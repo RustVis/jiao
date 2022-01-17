@@ -7,3 +7,6 @@ pub use traits::Canvas;
 
 #[cfg(feature = "gtk")]
 pub mod gtk_canvas;
+
+#[cfg(feature = "qt")]
+pub mod qt_canvas;
