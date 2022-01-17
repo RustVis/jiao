@@ -19,6 +19,17 @@ pub trait Canvas {
     /// Strokes (outlines) the current path with the current stoke style.
     fn stroke(&mut self);
 
+    /// Add a rotation to the transformation matrix.
+    fn rotate(&mut self, angle: f64);
+
+    /// Add a scaling transformation to the canvas units horizontally and/or vertically.
+    fn scale(&mut self, x: f64, y: f64);
+
+    /// Add a translation transformation to the current matrix.
+    fn translate(&mut self, x: f64, y: f64);
+}
+
+pub trait Path {
     /// Starts a new path by emptying the list of sub-paths.
     fn begin_path(&mut self);
 

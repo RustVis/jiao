@@ -11,46 +11,52 @@ pub struct QtCanvas(QPainter);
 impl Canvas for QtCanvas {
     #[inline]
     fn save(&mut self) {
-        self.0.save();
+        unsafe {
+            self.0.save();
+        }
     }
 
     #[inline]
     fn restore(&mut self) {
-        self.0.restore();
+        unsafe {
+            self.0.restore();
+        }
     }
 
     #[inline]
     fn clip(&mut self) {
-        self.0.clip();
+        //self.0.clip();
     }
 
     #[inline]
     fn fill(&mut self) {
-        self.0.fill();
+        //self.0.fill();
     }
 
     #[inline]
     fn stroke(&mut self) {
-        self.0.stroke();
+        //self.0.stroke();
     }
 
     #[inline]
-    fn begin_path(&mut self) {
-        self.0.new_path();
+    fn rotate(&mut self, angle: f64) {
+        // TODO(Shaohua): Convert angle to radian.
+        unsafe {
+            self.0.rotate(angle);
+        }
     }
 
     #[inline]
-    fn close_path(&mut self) {
-        self.0.close_path();
+    fn scale(&mut self, x: f64, y: f64) {
+        unsafe {
+            self.0.scale(x, y);
+        }
     }
 
     #[inline]
-    fn line_to(&mut self, x: f64, y: f64) {
-        self.0.line_to(x, y);
-    }
-
-    #[inline]
-    fn move_to(&mut self, x: f64, y: f64) {
-        self.0.move_to(x, y);
+    fn translate(&mut self, x: f64, y: f64) {
+        unsafe {
+            self.0.translate_2_double(x, y);
+        }
     }
 }
