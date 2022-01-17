@@ -1,4 +1,5 @@
 [workspace]
 members = [
+  "crates/canvas",
   "crates/jiao",
 ]
