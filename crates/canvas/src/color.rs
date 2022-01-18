@@ -19,7 +19,6 @@ enum ColorInner {
     Hsv(ColorHsvg),
     Cmyk(ColorCmyk),
     Hsl(ColorHsl),
-    RgbExtended(ColorRgbExtended),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -56,20 +55,11 @@ struct ColorHsl {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-struct ColorRgbExtended {
-    alpha_f16: u8,
-    red_f16: u8,
-    green_f16: u8,
-    blue_f16: u8,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Spec {
     Rgb,
     Hsv,
     Cmyk,
     Hsl,
-    RgbExtended,
 }
 
 pub const MAX_VALUE: u8 = u8::MAX;
@@ -114,7 +104,6 @@ impl Color {
             ColorInner::Hsv(_) => Spec::Hsv,
             ColorInner::Cmyk(_) => Spec::Cmyk,
             ColorInner::Hsl(_) => Spec::Hsl,
-            ColorInner::RgbExtended(_) => Spec::RgbExtended,
         }
     }
 
@@ -133,6 +122,20 @@ impl Color {
         }))
     }
 
+    pub fn to_rgb(&self) -> Self {
+        // TODO(Shaohua): Convert color space
+        Self::default()
+    }
+
+    pub fn alpha(&self) -> u8 {
+        match &self.0 {
+            ColorInner::Rgb(c) => c.alpha,
+            ColorInner::Hsv(c) => c.alpha,
+            ColorInner::Cmyk(c) => c.alpha,
+            ColorInner::Hsl(c) => c.apha,
+        }
+    }
+
     /// Returns the red color component of this color.
     pub fn red(&self) -> u8 {
         match &self.0 {
@@ -141,21 +144,20 @@ impl Color {
         }
     }
 
-    pub fn to_rgb(&self) -> Self {
-        // TODO(Shaohua): Convert color space
-        Self::default()
-    }
-
-    #[inline]
+    /// Returns the green color component of this color.
     pub fn green(&self) -> u8 {
-        0
-        //self.green
+        match &self.0 {
+            ColorInner::Rgb(c) => c.green,
+            _ => self.to_rgb().green(),
+        }
     }
 
-    #[inline]
+    /// Returns the blue color component of this color.
     pub fn blue(&self) -> u8 {
-        0
-        //self.blue
+        match &self.0 {
+            ColorInner::Rgb(c) => c.blue,
+            _ => self.to_rgb().blue(),
+        }
     }
 
     #[inline]
