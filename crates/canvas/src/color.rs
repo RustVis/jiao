@@ -6,20 +6,84 @@ use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 use std::str::FromStr;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Color {
+/// Represents color value.
+///
+/// Supports mulitiple color space.
+/// Default is RGBA.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Color(ColorInner);
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+enum ColorInner {
+    Rgb(ColorRgb),
+    Hsv(ColorHsvg),
+    Cmyk(ColorCmyk),
+    Hsl(ColorHsl),
+    RgbExtended(ColorRgbExtended),
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct ColorRgb {
+    alpha: u8,
     red: u8,
     green: u8,
     blue: u8,
-    alpha: u8,
 }
 
-const MAX_VALUE: u8 = 255;
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct ColorHsvg {
+    alpha: u8,
+    hue: u8,
+    saturation: u8,
+    value: u8,
+}
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct ColorCmyk {
+    alpha: u8,
+    cyan: u8,
+    magenta: u8,
+    yellow: u8,
+    black: u8,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct ColorHsl {
+    alpha: u8,
+    hue: u8,
+    saturation: u8,
+    lightness: u8,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct ColorRgbExtended {
+    alpha_f16: u8,
+    red_f16: u8,
+    green_f16: u8,
+    blue_f16: u8,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Spec {
+    Rgb,
+    Hsv,
+    Cmyk,
+    Hsl,
+    RgbExtended,
+}
+
+pub const MAX_VALUE: u8 = u8::MAX;
+
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ParseColorError {
     InvalidFormatError,
     OutOfRangeError,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum NameFormat {
+    HexRgb,
+    HexArgb,
 }
 
 impl fmt::Display for ParseColorError {
@@ -34,57 +98,75 @@ impl fmt::Display for ParseColorError {
 
 impl Default for Color {
     fn default() -> Self {
-        Self {
-            red: 0,
-            green: 0,
-            blue: 0,
-            alpha: MAX_VALUE,
-        }
+        Self::rgb(0, 0, 0)
     }
 }
 
 impl Color {
+    #[inline]
     pub fn new() -> Self {
         Self::default()
     }
 
+    pub fn spec(&self) -> Spec {
+        match &self.0 {
+            ColorInner::Rgb(_) => Spec::Rgb,
+            ColorInner::Hsv(_) => Spec::Hsv,
+            ColorInner::Cmyk(_) => Spec::Cmyk,
+            ColorInner::Hsl(_) => Spec::Hsl,
+            ColorInner::RgbExtended(_) => Spec::RgbExtended,
+        }
+    }
+
+    #[inline]
     pub fn rgb(red: u8, green: u8, blue: u8) -> Self {
-        Self {
-            red,
-            green,
-            blue,
-            alpha: MAX_VALUE,
-        }
+        Self::rgba(red, green, blue, MAX_VALUE)
     }
 
+    #[inline]
     pub fn rgba(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
-        Self {
+        Self(ColorInner::Rgb(ColorRgb {
+            alpha,
             red,
             green,
             blue,
-            alpha,
+        }))
+    }
+
+    /// Returns the red color component of this color.
+    pub fn red(&self) -> u8 {
+        match &self.0 {
+            ColorInner::Rgb(c) => c.red,
+            _ => self.to_rgb().red(),
         }
     }
 
-    pub fn red(&self) -> u8 {
-        self.red
+    pub fn to_rgb(&self) -> Self {
+        // TODO(Shaohua): Convert color space
+        Self::default()
     }
 
+    #[inline]
     pub fn green(&self) -> u8 {
-        self.green
+        0
+        //self.green
     }
 
+    #[inline]
     pub fn blue(&self) -> u8 {
-        self.blue
+        0
+        //self.blue
     }
 
+    #[inline]
     pub fn alpha(&self) -> u8 {
-        self.alpha
+        0
+        //self.0.rgb.alpha
     }
 
     pub fn to_rgb_str(&self) -> String {
-        debug_assert!(self.alpha == MAX_VALUE);
-        format!("#{:x}{:x}{:x}", self.red, self.green, self.blue)
+        debug_assert!(self.alpha() == MAX_VALUE);
+        format!("#{:x}{:x}{:x}", self.red(), self.green(), self.blue())
     }
 }
 
@@ -98,7 +180,10 @@ impl std::string::ToString for Color {
     fn to_string(&self) -> String {
         String::from(format!(
             "rgba({}, {}, {}, {})",
-            self.red, self.green, self.blue, self.alpha
+            self.red(),
+            self.green(),
+            self.blue(),
+            self.alpha()
         ))
     }
 }
