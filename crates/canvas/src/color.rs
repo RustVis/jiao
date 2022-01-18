@@ -63,6 +63,7 @@ pub enum Spec {
 }
 
 pub const MAX_VALUE: u8 = u8::MAX;
+pub const MAX_FLOAT_VALUE: f64 = MAX_VALUE as f64;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ParseColorError {
@@ -74,6 +75,13 @@ pub enum ParseColorError {
 pub enum NameFormat {
     HexRgb,
     HexArgb,
+}
+
+fn check_float_range(value: f64) -> Result<(), ParseColorError> {
+    if value < 0.0 || value > 1.0 {
+        return Err(ParseColorError::OutOfRangeError);
+    }
+    Ok(())
 }
 
 impl fmt::Display for ParseColorError {
@@ -122,20 +130,77 @@ impl Color {
         }))
     }
 
+    /// Creates and returns a CMYK color based on this color.
+    #[inline]
+    pub fn to_cmyk(&self) -> Self {
+        self.convert_to(Spec::Cmyk)
+    }
+
+    /// Creates and returns an RGB color based on this color.
+    #[inline]
     pub fn to_rgb(&self) -> Self {
-        // TODO(Shaohua): Convert color space
+        self.convert_to(Spec::Rgb)
+    }
+
+    /// Creates and returns an HSL color based on this color.
+    #[inline]
+    pub fn to_hsl(&self) -> Self {
+        self.convert_to(Spec::Hsl)
+    }
+
+    /// Creates and returns an HSV color based on this color.
+    #[inline]
+    pub fn to_hsv(&self) -> Self {
+        self.convert_to(Spec::Hsv)
+    }
+
+    /// Create a copy of this color in the specified format.
+    pub fn convert_to(&self, spec: Spec) -> Self {
+        // TODO(Shaohua):
         Self::default()
     }
 
+    /// Returns the alpha color component of this color.
+    #[inline]
     pub fn alpha(&self) -> u8 {
         match &self.0 {
             ColorInner::Rgb(c) => c.alpha,
             ColorInner::Hsv(c) => c.alpha,
             ColorInner::Cmyk(c) => c.alpha,
-            ColorInner::Hsl(c) => c.apha,
+            ColorInner::Hsl(c) => c.alpha,
         }
     }
 
+    /// Set alpha channel of this color.
+    #[inline]
+    pub fn set_alpha(&mut self, alpha: u8) {
+        match &mut self.0 {
+            ColorInner::Rgb(c) => c.alpha = alpha,
+            ColorInner::Hsv(c) => c.alpha = alpha,
+            ColorInner::Cmyk(c) => c.alpha = alpha,
+            ColorInner::Hsl(c) => c.alpha = alpha,
+        }
+    }
+
+    /// Returns the alpha color component of this color.
+    #[inline]
+    pub fn alpha_f(&self) -> f64 {
+        self.alpha() as f64 / MAX_FLOAT_VALUE
+    }
+
+    /// Sets the alpha of this color to \a alpha. qreal alpha is specified in the range 0.0-1.0.
+    #[inline]
+    pub fn set_alpha_f(&mut self, alpha: f64) -> Result<(), ParseColorError> {
+        check_float_range(alpha)?;
+        let alpha_int = (alpha * MAX_FLOAT_VALUE).round() as u8;
+        match &mut self.0 {
+            ColorInner::Rgb(c) => c.alpha = alpha_int,
+            ColorInner::Hsv(c) => c.alpha = alpha_int,
+            ColorInner::Cmyk(c) => c.alpha = alpha_int,
+            ColorInner::Hsl(c) => c.alpha = alpha_int,
+        }
+        Ok(())
+    }
     /// Returns the red color component of this color.
     pub fn red(&self) -> u8 {
         match &self.0 {
@@ -158,12 +223,6 @@ impl Color {
             ColorInner::Rgb(c) => c.blue,
             _ => self.to_rgb().blue(),
         }
-    }
-
-    #[inline]
-    pub fn alpha(&self) -> u8 {
-        0
-        //self.0.rgb.alpha
     }
 
     pub fn to_rgb_str(&self) -> String {
