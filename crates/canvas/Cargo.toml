@@ -7,9 +7,10 @@ edition = "2021"
 default = []
 gtk = ["cairo-rs"]
 qt = ["qt_gui"]
-wasm = ["web-sys"]
+wasm = ["web-sys", "wasm-bindgen"]
 
 [dependencies]
+serde = { version = "1.0.130", features = ["derive"] }
 
 [dependencies.qt_gui]
 version = "0.5"
@@ -23,3 +24,8 @@ optional = true
 version = "0.3.55"
 optional = true
 features = ["CanvasRenderingContext2d"]
+
+[dependencies.wasm-bindgen]
+version = "0.2"
+optional = true
+features = ["serde-serialize"]

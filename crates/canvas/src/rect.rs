@@ -2,7 +2,9 @@
 // Use of this source is governed by General Public License that can be found
 // in the LICENSE file.
 
-#[derive(Debug, Default, Clone, PartialEq, Eq)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Rect {
     x: i32,
     y: i32,
@@ -49,7 +51,7 @@ impl Rect {
     }
 }
 
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RectF {
     x: f64,
     y: f64,
