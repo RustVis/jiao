@@ -17,10 +17,10 @@ pub struct Color(ColorInner);
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum ColorInner {
-    Rgb(ColorRgb),
-    Hsv(ColorHsv),
     Cmyk(ColorCmyk),
     Hsl(ColorHsl),
+    Hsv(ColorHsv),
+    Rgb(ColorRgb),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -113,6 +113,9 @@ impl Color {
     #[inline]
     pub fn to_cmyk(&self) -> Self {
         match &self.0 {
+            ColorInner::Cmyk(c) => self.clone(),
+            ColorInner::Hsl(_) => self.to_rgb().to_cmyk(),
+            ColorInner::Hsv(_) => self.to_rgb().to_cmyk(),
             ColorInner::Rgb(c) => {
                 if c.red == 0 || c.green == 0 || c.blue == 0 {
                     // Special case, div-by-zero.
@@ -147,9 +150,6 @@ impl Color {
                     black: (black * MAX_FLOAT_VALUE).round() as u8,
                 }))
             }
-            ColorInner::Hsv(_) => self.to_rgb().to_cmyk(),
-            ColorInner::Cmyk(c) => self.clone(),
-            ColorInner::Hsl(_) => self.to_rgb().to_cmyk(),
         }
     }
 
@@ -163,6 +163,9 @@ impl Color {
     #[inline]
     pub fn to_hsl(&self) -> Self {
         match &self.0 {
+            ColorInner::Cmyk(_) => self.to_rgb().to_hsl(),
+            ColorInner::Hsl(_) => self.clone(),
+            ColorInner::Hsv(_) => self.to_rgb().to_hsl(),
             ColorInner::Rgb(c) => {
                 let red = c.red as f64 / MAX_FLOAT_VALUE;
                 let green = c.green as f64 / MAX_FLOAT_VALUE;
@@ -211,16 +214,61 @@ impl Color {
 
                 Self(ColorInner::Hsl(hsl))
             }
-            ColorInner::Hsv(_) => self.to_rgb().to_cmyk(),
-            ColorInner::Cmyk(_) => self.to_rgb().to_hsl(),
-            ColorInner::Hsl(_) => self.clone(),
         }
     }
 
     /// Creates and returns an HSV color based on this color.
     #[inline]
     pub fn to_hsv(&self) -> Self {
-        self.convert_to(Spec::Hsv)
+        match &self.0 {
+            ColorInner::Cmyk(_) => self.to_rgb().to_hsl(),
+            ColorInner::Hsl(_) => self.to_rgb().to_hsv(),
+            ColorInner::Hsv(_) => self.clone(),
+            ColorInner::Rgb(c) => {
+                let red = c.red as f64 / MAX_FLOAT_VALUE;
+                let green = c.green as f64 / MAX_FLOAT_VALUE;
+                let blue = c.blue as f64 / MAX_FLOAT_VALUE;
+                let max_val = red.max(green.max(blue));
+                let min_val = red.min(green.min(blue));
+                let delta = max_val - min_val;
+                let value = max_val;
+
+                let mut hsv = ColorHsv {
+                    alpha: c.alpha,
+                    hue: 0,
+                    saturation: 0,
+                    value: (value * MAX_FLOAT_VALUE).round() as u8,
+                };
+
+                if fuzzy_is_zero(delta) {
+                    // achromatic case, hue is undefined.
+                    hsv.hue = MAX_VALUE;
+                    hsv.saturation = 0;
+                } else {
+                    // chromatic case.
+                    hsv.saturation = ((delta / max_val) * MAX_FLOAT_VALUE).round() as u8;
+
+                    let mut hue = 0.0;
+                    if fuzzy_compare(red, max_val) {
+                        hue = (green - blue) / delta;
+                    } else if fuzzy_compare(green, max_val) {
+                        hue = 2.0 + (blue - red) / delta;
+                    } else if fuzzy_compare(blue, max_val) {
+                        hue = 4.0 + (red - green) / delta;
+                    } else {
+                        // TODO(Shaohua): Throw an error
+                    }
+
+                    hue *= 60.0;
+                    if hue < 0.0 {
+                        hue += 360.0;
+                    }
+                    hsv.hue = (hue * 100.0).round() as u8;
+                }
+
+                Self(ColorInner::Hsv(hsv))
+            }
+        }
     }
 
     /// Create a copy of this color in the specified format.
