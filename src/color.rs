@@ -16,7 +16,7 @@ pub struct Color(ColorInner);
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum ColorInner {
     Rgb(ColorRgb),
-    Hsv(ColorHsvg),
+    Hsv(ColorHsv),
     Cmyk(ColorCmyk),
     Hsl(ColorHsl),
 }
@@ -30,7 +30,7 @@ struct ColorRgb {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-struct ColorHsvg {
+struct ColorHsv {
     alpha: u8,
     hue: u8,
     saturation: u8,
@@ -97,7 +97,7 @@ impl fmt::Display for ParseColorError {
 
 impl Default for Color {
     fn default() -> Self {
-        Self::rgb(0, 0, 0)
+        Self::from_rgb(0, 0, 0)
     }
 }
 
@@ -105,21 +105,6 @@ impl Color {
     #[inline]
     pub fn new() -> Self {
         Self::default()
-    }
-
-    #[inline]
-    pub fn rgb(red: u8, green: u8, blue: u8) -> Self {
-        Self::rgba(red, green, blue, MAX_VALUE)
-    }
-
-    #[inline]
-    pub fn rgba(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
-        Self(ColorInner::Rgb(ColorRgb {
-            alpha,
-            red,
-            green,
-            blue,
-        }))
     }
 
     /// Creates and returns a CMYK color based on this color.
@@ -198,10 +183,10 @@ impl Color {
         })))
     }
 
-    /// Construct color from the HSV color values.
+    /// Construct color from the HSL color values.
     ///
-    /// The value of s, l, and a must all be in the range 0-255;
-    /// the value of h must be in the range 0-359.
+    /// The value of saturation, lightness, and alpha must all be in the range 0-255;
+    /// the value of hue must be in the range 0-359.
     fn from_hsl(
         hue: i32,
         saturation: u8,
@@ -225,7 +210,7 @@ impl Color {
         })))
     }
 
-    /// Construct color from the HSV color values.
+    /// Construct color from the HSL color values.
     ///
     /// All the values must be in range 0.0-1.0.
     fn from_hsl_f(
@@ -257,6 +242,83 @@ impl Color {
             saturation: (saturation * MAX_FLOAT_VALUE).round() as u8,
             lightness: (lightness * MAX_FLOAT_VALUE).round() as u8,
         })))
+    }
+
+    /// Construct color from the HSV color values.
+    ///
+    /// The value of saturation, value, and alpha must all be in the range 0-255;
+    /// the value of hue must be in the range 0-359.
+    fn from_hsv(hue: i32, saturation: u8, value: u8, alpha: u8) -> Result<Self, ParseColorError> {
+        if hue < -1 || hue >= MAX_HUE_VALUE {
+            return Err(ParseColorError::OutOfRangeError);
+        }
+        let real_hue = if hue == -1 {
+            MAX_VALUE
+        } else {
+            (hue % MAX_HUE_VALUE * 100) as u8
+        };
+
+        Ok(Self(ColorInner::Hsv(ColorHsv {
+            alpha,
+            hue: real_hue,
+            saturation,
+            value,
+        })))
+    }
+
+    /// Construct color from the HSV color values.
+    ///
+    /// All the values must be in range 0.0-1.0.
+    fn from_hsv_f(
+        hue: f64,
+        saturation: f64,
+        value: f64,
+        alpha: f64,
+    ) -> Result<Self, ParseColorError> {
+        if (hue < 0.0 && hue != -1.0)
+            || hue > 1.0
+            || saturation < 0.0
+            || saturation > 1.0
+            || value < 0.0
+            || value > 1.0
+            || alpha < 0.0
+            || alpha > 1.0
+        {
+            return Err(ParseColorError::OutOfRangeError);
+        }
+        let real_hue = if hue == -1.0 {
+            MAX_VALUE
+        } else {
+            (hue * 36_000.0).round() as u8
+        };
+
+        Ok(Self(ColorInner::Hsv(ColorHsv {
+            alpha: (alpha * MAX_FLOAT_VALUE).round() as u8,
+            hue: real_hue,
+            saturation: (saturation * MAX_FLOAT_VALUE).round() as u8,
+            value: (value * MAX_FLOAT_VALUE).round() as u8,
+        })))
+    }
+
+    /// Construct color from the RGB color values.
+    ///
+    /// All the values must be in range 0-255.
+    #[inline]
+    pub fn from_rgb(red: u8, green: u8, blue: u8) -> Self {
+        Self::from_rgba(red, green, blue, MAX_VALUE)
+    }
+
+    /// Construct color from the RGBA color values.
+    ///
+    /// All the values must be in range 0-255.
+    #[inline]
+    pub fn from_rgba(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
+        Self(ColorInner::Rgb(ColorRgb {
+            alpha,
+            red,
+            green,
+            blue,
+        }))
     }
 
     /// Returns how the color was specified.
@@ -380,7 +442,7 @@ impl std::str::FromStr for Color {
                     let blue = u8::from_str_radix(&s[5..7], 16)?;
                     let alpha = u8::from_str_radix(&s[7..9], 16)?;
 
-                    Ok(Color::rgba(red, green, blue, alpha))
+                    Ok(Color::from_rgba(red, green, blue, alpha))
                 }
                 7 => {
                     // #rrggbb
@@ -388,7 +450,7 @@ impl std::str::FromStr for Color {
                     let green = u8::from_str_radix(&s[3..5], 16)?;
                     let blue = u8::from_str_radix(&s[5..7], 16)?;
 
-                    Ok(Color::rgba(red, green, blue, MAX_VALUE))
+                    Ok(Color::from_rgb(red, green, blue))
                 }
                 4 => {
                     // #rgb
@@ -401,7 +463,7 @@ impl std::str::FromStr for Color {
                     let green = green * 17;
                     let blue = blue * 17;
 
-                    Ok(Color::rgba(red, green, blue, MAX_VALUE))
+                    Ok(Color::from_rgb(red, green, blue))
                 }
                 _ => Err(ParseColorError::InvalidFormatError),
             };
@@ -421,7 +483,7 @@ impl std::str::FromStr for Color {
             let blue = parts[2].parse::<u8>()?;
             let alpha = parts[3].parse::<u8>()?;
 
-            return Ok(Color::rgba(red, green, blue, alpha));
+            return Ok(Color::from_rgba(red, green, blue, alpha));
         } else if len > 9 && &s[0..4] == "rgb(" && &s[len - 1..len] == ")" {
             // rgb(0,0,0)
             // rgb(101, 255, 255)
@@ -437,7 +499,7 @@ impl std::str::FromStr for Color {
             let green = parts[1].parse::<u8>()?;
             let blue = parts[2].parse::<u8>()?;
 
-            return Ok(Color::rgba(red, green, blue, MAX_VALUE));
+            return Ok(Color::from_rgb(red, green, blue));
         }
 
         return Err(ParseColorError::InvalidFormatError);
