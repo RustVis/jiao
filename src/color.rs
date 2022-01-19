@@ -110,7 +110,45 @@ impl Color {
     /// Creates and returns a CMYK color based on this color.
     #[inline]
     pub fn to_cmyk(&self) -> Self {
-        self.convert_to(Spec::Cmyk)
+        match &self.0 {
+            ColorInner::Rgb(c) => {
+                if c.red == 0 || c.green == 0 || c.blue == 0 {
+                    // Special case, div-by-zero.
+                    return Self(ColorInner::Cmyk(ColorCmyk {
+                        alpha: c.alpha,
+                        cyan: 0,
+                        magenta: 0,
+                        yellow: 0,
+                        black: MAX_VALUE,
+                    }));
+                }
+                // rgb -> cmy
+                let red = c.red as f64 / MAX_FLOAT_VALUE;
+                let green = c.green as f64 / MAX_FLOAT_VALUE;
+                let blue = c.blue as f64 / MAX_FLOAT_VALUE;
+                let mut cyan = 1.0 - red;
+                let mut magenta = 1.0 - green;
+                let mut yellow = 1.0 - blue;
+
+                // cmy -> cmyk
+                let black = red.min(green.min(blue));
+                let black_revert = 1.0 - black;
+                cyan = (cyan - black) / black_revert;
+                magenta = (magenta - black) / black_revert;
+                yellow = (yellow - black) / black_revert;
+
+                Self(ColorInner::Cmyk(ColorCmyk {
+                    alpha: c.alpha,
+                    cyan: (cyan.round() * MAX_FLOAT_VALUE) as u8,
+                    magenta: (magenta.round() * MAX_FLOAT_VALUE) as u8,
+                    yellow: (yellow.round() * MAX_FLOAT_VALUE) as u8,
+                    black: (black.round() * MAX_FLOAT_VALUE) as u8,
+                }))
+            }
+            ColorInner::Hsv(_) => self.to_rgb().to_cmyk(),
+            ColorInner::Cmyk(c) => self.clone(),
+            ColorInner::Hsl(_) => self.to_rgb().to_cmyk(),
+        }
     }
 
     /// Creates and returns an RGB color based on this color.
@@ -133,8 +171,15 @@ impl Color {
 
     /// Create a copy of this color in the specified format.
     pub fn convert_to(&self, spec: Spec) -> Self {
-        // TODO(Shaohua):
-        Self::default()
+        if spec == self.spec() {
+            return self.clone();
+        }
+        match spec {
+            Spec::Rgb => self.to_rgb(),
+            Spec::Hsv => self.to_hsv(),
+            Spec::Cmyk => self.to_cmyk(),
+            Spec::Hsl => self.to_hsl(),
+        }
     }
 
     /// Construct color from the given CMYK color values.
