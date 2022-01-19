@@ -308,6 +308,14 @@ impl Color {
         Self::from_rgba(red, green, blue, MAX_VALUE)
     }
 
+    /// Construct color from the RGB color values.
+    ///
+    /// All the values must be in range 0.0-1.0.
+    #[inline]
+    pub fn from_rgb_f(red: f64, green: f64, blue: f64) -> Result<Self, ParseColorError> {
+        Self::from_rgba_f(red, green, blue, 1.0)
+    }
+
     /// Construct color from the RGBA color values.
     ///
     /// All the values must be in range 0-255.
@@ -319,6 +327,36 @@ impl Color {
             green,
             blue,
         }))
+    }
+
+    /// Construct color from the RGBA color values.
+    ///
+    /// All the values must be in range 0.0-1.0.
+    #[inline]
+    pub fn from_rgba_f(
+        red: f64,
+        green: f64,
+        blue: f64,
+        alpha: f64,
+    ) -> Result<Self, ParseColorError> {
+        if red < 0.0
+            || red > 1.0
+            || green < 0.0
+            || green > 1.0
+            || blue < 0.0
+            || blue > 1.0
+            || alpha < 0.0
+            || alpha > 1.0
+        {
+            return Err(ParseColorError::OutOfRangeError);
+        }
+
+        Ok(Self(ColorInner::Rgb(ColorRgb {
+            alpha: (alpha * MAX_FLOAT_VALUE).round() as u8,
+            red: (red * MAX_FLOAT_VALUE).round() as u8,
+            green: (green * MAX_FLOAT_VALUE).round() as u8,
+            blue: (blue * MAX_FLOAT_VALUE).round() as u8,
+        })))
     }
 
     /// Returns how the color was specified.
