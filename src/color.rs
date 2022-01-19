@@ -6,7 +6,7 @@ use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 use std::str::FromStr;
 
-use super::util::fuzzy_compare;
+use super::util::{fuzzy_compare, fuzzy_is_zero};
 
 /// Represents color value.
 ///
@@ -179,7 +179,7 @@ impl Color {
                     lightness: (lightness * MAX_FLOAT_VALUE).round() as u8,
                 };
 
-                if delta < f64::EPSILON {
+                if fuzzy_is_zero(delta) {
                     // achromatic case, hue is undefined.
                     hsl.hue = MAX_VALUE;
                     hsl.saturation = 0;

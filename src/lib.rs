@@ -8,6 +8,7 @@ mod point;
 pub use point::{Point, PointF};
 mod rect;
 pub use rect::{Rect, RectF};
+pub mod util;
 
 mod traits;
 pub use traits::{Canvas, Path};
