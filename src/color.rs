@@ -6,6 +6,8 @@ use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 use std::str::FromStr;
 
+use super::util::fuzzy_compare;
+
 /// Represents color value.
 ///
 /// Supports mulitiple color space.
@@ -139,10 +141,10 @@ impl Color {
 
                 Self(ColorInner::Cmyk(ColorCmyk {
                     alpha: c.alpha,
-                    cyan: (cyan.round() * MAX_FLOAT_VALUE) as u8,
-                    magenta: (magenta.round() * MAX_FLOAT_VALUE) as u8,
-                    yellow: (yellow.round() * MAX_FLOAT_VALUE) as u8,
-                    black: (black.round() * MAX_FLOAT_VALUE) as u8,
+                    cyan: (cyan * MAX_FLOAT_VALUE).round() as u8,
+                    magenta: (magenta * MAX_FLOAT_VALUE).round() as u8,
+                    yellow: (yellow * MAX_FLOAT_VALUE).round() as u8,
+                    black: (black * MAX_FLOAT_VALUE).round() as u8,
                 }))
             }
             ColorInner::Hsv(_) => self.to_rgb().to_cmyk(),
@@ -160,7 +162,59 @@ impl Color {
     /// Creates and returns an HSL color based on this color.
     #[inline]
     pub fn to_hsl(&self) -> Self {
-        self.convert_to(Spec::Hsl)
+        match &self.0 {
+            ColorInner::Rgb(c) => {
+                let red = c.red as f64 / MAX_FLOAT_VALUE;
+                let green = c.green as f64 / MAX_FLOAT_VALUE;
+                let blue = c.blue as f64 / MAX_FLOAT_VALUE;
+                let max_val = red.max(green.max(blue));
+                let min_val = red.min(green.min(blue));
+                let delta = max_val - min_val;
+                let delta2 = max_val + min_val;
+                let lightness = 0.5 * delta2;
+                let mut hsl = ColorHsl {
+                    alpha: c.alpha,
+                    hue: 0,
+                    saturation: 0,
+                    lightness: (lightness * MAX_FLOAT_VALUE).round() as u8,
+                };
+
+                if delta < f64::EPSILON {
+                    // achromatic case, hue is undefined.
+                    hsl.hue = MAX_VALUE;
+                    hsl.saturation = 0;
+                } else {
+                    // chromatic case.
+                    hsl.saturation = if lightness < 0.5 {
+                        ((delta / delta2) * MAX_FLOAT_VALUE).round() as u8
+                    } else {
+                        (delta / (2.0 - delta2) * MAX_FLOAT_VALUE).round() as u8
+                    };
+
+                    let mut hue = 0.0;
+                    if fuzzy_compare(red, max_val) {
+                        hue = (green - blue) / delta;
+                    } else if fuzzy_compare(green, max_val) {
+                        hue = 2.0 + (blue - red) / delta;
+                    } else if fuzzy_compare(blue, max_val) {
+                        hue = 4.0 + (red - green) / delta;
+                    } else {
+                        // TODO(Shaohua): Throw an error
+                    }
+
+                    hue *= 60.0;
+                    if hue < 0.0 {
+                        hue += 360.0;
+                    }
+                    hsl.hue = (hue * 100.0).round() as u8;
+                }
+
+                Self(ColorInner::Hsl(hsl))
+            }
+            ColorInner::Hsv(_) => self.to_rgb().to_cmyk(),
+            ColorInner::Cmyk(_) => self.to_rgb().to_hsl(),
+            ColorInner::Hsl(_) => self.clone(),
+        }
     }
 
     /// Creates and returns an HSV color based on this color.
