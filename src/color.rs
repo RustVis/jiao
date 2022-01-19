@@ -174,9 +174,73 @@ impl Color {
                     blue: (blue * MAX_FLOAT_VALUE).round() as u8,
                 }))
             }
-            ColorInner::Hsl(_c) => {
-                //
-                self.clone()
+            ColorInner::Hsl(c) => {
+                let mut red = 0;
+                let mut green = 0;
+                let mut blue = 0;
+                if c.saturation == 0 || c.hue == MAX_VALUE {
+                    // achromatic case
+                    red = c.lightness;
+                    green = c.lightness;
+                    blue = c.lightness;
+                } else if c.lightness == 0 {
+                    red = 0;
+                    green = 0;
+                    blue = 0;
+                } else {
+                    // chromatic case
+                    // FIXME(Shaohua): u8 out of range
+                    let hue = if c.hue as u32 == 36_000 {
+                        0.0
+                    } else {
+                        c.hue as f64 / 36_000.0
+                    };
+                    let saturation = c.saturation as f64 / MAX_FLOAT_VALUE;
+                    let lightness = c.lightness as f64 / MAX_FLOAT_VALUE;
+                    let temp2 = if lightness < 0.5 {
+                        lightness * (1.0 + saturation)
+                    } else {
+                        lightness + saturation - (lightness * saturation)
+                    };
+
+                    let temp1 = (2.0 * lightness) - temp2;
+                    let mut temp3 = [hue + (1.0 / 3.0), hue, hue - (1.0 / 3.0)];
+                    let mut array = [0u8; 4];
+
+                    for i in 0..3 {
+                        if temp3[i] < 0.0 {
+                            temp3[i] += 1.0;
+                        } else if temp3[i] > 1.0 {
+                            temp3[i] -= 1.0;
+                        }
+
+                        let sixtemp3 = temp3[i] * 6.0;
+                        if sixtemp3 < 1.0 {
+                            array[i + 1] = ((temp1 + (temp2 - temp1) * sixtemp3) * MAX_FLOAT_VALUE)
+                                .round() as u8;
+                        } else if (temp3[i] * 2.0) < 1.0 {
+                            array[i + 1] = (temp2 * MAX_FLOAT_VALUE).round() as u8;
+                        } else if (temp3[i] * 3.0) < 2.0 {
+                            array[i + 1] = ((temp1
+                                + (temp2 - temp1) * (2.0 / 3.0 - temp3[i]) * 6.0)
+                                * MAX_FLOAT_VALUE)
+                                .round() as u8;
+                        } else {
+                            array[i + 1] = (temp1 * MAX_FLOAT_VALUE).round() as u8;
+                        }
+                    }
+
+                    red = array[1];
+                    green = array[2];
+                    blue = array[3];
+                }
+
+                Self(ColorInner::Rgb(ColorRgb {
+                    alpha: c.alpha,
+                    red,
+                    green,
+                    blue,
+                }))
             }
             ColorInner::Hsv(_c) => {
                 //
