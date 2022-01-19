@@ -64,6 +64,7 @@ pub enum Spec {
 
 pub const MAX_VALUE: u8 = u8::MAX;
 pub const MAX_FLOAT_VALUE: f64 = MAX_VALUE as f64;
+pub const MAX_HUE_VALUE: i32 = 360;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ParseColorError {
@@ -104,15 +105,6 @@ impl Color {
     #[inline]
     pub fn new() -> Self {
         Self::default()
-    }
-
-    pub fn spec(&self) -> Spec {
-        match &self.0 {
-            ColorInner::Rgb(_) => Spec::Rgb,
-            ColorInner::Hsv(_) => Spec::Hsv,
-            ColorInner::Cmyk(_) => Spec::Cmyk,
-            ColorInner::Hsl(_) => Spec::Hsl,
-        }
     }
 
     #[inline]
@@ -158,6 +150,123 @@ impl Color {
     pub fn convert_to(&self, spec: Spec) -> Self {
         // TODO(Shaohua):
         Self::default()
+    }
+
+    /// Construct color from the given CMYK color values.
+    ///
+    /// All the values must be in the range 0-255.
+    pub fn from_cmyk(cyan: u8, magenta: u8, yellow: u8, black: u8, alpha: u8) -> Self {
+        Self(ColorInner::Cmyk(ColorCmyk {
+            alpha,
+            cyan,
+            magenta,
+            yellow,
+            black,
+        }))
+    }
+
+    /// Construct color from the given CMYK color values.
+    ///
+    /// All the values must be in the range 0.0-1.0.
+    pub fn from_cmyk_f(
+        cyan: f64,
+        magenta: f64,
+        yellow: f64,
+        black: f64,
+        alpha: f64,
+    ) -> Result<Self, ParseColorError> {
+        if cyan < 0.0
+            || cyan > 1.0
+            || magenta < 0.0
+            || magenta > 1.0
+            || yellow < 0.0
+            || yellow > 1.0
+            || black < 0.0
+            || black > 1.0
+            || alpha < 0.0
+            || alpha > 1.0
+        {
+            return Err(ParseColorError::OutOfRangeError);
+        }
+
+        Ok(Self(ColorInner::Cmyk(ColorCmyk {
+            alpha: (alpha * MAX_FLOAT_VALUE).round() as u8,
+            cyan: (cyan * MAX_FLOAT_VALUE).round() as u8,
+            magenta: (magenta * MAX_FLOAT_VALUE).round() as u8,
+            yellow: (yellow * MAX_FLOAT_VALUE).round() as u8,
+            black: (black * MAX_FLOAT_VALUE).round() as u8,
+        })))
+    }
+
+    /// Construct color from the HSV color values.
+    ///
+    /// The value of s, l, and a must all be in the range 0-255;
+    /// the value of h must be in the range 0-359.
+    fn from_hsl(
+        hue: i32,
+        saturation: u8,
+        lightness: u8,
+        alpha: u8,
+    ) -> Result<Self, ParseColorError> {
+        if hue < -1 || hue >= MAX_HUE_VALUE {
+            return Err(ParseColorError::OutOfRangeError);
+        }
+        let real_hue = if hue == -1 {
+            MAX_VALUE
+        } else {
+            (hue % MAX_HUE_VALUE * 100) as u8
+        };
+
+        Ok(Self(ColorInner::Hsl(ColorHsl {
+            alpha,
+            hue: real_hue,
+            saturation,
+            lightness,
+        })))
+    }
+
+    /// Construct color from the HSV color values.
+    ///
+    /// All the values must be in range 0.0-1.0.
+    fn from_hsl_f(
+        hue: f64,
+        saturation: f64,
+        lightness: f64,
+        alpha: f64,
+    ) -> Result<Self, ParseColorError> {
+        if (hue < 0.0 && hue != -1.0)
+            || hue > 1.0
+            || saturation < 0.0
+            || saturation > 1.0
+            || lightness < 0.0
+            || lightness > 1.0
+            || alpha < 0.0
+            || alpha > 1.0
+        {
+            return Err(ParseColorError::OutOfRangeError);
+        }
+        let real_hue = if hue == -1.0 {
+            MAX_VALUE
+        } else {
+            (hue * 36_000.0).round() as u8
+        };
+
+        Ok(Self(ColorInner::Hsl(ColorHsl {
+            alpha: (alpha * MAX_FLOAT_VALUE).round() as u8,
+            hue: real_hue,
+            saturation: (saturation * MAX_FLOAT_VALUE).round() as u8,
+            lightness: (lightness * MAX_FLOAT_VALUE).round() as u8,
+        })))
+    }
+
+    /// Returns how the color was specified.
+    pub fn spec(&self) -> Spec {
+        match &self.0 {
+            ColorInner::Rgb(_) => Spec::Rgb,
+            ColorInner::Hsv(_) => Spec::Hsv,
+            ColorInner::Cmyk(_) => Spec::Cmyk,
+            ColorInner::Hsl(_) => Spec::Hsl,
+        }
     }
 
     /// Returns the alpha color component of this color.
