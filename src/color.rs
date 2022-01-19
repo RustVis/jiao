@@ -156,7 +156,34 @@ impl Color {
     /// Creates and returns an RGB color based on this color.
     #[inline]
     pub fn to_rgb(&self) -> Self {
-        self.convert_to(Spec::Rgb)
+        match &self.0 {
+            ColorInner::Cmyk(c) => {
+                let cyan = c.cyan as f64 / MAX_FLOAT_VALUE;
+                let magenta = c.magenta as f64 / MAX_FLOAT_VALUE;
+                let yellow = c.yellow as f64 / MAX_FLOAT_VALUE;
+                let black = c.black as f64 / MAX_FLOAT_VALUE;
+
+                let red = 1.0 - (cyan * (1.0 - black) + black);
+                let green = 1.0 - (magenta * (1.0 - black) + black);
+                let blue = 1.0 - (yellow * (1.0 - black) + black);
+
+                Self(ColorInner::Rgb(ColorRgb {
+                    alpha: c.alpha,
+                    red: (red * MAX_FLOAT_VALUE).round() as u8,
+                    green: (green * MAX_FLOAT_VALUE).round() as u8,
+                    blue: (blue * MAX_FLOAT_VALUE).round() as u8,
+                }))
+            }
+            ColorInner::Hsl(_c) => {
+                //
+                self.clone()
+            }
+            ColorInner::Hsv(_c) => {
+                //
+                self.clone()
+            }
+            ColorInner::Rgb(_) => self.clone(),
+        }
     }
 
     /// Creates and returns an HSL color based on this color.
