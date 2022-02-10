@@ -10,7 +10,7 @@ qt = ["qt_gui"]
 wasm = ["web-sys", "wasm-bindgen"]
 
 [dependencies]
-serde = { version = "1.0.134", features = ["derive"] }
+serde = { version = "1.0.136", features = ["derive"] }
 
 [dependencies.qt_gui]
 version = "0.5.0"
