@@ -5,9 +5,9 @@
 pub mod base;
 pub use base::{color::Color, point::Point, point::PointF, rect::Rect, rect::RectF};
 
-pub mod kernel;
-
 pub mod animation;
+pub mod kernel;
+pub mod painting;
 pub mod util;
 
 #[cfg(feature = "gtk")]
