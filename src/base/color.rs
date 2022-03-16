@@ -6,7 +6,7 @@ use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 use std::str::FromStr;
 
-use super::util::{fuzzy_compare, fuzzy_is_zero};
+use crate::util::{fuzzy_compare, fuzzy_is_zero};
 
 /// Represents color value.
 ///

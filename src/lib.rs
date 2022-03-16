@@ -2,14 +2,10 @@
 // Use of this source is governed by General Public License that can be found
 // in the LICENSE file.
 
-pub mod color;
-pub use color::Color;
-//mod point;
-//pub use point::{Point, PointF};
-//mod rect;
-//pub use rect::{Rect, RectF};
-pub mod util;
+pub mod base;
+pub use base::{color::Color, point::Point, point::PointF, rect::Rect, rect::RectF};
 
+pub mod util;
 //mod traits;
 //pub use traits::{Canvas, Path};
 
