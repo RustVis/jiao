@@ -2,10 +2,9 @@
 // Use of this source is governed by General Public License that can be found
 // in the LICENSE file.
 
-pub mod animation;
-pub mod base;
-pub mod image;
-pub mod kernel;
-pub mod math3d;
-pub mod painting;
-pub mod util;
+pub mod generic_matrix;
+pub mod matrix4x4;
+pub mod quaternion;
+pub mod vector2d;
+pub mod vector3d;
+pub mod vector4d;
