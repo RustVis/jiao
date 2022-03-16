@@ -4,17 +4,20 @@
 
 pub mod color;
 pub use color::Color;
-mod point;
-pub use point::{Point, PointF};
-mod rect;
-pub use rect::{Rect, RectF};
+//mod point;
+//pub use point::{Point, PointF};
+//mod rect;
+//pub use rect::{Rect, RectF};
 pub mod util;
 
-mod traits;
-pub use traits::{Canvas, Path};
+//mod traits;
+//pub use traits::{Canvas, Path};
 
 #[cfg(feature = "gtk")]
-pub mod gtk_canvas;
+pub mod gtk;
 
 #[cfg(feature = "qt")]
-pub mod qt_canvas;
+pub mod qt;
+
+#[cfg(feature = "web")]
+pub mod web;
