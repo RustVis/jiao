@@ -6,6 +6,7 @@ use core::{mem, ops};
 use serde::{Deserialize, Serialize};
 
 use super::aspect_ratio_mode::AspectRatioMode;
+use super::margins::{Margins, MarginsF};
 
 /// The Size struct defines the size of a two-dimensional object using integer point precision.
 ///
@@ -44,21 +45,21 @@ impl Size {
         Self { width, height }
     }
 
-    //    /// Returns the size that results from shrinking this size by margins.
-    //    pub fn shrunk_by(&self, margins: &Margins) -> Self {
-    //        Self {
-    //            width: self.width - margins.left() - margins.right(),
-    //            height: self.height - margins.top() - margins.bottom(),
-    //        }
-    //    }
-    //
-    //    /// Returns the size that results from growing this size by margins.
-    //    pub fn grown_by(&self, margins: &Margins) -> Self {
-    //        Self {
-    //            width: self.width + margins.left() + margins.right(),
-    //            height: self.height + margins.top() + margins.bottom(),
-    //        }
-    //    }
+    /// Returns the size that results from shrinking this size by margins.
+    pub fn shrunk_by(&self, margins: &Margins) -> Self {
+        Self {
+            width: self.width - margins.left() - margins.right(),
+            height: self.height - margins.top() - margins.bottom(),
+        }
+    }
+
+    /// Returns the size that results from growing this size by margins.
+    pub fn grown_by(&self, margins: &Margins) -> Self {
+        Self {
+            width: self.width + margins.left() + margins.right(),
+            height: self.height + margins.top() + margins.bottom(),
+        }
+    }
 
     /// Returns a size holding the minimum width and height of this size and the given `other`.
     pub fn bounded_to(&self, other: &Self) -> Self {
@@ -298,21 +299,21 @@ impl SizeF {
         Self { width, height }
     }
 
-    //    /// Returns the size that results from shrinking this size by margins.
-    //    pub fn shrunk_by(&self, margins: &MarginsF) -> Self {
-    //        Self {
-    //            width: self.width - margins.left() - margins.right(),
-    //            height: self.height - margins.top() - margins.bottom(),
-    //        }
-    //    }
-    //
-    //    /// Returns the size that results from growing this size by margins.
-    //    pub fn grown_by(&self, margins: &MarginsF) -> Self {
-    //        Self {
-    //            width: self.width + margins.left() + margins.right(),
-    //            height: self.height + margins.top() + margins.bottom(),
-    //        }
-    //    }
+    /// Returns the size that results from shrinking this size by margins.
+    pub fn shrunk_by(&self, margins: &MarginsF) -> Self {
+        Self {
+            width: self.width - margins.left() - margins.right(),
+            height: self.height - margins.top() - margins.bottom(),
+        }
+    }
+
+    /// Returns the size that results from growing this size by margins.
+    pub fn grown_by(&self, margins: &MarginsF) -> Self {
+        Self {
+            width: self.width + margins.left() + margins.right(),
+            height: self.height + margins.top() + margins.bottom(),
+        }
+    }
 
     /// Returns a size holding the minimum width and height of this size and the given `other`.
     pub fn bounded_to(&self, other: &Self) -> Self {
