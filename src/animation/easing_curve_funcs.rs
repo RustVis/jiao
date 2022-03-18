@@ -2,6 +2,8 @@
 // Use of this source is governed by General Public License that can be found
 // in the LICENSE file.
 
+//! These easing functions are based on Robert Penner's Easing Equations.
+
 use core::f64::consts::{FRAC_PI_2, PI};
 
 /// Easing equation function for a simple linear tweening, with no easing.
