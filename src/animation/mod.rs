@@ -4,6 +4,7 @@
 
 pub mod animation_group;
 pub mod easing_curve;
+pub mod easing_curve_funcs;
 pub mod parallel_animation_group;
 pub mod pause_animation;
 pub mod property_animation;
