@@ -44,24 +44,36 @@ impl Size {
         Self { width, height }
     }
 
-    // Returns the size that results from shrinking this size by margins.
-    //pub fn shrunk_by(&self, margins: &Margins) -> Self {
-    //    unimplemented!()
-    //}
-
-    // Returns the size that results from growing this size by margins.
-    //pub fn grown_by(&self, margins: &Margins) -> Self {
-    //    unimplemented!()
-    //}
+    //    /// Returns the size that results from shrinking this size by margins.
+    //    pub fn shrunk_by(&self, margins: &Margins) -> Self {
+    //        Self {
+    //            width: self.width - margins.left() - margins.right(),
+    //            height: self.height - margins.top() - margins.bottom(),
+    //        }
+    //    }
+    //
+    //    /// Returns the size that results from growing this size by margins.
+    //    pub fn grown_by(&self, margins: &Margins) -> Self {
+    //        Self {
+    //            width: self.width + margins.left() + margins.right(),
+    //            height: self.height + margins.top() + margins.bottom(),
+    //        }
+    //    }
 
     /// Returns a size holding the minimum width and height of this size and the given `other`.
     pub fn bounded_to(&self, other: &Self) -> Self {
-        unimplemented!()
+        Self {
+            width: self.width.min(other.width),
+            height: self.height.min(other.height),
+        }
     }
 
     /// Returns a size holding the maximum width and height of this size and the given `other`.
     pub fn expanded_to(&self, other: &Self) -> Self {
-        unimplemented!()
+        Self {
+            width: self.width.max(other.width),
+            height: self.height.max(other.height),
+        }
     }
 
     /// Returns the height.
@@ -98,12 +110,40 @@ impl Size {
 
     /// Scales the size to a rectangle with the given width and height, according to the specified `mode`.
     pub fn scale(&mut self, width: i32, height: i32, mode: AspectRatioMode) {
-        unimplemented!()
+        self.scale_by(Size::from(width, height), mode)
+    }
+
+    /// Scales the size to a rectangle with the given width and height, according to the specified `mode`.
+    pub fn scale_by(&mut self, size: Size, mode: AspectRatioMode) {
+        let new_size = self.scaled_by(size, mode);
+        *self = new_size;
     }
 
     /// Return a size scaled to a rectangle with the given width and height, according to the specified `mode`.
     pub fn scaled(&self, width: i32, height: i32, mode: AspectRatioMode) -> Self {
-        unimplemented!()
+        self.scaled_by(Size::from(width, height), mode)
+    }
+
+    /// Return a size scaled to a rectangle with the given width and height, according to the specified `mode`.
+    pub fn scaled_by(&self, size: Size, mode: AspectRatioMode) -> Self {
+        if mode == AspectRatioMode::IgnoreAspectRatio || self.width == 0 || self.height == 0 {
+            return size;
+        }
+
+        let rw = (size.height * self.width / self.height) as i32;
+        let use_height = if mode == AspectRatioMode::KeepAspectRatio {
+            rw <= size.width
+        } else {
+            assert!(mode == AspectRatioMode::KeepAspectRatioByExpanding);
+            rw >= size.width
+        };
+
+        if use_height {
+            return Size::from(rw, size.height);
+        } else {
+            let height = (size.width as i64 * self.height as i64 / self.width as i64) as i32;
+            return Size::from(size.width, height);
+        }
     }
 
     /// Sets the height to the given height.
