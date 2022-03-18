@@ -35,8 +35,8 @@ impl Line {
     /// Constructs a line object that represents the line between (x1, y1) and (x2, y2).
     pub fn from(x1: i32, y1: i32, x2: i32, y2: i32) -> Self {
         Self {
-            p1: Point::new(x1, y1),
-            p2: Point::new(x2, y2),
+            p1: Point::from(x1, y1),
+            p2: Point::from(x2, y2),
         }
     }
 
@@ -79,7 +79,7 @@ impl Line {
     ///
     /// This is equivalent to (p1() + p2()) / 2, except it will never overflow.
     pub fn center(&self) -> Point {
-        Point::new(
+        Point::from(
             ((self.p1.x() as i64 + self.p2.x() as i64) / 2) as i32,
             ((self.p1.y() as i64 + self.p2.y() as i64) / 2) as i32,
         )
