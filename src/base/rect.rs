@@ -100,37 +100,141 @@ impl Rect {
 
     /// Returns true if the point (`x`, `y`) is inside this rectangle, otherwise returns false.
     pub fn contains(&self, x: i32, y: i32) -> bool {
-        unimplemented!()
+        self.contains_helper(x, y, false)
     }
 
     /// Returns true if the point (`x`, `y`) is inside this rectangle (not on the edge),
     /// otherwise returns false.
     pub fn contains_proper(&self, x: i32, y: i32) -> bool {
-        unimplemented!()
+        self.contains_helper(x, y, true)
+    }
+
+    fn contains_helper(&self, x: i32, y: i32, proper: bool) -> bool {
+        let mut l;
+        let mut r;
+        // TODO(Shaohua): Replace with self.x2 < self.x1
+        if self.x2 < self.x1 - 1 {
+            l = self.x2;
+            r = self.x1;
+        } else {
+            l = self.x1;
+            r = self.x2;
+        }
+        if proper {
+            if x <= l || x >= r {
+                return false;
+            }
+        } else {
+            if x < l || x > r {
+                return false;
+            }
+        }
+
+        let mut t;
+        let mut b;
+        if self.y2 < self.y1 - 1 {
+            t = self.y2;
+            b = self.y1;
+        } else {
+            t = self.y1;
+            b = self.y2;
+        }
+
+        if proper {
+            if y <= t || y >= b {
+                return false;
+            }
+        } else {
+            if y < t || y > b {
+                return false;
+            }
+        }
+        return true;
     }
 
     /// Returns true if the given point is inside or on the edge of the rectangle,
     /// otherwise returns false.
     pub fn contains_point(&self, point: &Point) -> bool {
-        unimplemented!()
+        self.contains(point.x(), point.y())
     }
 
     /// Returns true if the given point is inside of the rectangle,
     /// otherwise returns false (including on the edges).
     pub fn contains_point_proper(&self, point: &Point) -> bool {
-        unimplemented!()
+        self.contains_proper(point.x(), point.y())
     }
 
     /// Returns true if the given rectangle is inside this rectangle, including
     /// on the edge, otherwise returns false.
     pub fn contains_rect(&self, rect: &Self) -> bool {
-        unimplemented!()
+        self.contains_rect_helper(rect, false)
     }
 
     /// Returns true if the given rectangle is inside this rectangle,
     /// otherwise returns false.
     pub fn contains_rect_proper(&self, rect: &Self) -> bool {
-        unimplemented!()
+        self.contains_rect_helper(rect, true)
+    }
+
+    fn contains_rect_helper(&self, rect: &Self, proper: bool) -> bool {
+        if self.is_null() || rect.is_null() {
+            return false;
+        }
+
+        let mut l1 = self.x1;
+        let mut r1 = self.x1;
+        // TODO(Shaohua): Replace with self.x2 < self.x1
+        if self.x2 - self.x1 + 1 < 0 {
+            l1 = self.x2;
+        } else {
+            r1 = self.x2;
+        }
+
+        let mut l2 = rect.x1;
+        let mut r2 = rect.x1;
+        if rect.x2 - rect.x1 + 1 < 0 {
+            l2 = rect.x2;
+        } else {
+            r2 = rect.x2;
+        }
+
+        if proper {
+            if l2 <= l1 || r2 >= r1 {
+                return false;
+            }
+        } else {
+            if l2 < l1 || r2 > r1 {
+                return false;
+            }
+        }
+
+        let mut t1 = self.y1;
+        let mut b1 = self.y1;
+        if self.y2 - self.y1 + 1 < 0 {
+            t1 = self.y2;
+        } else {
+            b1 = self.y2;
+        }
+
+        let mut t2 = rect.y1;
+        let mut b2 = rect.y1;
+        if rect.y2 - rect.y1 + 1 < 0 {
+            t2 = rect.y2;
+        } else {
+            b2 = rect.y2;
+        }
+
+        if proper {
+            if t2 <= t1 || b2 >= b1 {
+                return false;
+            }
+        } else {
+            if t2 < t1 || b2 > b1 {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /// Extracts the position of the rectangle's top-left corner to `x1` and `y1`,
