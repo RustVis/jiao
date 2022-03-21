@@ -242,6 +242,12 @@ impl PointF {
         self.x.abs() + self.y.abs()
     }
 
+    /// Rounds the coordinates of this point to the nearest integer,
+    /// and returns a Point object with the rounded coordinates.
+    pub fn to_point(&self) -> Point {
+        Point::from(self.x.round() as i32, self.y.round() as i32)
+    }
+
     /// Returns a point with x and y coordinates exchanged:
     pub fn transposed(&self) -> Self {
         Self {

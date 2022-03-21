@@ -343,8 +343,8 @@ impl LineF {
     /// Returns an integer based copy of this line.
     ///
     /// Note that the returned line's start and end points are rounded to the nearest integer.
-    pub fn to_line(&self) -> LineF {
-        unimplemented!()
+    pub fn to_line(&self) -> Line {
+        Line::from_points(self.p1.to_point(), self.p2.to_point())
     }
 
     /// Translates this line by the given point (`x`, `y`).
