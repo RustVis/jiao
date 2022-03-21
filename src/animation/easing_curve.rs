@@ -2,7 +2,12 @@
 // Use of this source is governed by General Public License that can be found
 // in the LICENSE file.
 
+use super::easing_curve_funcs as inner;
 use crate::base::point::PointF;
+
+const DEFAULT_AMPLITUDE: f64 = 1.0;
+const DEFAULT_OVERSHOOT: f64 = 1.70158;
+const DEFAULT_PERIOD: f64 = 0.3;
 
 /// The type of easing curve.
 // TODO(Shaohua): Add images to rust doc.
@@ -232,6 +237,18 @@ pub struct EasingCurve {
 /// (In some cases the return value can be outside that range).
 pub type EasingFunction = fn(progress: f64) -> f64;
 
+impl Default for EasingCurve {
+    fn default() -> Self {
+        Self {
+            curve_type: EasingCurveType::Linear,
+            amplitude: DEFAULT_AMPLITUDE,
+            overshoot: DEFAULT_OVERSHOOT,
+            period: DEFAULT_PERIOD,
+            custom_func: None,
+        }
+    }
+}
+
 impl EasingCurve {
     pub fn new(curve_type: EasingCurveType) -> Self {
         Self {
@@ -342,18 +359,108 @@ impl EasingCurve {
     /// can be outside those bounds. For example, `EasingCurveType::InBack` will return
     /// negative values in the beginning of the function.
     pub fn value_for_progress(&self, progress: f64) -> f64 {
-        unimplemented!()
+        match self.curve_type {
+            EasingCurveType::Linear => inner::ease_none(progress),
+            EasingCurveType::InQuad => inner::ease_in_quad(progress),
+            EasingCurveType::OutQuad => inner::ease_out_quad(progress),
+            EasingCurveType::InOutQuad => inner::ease_in_out_quad(progress),
+            EasingCurveType::OutInQuad => inner::ease_out_in_quad(progress),
+            EasingCurveType::InCubic => inner::ease_in_cubic(progress),
+            EasingCurveType::OutCubic => inner::ease_out_cubic(progress),
+            EasingCurveType::InOutCubic => inner::ease_in_out_cubic(progress),
+            EasingCurveType::OutInCubic => inner::ease_out_in_cubic(progress),
+            EasingCurveType::InQuart => inner::ease_in_quart(progress),
+            EasingCurveType::OutQuart => inner::ease_out_quart(progress),
+            EasingCurveType::InOutQuart => inner::ease_in_out_quart(progress),
+            EasingCurveType::OutInQuart => inner::ease_out_in_quart(progress),
+            EasingCurveType::InQuint => inner::ease_in_quint(progress),
+            EasingCurveType::OutQuint => inner::ease_out_quint(progress),
+            EasingCurveType::InOutQuint => inner::ease_in_out_quint(progress),
+            EasingCurveType::OutInQuint => inner::ease_out_in_quint(progress),
+            EasingCurveType::InSine => inner::ease_in_sine(progress),
+            EasingCurveType::OutSine => inner::ease_out_sine(progress),
+            EasingCurveType::InOutSine => inner::ease_in_out_sine(progress),
+            EasingCurveType::OutInSine => inner::ease_out_in_sine(progress),
+            EasingCurveType::InExpo => inner::ease_in_expo(progress),
+            EasingCurveType::OutExpo => inner::ease_out_expo(progress),
+            EasingCurveType::InOutExpo => inner::ease_in_out_expo(progress),
+            EasingCurveType::OutInExpo => inner::ease_out_in_expo(progress),
+            EasingCurveType::InCirc => inner::ease_in_circ(progress),
+            EasingCurveType::OutCirc => inner::ease_out_circ(progress),
+            EasingCurveType::InOutCirc => inner::ease_in_out_circ(progress),
+            EasingCurveType::OutInCirc => inner::ease_out_in_circ(progress),
+            EasingCurveType::InCurve => inner::ease_in_curve(progress),
+            EasingCurveType::OutCurve => inner::ease_out_curve(progress),
+            EasingCurveType::SineCurve => inner::ease_sine_curve(progress),
+            EasingCurveType::CosineCurve => inner::ease_cosine_curve(progress),
+            _ => progress,
+        }
     }
 }
 
-impl Default for EasingCurve {
-    fn default() -> Self {
-        Self {
-            curve_type: EasingCurveType::Linear,
-            amplitude: 1.0,
-            overshoot: 1.70158,
-            period: 0.3,
-            custom_func: None,
+impl EasingCurve {
+    /// Get value for back easing curves.
+    fn back_ease_value(&self, progress: f64) -> f64 {
+        // The *back() functions are not always precise on the endpoints, so handle explicitly
+        if progress < 0.0 {
+            return 0.0;
+        }
+        if progress > 1.0 {
+            return 1.0;
+        }
+        let overshoot = if self.overshoot < 0.0 {
+            DEFAULT_OVERSHOOT
+        } else {
+            self.overshoot
+        };
+
+        match self.curve_type {
+            EasingCurveType::InBack => inner::ease_in_back(progress, overshoot),
+            EasingCurveType::OutBack => inner::ease_out_back(progress, overshoot),
+            EasingCurveType::InOutBack => inner::ease_in_out_back(progress, overshoot),
+            EasingCurveType::OutInBack => inner::ease_out_in_back(progress, overshoot),
+            _ => progress,
+        }
+    }
+
+    /// Get value for bounce easing curves.
+    fn bounce_ease_value(&self, progress: f64) -> f64 {
+        let amplitude = if self.amplitude < 0.0 {
+            1.0
+        } else {
+            self.amplitude
+        };
+        match self.curve_type {
+            EasingCurveType::InBounce => inner::ease_in_bounce(progress, amplitude),
+            EasingCurveType::OutBounce => inner::ease_out_bounce(progress, amplitude),
+            EasingCurveType::InOutBounce => inner::ease_in_out_bounce(progress, amplitude),
+            EasingCurveType::OutInBounce => inner::ease_out_in_bounce(progress, amplitude),
+            _ => progress,
+        }
+    }
+
+    /// Get value for elastic easing curves.
+    fn elastic_ease_value(&self, progress: f64) -> f64 {
+        let period = if self.period < 0.0 {
+            DEFAULT_PERIOD
+        } else {
+            self.period
+        };
+        let amplitude = if self.amplitude < 0.0 {
+            DEFAULT_AMPLITUDE
+        } else {
+            self.amplitude
+        };
+        match self.curve_type {
+            EasingCurveType::InElastic => inner::ease_in_elastic(progress, amplitude, period),
+            EasingCurveType::OutElastic => inner::ease_out_elastic(progress, amplitude, period),
+            EasingCurveType::InOutElastic => {
+                inner::ease_in_out_elastic(progress, amplitude, period)
+            }
+            EasingCurveType::OutInElastic => {
+                inner::ease_out_in_elastic(progress, amplitude, period)
+            }
+            _ => progress,
         }
     }
 }
