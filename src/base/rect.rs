@@ -1122,8 +1122,52 @@ impl RectF {
     /// Returns true if this rectangle intersects with the given `rectangle`
     /// (i.e., there is at least one pixel that is within both rectangles),
     /// otherwise returns false.
-    pub fn intersects(&self, _rectangle: &Self) -> bool {
-        unimplemented!()
+    pub fn intersects(&self, rectangle: &Self) -> bool {
+        if self.is_null() || rectangle.is_null() {
+            return false;
+        }
+
+        let mut l1 = self.x1;
+        let mut r1 = self.x1;
+        // TODO(Shaohua): Replace
+        if self.x2 - self.x1 + 1.0 < 0.0 {
+            l1 = self.x2;
+        } else {
+            r1 = self.x2;
+        }
+
+        let mut l2 = rectangle.x1;
+        let mut r2 = rectangle.x1;
+        if rectangle.x2 - rectangle.x1 + 1.0 < 0.0 {
+            l2 = rectangle.x2;
+        } else {
+            r2 = rectangle.x2;
+        }
+
+        if l1 > r2 || l2 > r1 {
+            return false;
+        }
+
+        let mut t1 = self.y1;
+        let mut b1 = self.y1;
+        if self.y2 - self.y1 + 1.0 < 0.0 {
+            t1 = self.y2;
+        } else {
+            b1 = self.y2;
+        }
+
+        let mut t2 = rectangle.y1;
+        let mut b2 = rectangle.y1;
+        if rectangle.y2 - rectangle.y1 + 1.0 < 0.0 {
+            t2 = rectangle.y2;
+        } else {
+            b2 = rectangle.y2;
+        }
+
+        if t1 > b2 || t2 > b1 {
+            return false;
+        }
+        return true;
     }
 
     /// Returns true if the rectangle is empty, otherwise returns false.
@@ -1281,7 +1325,25 @@ impl RectF {
     /// If width() < 0 the function swaps the left and right corners, and it swaps
     /// the top and bottom corners if height() < 0.
     pub fn normalized(&self) -> Self {
-        unimplemented!()
+        let mut r = RectF::new();
+        // TODO(Shaohua): Replace
+        if self.x2 < self.x1 - 1.0 {
+            // swap bad x values
+            r.x1 = self.x2;
+            r.x2 = self.x1;
+        } else {
+            r.x1 = self.x1;
+            r.x2 = self.x2;
+        }
+        if self.y2 < self.y1 - 1.0 {
+            // swap bad y values
+            r.y1 = self.y2;
+            r.y2 = self.y1;
+        } else {
+            r.y1 = self.y1;
+            r.y2 = self.y2;
+        }
+        return r;
     }
 
     /// Returns the x-coordinate of the rectangle's right edge.
