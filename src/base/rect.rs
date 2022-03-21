@@ -1114,15 +1114,15 @@ impl RectF {
         self.y2 - self.y1
     }
 
-    /// Returns the intersection of this rectangle and the given rectangle.
-    pub fn intersected(&self, rect: &Self) -> Self {
-        unimplemented!()
+    /// Returns the intersection of this rectangle and the given `rectangle`.
+    pub fn intersected(&self, rectangle: &Self) -> Self {
+        self & rectangle
     }
 
-    /// Returns true if this rectangle intersects with the given rectangle
+    /// Returns true if this rectangle intersects with the given `rectangle`
     /// (i.e., there is at least one pixel that is within both rectangles),
     /// otherwise returns false.
-    pub fn intersects(&self, rect: &Self) -> bool {
+    pub fn intersects(&self, _rectangle: &Self) -> bool {
         unimplemented!()
     }
 
@@ -1475,7 +1475,7 @@ impl RectF {
 
     /// Returns the bounding rectangle of this rectangle and the given `rectangle`.
     pub fn united(&self, rectangle: &Self) -> Self {
-        unimplemented!()
+        self | rectangle
     }
 
     /// Returns the width of the rectangle.
@@ -1495,5 +1495,160 @@ impl RectF {
     /// Equivalent to `top()`.
     pub fn y(&self) -> f64 {
         self.y1
+    }
+}
+
+impl ops::AddAssign<&MarginsF> for RectF {
+    /// Adds the margins to the rectangle, growing it.
+    fn add_assign(&mut self, margins: &MarginsF) {
+        self.x1 -= margins.left();
+        self.y1 -= margins.top();
+        self.x2 += margins.right();
+        self.y2 += margins.bottom();
+    }
+}
+
+impl ops::Add<&RectF> for &MarginsF {
+    type Output = RectF;
+    fn add(self, rectangle: &RectF) -> RectF {
+        rectangle.margins_added(self)
+    }
+}
+
+impl ops::SubAssign<&MarginsF> for RectF {
+    /// Returns a rectangle shrunk by the margins.
+    fn sub_assign(&mut self, margins: &MarginsF) {
+        self.x1 += margins.left();
+        self.y1 += margins.top();
+        self.x2 -= margins.right();
+        self.y2 -= margins.bottom();
+    }
+}
+
+impl ops::Sub<&RectF> for &MarginsF {
+    type Output = RectF;
+    fn sub(self, rectangle: &RectF) -> RectF {
+        rectangle.margins_removed(self)
+    }
+}
+
+impl ops::BitAnd<&RectF> for &RectF {
+    type Output = RectF;
+
+    /// Returns the intersection of this rectangle and the given `rectangle`.
+    ///
+    /// Returns an empty rectangle if there is no intersection.
+    fn bitand(self, rectangle: &RectF) -> RectF {
+        if self.is_null() || rectangle.is_null() {
+            return RectF::new();
+        }
+
+        let mut l1 = self.x1;
+        let mut r1 = self.x1;
+        // TODO(Shaohua): Replace
+        if self.x2 - self.x1 + 1.0 < 0.0 {
+            l1 = self.x2;
+        } else {
+            r1 = self.x2;
+        }
+
+        let mut l2 = rectangle.x1;
+        let mut r2 = rectangle.x1;
+        if rectangle.x2 - rectangle.x1 + 1.0 < 0.0 {
+            l2 = rectangle.x2;
+        } else {
+            r2 = rectangle.x2;
+        }
+
+        if l1 > r2 || l2 > r1 {
+            return RectF::new();
+        }
+
+        let mut t1 = self.y1;
+        let mut b1 = self.y1;
+        if self.y2 - self.y1 + 1.0 < 0.0 {
+            t1 = self.y2;
+        } else {
+            b1 = self.y2;
+        }
+
+        let mut t2 = rectangle.y1;
+        let mut b2 = rectangle.y1;
+        if rectangle.y2 - rectangle.y1 + 1.0 < 0.0 {
+            t2 = rectangle.y2;
+        } else {
+            b2 = rectangle.y2;
+        }
+
+        if t1 > b2 || t2 > b1 {
+            return RectF::new();
+        }
+
+        return RectF::from(l1.max(l2), r1.min(r2), t1.max(t2), b1.min(b2));
+    }
+}
+
+impl ops::BitAndAssign<&RectF> for RectF {
+    /// Intersects this rectangle with the given `rectangle`.
+    fn bitand_assign(&mut self, rectangle: &RectF) {
+        let new_rect = rectangle & self;
+        *self = new_rect;
+    }
+}
+
+impl ops::BitOr<&RectF> for &RectF {
+    type Output = RectF;
+
+    /// Returns the bounding rectangle of this rectangle and the given `rectangle`.
+    fn bitor(self, rectangle: &RectF) -> RectF {
+        if self.is_null() {
+            return rectangle.clone();
+        }
+        if rectangle.is_null() {
+            return self.clone();
+        }
+
+        let mut l1 = self.x1;
+        let mut r1 = self.x1;
+        // TODO(Shaohua): Replace
+        if self.x2 - self.x1 + 1.0 < 0.0 {
+            l1 = self.x2;
+        } else {
+            r1 = self.x2;
+        }
+
+        let mut l2 = rectangle.x1;
+        let mut r2 = rectangle.x1;
+        if rectangle.x2 - rectangle.x1 + 1.0 < 0.0 {
+            l2 = rectangle.x2;
+        } else {
+            r2 = rectangle.x2;
+        }
+
+        let mut t1 = self.y1;
+        let mut b1 = self.y1;
+        if self.y2 - self.y1 + 1.0 < 0.0 {
+            t1 = self.y2;
+        } else {
+            b1 = self.y2;
+        }
+
+        let mut t2 = rectangle.y1;
+        let mut b2 = rectangle.y1;
+        if rectangle.y2 - rectangle.y1 + 1.0 < 0.0 {
+            t2 = rectangle.y2;
+        } else {
+            b2 = rectangle.y2;
+        }
+
+        return RectF::from(l1.min(l2), r1.max(r2), t1.min(t2), b1.max(b2));
+    }
+}
+
+impl ops::BitOrAssign<&RectF> for RectF {
+    /// Unites this rectangle with the given `rectangle`.
+    fn bitor_assign(&mut self, rectangle: &RectF) {
+        let new_rect = rectangle | self;
+        *self = new_rect;
     }
 }
