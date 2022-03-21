@@ -655,6 +655,13 @@ impl ops::AddAssign<&Margins> for Rect {
     }
 }
 
+impl ops::Add<&Rect> for &Margins {
+    type Output = Rect;
+    fn add(self, rectangle: &Rect) -> Rect {
+        rectangle.margins_added(self)
+    }
+}
+
 impl ops::SubAssign<&Margins> for Rect {
     /// Returns a rectangle shrunk by the margins.
     fn sub_assign(&mut self, margins: &Margins) {
@@ -662,6 +669,13 @@ impl ops::SubAssign<&Margins> for Rect {
         self.y1 += margins.top();
         self.x2 -= margins.right();
         self.y2 -= margins.bottom();
+    }
+}
+
+impl ops::Sub<&Rect> for &Margins {
+    type Output = Rect;
+    fn sub(self, rectangle: &Rect) -> Rect {
+        rectangle.margins_removed(self)
     }
 }
 
