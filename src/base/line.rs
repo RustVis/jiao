@@ -165,6 +165,23 @@ pub struct LineF {
     p2: PointF,
 }
 
+/// Describes the intersection between two lines.
+pub enum IntersectType {
+    /// Indicates that the lines do not intersect; i.e. they are parallel.
+    NoIntersection,
+
+    /// The two lines intersect, but not within the range defined by their lengths.
+    ///
+    /// This will be the case if the lines are not parallel.
+    ///
+    /// `LineF::intersect()` will also return this value if the intersect point
+    /// is within the start and end point of only one of the lines.
+    UnboundedIntersection,
+
+    /// The two lines intersect with each other within the start and end points of each line.
+    BoundedIntersection,
+}
+
 impl LineF {
     /// Constructs a null line.
     pub fn new() -> Self {
@@ -294,8 +311,31 @@ impl LineF {
     ///
     /// The actual intersection point is extracted to `intersection_point` (if the pointer is valid).
     /// If the lines are parallel, the intersection point is undefined.
-    pub fn intersects() {
-        unimplemented!()
+    pub fn intersects(&self, line: &LineF, intersection_point: &mut PointF) -> IntersectType {
+        // Ipmlementation is based on Graphics Gems III's "Faster Line Segment Intersection"
+        let a = self.p2 - self.p1;
+        let b = line.p1 - line.p2;
+        let c = self.p1 - line.p1;
+
+        let denominator = a.y() * b.x() - a.x() * b.y();
+        if denominator == 0.0 || denominator.is_infinite() {
+            return IntersectType::NoIntersection;
+        }
+
+        let reciprocal = 1.0 / denominator;
+        let na = (b.y() * c.x() - b.x() * c.y()) * reciprocal;
+        *intersection_point = self.p1 + a * na;
+
+        if na < 0.0 || na > 1.0 {
+            return IntersectType::UnboundedIntersection;
+        }
+
+        let nb = (a.x() * c.y() - a.y() * c.x()) * reciprocal;
+        if nb < 0.0 || nb > 1.0 {
+            return IntersectType::UnboundedIntersection;
+        }
+
+        return IntersectType::BoundedIntersection;
     }
 
     /// Returns true if the line does not have distinct start and end points;

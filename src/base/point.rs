@@ -293,6 +293,15 @@ impl ops::SubAssign for PointF {
     }
 }
 
+impl ops::Mul<f64> for PointF {
+    type Output = Self;
+
+    /// Returns a copy of the given point, multiplied by the given `factor`.
+    fn mul(self, factor: f64) -> Self {
+        PointF::from(self.x * factor, self.y * factor)
+    }
+}
+
 impl ops::MulAssign<f64> for PointF {
     fn mul_assign(&mut self, factor: f64) {
         self.x *= factor;
@@ -305,5 +314,16 @@ impl ops::DivAssign<f64> for PointF {
         assert!(factor != 0.0);
         self.x /= factor;
         self.y /= factor;
+    }
+}
+
+impl ops::Div<f64> for PointF {
+    type Output = Self;
+
+    /// Returns the QPointF object formed by dividing both components of the given point
+    /// by the given divisor.
+    fn div(self, factor: f64) -> Self {
+        assert!(factor != 0.0);
+        PointF::from(self.x / factor, self.y / factor)
     }
 }
