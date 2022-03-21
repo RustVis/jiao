@@ -373,7 +373,13 @@ impl LineF {
     /// i.e a line starting at the same point as this line with a length of 1.0,
     /// provided the line is non-null.
     pub fn unit_vector(&self) -> Self {
-        unimplemented!()
+        let x = self.dx();
+        let y = self.dy();
+        let hypot = (x * x + y * y).sqrt();
+        LineF::from_points(
+            self.p1(),
+            PointF::from(self.p1.x() + x / hypot, self.p1.y() + y / hypot),
+        )
     }
 }
 
@@ -387,6 +393,16 @@ mod tests {
         assert_eq!(
             new_line,
             LineF::from(0.0, 0.0, 6.232597064195178, -5.631583599253912)
+        );
+    }
+
+    #[test]
+    fn test_unit_vector() {
+        let line = LineF::from(0.0, 0.0, 1.0, 1.0);
+        let unit_line = line.unit_vector();
+        assert_eq!(
+            unit_line,
+            LineF::from(0.0, 0.0, 0.7071067811865475, 0.7071067811865475)
         );
     }
 }
