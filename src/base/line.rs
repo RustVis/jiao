@@ -253,7 +253,21 @@ impl LineF {
     /// The returned value represents the number of degrees you need to add to this line
     /// to make it have the same angle as the given line, going counter-clockwise.
     pub fn angle_to(&self, line: &LineF) -> f64 {
-        unimplemented!()
+        if self.is_null() || line.is_null() {
+            return 0.0;
+        }
+
+        let a1 = self.angle();
+        let a2 = line.angle();
+
+        let delta = a2 - a1;
+        let delta_normalized = if delta < 0.0 { delta + 360.0 } else { delta };
+
+        if delta == 360.0 {
+            return 0.0;
+        } else {
+            return delta_normalized;
+        }
     }
 
     /// Returns the center point of this line.
@@ -299,14 +313,14 @@ impl LineF {
 
     /// Returns a line that is perpendicular to this line with the same starting point and length.
     pub fn normal_vector(&self) -> Self {
-        unimplemented!()
+        LineF::from_points(self.p1(), self.p1() + PointF::from(self.dy(), -self.dx()))
     }
 
     /// Returns the point at the parameterized position specified by `t`.
     ///
     /// The function returns the line's start point if t = 0, and its end point if t = 1.
     pub fn point_at(&self, t: f64) -> PointF {
-        unimplemented!()
+        PointF::from(self.p1.x() + self.dx() * t, self.p1.y() + self.dy() * t)
     }
 
     /// Sets the starting point of this line to `p1`.
@@ -326,7 +340,14 @@ impl LineF {
     /// Positive values for the angles mean counter-clockwise while negative values
     /// mean the clockwise direction. Zero degrees is at the 3 o'clock position.
     pub fn set_angle(&mut self, angle: f64) {
-        unimplemented!()
+        let angle_r = angle * 2.0 * PI / 360.0;
+        let len = self.length();
+
+        let dx = angle_r.cos() * len;
+        let dy = -angle_r.sin() * len;
+
+        *self.p2.rx() = self.p1.x() + dx;
+        *self.p2.ry() = self.p1.y() + dy;
     }
 
     /// Sets the length of the line to the given length.
