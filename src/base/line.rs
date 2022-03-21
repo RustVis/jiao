@@ -231,7 +231,17 @@ impl LineF {
     /// The angles are measured counter-clockwise from a point on the x-axis
     /// to the right of the origin (x > 0).
     pub fn angle(&self) -> f64 {
-        unimplemented!()
+        let dx = self.dx();
+        let dy = self.dy();
+        let theta = (-dy).atan2(dx) * 360.0 / (PI * 2.0);
+
+        let theta_normalized = if theta < 0.0 { theta + 360.0 } else { theta };
+
+        if theta_normalized == 360.0 {
+            0.0
+        } else {
+            theta_normalized
+        }
     }
 
     /// Returns the angle (in degrees) from this line to the given line,
@@ -398,6 +408,13 @@ impl LineF {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_angle() {
+        let line = LineF::from(0.0, 0.0, 3.0, 4.0);
+        let angle = line.angle();
+        assert_eq!(angle, 306.86989764584405);
+    }
 
     #[test]
     fn test_from_polar() {
