@@ -2,6 +2,8 @@
 // Use of this source is governed by General Public License that can be found
 // in the LICENSE file.
 
+use core::mem;
+
 use super::easing_curve_funcs as inner;
 use crate::base::point::PointF;
 
@@ -338,7 +340,7 @@ impl EasingCurve {
     ///
     /// This operation is very fast and never fails.
     pub fn swap(&mut self, other: &mut Self) {
-        unimplemented!()
+        mem::swap(self, other);
     }
 
     /// Returns the cubic bezier spline that defines a custom easing curve.
