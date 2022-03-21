@@ -282,7 +282,9 @@ impl LineF {
 
     /// Returns the length of the line.
     pub fn length(&self) -> f64 {
-        unimplemented!()
+        let dx = self.dx();
+        let dy = self.dy();
+        (dx * dx + dy * dy).sqrt()
     }
 
     /// Returns a line that is perpendicular to this line with the same starting point and length.
@@ -324,8 +326,18 @@ impl LineF {
     /// A null line will not be rescaled.
     /// For non-null lines with very short lengths (represented by denormal floating-point values),
     /// results may be imprecise.
-    pub fn set_length(&mut self, length: f64) {
-        unimplemented!()
+    pub fn set_length(&mut self, mut length: f64) {
+        if self.is_null() {
+            return;
+        }
+        debug_assert!(self.length() > 0.0);
+        let vector = self.unit_vector();
+        // In case it's not quite exactly 1.
+        length /= vector.length();
+        self.p2 = PointF::from(
+            self.p1.x() + length * vector.dx(),
+            self.p1.y() + length * vector.dy(),
+        );
     }
 
     /// Sets this line to the start in `x1`, `y1` and end in `x2`, `y2`.
