@@ -123,9 +123,24 @@ impl Line {
         self.p2 = p2;
     }
 
+    /// Translates this line by the given point (`x`, `y`).
+    pub fn translate(&mut self, x: i32, y: i32) {
+        self.translate_point(Point::from(x, y))
+    }
+
     /// Translates this line by the given `offset`.
-    pub fn translate(&mut self, offset: Point) {
+    pub fn translate_point(&mut self, offset: Point) {
         self.p1 += offset;
         self.p2 += offset;
+    }
+
+    /// Returns this line translated by the given point (`x`, `y`).
+    pub fn translated(&self, x: i32, y: i32) -> Self {
+        self.translated_point(Point::from(x, y))
+    }
+
+    /// Returns this line translated by the given `offset`.
+    pub fn translated_point(&self, offset: Point) -> Self {
+        Line::from_points(self.p1 + offset, self.p2 + offset)
     }
 }
