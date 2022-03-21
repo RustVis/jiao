@@ -40,7 +40,7 @@ pub fn ease_in_out_quad(mut t: f64) -> f64 {
 
 /// Easing equation function for a quadratic (t^2) easing out/in: deceleration until halfway,
 /// then acceleration.
-pub fn ease_out_in_quad(mut t: f64) -> f64 {
+pub fn ease_out_in_quad(t: f64) -> f64 {
     if t < 0.5 {
         ease_out_quad(t * 2.0) / 2.0
     } else {

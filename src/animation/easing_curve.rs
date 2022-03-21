@@ -2,7 +2,10 @@
 // Use of this source is governed by General Public License that can be found
 // in the LICENSE file.
 
+use crate::base::point::PointF;
+
 /// The type of easing curve.
+// TODO(Shaohua): Add images to rust doc.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EasingCurveType {
     /// Easing curve for a linear (t) function: velocity is constant.
@@ -172,15 +175,185 @@ pub enum EasingCurveType {
     /// contrary to the usual 0 to 1 easing curve.
     CosineCurve,
 
+    /// Allows defining a custom easing curve using a cubic bezier spline.
     BezierSpline,
-    TCBSpline,
-    NCurveTypes,
 
+    /// Allows defining a custom easing curve using a TCB spline.
+    TCBSpline,
+
+    /// This is returned if the user specified a custom curve type with `set_custom_type()`.
+    ///
+    /// Note that you cannot call `set_type()` with this value, but `get_type()` can return it.
     Custom,
 }
 
 impl Default for EasingCurveType {
     fn default() -> Self {
         EasingCurveType::Linear
+    }
+}
+
+/// The EasingCurve struct provides easing curves for controlling animation.
+///
+/// Easing curves describe a function that controls how the speed of the interpolation
+/// between 0 and 1 should be. Easing curves allow transitions from one value to another
+/// to appear more natural than a simple constant speed would allow. The EasingCurve struct
+/// is usually used in conjunction with the PropertyAnimation struct but can be used on its own.
+/// It is usually used to accelerate the interpolation from zero velocity (ease in) or
+/// decelerate to zero velocity (ease out). Ease in and ease out can also be combined
+/// in the same easing curve.
+///
+/// To calculate the speed of the interpolation, the easing curve provides the function
+/// `value_for_progress()`, where the `progress` argument specifies the progress
+/// of the interpolation: 0 is the start value of the interpolation, 1 is the end value
+/// of the interpolation. The returned value is the effective progress of the interpolation.
+/// If the returned value is the same as the input value for all input values the easing curve
+/// is a linear curve. This is the default behaviour.
+///
+/// The ability to set an amplitude, overshoot, or period depends on the EasingCurveType.
+/// Amplitude access is available to curves that behave as springs such as elastic and bounce curves.
+/// Changing the amplitude changes the height of the curve. Period access is only available
+/// to elastic curves and setting a higher period slows the rate of bounce. Only curves
+/// that have "boomerang" behaviors such as the `InBack`, `OutBack`, `InOutBack`, and `OutInBack`
+/// have overshoot settings. These curves will interpolate beyond the end points and
+/// return to the end point, acting similar to a boomerang.
+#[derive(Debug, Clone, PartialEq)]
+pub struct EasingCurve {
+    curve_type: EasingCurveType,
+    amplitude: f64,
+    overshoot: f64,
+    period: f64,
+    custom_func: Option<EasingFunction>,
+}
+
+/// Function for custom easing curve type.
+///
+/// `progress` and the return value are considered to be normalized between 0 and 1
+/// (In some cases the return value can be outside that range).
+pub type EasingFunction = fn(progress: f64) -> f64;
+
+impl EasingCurve {
+    pub fn new(curve_type: EasingCurveType) -> Self {
+        Self {
+            curve_type,
+            ..Self::default()
+        }
+    }
+
+    /// Returns the amplitude.
+    ///
+    /// This is not applicable for all curve types.
+    /// It is only applicable for bounce and elastic curves.
+    pub fn amplitude(&self) -> f64 {
+        self.amplitude
+    }
+
+    /// Returns the function pointer to the custom easing curve.
+    ///
+    /// If `get_type()` does not return `EasingCurveType::Custom`, this function will return `None`.
+    pub fn custom_type(&self) -> Option<EasingFunction> {
+        self.custom_func
+    }
+
+    /// Returns the overshoot.
+    ///
+    /// This is not applicable for all curve types.
+    ///
+    /// It is only applicable if `get_type()` is:
+    /// - `EasingCurveType::InBack`
+    /// - `EasingCurveType::OutBack`
+    /// - `EasingCurveType::InOutBack`
+    /// - `EasingCurveType::OutInBack`
+    pub fn overshoot(&self) -> f64 {
+        self.overshoot
+    }
+
+    /// Returns the period.
+    ///
+    /// This is not applicable for all curve types.
+    ///
+    /// It is only applicable if `get_type()` is:
+    /// - `EasingCurveType::InElastic`
+    /// - `EasingCurveType::OutElastic`
+    /// - `EasingCurveType::InOutElastic`
+    /// - `EasingCurveType::OutInElastic`
+    pub fn period(&self) -> f64 {
+        self.period
+    }
+
+    /// Sets the amplitude to `amplitude`.
+    ///
+    /// This will set the amplitude of the bounce or the amplitude of the elastic "spring" effect.
+    /// The higher the number, the higher the amplitude.
+    pub fn set_amplitude(&mut self, amplitude: f64) {
+        self.amplitude = amplitude;
+    }
+
+    /// Sets a custom easing curve that is defined by the user in the function `func`.
+    ///
+    /// After calling this function, `get_type()` will return `EasingCurveType::Custom`.
+    pub fn set_custom_type(&mut self, func: EasingFunction) {
+        self.custom_func = Some(func);
+        self.curve_type = EasingCurveType::Custom;
+    }
+
+    /// Sets the overshoot to overshoot.
+    /// 0 produces no overshoot, and the default value of 1.70158 produces an overshoot of 10 percent.
+    pub fn set_overshoot(&mut self, overshoot: f64) {
+        self.overshoot = overshoot;
+    }
+
+    /// Sets the period to period.
+    ///
+    /// Setting a small period value will give a high frequency of the curve.
+    /// A large period will give it a small frequency.
+    pub fn set_period(&mut self, period: f64) {
+        self.period = period;
+    }
+
+    /// Sets the type of the easing curve to type.
+    pub fn set_type(&mut self, curve_type: EasingCurveType) {
+        debug_assert_ne!(curve_type, EasingCurveType::Custom);
+        self.curve_type = curve_type;
+    }
+
+    /// Swaps curve other with this curve.
+    ///
+    /// This operation is very fast and never fails.
+    pub fn swap(&mut self, other: &mut Self) {
+        unimplemented!()
+    }
+
+    /// Returns the cubic bezier spline that defines a custom easing curve.
+    ///
+    /// If the easing curve does not have a custom bezier easing curve the list is empty.
+    pub fn to_cubic_spline(&self) -> Vec<PointF> {
+        unimplemented!()
+    }
+
+    /// Returns the type of the easing curve.
+    pub fn get_type(&self) -> EasingCurveType {
+        self.curve_type
+    }
+
+    /// Return the effective progress for the easing curve at `progress`.
+    ///
+    /// Whereas progress must be between 0 and 1, the returned effective progress
+    /// can be outside those bounds. For example, `EasingCurveType::InBack` will return
+    /// negative values in the beginning of the function.
+    pub fn value_for_progress(&self, progress: f64) -> f64 {
+        unimplemented!()
+    }
+}
+
+impl Default for EasingCurve {
+    fn default() -> Self {
+        Self {
+            curve_type: EasingCurveType::Linear,
+            amplitude: 1.0,
+            overshoot: 1.70158,
+            period: 0.3,
+            custom_func: None,
+        }
     }
 }
