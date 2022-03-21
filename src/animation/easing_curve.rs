@@ -393,6 +393,23 @@ impl EasingCurve {
             EasingCurveType::OutCurve => inner::ease_out_curve(progress),
             EasingCurveType::SineCurve => inner::ease_sine_curve(progress),
             EasingCurveType::CosineCurve => inner::ease_cosine_curve(progress),
+
+            // Complex curves.
+            EasingCurveType::InBack
+            | EasingCurveType::OutBack
+            | EasingCurveType::InOutBack
+            | EasingCurveType::OutInBack => self.back_ease_value(progress),
+
+            EasingCurveType::InBounce
+            | EasingCurveType::OutBounce
+            | EasingCurveType::InOutBounce
+            | EasingCurveType::OutInBounce => self.bounce_ease_value(progress),
+
+            EasingCurveType::InElastic
+            | EasingCurveType::OutElastic
+            | EasingCurveType::InOutElastic
+            | EasingCurveType::OutInElastic => self.elastic_ease_value(progress),
+
             _ => progress,
         }
     }
