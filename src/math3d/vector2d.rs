@@ -177,7 +177,7 @@ impl Vector2D {
 }
 
 impl ops::AddAssign<&Vector2D> for Vector2D {
-    /// Adds the given vector to this vector and returns a reference to this vector.
+    /// Adds the given vector to this vector.
     fn add_assign(&mut self, vector: &Vector2D) {
         self.v[0] += vector.v[0];
         self.v[1] += vector.v[1];
@@ -205,7 +205,7 @@ impl ops::Add<&Vector2D> for &Vector2D {
 }
 
 impl ops::SubAssign<&Vector2D> for Vector2D {
-    /// Subtracts the given vector from this vector and returns a reference to this vector.
+    /// Subtracts the given vector from this vector.
     fn sub_assign(&mut self, vector: &Vector2D) {
         self.v[0] -= vector.v[0];
         self.v[1] -= vector.v[1];
@@ -232,8 +232,19 @@ impl ops::Sub<&Vector2D> for &Vector2D {
     }
 }
 
+impl ops::Neg for &Vector2D {
+    type Output = Vector2D;
+
+    /// Returns a Vector2D object that is formed by changing the sign of the components of the given vector.
+    ///
+    /// Equivalent to Vector2D(0, 0) - vector.
+    fn neg(self) -> Self::Output {
+        Vector2D::from(-self.v[0], -self.v[1])
+    }
+}
+
 impl ops::MulAssign<f32> for Vector2D {
-    /// Multiplies this vector's coordinates by the given factor, and returns a reference to this vector.
+    /// Multiplies this vector's coordinates by the given factor.
     fn mul_assign(&mut self, factor: f32) {
         self.v[0] *= factor;
         self.v[1] *= factor;
@@ -276,7 +287,7 @@ impl ops::Mul<&Vector2D> for Vector2D {
 }
 
 impl ops::DivAssign<f32> for Vector2D {
-    /// Divides this vector's coordinates by the given `divisor`, and returns a reference to this vector.
+    /// Divides this vector's coordinates by the given `divisor`.
     fn div_assign(&mut self, divisor: f32) {
         assert!(divisor != 0.0);
         self.v[0] /= divisor;
