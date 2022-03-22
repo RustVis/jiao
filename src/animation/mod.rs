@@ -9,3 +9,4 @@ pub mod parallel_animation_group;
 pub mod pause_animation;
 pub mod property_animation;
 pub mod sequential_animation_group;
+pub mod traits;
