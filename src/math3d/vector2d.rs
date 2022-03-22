@@ -40,6 +40,7 @@ impl Vector2D {
     //
     // The z coordinate of vector is dropped.
     //pub fn from_3d(vector: &Vector3D) -> Self {
+    //    unimplemented!()
     //}
 
     /// Constructs a vector with x and y coordinates from a 2D point.
@@ -70,9 +71,9 @@ impl Vector2D {
         (*self - point).length()
     }
 
-    /// Returns the dot product of v1 and v2.
-    pub fn dot_product(&self, other: &Self) -> f32 {
-        unimplemented!()
+    /// Returns the dot product of `self` and `vector`.
+    pub fn dot_product(&self, vector: &Self) -> f32 {
+        self.v[0] * vector.v[0] + self.v[1] * vector.v[1]
     }
 
     /// Returns true if the x and y coordinates are set to 0.0, otherwise returns false.
@@ -156,12 +157,12 @@ impl Vector2D {
 
     // Returns the 3D form of this 2D vector, with the z coordinate set to zero.
     //pub fn to_vector3d(&self) -> Vector3D {
-    //    unimplemented!()
+    //    Vector3D::from(self.v[0], self.v[1], 0.0)
     //}
 
     // Returns the 4D form of this 2D vector, with the z and w coordinates set to zero.
     //pub fn to_vector4d(&self) -> Vector4D {
-    //    unimplemented!()
+    //    Vector4D::from(self.v[0], self.v[1], 0.0, 0.0)
     //}
 
     /// Returns the x coordinate of this point.
