@@ -68,7 +68,7 @@ impl Vector3D {
     /// Returns the cross-product of vectors self and `vector`,
     /// which corresponds to the normal vector of a plane defined by self and `vector`.
     pub fn cross_product(&self, vector: &Self) -> Self {
-        unimplemented!()
+        nimplemented!()
     }
 
     /// Returns the distance that this vertex is from a line defined by point and the unit vector direction.
@@ -248,21 +248,27 @@ impl Vector3D {
 impl ops::AddAssign<&Vector3D> for Vector3D {
     /// Adds the given vector to this vector.
     fn add_assign(&mut self, vector: &Self) {
-        unimplemented!()
+        self.v[0] += vector.v[0];
+        self.v[1] += vector.v[1];
+        self.v[2] += vector.v[2];
     }
 }
 
 impl ops::SubAssign<&Vector3D> for Vector3D {
     /// Subtracts the given vector from this vector.
     fn sub_assign(&mut self, vector: &Self) {
-        unimplemented!()
+        self.v[0] -= vector.v[0];
+        self.v[1] -= vector.v[1];
+        self.v[2] -= vector.v[2];
     }
 }
 
 impl ops::MulAssign<f32> for Vector3D {
     /// Multiplies this vector's coordinates by the given factor.
     fn mul_assign(&mut self, factor: f32) {
-        unimplemented!()
+        self.v[0] *= factor;
+        self.v[1] *= factor;
+        self.v[2] *= factor;
     }
 }
 
@@ -271,21 +277,27 @@ impl ops::MulAssign<&Vector3D> for Vector3D {
     ///
     /// Note: this is not the same as the `cross_product()` of this vector and vector.
     fn mul_assign(&mut self, vector: &Self) {
-        unimplemented!()
+        self.v[0] *= vector.v[0];
+        self.v[1] *= vector.v[1];
+        self.v[2] *= vector.v[2];
     }
 }
 
 impl ops::DivAssign<f32> for Vector3D {
     /// Divides this vector's coordinates by the given divisor.
     fn div_assign(&mut self, divisor: f32) {
-        unimplemented!()
+        self.v[0] /= divisor;
+        self.v[1] /= divisor;
+        self.v[2] /= divisor;
     }
 }
 
 impl ops::DivAssign<&Vector3D> for Vector3D {
     /// Divides the components of this vector by the corresponding components in vector.
     fn div_assign(&mut self, vector: &Self) {
-        unimplemented!()
+        self.v[0] /= vector.v[0];
+        self.v[1] /= vector.v[1];
+        self.v[2] /= vector.v[2];
     }
 }
 
@@ -296,7 +308,8 @@ impl ops::Index<usize> for Vector3D {
     ///
     /// `index` must be a valid index position in the vector (i.e., 0 <= index < 3).
     fn index(&self, index: usize) -> &Self::Output {
-        unimplemented!()
+        assert!(index < 3);
+        &self.v[index]
     }
 }
 
@@ -305,7 +318,8 @@ impl ops::IndexMut<usize> for Vector3D {
     ///
     /// `index` must be a valid index position in the vector (i.e., 0 <= index < 3).
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        unimplemented!()
+        assert!(index < 3);
+        &mut self.v[index]
     }
 }
 
@@ -315,7 +329,11 @@ impl ops::Add<&Vector3D> for Vector3D {
     /// Returns a Vector3D object that is the sum of the given vectors,
     /// each component is added separately.
     fn add(self, vector: &Vector3D) -> Self::Output {
-        unimplemented!()
+        Vector3D::from(
+            self.v[0] + vector.v[0],
+            self.v[1] + vector.v[1],
+            self.v[2] + vector.v[2],
+        )
     }
 }
 
@@ -325,7 +343,11 @@ impl ops::Add<&Vector3D> for &Vector3D {
     /// Returns a Vector3D object that is the sum of the given vectors,
     /// each component is added separately.
     fn add(self, vector: &Vector3D) -> Self::Output {
-        unimplemented!()
+        Vector3D::from(
+            self.v[0] + vector.v[0],
+            self.v[1] + vector.v[1],
+            self.v[2] + vector.v[2],
+        )
     }
 }
 
@@ -335,7 +357,11 @@ impl ops::Sub<&Vector3D> for Vector3D {
     /// Returns a Vector3D object that is formed by subtracting vector from self;
     /// each component is subtracted separately.
     fn sub(self, vector: &Vector3D) -> Self::Output {
-        unimplemented!()
+        Vector3D::from(
+            self.v[0] - vector.v[0],
+            self.v[1] - vector.v[1],
+            self.v[2] - vector.v[2],
+        )
     }
 }
 
@@ -345,7 +371,11 @@ impl ops::Sub<&Vector3D> for &Vector3D {
     /// Returns a Vector3D object that is formed by subtracting vector from self;
     /// each component is subtracted separately.
     fn sub(self, vector: &Vector3D) -> Self::Output {
-        unimplemented!()
+        Vector3D::from(
+            self.v[0] - vector.v[0],
+            self.v[1] - vector.v[1],
+            self.v[2] - vector.v[2],
+        )
     }
 }
 
@@ -357,7 +387,7 @@ impl ops::Neg for &Vector3D {
     ///
     /// Equivalent to Vector3D(0, 0, 0) - vector.
     fn neg(self) -> Self::Output {
-        unimplemented!()
+        Vector3D::from(-self.v[0], -self.v[1], -self.v[2])
     }
 }
 
@@ -366,7 +396,7 @@ impl ops::Mul<&Vector3D> for f32 {
 
     /// Returns a copy of the given vector, multiplied by the given factor.
     fn mul(self, vector: &Vector3D) -> Self::Output {
-        unimplemented!()
+        Vector3D::from(vector.v[0] * self, vector.v[1] * self, vector.v[2] * self)
     }
 }
 
@@ -375,7 +405,7 @@ impl ops::Mul<f32> for Vector3D {
 
     /// Returns a copy of the given vector, multiplied by the given factor.
     fn mul(self, factor: f32) -> Self::Output {
-        unimplemented!()
+        Vector3D::from(self.v[0] * factor, self.v[1] * factor, self.v[2] * factor)
     }
 }
 
@@ -384,7 +414,7 @@ impl ops::Mul<f32> for &Vector3D {
 
     /// Returns a copy of the given vector, multiplied by the given factor.
     fn mul(self, factor: f32) -> Self::Output {
-        unimplemented!()
+        Vector3D::from(self.v[0] * factor, self.v[1] * factor, self.v[2] * factor)
     }
 }
 
@@ -395,7 +425,11 @@ impl ops::Mul<&Vector3D> for Vector3D {
     ///
     /// Note: this is not the same as the `cross_product()` of self and vector.
     fn mul(self, vector: &Vector3D) -> Self::Output {
-        unimplemented!()
+        Vector3D::from(
+            self.v[0] * vector.v[0],
+            self.v[1] * vector.v[1],
+            self.v[2] * vector.v[2],
+        )
     }
 }
 
@@ -406,7 +440,11 @@ impl ops::Mul<&Vector3D> for &Vector3D {
     ///
     /// Note: this is not the same as the `cross_product()` of self and vector.
     fn mul(self, vector: &Vector3D) -> Self::Output {
-        unimplemented!()
+        Vector3D::from(
+            self.v[0] * vector.v[0],
+            self.v[1] * vector.v[1],
+            self.v[2] * vector.v[2],
+        )
     }
 }
 
@@ -416,7 +454,12 @@ impl ops::Div<f32> for Vector3D {
     /// Returns the Vector3D object formed by dividing all three components
     /// of the given vector by the given divisor.
     fn div(self, divisor: f32) -> Self::Output {
-        unimplemented!()
+        assert!(divisor != 0.0);
+        Vector3D::from(
+            self.v[0] / divisor,
+            self.v[1] / divisor,
+            self.v[2] / divisor,
+        )
     }
 }
 
@@ -426,7 +469,12 @@ impl ops::Div<f32> for &Vector3D {
     /// Returns the Vector3D object formed by dividing all three components
     /// of the given vector by the given divisor.
     fn div(self, divisor: f32) -> Self::Output {
-        unimplemented!()
+        assert!(divisor != 0.0);
+        Vector3D::from(
+            self.v[0] / divisor,
+            self.v[1] / divisor,
+            self.v[2] / divisor,
+        )
     }
 }
 
@@ -436,7 +484,14 @@ impl ops::Div<&Vector3D> for Vector3D {
     /// Returns the Vector3D object formed by dividing components of the given vector
     /// by a respective components of the given divisor.
     fn div(self, vector: &Vector3D) -> Self::Output {
-        unimplemented!()
+        assert!(vector.v[0] != 0.0);
+        assert!(vector.v[1] != 0.0);
+        assert!(vector.v[2] != 0.0);
+        Vector3D::from(
+            self.v[0] / vector.v[0],
+            self.v[1] / vector.v[1],
+            self.v[2] / vector.v[2],
+        )
     }
 }
 
@@ -446,6 +501,13 @@ impl ops::Div<&Vector3D> for &Vector3D {
     /// Returns the Vector3D object formed by dividing components of the given vector
     /// by a respective components of the given divisor.
     fn div(self, vector: &Vector3D) -> Self::Output {
-        unimplemented!()
+        assert!(vector.v[0] != 0.0);
+        assert!(vector.v[1] != 0.0);
+        assert!(vector.v[2] != 0.0);
+        Vector3D::from(
+            self.v[0] / vector.v[0],
+            self.v[1] / vector.v[1],
+            self.v[2] / vector.v[2],
+        )
     }
 }
