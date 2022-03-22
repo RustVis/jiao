@@ -9,4 +9,5 @@ pub mod margins;
 pub mod point;
 pub mod rect;
 pub mod size;
+pub mod sysinfo;
 pub mod timer;
