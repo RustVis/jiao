@@ -58,12 +58,16 @@ impl Vector2D {
     /// If `direction` is a null vector, then it does not define a line.
     /// In that case, the distance from `point` to this vertex is returned.
     pub fn distance_to_line(&self, point: &Self, direction: &Self) -> f32 {
-        unimplemented!()
+        if direction.is_null() {
+            return (self - point).length();
+        }
+        let p = (self - point).dot_product(direction) * direction + point;
+        return (self - &p).length();
     }
 
     /// Returns the distance from this vertex to a point defined by the vertex point.
     pub fn distance_to_point(&self, point: &Self) -> f32 {
-        unimplemented!()
+        (*self - point).length()
     }
 
     /// Returns the dot product of v1 and v2.
@@ -78,21 +82,36 @@ impl Vector2D {
 
     /// Returns the length of the vector from the origin.
     pub fn length(&self) -> f32 {
-        unimplemented!()
+        let hypot = self.length_squared_precise();
+        hypot.sqrt() as f32
+    }
+
+    /// Need some extra precision if the length is very small.
+    fn length_squared_precise(&self) -> f64 {
+        let x = self.v[0] as f64;
+        let y = self.v[1] as f64;
+        x * x + y * y
     }
 
     /// Returns the squared length of the vector from the origin.
     ///
     /// This is equivalent to the dot product of the vector with itself.
     pub fn length_squared(&self) -> f32 {
-        unimplemented!()
+        self.v[0] * self.v[0] + self.v[1] * self.v[1]
     }
 
     /// Normalizes the currect vector in place.
     ///
     /// Nothing happens if this vector is a null vector or the length of the vector is very close to 1.
     pub fn normalize(&mut self) {
-        unimplemented!()
+        let hypot = self.length_squared_precise();
+        if hypot == 1.0 || hypot == 0.0 {
+            return;
+        }
+
+        let sqrt = hypot.sqrt();
+        self.v[0] = (self.v[0] as f64 / sqrt) as f32;
+        self.v[1] = (self.v[1] as f64 / sqrt) as f32;
     }
 
     /// Returns the normalized unit vector form of this vector.
@@ -101,7 +120,18 @@ impl Vector2D {
     /// If the length of the vector is very close to 1, then the vector will be returned as-is.
     /// Otherwise the normalized form of the vector of length 1 will be returned.
     pub fn normalized(&self) -> Self {
-        unimplemented!()
+        let hypot = self.length_squared_precise();
+        if hypot == 1.0 {
+            return self.clone();
+        } else if hypot == 0.0 {
+            return Self::new();
+        } else {
+            let sqrt = hypot.sqrt();
+            return Vector2D::from(
+                (self.v[0] as f64 / sqrt) as f32,
+                (self.v[1] as f64 / sqrt) as f32,
+            );
+        }
     }
 
     /// Sets the x coordinate of this point to the given x coordinate.
@@ -116,12 +146,12 @@ impl Vector2D {
 
     /// Returns the Point form of this 2D vector.
     pub fn to_point(&self) -> Point {
-        unimplemented!()
+        Point::from(self.x().round() as i32, self.y().round() as i32)
     }
 
     /// Returns the PointF form of this 2D vector.
     pub fn to_pointf(&self) -> PointF {
-        unimplemented!()
+        PointF::from(self.x() as f64, self.y() as f64)
     }
 
     // Returns the 3D form of this 2D vector, with the z coordinate set to zero.
@@ -148,7 +178,8 @@ impl Vector2D {
 impl ops::AddAssign<&Vector2D> for Vector2D {
     /// Adds the given vector to this vector and returns a reference to this vector.
     fn add_assign(&mut self, vector: &Vector2D) {
-        unimplemented!()
+        self.v[0] += vector.v[0];
+        self.v[1] += vector.v[1];
     }
 }
 
@@ -158,14 +189,25 @@ impl ops::Add<&Vector2D> for Vector2D {
     /// Returns a Vector2D object that is the sum of the given vectors, `self` and `vector`;
     /// each component is added separately.
     fn add(self, vector: &Vector2D) -> Self::Output {
-        unimplemented!()
+        Self::from(self.v[0] + vector.v[0], self.v[1] + vector.v[1])
+    }
+}
+
+impl ops::Add<&Vector2D> for &Vector2D {
+    type Output = Vector2D;
+
+    /// Returns a Vector2D object that is the sum of the given vectors, `self` and `vector`;
+    /// each component is added separately.
+    fn add(self, vector: &Vector2D) -> Self::Output {
+        Vector2D::from(self.v[0] + vector.v[0], self.v[1] + vector.v[1])
     }
 }
 
 impl ops::SubAssign<&Vector2D> for Vector2D {
     /// Subtracts the given vector from this vector and returns a reference to this vector.
     fn sub_assign(&mut self, vector: &Vector2D) {
-        unimplemented!()
+        self.v[0] -= vector.v[0];
+        self.v[1] -= vector.v[1];
     }
 }
 
@@ -175,21 +217,33 @@ impl ops::Sub<&Vector2D> for Vector2D {
     /// Returns a QVector2D object that is formed by subtracting `vector` from `self`;
     /// each component is subtracted separately.
     fn sub(self, vector: &Vector2D) -> Self::Output {
-        unimplemented!()
+        Self::from(self.v[0] - vector.v[0], self.v[1] - vector.v[1])
+    }
+}
+
+impl ops::Sub<&Vector2D> for &Vector2D {
+    type Output = Vector2D;
+
+    /// Returns a QVector2D object that is formed by subtracting `vector` from `self`;
+    /// each component is subtracted separately.
+    fn sub(self, vector: &Vector2D) -> Self::Output {
+        Vector2D::from(self.v[0] - vector.v[0], self.v[1] - vector.v[1])
     }
 }
 
 impl ops::MulAssign<f32> for Vector2D {
     /// Multiplies this vector's coordinates by the given factor, and returns a reference to this vector.
     fn mul_assign(&mut self, factor: f32) {
-        unimplemented!()
+        self.v[0] *= factor;
+        self.v[1] *= factor;
     }
 }
 
 impl ops::MulAssign<&Vector2D> for Vector2D {
     /// Multiplies the components of this vector by the corresponding components in vector.
     fn mul_assign(&mut self, vector: &Vector2D) {
-        unimplemented!()
+        self.v[0] *= vector.v[0];
+        self.v[1] *= vector.v[1];
     }
 }
 
@@ -198,16 +252,16 @@ impl ops::Mul<f32> for Vector2D {
 
     /// Returns a copy of the given vector, multiplied by the given `factor`.
     fn mul(self, factor: f32) -> Self::Output {
-        unimplemented!()
+        Self::from(self.v[0] * factor, self.v[1] * factor)
     }
 }
 
-impl ops::Mul<Vector2D> for f32 {
+impl ops::Mul<&Vector2D> for f32 {
     type Output = Vector2D;
 
     /// Returns a copy of the given vector, multiplied by the given `factor`.
-    fn mul(self, vector: Vector2D) -> Self::Output {
-        unimplemented!()
+    fn mul(self, vector: &Vector2D) -> Self::Output {
+        Vector2D::from(self * vector.v[0], self * vector.v[1])
     }
 }
 
@@ -216,21 +270,26 @@ impl ops::Mul<&Vector2D> for Vector2D {
 
     /// Multiplies the components of `self` by the corresponding components in `vector`.
     fn mul(self, vector: &Vector2D) -> Self::Output {
-        unimplemented!()
+        Self::from(self.v[0] * vector.v[0], self.v[1] * vector.v[1])
     }
 }
 
 impl ops::DivAssign<f32> for Vector2D {
     /// Divides this vector's coordinates by the given `divisor`, and returns a reference to this vector.
     fn div_assign(&mut self, divisor: f32) {
-        unimplemented!()
+        assert!(divisor != 0.0);
+        self.v[0] /= divisor;
+        self.v[1] /= divisor;
     }
 }
 
 impl ops::DivAssign<&Vector2D> for Vector2D {
     /// Divides the components of this vector by the corresponding components in vector.
     fn div_assign(&mut self, vector: &Vector2D) {
-        unimplemented!()
+        assert!(vector.v[0] != 0.0);
+        assert!(vector.v[1] != 0.0);
+        self.v[0] /= vector.v[0];
+        self.v[1] /= vector.v[1];
     }
 }
 
@@ -240,7 +299,8 @@ impl ops::Div<f32> for Vector2D {
     /// Returns the QVector2D object formed by dividing all three components
     /// of the given vector by the given `divisor`.
     fn div(self, divisor: f32) -> Self::Output {
-        unimplemented!()
+        assert!(divisor != 0.0);
+        Self::from(self.v[0] / divisor, self.v[1] / divisor)
     }
 }
 
@@ -249,22 +309,24 @@ impl ops::Div<&Vector2D> for Vector2D {
 
     /// Returns the Vector2D object formed by dividing components of the given vector
     /// by a respective components of the given `divisor`.
-    fn div(self, divisor: &Vector2D) -> Self::Output {
-        unimplemented!()
+    fn div(self, vector: &Vector2D) -> Self::Output {
+        assert!(vector.v[0] != 0.0);
+        assert!(vector.v[1] != 0.0);
+        Self::from(self.v[0] / vector.v[0], self.v[1] / vector.v[1])
     }
 }
 
 impl ops::Index<usize> for Vector2D {
     type Output = f32;
     fn index(&self, index: usize) -> &Self::Output {
-        assert!(index >= 0 && index <= 1);
+        assert!(index <= 1);
         &self.v[index]
     }
 }
 
 impl ops::IndexMut<usize> for Vector2D {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        assert!(index >= 0 && index <= 1);
+        assert!(index <= 1);
         &mut self.v[index]
     }
 }
