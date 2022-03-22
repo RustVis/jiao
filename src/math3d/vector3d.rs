@@ -68,7 +68,11 @@ impl Vector3D {
     /// Returns the cross-product of vectors self and `vector`,
     /// which corresponds to the normal vector of a plane defined by self and `vector`.
     pub fn cross_product(&self, vector: &Self) -> Self {
-        nimplemented!()
+        Vector3D::from(
+            self.v[1] * vector.v[2] - self.v[2] * vector.v[1],
+            self.v[2] * vector.v[0] - self.v[0] * vector.v[2],
+            self.v[0] * vector.v[1] - self.v[1] * vector.v[0],
+        )
     }
 
     /// Returns the distance that this vertex is from a line defined by point and the unit vector direction.
@@ -76,7 +80,11 @@ impl Vector3D {
     /// If `direction` is a null vector, then it does not define a line.
     /// In that case, the distance from `point` to this vertex is returned.
     pub fn distance_to_line(&self, point: &Self, direction: &Self) -> f32 {
-        unimplemented!()
+        if direction.is_null() {
+            return (self - point).length();
+        }
+        let p = (self - point).dot_product(direction) * direction + point;
+        return (self - &p).length();
     }
 
     /// Returns the distance from this vertex to a plane defined by the vertex plane and
@@ -86,7 +94,7 @@ impl Vector3D {
     /// The return value will be negative if the vertex is below the `plane`,
     /// or zero if it is on the `plane`.
     pub fn distance_to_plane(&self, plane: &Self, normal: &Self) -> f32 {
-        unimplemented!()
+        (self - plane).dot_product(normal)
     }
 
     /// Returns the distance from this vertex to a plane defined by the vertices `plane1`,
@@ -97,34 +105,44 @@ impl Vector3D {
     ///
     /// The two vectors that define the plane are plane2 - plane1 and plane3 - plane1.
     pub fn distance_to_planes(&self, plane1: &Self, plane2: &Self, plane3: &Self) -> f32 {
-        unimplemented!()
+        let n = (plane2 - plane1).normal(&(plane3 - plane1));
+        (self - plane1).dot_product(&n)
     }
 
     /// Returns the distance from this vertex to a point defined by the vertex `point`.
     pub fn distance_to_point(&self, point: &Self) -> f32 {
-        unimplemented!()
+        (self - point).length()
     }
 
     /// Returns the dot product of self and `vector`.
     pub fn dot_product(&self, vector: &Self) -> f32 {
-        unimplemented!()
+        self.v[0] * vector.v[0] + self.v[1] * vector.v[1] + self.v[2] * vector.v[2]
     }
 
     /// Returns true if the x, y, and z coordinates are set to 0.0, otherwise returns false.
     pub fn is_null(&self) -> bool {
-        unimplemented!()
+        self.v[0] == 0.0 && self.v[1] == 0.0 && self.v[2] == 0.0
     }
 
     /// Returns the length of the vector from the origin.
     pub fn length(&self) -> f32 {
-        unimplemented!()
+        let hypot = self.length_squared_precise();
+        hypot.sqrt() as f32
     }
 
     /// Returns the squared length of the vector from the origin.
     ///
     /// This is equivalent to the dot product of the vector with itself.
     pub fn length_squared(&self) -> f32 {
-        unimplemented!()
+        self.v[0] * self.v[0] + self.v[1] * self.v[1] + self.v[2] * self.v[2]
+    }
+
+    /// Need some extra precision if the length is very small.
+    fn length_squared_precise(&self) -> f64 {
+        let x = self.v[0] as f64;
+        let y = self.v[1] as f64;
+        let z = self.v[2] as f64;
+        x * x + y * y + z * z
     }
 
     /// Returns the normal vector of a plane defined by vectors self and `vector`,
@@ -133,7 +151,7 @@ impl Vector3D {
     /// Use `cross_product()` to compute the cross-product of vectors if
     /// you do not need the result to be normalized to a unit vector.
     pub fn normal(&self, vector: &Self) -> Self {
-        unimplemented!()
+        self.cross_product(vector).normalized()
     }
 
     /// Returns the normal vector of a plane defined by vectors v2 - self and
@@ -142,14 +160,21 @@ impl Vector3D {
     /// Use `cross_product()` to compute the cross-product of v2 - self and v3 - self
     /// if you do not need the result to be normalized to a unit vector.
     pub fn normal3(&self, v2: &Self, v3: &Self) -> Self {
-        unimplemented!()
+        (v2 - self).cross_product(&(v3 - self)).normalized()
     }
 
     /// Normalizes the currect vector in place.
     ///
     /// Nothing happens if this vector is a null vector or the length of the vector is very close to 1.
     pub fn normalize(&mut self) {
-        unimplemented!()
+        let hypot = self.length_squared_precise();
+        if hypot == 1.0 || hypot == 0.0 {
+            return;
+        }
+        let sqrt = hypot.sqrt();
+        self.v[0] = (self.v[0] as f64 / sqrt) as f32;
+        self.v[1] = (self.v[1] as f64 / sqrt) as f32;
+        self.v[2] = (self.v[2] as f64 / sqrt) as f32;
     }
 
     /// Returns the normalized unit vector form of this vector.
@@ -159,7 +184,19 @@ impl Vector3D {
     /// will be returned as-is.
     /// Otherwise the normalized form of the vector of length 1 will be returned.
     pub fn normalized(&self) -> Self {
-        unimplemented!()
+        let hypot = self.length_squared_precise();
+        if hypot == 1.0 {
+            return self.clone();
+        } else if hypot == 0.0 {
+            let sqrt = hypot.sqrt();
+            return Vector3D::from(
+                (self.v[0] as f64 / sqrt) as f32,
+                (self.v[1] as f64 / sqrt) as f32,
+                (self.v[2] as f64 / sqrt) as f32,
+            );
+        } else {
+            return Vector3D::new();
+        }
     }
 
     // Returns the window coordinates of this vector initially in object/model coordinates
@@ -195,19 +232,19 @@ impl Vector3D {
     ///
     /// The z coordinate is dropped.
     pub fn to_point(&self) -> Point {
-        unimplemented!()
+        Point::from(self.v[0].round() as i32, self.v[1].round() as i32)
     }
 
     /// Returns the PointF form of this 3D vector.
     ///
     /// The z coordinate is dropped.
     pub fn to_pointf(&self) -> PointF {
-        unimplemented!()
+        PointF::from(self.v[0] as f64, self.v[1] as f64)
     }
 
     /// Returns the 2D vector form of this 3D vector, dropping the z coordinate.
     pub fn to_vector2d(&self) -> Vector2D {
-        unimplemented!()
+        Vector2D::from(self.v[0], self.v[1])
     }
 
     // Returns the 4D form of this 3D vector, with the w coordinate set to zero.
