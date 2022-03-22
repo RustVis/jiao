@@ -5,6 +5,8 @@
 use core::ops;
 use serde::{Deserialize, Serialize};
 
+use super::vector3d::Vector3D;
+use super::vector4d::Vector4D;
 use crate::base::point::{Point, PointF};
 
 /// The Vector2D class represents a vector or vertex in 2D space.
@@ -30,18 +32,19 @@ impl Vector2D {
         Self { v: [x, y] }
     }
 
-    // Constructs a vector with x and y coordinates from a 3D vector.
-    //
-    // The z and w coordinates of vector are dropped.
-    //pub fn from_4d(vector: &Vector4D) -> Self {
-    //    unimplemented!()
-    //}
-    // Constructs a vector with x and y coordinates from a 3D vector.
-    //
-    // The z coordinate of vector is dropped.
-    //pub fn from_3d(vector: &Vector3D) -> Self {
-    //    unimplemented!()
-    //}
+    /// Constructs a vector with x and y coordinates from a 4D vector.
+    ///
+    /// The z and w coordinates of vector are dropped.
+    pub fn from_4d(vector: &Vector4D) -> Self {
+        Self::from(vector.x(), vector.y())
+    }
+
+    /// Constructs a vector with x and y coordinates from a 3D vector.
+    ///
+    /// The z coordinate of vector is dropped.
+    pub fn from_3d(vector: &Vector3D) -> Self {
+        Self::from(vector.x(), vector.y())
+    }
 
     /// Constructs a vector with x and y coordinates from a 2D point.
     pub fn from_pointf(point: &PointF) -> Self {
@@ -155,15 +158,15 @@ impl Vector2D {
         PointF::from(self.x() as f64, self.y() as f64)
     }
 
-    // Returns the 3D form of this 2D vector, with the z coordinate set to zero.
-    //pub fn to_vector3d(&self) -> Vector3D {
-    //    Vector3D::from(self.v[0], self.v[1], 0.0)
-    //}
+    /// Returns the 3D form of this 2D vector, with the z coordinate set to zero.
+    pub fn to_vector3d(&self) -> Vector3D {
+        Vector3D::from(self.v[0], self.v[1], 0.0)
+    }
 
-    // Returns the 4D form of this 2D vector, with the z and w coordinates set to zero.
-    //pub fn to_vector4d(&self) -> Vector4D {
-    //    Vector4D::from(self.v[0], self.v[1], 0.0, 0.0)
-    //}
+    /// Returns the 4D form of this 2D vector, with the z and w coordinates set to zero.
+    pub fn to_vector4d(&self) -> Vector4D {
+        Vector4D::from(self.v[0], self.v[1], 0.0, 0.0)
+    }
 
     /// Returns the x coordinate of this point.
     pub fn x(&self) -> f32 {

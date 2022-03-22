@@ -6,6 +6,7 @@ use core::ops;
 use serde::{Deserialize, Serialize};
 
 use super::vector2d::Vector2D;
+use super::vector4d::Vector4D;
 use crate::base::point::{Point, PointF};
 
 /// The Vector3D struct represents a vector or vertex in 3D space.
@@ -37,9 +38,10 @@ impl Vector3D {
         Self { v: [x, y, z] }
     }
 
-    // Constructs a 3D vector from the specified 4D vector. The w coordinate is dropped.
-    //pub fn from_vector4d(vector: Vector4D) -> Self {
-    //}
+    /// Constructs a 3D vector from the specified 4D vector. The w coordinate is dropped.
+    pub fn from_vector4d(vector: Vector4D) -> Self {
+        Self::from(vector.x(), vector.y(), vector.z())
+    }
 
     /// Constructs a 3D vector from the specified 2D vector.
     ///
@@ -247,10 +249,10 @@ impl Vector3D {
         Vector2D::from(self.v[0], self.v[1])
     }
 
-    // Returns the 4D form of this 3D vector, with the w coordinate set to zero.
-    //pub fn to_vector4d(&self) -> Vector4D {
-    //    unimplemented!()
-    //}
+    /// Returns the 4D form of this 3D vector, with the w coordinate set to zero.
+    pub fn to_vector4d(&self) -> Vector4D {
+        Vector4D::from(self.v[0], self.v[1], self.v[2], 0.0)
+    }
 
     // Returns the object/model coordinates of this vector initially in window coordinates
     // using the model view matrix modelView, the projection matrix projection and
