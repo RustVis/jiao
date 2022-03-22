@@ -21,4 +21,5 @@ pub mod polygon;
 pub mod radial_gradient;
 pub mod region;
 pub mod rgb;
+pub mod rgba64;
 pub mod transform;

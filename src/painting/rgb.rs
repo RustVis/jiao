@@ -6,6 +6,7 @@
 ///
 /// The type also holds a value for the alpha-channel.
 /// The default alpha channel is ff, i.e opaque.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Rgb(u32);
 
 /// Masks RGB values.
