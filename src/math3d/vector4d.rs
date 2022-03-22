@@ -10,6 +10,7 @@ use super::vector3d::Vector3D;
 use crate::base::point::{Point, PointF};
 
 /// The Vector4D struct represents a vector or vertex in 4D space.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Vector4D {
     v: [f32; 4],
 }
@@ -70,7 +71,10 @@ impl Vector4D {
 
     /// Returns the dot product of self and `vector`.
     pub fn dot_product(&self, vector: &Self) -> f32 {
-        unimplemented!()
+        self.v[0] * vector.v[0]
+            + self.v[1] * vector.v[1]
+            + self.v[2] * vector.v[2]
+            + self.v[3] * vector.v[3]
     }
 
     /// Returns true if the x, y, z, and w coordinates are set to 0.0, otherwise returns false.
@@ -80,21 +84,41 @@ impl Vector4D {
 
     /// Returns the length of the vector from the origin.
     pub fn length(&self) -> f32 {
-        unimplemented!()
+        let hypot = self.length_squared_precise();
+        hypot.sqrt() as f32
     }
 
     /// Returns the squared length of the vector from the origin.
     ///
     /// This is equivalent to the dot product of the vector with itself.
     pub fn length_squared(&self) -> f32 {
-        unimplemented!()
+        self.v[0] * self.v[0]
+            + self.v[1] * self.v[1]
+            + self.v[2] * self.v[2]
+            + self.v[3] * self.v[3]
+    }
+
+    fn length_squared_precise(&self) -> f64 {
+        let x = self.x() as f64;
+        let y = self.y() as f64;
+        let z = self.z() as f64;
+        let w = self.w() as f64;
+        x * x + y * y + z * z + w * w
     }
 
     /// Normalizes the currect vector in place.
     ///
     /// Nothing happens if this vector is a null vector or the length of the vector is very close to 1.
     pub fn normalize(&mut self) {
-        unimplemented!()
+        let hypot = self.length_squared_precise();
+        if hypot == 1.0 || hypot == 0.0 {
+            return;
+        }
+        let sqrt = hypot.sqrt();
+        self.v[0] = (self.v[0] as f64 / sqrt) as f32;
+        self.v[1] = (self.v[1] as f64 / sqrt) as f32;
+        self.v[2] = (self.v[2] as f64 / sqrt) as f32;
+        self.v[3] = (self.v[3] as f64 / sqrt) as f32;
     }
 
     /// Returns the normalized unit vector form of this vector.
@@ -103,7 +127,20 @@ impl Vector4D {
     /// If the length of the vector is very close to 1, then the vector will be returned as-is.
     /// Otherwise the normalized form of the vector of length 1 will be returned.
     pub fn normalized(&self) -> Self {
-        unimplemented!()
+        let hypot = self.length_squared_precise();
+        if hypot == 1.0 {
+            return self.clone();
+        } else if hypot == 0.0 {
+            return Vector4D::new();
+        } else {
+            let sqrt = hypot.sqrt();
+            return Vector4D::from(
+                (self.v[0] as f64 / sqrt) as f32,
+                (self.v[1] as f64 / sqrt) as f32,
+                (self.v[2] as f64 / sqrt) as f32,
+                (self.v[3] as f64 / sqrt) as f32,
+            );
+        }
     }
 
     /// Sets the w coordinate of this point to the given w coordinate.
@@ -150,7 +187,10 @@ impl Vector4D {
     ///
     /// Returns a null vector if w is zero.
     pub fn to_vector2d_affine(&self) -> Vector2D {
-        unimplemented!()
+        if self.v[3] == 0.0 {
+            return Vector2D::new();
+        }
+        return Vector2D::from(self.v[0] / self.v[3], self.v[1] / self.v[3]);
     }
 
     /// Returns the 3D vector form of this 4D vector, dropping the w coordinate.
@@ -163,7 +203,14 @@ impl Vector4D {
     ///
     /// Returns a null vector if w is zero.
     pub fn to_vector3d_affine(&self) -> Vector3D {
-        unimplemented!()
+        if self.v[3] == 0.0 {
+            return Vector3D::new();
+        }
+        return Vector3D::from(
+            self.v[0] / self.v[3],
+            self.v[1] / self.v[3],
+            self.v[2] / self.v[3],
+        );
     }
 
     /// Returns the w coordinate of this point.
@@ -190,42 +237,65 @@ impl Vector4D {
 impl ops::AddAssign<&Vector4D> for Vector4D {
     /// Adds the given vector to this vector.
     fn add_assign(&mut self, vector: &Vector4D) {
-        unimplemented!()
+        self.v[0] += vector.v[0];
+        self.v[1] += vector.v[1];
+        self.v[2] += vector.v[2];
+        self.v[3] += vector.v[3];
     }
 }
 
 impl ops::SubAssign<&Vector4D> for Vector4D {
     /// Subtracts the given vector from this vector.
     fn sub_assign(&mut self, vector: &Vector4D) {
-        unimplemented!()
+        self.v[0] += vector.v[0];
+        self.v[1] += vector.v[1];
+        self.v[2] += vector.v[2];
+        self.v[3] += vector.v[3];
     }
 }
 
 impl ops::MulAssign<f32> for Vector4D {
     /// Multiplies this vector's coordinates by the given factor.
     fn mul_assign(&mut self, factor: f32) {
-        unimplemented!()
+        self.v[0] *= factor;
+        self.v[1] *= factor;
+        self.v[2] *= factor;
+        self.v[3] *= factor;
     }
 }
 
 impl ops::MulAssign<&Vector4D> for Vector4D {
     /// Multiplies the components of this vector by the corresponding components in vector.
     fn mul_assign(&mut self, vector: &Vector4D) {
-        unimplemented!()
+        self.v[0] *= vector.v[0];
+        self.v[1] *= vector.v[1];
+        self.v[2] *= vector.v[2];
+        self.v[3] *= vector.v[3];
     }
 }
 
 impl ops::DivAssign<f32> for Vector4D {
     /// Divides this vector's coordinates by the given divisor.
     fn div_assign(&mut self, divisor: f32) {
-        unimplemented!()
+        assert!(divisor != 0.0);
+        self.v[0] /= divisor;
+        self.v[1] /= divisor;
+        self.v[2] /= divisor;
+        self.v[3] /= divisor;
     }
 }
 
 impl ops::DivAssign<&Vector4D> for Vector4D {
     /// Divides the components of this vector by the corresponding components in vector.
-    fn div_assign(&mut self, divisor: &Vector4D) {
-        unimplemented!()
+    fn div_assign(&mut self, vector: &Vector4D) {
+        assert!(vector.v[0] != 0.0);
+        assert!(vector.v[1] != 0.0);
+        assert!(vector.v[2] != 0.0);
+        assert!(vector.v[3] != 0.0);
+        self.v[0] /= vector.v[0];
+        self.v[1] /= vector.v[1];
+        self.v[2] /= vector.v[2];
+        self.v[3] /= vector.v[3];
     }
 }
 
@@ -257,7 +327,12 @@ impl ops::Add<&Vector4D> for Vector4D {
     /// Returns a Vector4D object that is the sum of the given vectors,
     /// each component is added separately.
     fn add(self, vector: &Vector4D) -> Self::Output {
-        unimplemented!()
+        Self::from(
+            self.v[0] + vector.v[0],
+            self.v[1] + vector.v[1],
+            self.v[2] + vector.v[2],
+            self.v[3] + vector.v[3],
+        )
     }
 }
 
@@ -267,7 +342,12 @@ impl ops::Add<&Vector4D> for &Vector4D {
     /// Returns a Vector4D object that is the sum of the given vectors,
     /// each component is added separately.
     fn add(self, vector: &Vector4D) -> Self::Output {
-        unimplemented!()
+        Vector4D::from(
+            self.v[0] + vector.v[0],
+            self.v[1] + vector.v[1],
+            self.v[2] + vector.v[2],
+            self.v[3] + vector.v[3],
+        )
     }
 }
 
@@ -277,7 +357,12 @@ impl ops::Sub<&Vector4D> for Vector4D {
     /// Returns a Vector4D object that is the sub of the given vectors,
     /// each component is added separately.
     fn sub(self, vector: &Vector4D) -> Self::Output {
-        unimplemented!()
+        Vector4D::from(
+            self.v[0] - vector.v[0],
+            self.v[1] - vector.v[1],
+            self.v[2] - vector.v[2],
+            self.v[3] - vector.v[3],
+        )
     }
 }
 
@@ -287,7 +372,12 @@ impl ops::Sub<&Vector4D> for &Vector4D {
     /// Returns a Vector4D object that is the sub of the given vectors,
     /// each component is added separately.
     fn sub(self, vector: &Vector4D) -> Self::Output {
-        unimplemented!()
+        Vector4D::from(
+            self.v[0] - vector.v[0],
+            self.v[1] - vector.v[1],
+            self.v[2] - vector.v[2],
+            self.v[3] - vector.v[3],
+        )
     }
 }
 
@@ -299,7 +389,7 @@ impl ops::Neg for Vector4D {
     ///
     /// Equivalent to Vector4D(0,0,0,0) - vector.
     fn neg(self) -> Self::Output {
-        unimplemented!()
+        Vector4D::from(-self.v[0], -self.v[1], -self.v[2], -self.v[3])
     }
 }
 
@@ -311,7 +401,7 @@ impl ops::Neg for &Vector4D {
     ///
     /// Equivalent to Vector4D(0,0,0,0) - vector.
     fn neg(self) -> Self::Output {
-        unimplemented!()
+        Vector4D::from(-self.v[0], -self.v[1], -self.v[2], -self.v[3])
     }
 }
 
@@ -320,7 +410,12 @@ impl ops::Mul<&Vector4D> for f32 {
 
     /// Returns a copy of the given vector, multiplied by the given factor.
     fn mul(self, vector: &Vector4D) -> Self::Output {
-        unimplemented!()
+        Vector4D::from(
+            vector.v[0] * self,
+            vector.v[1] * self,
+            vector.v[2] * self,
+            vector.v[3] * self,
+        )
     }
 }
 
@@ -329,7 +424,12 @@ impl ops::Mul<f32> for Vector4D {
 
     /// Returns a copy of the given vector, multiplied by the given factor.
     fn mul(self, factor: f32) -> Self::Output {
-        unimplemented!()
+        Vector4D::from(
+            self.v[0] * factor,
+            self.v[1] * factor,
+            self.v[2] * factor,
+            self.v[3] * factor,
+        )
     }
 }
 
@@ -338,7 +438,12 @@ impl ops::Mul<f32> for &Vector4D {
 
     /// Returns a copy of the given vector, multiplied by the given factor.
     fn mul(self, factor: f32) -> Self::Output {
-        unimplemented!()
+        Vector4D::from(
+            self.v[0] * factor,
+            self.v[1] * factor,
+            self.v[2] * factor,
+            self.v[3] * factor,
+        )
     }
 }
 
@@ -347,7 +452,12 @@ impl ops::Mul<&Vector4D> for Vector4D {
 
     /// Returns a copy of the given vector, multiplied by the given factor.
     fn mul(self, vector: &Vector4D) -> Self::Output {
-        unimplemented!()
+        Vector4D::from(
+            self.v[0] * vector.v[0],
+            self.v[1] * vector.v[1],
+            self.v[2] * vector.v[2],
+            self.v[3] * vector.v[3],
+        )
     }
 }
 
@@ -356,7 +466,12 @@ impl ops::Mul<&Vector4D> for &Vector4D {
 
     /// Returns a copy of the given vector, multiplied by the given factor.
     fn mul(self, vector: &Vector4D) -> Self::Output {
-        unimplemented!()
+        Vector4D::from(
+            self.v[0] * vector.v[0],
+            self.v[1] * vector.v[1],
+            self.v[2] * vector.v[2],
+            self.v[3] * vector.v[3],
+        )
     }
 }
 
@@ -366,7 +481,13 @@ impl ops::Div<f32> for Vector4D {
     /// Returns the Vector4D object formed by dividing all four components of
     /// the given vector by the given divisor.
     fn div(self, divisor: f32) -> Self::Output {
-        unimplemented!()
+        assert!(divisor != 0.0);
+        Vector4D::from(
+            self.v[0] / divisor,
+            self.v[1] / divisor,
+            self.v[2] / divisor,
+            self.v[3] / divisor,
+        )
     }
 }
 
@@ -376,7 +497,13 @@ impl ops::Div<f32> for &Vector4D {
     /// Returns the Vector4D object formed by dividing all four components of
     /// the given vector by the given divisor.
     fn div(self, divisor: f32) -> Self::Output {
-        unimplemented!()
+        assert!(divisor != 0.0);
+        Vector4D::from(
+            self.v[0] / divisor,
+            self.v[1] / divisor,
+            self.v[2] / divisor,
+            self.v[3] / divisor,
+        )
     }
 }
 
@@ -386,7 +513,16 @@ impl ops::Div<&Vector4D> for Vector4D {
     /// Returns the Vector4D object formed by dividing all four components of
     /// the given vector by the given divisor.
     fn div(self, vector: &Vector4D) -> Self::Output {
-        unimplemented!()
+        assert!(vector.v[0] != 0.0);
+        assert!(vector.v[1] != 0.0);
+        assert!(vector.v[2] != 0.0);
+        assert!(vector.v[3] != 0.0);
+        Vector4D::from(
+            self.v[0] / vector.v[0],
+            self.v[1] / vector.v[1],
+            self.v[2] / vector.v[2],
+            self.v[3] / vector.v[3],
+        )
     }
 }
 
@@ -396,6 +532,15 @@ impl ops::Div<&Vector4D> for &Vector4D {
     /// Returns the Vector4D object formed by dividing all four components of
     /// the given vector by the given divisor.
     fn div(self, vector: &Vector4D) -> Self::Output {
-        unimplemented!()
+        assert!(vector.v[0] != 0.0);
+        assert!(vector.v[1] != 0.0);
+        assert!(vector.v[2] != 0.0);
+        assert!(vector.v[3] != 0.0);
+        Vector4D::from(
+            self.v[0] / vector.v[0],
+            self.v[1] / vector.v[1],
+            self.v[2] / vector.v[2],
+            self.v[3] / vector.v[3],
+        )
     }
 }

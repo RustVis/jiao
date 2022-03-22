@@ -218,7 +218,7 @@ impl ops::SubAssign<&Vector2D> for Vector2D {
 impl ops::Sub<&Vector2D> for Vector2D {
     type Output = Vector2D;
 
-    /// Returns a QVector2D object that is formed by subtracting `vector` from `self`;
+    /// Returns a Vector2D object that is formed by subtracting `vector` from `self`;
     /// each component is subtracted separately.
     fn sub(self, vector: &Vector2D) -> Self::Output {
         Self::from(self.v[0] - vector.v[0], self.v[1] - vector.v[1])
@@ -228,7 +228,7 @@ impl ops::Sub<&Vector2D> for Vector2D {
 impl ops::Sub<&Vector2D> for &Vector2D {
     type Output = Vector2D;
 
-    /// Returns a QVector2D object that is formed by subtracting `vector` from `self`;
+    /// Returns a Vector2D object that is formed by subtracting `vector` from `self`;
     /// each component is subtracted separately.
     fn sub(self, vector: &Vector2D) -> Self::Output {
         Vector2D::from(self.v[0] - vector.v[0], self.v[1] - vector.v[1])
@@ -311,7 +311,7 @@ impl ops::DivAssign<&Vector2D> for Vector2D {
 impl ops::Div<f32> for Vector2D {
     type Output = Vector2D;
 
-    /// Returns the QVector2D object formed by dividing all three components
+    /// Returns the Vector2D object formed by dividing all three components
     /// of the given vector by the given `divisor`.
     fn div(self, divisor: f32) -> Self::Output {
         assert!(divisor != 0.0);

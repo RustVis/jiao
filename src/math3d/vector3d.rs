@@ -189,7 +189,7 @@ impl Vector3D {
         let hypot = self.length_squared_precise();
         if hypot == 1.0 {
             return self.clone();
-        } else if hypot == 0.0 {
+        } else if hypot != 0.0 {
             let sqrt = hypot.sqrt();
             return Vector3D::from(
                 (self.v[0] as f64 / sqrt) as f32,
