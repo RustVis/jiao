@@ -65,7 +65,7 @@ impl Vector4D {
     }
 
     /// Constructs a vector with x and y coordinates from a 2D point, and z and w coordinates of 0.
-    pub fn from_pointf(point: &PointF) -> Self {
+    pub fn from_point_f(point: &PointF) -> Self {
         Self::from(point.x() as f32, point.y() as f32, 0.0, 0.0)
     }
 
@@ -173,7 +173,7 @@ impl Vector4D {
     /// Returns the PointF form of this 4D vector.
     ///
     /// The z and w coordinates are dropped.
-    pub fn to_pointf(&self) -> PointF {
+    pub fn to_point_f(&self) -> PointF {
         PointF::from(self.x() as f64, self.y() as f64)
     }
 

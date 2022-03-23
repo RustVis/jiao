@@ -47,7 +47,7 @@ impl Vector2D {
     }
 
     /// Constructs a vector with x and y coordinates from a 2D point.
-    pub fn from_pointf(point: &PointF) -> Self {
+    pub fn from_point_f(point: &PointF) -> Self {
         Self::from(point.x() as f32, point.y() as f32)
     }
 
@@ -154,7 +154,7 @@ impl Vector2D {
     }
 
     /// Returns the PointF form of this 2D vector.
-    pub fn to_pointf(&self) -> PointF {
+    pub fn to_point_f(&self) -> PointF {
         PointF::from(self.x() as f64, self.y() as f64)
     }
 

@@ -58,7 +58,7 @@ impl Vector3D {
     }
 
     /// Constructs a vector with x and y coordinates from a 2D point, and a z coordinate of 0.
-    pub fn from_pointf(point: &PointF) -> Self {
+    pub fn from_point_f(point: &PointF) -> Self {
         Self::from(point.x() as f32, point.y() as f32, 0.0)
     }
 
@@ -240,7 +240,7 @@ impl Vector3D {
     /// Returns the PointF form of this 3D vector.
     ///
     /// The z coordinate is dropped.
-    pub fn to_pointf(&self) -> PointF {
+    pub fn to_point_f(&self) -> PointF {
         PointF::from(self.v[0] as f64, self.v[1] as f64)
     }
 
