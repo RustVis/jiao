@@ -14,3 +14,11 @@ pub fn fuzzy_compare(p1: f64, p2: f64) -> bool {
 pub fn fuzzy_is_zero(p: f64) -> bool {
     fuzzy_compare(p, 0.0)
 }
+
+pub fn div_257_floor(x: u32) -> u8 {
+    ((x - (x >> 8)) >> 8) as u8
+}
+
+pub fn div_257(x: u16) -> u8 {
+    div_257_floor((x + 128) as u32)
+}

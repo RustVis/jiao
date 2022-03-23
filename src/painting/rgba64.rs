@@ -4,6 +4,8 @@
 
 use core::ops;
 
+use crate::util::div_257;
+
 /// The Rgba64 struct contains a 64-bit RGB color.
 ///
 /// Rgba64 is a 64-bit data-structure containing four 16-bit color channels: Red, green, blue and alpha.
@@ -94,7 +96,7 @@ impl Rgba64 {
 
     /// Returns the alpha channel as an 8-bit.
     pub fn alpha8(&self) -> u8 {
-        Self::div_257(self.alpha())
+        div_257(self.alpha())
     }
 
     /// Returns the alpha channel as an 8-bit.
@@ -104,7 +106,7 @@ impl Rgba64 {
 
     /// Returns the blue color component as an 8-bit.
     pub fn blue8(&self) -> u8 {
-        Self::div_257(self.blue())
+        div_257(self.blue())
     }
 
     /// Returns the 16-bit blue color component.
@@ -114,7 +116,7 @@ impl Rgba64 {
 
     /// Returns the green color component as an 8-bit.
     pub fn green8(&self) -> u8 {
-        Self::div_257(self.green())
+        div_257(self.green())
     }
 
     /// Returns the 16-bit green color component.
@@ -164,7 +166,7 @@ impl Rgba64 {
 
     /// Returns the red color component as an 8-bit.
     pub fn red8(&self) -> u8 {
-        Self::div_257(self.red())
+        div_257(self.red())
     }
 
     /// Returns the 16-bit red color component.
@@ -254,15 +256,5 @@ impl Rgba64 {
     #[inline]
     fn alpha_mask() -> u64 {
         0xffff_u64 << Shifts::AlphaShift
-    }
-
-    #[inline]
-    fn div_257_floor(x: u32) -> u8 {
-        ((x - (x >> 8)) >> 8) as u8
-    }
-
-    #[inline]
-    fn div_257(x: u16) -> u8 {
-        Self::div_257_floor((x + 128) as u32)
     }
 }
