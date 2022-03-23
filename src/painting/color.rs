@@ -147,7 +147,7 @@ impl ColorInner {
         })
     }
 
-    const fn hsl(hue: u8, saturation: u8, lightness: u8, alpha: u8) -> Self {
+    const fn hsl(hue: u16, saturation: u8, lightness: u8, alpha: u8) -> Self {
         Self::Hsl(ColorHsl {
             alpha,
             hue,
@@ -156,7 +156,7 @@ impl ColorInner {
         })
     }
 
-    const fn hsv(hue: u8, saturation: u8, value: u8, alpha: u8) -> Self {
+    const fn hsv(hue: u16, saturation: u8, value: u8, alpha: u8) -> Self {
         Self::Hsv(ColorHsv {
             alpha,
             hue,
@@ -176,22 +176,6 @@ impl ColorInner {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-struct ColorRgb {
-    alpha: u8,
-    red: u8,
-    green: u8,
-    blue: u8,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-struct ColorHsv {
-    alpha: u8,
-    hue: u8,
-    saturation: u8,
-    value: u8,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
 struct ColorCmyk {
     alpha: u8,
     cyan: u8,
@@ -203,9 +187,25 @@ struct ColorCmyk {
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct ColorHsl {
     alpha: u8,
-    hue: u8,
+    hue: u16,
     saturation: u8,
     lightness: u8,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct ColorHsv {
+    alpha: u8,
+    hue: u16,
+    saturation: u8,
+    value: u8,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct ColorRgb {
+    alpha: u8,
+    red: u8,
+    green: u8,
+    blue: u8,
 }
 
 /// The type of color specified.
@@ -219,8 +219,12 @@ pub enum Spec {
 }
 
 pub const MAX_VALUE: u8 = u8::MAX;
-pub const MAX_FLOAT_VALUE: f64 = MAX_VALUE as f64;
-pub const MAX_HUE_VALUE: i32 = 360;
+pub const MAX_VALUE_F64: f64 = MAX_VALUE as f64;
+pub const MAX_HUE_VALUE: u16 = 360;
+pub const MAX_HUE_VALUE_I32: i32 = 360;
+pub const MAX_HUE_VALUE_F64: f64 = 360.0;
+pub const HUE_BASE: u16 = 36_000;
+pub const HUE_BASE_F64: f64 = 36_000.0;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ParseColorError {
@@ -312,11 +316,11 @@ impl Color {
 
         Ok(Self {
             inner: ColorInner::cmyk(
-                (cyan * MAX_FLOAT_VALUE).round() as u8,
-                (magenta * MAX_FLOAT_VALUE).round() as u8,
-                (yellow * MAX_FLOAT_VALUE).round() as u8,
-                (black * MAX_FLOAT_VALUE).round() as u8,
-                (alpha * MAX_FLOAT_VALUE).round() as u8,
+                (cyan * MAX_VALUE_F64).round() as u8,
+                (magenta * MAX_VALUE_F64).round() as u8,
+                (yellow * MAX_VALUE_F64).round() as u8,
+                (black * MAX_VALUE_F64).round() as u8,
+                (alpha * MAX_VALUE_F64).round() as u8,
             ),
         })
     }
@@ -331,13 +335,13 @@ impl Color {
         lightness: u8,
         alpha: u8,
     ) -> Result<Self, ParseColorError> {
-        if hue < -1 || hue >= MAX_HUE_VALUE {
+        if hue < -1 || hue >= MAX_HUE_VALUE_I32 {
             return Err(ParseColorError::OutOfRangeError);
         }
         let real_hue = if hue == -1 {
-            MAX_VALUE
+            MAX_HUE_VALUE
         } else {
-            (hue % MAX_HUE_VALUE * 100) as u8
+            (hue % MAX_HUE_VALUE_I32 * 100) as u16
         };
 
         Ok(Self {
@@ -366,17 +370,17 @@ impl Color {
             return Err(ParseColorError::OutOfRangeError);
         }
         let real_hue = if hue == -1.0 {
-            MAX_VALUE
+            MAX_HUE_VALUE
         } else {
-            (hue * 36_000.0).round() as u8
+            (hue * HUE_BASE_F64).round() as u16
         };
 
         Ok(Self {
             inner: ColorInner::hsl(
                 real_hue,
-                (saturation * MAX_FLOAT_VALUE).round() as u8,
-                (lightness * MAX_FLOAT_VALUE).round() as u8,
-                (alpha * MAX_FLOAT_VALUE).round() as u8,
+                (saturation * MAX_VALUE_F64).round() as u8,
+                (lightness * MAX_VALUE_F64).round() as u8,
+                (alpha * MAX_VALUE_F64).round() as u8,
             ),
         })
     }
@@ -386,13 +390,13 @@ impl Color {
     /// The value of saturation, value, and alpha must all be in the range 0-255;
     /// the value of hue must be in the range 0-359.
     fn from_hsv(hue: i32, saturation: u8, value: u8, alpha: u8) -> Result<Self, ParseColorError> {
-        if hue < -1 || hue >= MAX_HUE_VALUE {
+        if hue < -1 || hue >= MAX_HUE_VALUE_I32 {
             return Err(ParseColorError::OutOfRangeError);
         }
         let real_hue = if hue == -1 {
-            MAX_VALUE
+            MAX_HUE_VALUE
         } else {
-            (hue % MAX_HUE_VALUE * 100) as u8
+            ((hue % MAX_HUE_VALUE_I32) * 100) as u16
         };
 
         Ok(Self {
@@ -421,17 +425,17 @@ impl Color {
             return Err(ParseColorError::OutOfRangeError);
         }
         let real_hue = if hue == -1.0 {
-            MAX_VALUE
+            MAX_HUE_VALUE
         } else {
-            (hue * 36_000.0).round() as u8
+            (hue * HUE_BASE_F64).round() as u16
         };
 
         Ok(Self {
             inner: ColorInner::hsv(
                 real_hue,
-                (saturation * MAX_FLOAT_VALUE).round() as u8,
-                (value * MAX_FLOAT_VALUE).round() as u8,
-                (alpha * MAX_FLOAT_VALUE).round() as u8,
+                (saturation * MAX_VALUE_F64).round() as u8,
+                (value * MAX_VALUE_F64).round() as u8,
+                (alpha * MAX_VALUE_F64).round() as u8,
             ),
         })
     }
@@ -482,10 +486,10 @@ impl Color {
 
         Ok(Self {
             inner: ColorInner::rgb(
-                (red * MAX_FLOAT_VALUE).round() as u8,
-                (green * MAX_FLOAT_VALUE).round() as u8,
-                (blue * MAX_FLOAT_VALUE).round() as u8,
-                (alpha * MAX_FLOAT_VALUE).round() as u8,
+                (red * MAX_VALUE_F64).round() as u8,
+                (green * MAX_VALUE_F64).round() as u8,
+                (blue * MAX_VALUE_F64).round() as u8,
+                (alpha * MAX_VALUE_F64).round() as u8,
             ),
         })
     }
@@ -521,9 +525,9 @@ impl Color {
                     };
                 }
                 // rgb -> cmy
-                let red = c.red as f64 / MAX_FLOAT_VALUE;
-                let green = c.green as f64 / MAX_FLOAT_VALUE;
-                let blue = c.blue as f64 / MAX_FLOAT_VALUE;
+                let red = c.red as f64 / MAX_VALUE_F64;
+                let green = c.green as f64 / MAX_VALUE_F64;
+                let blue = c.blue as f64 / MAX_VALUE_F64;
                 let mut cyan = 1.0 - red;
                 let mut magenta = 1.0 - green;
                 let mut yellow = 1.0 - blue;
@@ -537,10 +541,10 @@ impl Color {
 
                 Self {
                     inner: ColorInner::cmyk(
-                        (cyan * MAX_FLOAT_VALUE).round() as u8,
-                        (magenta * MAX_FLOAT_VALUE).round() as u8,
-                        (yellow * MAX_FLOAT_VALUE).round() as u8,
-                        (black * MAX_FLOAT_VALUE).round() as u8,
+                        (cyan * MAX_VALUE_F64).round() as u8,
+                        (magenta * MAX_VALUE_F64).round() as u8,
+                        (yellow * MAX_VALUE_F64).round() as u8,
+                        (black * MAX_VALUE_F64).round() as u8,
                         c.alpha,
                     ),
                 }
@@ -552,10 +556,10 @@ impl Color {
     pub fn to_rgb(&self) -> Self {
         match &self.inner {
             ColorInner::Cmyk(c) => {
-                let cyan = c.cyan as f64 / MAX_FLOAT_VALUE;
-                let magenta = c.magenta as f64 / MAX_FLOAT_VALUE;
-                let yellow = c.yellow as f64 / MAX_FLOAT_VALUE;
-                let black = c.black as f64 / MAX_FLOAT_VALUE;
+                let cyan = c.cyan as f64 / MAX_VALUE_F64;
+                let magenta = c.magenta as f64 / MAX_VALUE_F64;
+                let yellow = c.yellow as f64 / MAX_VALUE_F64;
+                let black = c.black as f64 / MAX_VALUE_F64;
 
                 let red = 1.0 - (cyan * (1.0 - black) + black);
                 let green = 1.0 - (magenta * (1.0 - black) + black);
@@ -563,9 +567,9 @@ impl Color {
 
                 Self {
                     inner: ColorInner::rgb(
-                        (red * MAX_FLOAT_VALUE).round() as u8,
-                        (green * MAX_FLOAT_VALUE).round() as u8,
-                        (blue * MAX_FLOAT_VALUE).round() as u8,
+                        (red * MAX_VALUE_F64).round() as u8,
+                        (green * MAX_VALUE_F64).round() as u8,
+                        (blue * MAX_VALUE_F64).round() as u8,
                         c.alpha,
                     ),
                 }
@@ -574,7 +578,7 @@ impl Color {
                 let mut red = 0;
                 let mut green = 0;
                 let mut blue = 0;
-                if c.saturation == 0 || c.hue == MAX_VALUE {
+                if c.saturation == 0 || c.hue == MAX_HUE_VALUE {
                     // achromatic case
                     red = c.lightness;
                     green = c.lightness;
@@ -585,14 +589,13 @@ impl Color {
                     blue = 0;
                 } else {
                     // chromatic case
-                    // FIXME(Shaohua): u8 out of range
-                    let hue = if c.hue as u32 == 36_000 {
+                    let hue = if c.hue == HUE_BASE {
                         0.0
                     } else {
-                        c.hue as f64 / 36_000.0
+                        c.hue as f64 / HUE_BASE_F64
                     };
-                    let saturation = c.saturation as f64 / MAX_FLOAT_VALUE;
-                    let lightness = c.lightness as f64 / MAX_FLOAT_VALUE;
+                    let saturation = c.saturation as f64 / MAX_VALUE_F64;
+                    let lightness = c.lightness as f64 / MAX_VALUE_F64;
                     let temp2 = if lightness < 0.5 {
                         lightness * (1.0 + saturation)
                     } else {
@@ -612,17 +615,17 @@ impl Color {
 
                         let sixtemp3 = temp3[i] * 6.0;
                         if sixtemp3 < 1.0 {
-                            array[i + 1] = ((temp1 + (temp2 - temp1) * sixtemp3) * MAX_FLOAT_VALUE)
+                            array[i + 1] = ((temp1 + (temp2 - temp1) * sixtemp3) * MAX_VALUE_F64)
                                 .round() as u8;
                         } else if (temp3[i] * 2.0) < 1.0 {
-                            array[i + 1] = (temp2 * MAX_FLOAT_VALUE).round() as u8;
+                            array[i + 1] = (temp2 * MAX_VALUE_F64).round() as u8;
                         } else if (temp3[i] * 3.0) < 2.0 {
                             array[i + 1] = ((temp1
                                 + (temp2 - temp1) * (2.0 / 3.0 - temp3[i]) * 6.0)
-                                * MAX_FLOAT_VALUE)
+                                * MAX_VALUE_F64)
                                 .round() as u8;
                         } else {
-                            array[i + 1] = (temp1 * MAX_FLOAT_VALUE).round() as u8;
+                            array[i + 1] = (temp1 * MAX_VALUE_F64).round() as u8;
                         }
                     }
 
@@ -650,9 +653,9 @@ impl Color {
             ColorInner::Hsl(_) => self.clone(),
             ColorInner::Hsv(_) => self.to_rgb().to_hsl(),
             ColorInner::Rgb(c) => {
-                let red = c.red as f64 / MAX_FLOAT_VALUE;
-                let green = c.green as f64 / MAX_FLOAT_VALUE;
-                let blue = c.blue as f64 / MAX_FLOAT_VALUE;
+                let red = c.red as f64 / MAX_VALUE_F64;
+                let green = c.green as f64 / MAX_VALUE_F64;
+                let blue = c.blue as f64 / MAX_VALUE_F64;
                 let max_val = red.max(green.max(blue));
                 let min_val = red.min(green.min(blue));
                 let delta = max_val - min_val;
@@ -662,19 +665,19 @@ impl Color {
                     alpha: c.alpha,
                     hue: 0,
                     saturation: 0,
-                    lightness: (lightness * MAX_FLOAT_VALUE).round() as u8,
+                    lightness: (lightness * MAX_VALUE_F64).round() as u8,
                 };
 
                 if fuzzy_is_zero(delta) {
                     // achromatic case, hue is undefined.
-                    hsl.hue = MAX_VALUE;
+                    hsl.hue = MAX_HUE_VALUE;
                     hsl.saturation = 0;
                 } else {
                     // chromatic case.
                     hsl.saturation = if lightness < 0.5 {
-                        ((delta / delta2) * MAX_FLOAT_VALUE).round() as u8
+                        ((delta / delta2) * MAX_VALUE_F64).round() as u8
                     } else {
-                        (delta / (2.0 - delta2) * MAX_FLOAT_VALUE).round() as u8
+                        (delta / (2.0 - delta2) * MAX_VALUE_F64).round() as u8
                     };
 
                     let mut hue = 0.0;
@@ -690,9 +693,9 @@ impl Color {
 
                     hue *= 60.0;
                     if hue < 0.0 {
-                        hue += 360.0;
+                        hue += MAX_HUE_VALUE_F64;
                     }
-                    hsl.hue = (hue * 100.0).round() as u8;
+                    hsl.hue = (hue * 100.0).round() as u16;
                 }
 
                 Self {
@@ -709,9 +712,9 @@ impl Color {
             ColorInner::Hsl(_) => self.to_rgb().to_hsv(),
             ColorInner::Hsv(_) => self.clone(),
             ColorInner::Rgb(c) => {
-                let red = c.red as f64 / MAX_FLOAT_VALUE;
-                let green = c.green as f64 / MAX_FLOAT_VALUE;
-                let blue = c.blue as f64 / MAX_FLOAT_VALUE;
+                let red = c.red as f64 / MAX_VALUE_F64;
+                let green = c.green as f64 / MAX_VALUE_F64;
+                let blue = c.blue as f64 / MAX_VALUE_F64;
                 let max_val = red.max(green.max(blue));
                 let min_val = red.min(green.min(blue));
                 let delta = max_val - min_val;
@@ -721,16 +724,16 @@ impl Color {
                     alpha: c.alpha,
                     hue: 0,
                     saturation: 0,
-                    value: (value * MAX_FLOAT_VALUE).round() as u8,
+                    value: (value * MAX_VALUE_F64).round() as u8,
                 };
 
                 if fuzzy_is_zero(delta) {
                     // achromatic case, hue is undefined.
-                    hsv.hue = MAX_VALUE;
+                    hsv.hue = MAX_HUE_VALUE;
                     hsv.saturation = 0;
                 } else {
                     // chromatic case.
-                    hsv.saturation = ((delta / max_val) * MAX_FLOAT_VALUE).round() as u8;
+                    hsv.saturation = ((delta / max_val) * MAX_VALUE_F64).round() as u8;
 
                     let mut hue = 0.0;
                     if fuzzy_compare(red, max_val) {
@@ -745,9 +748,9 @@ impl Color {
 
                     hue *= 60.0;
                     if hue < 0.0 {
-                        hue += 360.0;
+                        hue += MAX_HUE_VALUE_F64;
                     }
-                    hsv.hue = (hue * 100.0).round() as u8;
+                    hsv.hue = (hue * 100.0).round() as u16;
                 }
 
                 Self {
@@ -769,7 +772,7 @@ impl Color {
 
     /// Returns the alpha color component of this color.
     pub fn alpha_f(&self) -> f64 {
-        self.alpha() as f64 / MAX_FLOAT_VALUE
+        self.alpha() as f64 / MAX_VALUE_F64
     }
 
     /// Returns the black color component of this color.
@@ -915,7 +918,19 @@ impl Color {
     /// These components can be retrieved individually using the `hue_f()`, `saturation_f()`,
     /// `value_f()` and `alpha_f()` functions.
     pub fn get_hsv_f(&self, hue: &mut f64, saturation: &mut f64, value: &mut f64, alpha: &mut f64) {
-        unimplemented!()
+        match &self.inner {
+            ColorInner::Hsv(c) => {
+                *hue = if c.hue == MAX_HUE_VALUE {
+                    -1.0
+                } else {
+                    c.hue as f64 / HUE_BASE_F64
+                };
+                *saturation = c.saturation as f64 / MAX_VALUE_F64;
+                *value = c.value as f64 / MAX_VALUE_F64;
+                *alpha = c.alpha as f64 / MAX_VALUE_F64;
+            }
+            _ => self.to_hsv().get_hsv_f(hue, saturation, value, alpha),
+        }
     }
 
     /// Sets the contents to the red, green, blue, and alpha-channel (transparency)
@@ -1132,7 +1147,7 @@ impl Color {
     /// qreal alpha is specified in the range 0.0-1.0.
     pub fn set_alpha_f(&mut self, alpha: f64) -> Result<(), ParseColorError> {
         check_float_range(alpha)?;
-        let alpha_int = (alpha * MAX_FLOAT_VALUE).round() as u8;
+        let alpha_int = (alpha * MAX_VALUE_F64).round() as u8;
         match &mut self.inner {
             ColorInner::Rgb(c) => c.alpha = alpha_int,
             ColorInner::Hsv(c) => c.alpha = alpha_int,
