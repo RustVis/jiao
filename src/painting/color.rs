@@ -992,11 +992,6 @@ impl Color {
         unimplemented!()
     }
 
-    /// Returns true if the color is valid; otherwise returns false.
-    pub fn is_valid(&self) -> bool {
-        unimplemented!()
-    }
-
     /// Returns true if the name is a valid color name and can be used
     /// to construct a valid Color object, otherwise returns false.
     ///
