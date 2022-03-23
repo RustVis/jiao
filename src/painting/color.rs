@@ -54,10 +54,10 @@ use crate::util::{fuzzy_compare, fuzzy_is_zero};
 ///
 /// # Integer vs. Floating Point Precision
 /// Color supports floating point precision and provides floating point versions
-/// of all the color components functions, e.g. `get_rgbf()`, `huef()` and `from_cmykf()`.
+/// of all the color components functions, e.g. `get_rgb_f()`, `huef()` and `from_cmyk_f()`.
 /// Note that since the components are stored using 16-bit integers, there might be
-/// minor deviations between the values set using, for example, `set_rgbf()`
-/// and the values returned by the `get_rgbf()` function due to rounding.
+/// minor deviations between the values set using, for example, `set_rgb_f()`
+/// and the values returned by the `get_rgb_f()` function due to rounding.
 ///
 /// While the integer based functions take values in the range 0-255
 /// (except hue() which must have values within the range 0-359),
@@ -122,7 +122,9 @@ use crate::util::{fuzzy_compare, fuzzy_is_zero};
 ///
 /// Default is RGBA.
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Color(ColorInner);
+pub struct Color {
+    inner: ColorInner,
+}
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 enum ColorInner {
@@ -221,20 +223,22 @@ impl Color {
     /// Creates and returns a CMYK color based on this color.
     #[inline]
     pub fn to_cmyk(&self) -> Self {
-        match &self.0 {
+        match &self.inner {
             ColorInner::Cmyk(c) => self.clone(),
             ColorInner::Hsl(_) => self.to_rgb().to_cmyk(),
             ColorInner::Hsv(_) => self.to_rgb().to_cmyk(),
             ColorInner::Rgb(c) => {
                 if c.red == 0 || c.green == 0 || c.blue == 0 {
                     // Special case, div-by-zero.
-                    return Self(ColorInner::Cmyk(ColorCmyk {
-                        alpha: c.alpha,
-                        cyan: 0,
-                        magenta: 0,
-                        yellow: 0,
-                        black: MAX_VALUE,
-                    }));
+                    return Self {
+                        inner: ColorInner::Cmyk(ColorCmyk {
+                            alpha: c.alpha,
+                            cyan: 0,
+                            magenta: 0,
+                            yellow: 0,
+                            black: MAX_VALUE,
+                        }),
+                    };
                 }
                 // rgb -> cmy
                 let red = c.red as f64 / MAX_FLOAT_VALUE;
@@ -251,13 +255,15 @@ impl Color {
                 magenta = (magenta - black) / black_revert;
                 yellow = (yellow - black) / black_revert;
 
-                Self(ColorInner::Cmyk(ColorCmyk {
-                    alpha: c.alpha,
-                    cyan: (cyan * MAX_FLOAT_VALUE).round() as u8,
-                    magenta: (magenta * MAX_FLOAT_VALUE).round() as u8,
-                    yellow: (yellow * MAX_FLOAT_VALUE).round() as u8,
-                    black: (black * MAX_FLOAT_VALUE).round() as u8,
-                }))
+                Self {
+                    inner: ColorInner::Cmyk(ColorCmyk {
+                        alpha: c.alpha,
+                        cyan: (cyan * MAX_FLOAT_VALUE).round() as u8,
+                        magenta: (magenta * MAX_FLOAT_VALUE).round() as u8,
+                        yellow: (yellow * MAX_FLOAT_VALUE).round() as u8,
+                        black: (black * MAX_FLOAT_VALUE).round() as u8,
+                    }),
+                }
             }
         }
     }
@@ -265,7 +271,7 @@ impl Color {
     /// Creates and returns an RGB color based on this color.
     #[inline]
     pub fn to_rgb(&self) -> Self {
-        match &self.0 {
+        match &self.inner {
             ColorInner::Cmyk(c) => {
                 let cyan = c.cyan as f64 / MAX_FLOAT_VALUE;
                 let magenta = c.magenta as f64 / MAX_FLOAT_VALUE;
@@ -276,12 +282,14 @@ impl Color {
                 let green = 1.0 - (magenta * (1.0 - black) + black);
                 let blue = 1.0 - (yellow * (1.0 - black) + black);
 
-                Self(ColorInner::Rgb(ColorRgb {
-                    alpha: c.alpha,
-                    red: (red * MAX_FLOAT_VALUE).round() as u8,
-                    green: (green * MAX_FLOAT_VALUE).round() as u8,
-                    blue: (blue * MAX_FLOAT_VALUE).round() as u8,
-                }))
+                Self {
+                    inner: ColorInner::Rgb(ColorRgb {
+                        alpha: c.alpha,
+                        red: (red * MAX_FLOAT_VALUE).round() as u8,
+                        green: (green * MAX_FLOAT_VALUE).round() as u8,
+                        blue: (blue * MAX_FLOAT_VALUE).round() as u8,
+                    }),
+                }
             }
             ColorInner::Hsl(c) => {
                 let mut red = 0;
@@ -344,12 +352,14 @@ impl Color {
                     blue = array[3];
                 }
 
-                Self(ColorInner::Rgb(ColorRgb {
-                    alpha: c.alpha,
-                    red,
-                    green,
-                    blue,
-                }))
+                Self {
+                    inner: ColorInner::Rgb(ColorRgb {
+                        alpha: c.alpha,
+                        red,
+                        green,
+                        blue,
+                    }),
+                }
             }
             ColorInner::Hsv(_c) => {
                 //
@@ -362,7 +372,7 @@ impl Color {
     /// Creates and returns an HSL color based on this color.
     #[inline]
     pub fn to_hsl(&self) -> Self {
-        match &self.0 {
+        match &self.inner {
             ColorInner::Cmyk(_) => self.to_rgb().to_hsl(),
             ColorInner::Hsl(_) => self.clone(),
             ColorInner::Hsv(_) => self.to_rgb().to_hsl(),
@@ -412,7 +422,9 @@ impl Color {
                     hsl.hue = (hue * 100.0).round() as u8;
                 }
 
-                Self(ColorInner::Hsl(hsl))
+                Self {
+                    inner: ColorInner::Hsl(hsl),
+                }
             }
         }
     }
@@ -420,7 +432,7 @@ impl Color {
     /// Creates and returns an HSV color based on this color.
     #[inline]
     pub fn to_hsv(&self) -> Self {
-        match &self.0 {
+        match &self.inner {
             ColorInner::Cmyk(_) => self.to_rgb().to_hsl(),
             ColorInner::Hsl(_) => self.to_rgb().to_hsv(),
             ColorInner::Hsv(_) => self.clone(),
@@ -466,7 +478,9 @@ impl Color {
                     hsv.hue = (hue * 100.0).round() as u8;
                 }
 
-                Self(ColorInner::Hsv(hsv))
+                Self {
+                    inner: ColorInner::Hsv(hsv),
+                }
             }
         }
     }
@@ -488,13 +502,15 @@ impl Color {
     ///
     /// All the values must be in the range 0-255.
     pub fn from_cmyk(cyan: u8, magenta: u8, yellow: u8, black: u8, alpha: u8) -> Self {
-        Self(ColorInner::Cmyk(ColorCmyk {
-            alpha,
-            cyan,
-            magenta,
-            yellow,
-            black,
-        }))
+        Self {
+            inner: ColorInner::Cmyk(ColorCmyk {
+                alpha,
+                cyan,
+                magenta,
+                yellow,
+                black,
+            }),
+        }
     }
 
     /// Construct color from the given CMYK color values.
@@ -521,13 +537,15 @@ impl Color {
             return Err(ParseColorError::OutOfRangeError);
         }
 
-        Ok(Self(ColorInner::Cmyk(ColorCmyk {
-            alpha: (alpha * MAX_FLOAT_VALUE).round() as u8,
-            cyan: (cyan * MAX_FLOAT_VALUE).round() as u8,
-            magenta: (magenta * MAX_FLOAT_VALUE).round() as u8,
-            yellow: (yellow * MAX_FLOAT_VALUE).round() as u8,
-            black: (black * MAX_FLOAT_VALUE).round() as u8,
-        })))
+        Ok(Self {
+            inner: ColorInner::Cmyk(ColorCmyk {
+                alpha: (alpha * MAX_FLOAT_VALUE).round() as u8,
+                cyan: (cyan * MAX_FLOAT_VALUE).round() as u8,
+                magenta: (magenta * MAX_FLOAT_VALUE).round() as u8,
+                yellow: (yellow * MAX_FLOAT_VALUE).round() as u8,
+                black: (black * MAX_FLOAT_VALUE).round() as u8,
+            }),
+        })
     }
 
     /// Construct color from the HSL color values.
@@ -549,12 +567,14 @@ impl Color {
             (hue % MAX_HUE_VALUE * 100) as u8
         };
 
-        Ok(Self(ColorInner::Hsl(ColorHsl {
-            alpha,
-            hue: real_hue,
-            saturation,
-            lightness,
-        })))
+        Ok(Self {
+            inner: ColorInner::Hsl(ColorHsl {
+                alpha,
+                hue: real_hue,
+                saturation,
+                lightness,
+            }),
+        })
     }
 
     /// Construct color from the HSL color values.
@@ -583,12 +603,14 @@ impl Color {
             (hue * 36_000.0).round() as u8
         };
 
-        Ok(Self(ColorInner::Hsl(ColorHsl {
-            alpha: (alpha * MAX_FLOAT_VALUE).round() as u8,
-            hue: real_hue,
-            saturation: (saturation * MAX_FLOAT_VALUE).round() as u8,
-            lightness: (lightness * MAX_FLOAT_VALUE).round() as u8,
-        })))
+        Ok(Self {
+            inner: ColorInner::Hsl(ColorHsl {
+                alpha: (alpha * MAX_FLOAT_VALUE).round() as u8,
+                hue: real_hue,
+                saturation: (saturation * MAX_FLOAT_VALUE).round() as u8,
+                lightness: (lightness * MAX_FLOAT_VALUE).round() as u8,
+            }),
+        })
     }
 
     /// Construct color from the HSV color values.
@@ -605,12 +627,14 @@ impl Color {
             (hue % MAX_HUE_VALUE * 100) as u8
         };
 
-        Ok(Self(ColorInner::Hsv(ColorHsv {
-            alpha,
-            hue: real_hue,
-            saturation,
-            value,
-        })))
+        Ok(Self {
+            inner: ColorInner::Hsv(ColorHsv {
+                alpha,
+                hue: real_hue,
+                saturation,
+                value,
+            }),
+        })
     }
 
     /// Construct color from the HSV color values.
@@ -639,12 +663,14 @@ impl Color {
             (hue * 36_000.0).round() as u8
         };
 
-        Ok(Self(ColorInner::Hsv(ColorHsv {
-            alpha: (alpha * MAX_FLOAT_VALUE).round() as u8,
-            hue: real_hue,
-            saturation: (saturation * MAX_FLOAT_VALUE).round() as u8,
-            value: (value * MAX_FLOAT_VALUE).round() as u8,
-        })))
+        Ok(Self {
+            inner: ColorInner::Hsv(ColorHsv {
+                alpha: (alpha * MAX_FLOAT_VALUE).round() as u8,
+                hue: real_hue,
+                saturation: (saturation * MAX_FLOAT_VALUE).round() as u8,
+                value: (value * MAX_FLOAT_VALUE).round() as u8,
+            }),
+        })
     }
 
     /// Construct color from the RGB color values.
@@ -668,12 +694,14 @@ impl Color {
     /// All the values must be in range 0-255.
     #[inline]
     pub fn from_rgba(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
-        Self(ColorInner::Rgb(ColorRgb {
-            alpha,
-            red,
-            green,
-            blue,
-        }))
+        Self {
+            inner: ColorInner::Rgb(ColorRgb {
+                alpha,
+                red,
+                green,
+                blue,
+            }),
+        }
     }
 
     /// Construct color from the RGBA color values.
@@ -698,17 +726,19 @@ impl Color {
             return Err(ParseColorError::OutOfRangeError);
         }
 
-        Ok(Self(ColorInner::Rgb(ColorRgb {
-            alpha: (alpha * MAX_FLOAT_VALUE).round() as u8,
-            red: (red * MAX_FLOAT_VALUE).round() as u8,
-            green: (green * MAX_FLOAT_VALUE).round() as u8,
-            blue: (blue * MAX_FLOAT_VALUE).round() as u8,
-        })))
+        Ok(Self {
+            inner: ColorInner::Rgb(ColorRgb {
+                alpha: (alpha * MAX_FLOAT_VALUE).round() as u8,
+                red: (red * MAX_FLOAT_VALUE).round() as u8,
+                green: (green * MAX_FLOAT_VALUE).round() as u8,
+                blue: (blue * MAX_FLOAT_VALUE).round() as u8,
+            }),
+        })
     }
 
     /// Returns how the color was specified.
     pub fn spec(&self) -> Spec {
-        match &self.0 {
+        match &self.inner {
             ColorInner::Rgb(_) => Spec::Rgb,
             ColorInner::Hsv(_) => Spec::Hsv,
             ColorInner::Cmyk(_) => Spec::Cmyk,
@@ -719,7 +749,7 @@ impl Color {
     /// Returns the alpha color component of this color.
     #[inline]
     pub fn alpha(&self) -> u8 {
-        match &self.0 {
+        match &self.inner {
             ColorInner::Rgb(c) => c.alpha,
             ColorInner::Hsv(c) => c.alpha,
             ColorInner::Cmyk(c) => c.alpha,
@@ -730,7 +760,7 @@ impl Color {
     /// Set alpha channel of this color.
     #[inline]
     pub fn set_alpha(&mut self, alpha: u8) {
-        match &mut self.0 {
+        match &mut self.inner {
             ColorInner::Rgb(c) => c.alpha = alpha,
             ColorInner::Hsv(c) => c.alpha = alpha,
             ColorInner::Cmyk(c) => c.alpha = alpha,
@@ -749,7 +779,7 @@ impl Color {
     pub fn set_alpha_f(&mut self, alpha: f64) -> Result<(), ParseColorError> {
         check_float_range(alpha)?;
         let alpha_int = (alpha * MAX_FLOAT_VALUE).round() as u8;
-        match &mut self.0 {
+        match &mut self.inner {
             ColorInner::Rgb(c) => c.alpha = alpha_int,
             ColorInner::Hsv(c) => c.alpha = alpha_int,
             ColorInner::Cmyk(c) => c.alpha = alpha_int,
@@ -759,7 +789,7 @@ impl Color {
     }
     /// Returns the red color component of this color.
     pub fn red(&self) -> u8 {
-        match &self.0 {
+        match &self.inner {
             ColorInner::Rgb(c) => c.red,
             _ => self.to_rgb().red(),
         }
@@ -767,7 +797,7 @@ impl Color {
 
     /// Returns the green color component of this color.
     pub fn green(&self) -> u8 {
-        match &self.0 {
+        match &self.inner {
             ColorInner::Rgb(c) => c.green,
             _ => self.to_rgb().green(),
         }
@@ -775,7 +805,7 @@ impl Color {
 
     /// Returns the blue color component of this color.
     pub fn blue(&self) -> u8 {
-        match &self.0 {
+        match &self.inner {
             ColorInner::Rgb(c) => c.blue,
             _ => self.to_rgb().blue(),
         }
