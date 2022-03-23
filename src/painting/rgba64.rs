@@ -230,6 +230,7 @@ impl Rgba64 {
         return self.unpremultiplied_64bit();
     }
 
+    #[allow(dead_code)]
     fn unpremultiplied_32bit(&self) -> Self {
         if self.is_opaque() || self.is_transparent() {
             return *self;
@@ -241,6 +242,7 @@ impl Rgba64 {
         return Self::from_rgba64(r, g, b, a as u16);
     }
 
+    #[allow(dead_code)]
     fn unpremultiplied_64bit(&self) -> Self {
         if self.is_opaque() || self.is_transparent() {
             return *self;
