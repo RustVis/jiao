@@ -8,9 +8,118 @@ use std::str::FromStr;
 
 use crate::util::{fuzzy_compare, fuzzy_is_zero};
 
-/// Represents color value.
+/// The Color class provides colors based on RGB, HSV or CMYK values.
 ///
-/// Supports mulitiple color space.
+///
+/// A color is normally specified in terms of RGB (red, green, and blue) components,
+/// but it is also possible to specify it in terms of HSV (hue, saturation, and value) and
+/// CMYK (cyan, magenta, yellow and black) components.
+///
+/// In addition a color can be specified using a color name.
+/// The color name can be any of the SVG 1.0 color names.
+///
+/// The Color constructor creates the color based on RGB values. To create a Color
+/// based on either HSV or CMYK values, use the `to_hsv()` and `to_cmyk()` functions respectively.
+/// These functions return a copy of the color using the desired format.
+/// In addition the `from_rgb()`, `from_hsv()` and `from_cmyk()` functions
+/// create colors from the specified values.
+/// Alternatively, a color can be converted to any of the three formats using
+/// the `convert_to()` function (returning a copy of the color in the desired format),
+/// or any of the `set_rgb()`, `set_hsv()` and `set_cmyk()` functions
+/// altering this color's format.
+/// The `spec()` function tells how the color was specified.
+///
+/// A color can be set by passing an RGB string (such as "#112233"),
+/// or an ARGB string (such as "#ff112233") or a color name (such as "blue"),
+/// to the `set_named_color()` function.
+/// The color names are taken from the SVG 1.0 color names.
+/// The `name()` function returns the name of the color in the format "#RRGGBB".
+/// Colors can also be set using `set_rgb()`, `set_hsv()` and `set_cmyk()`.
+/// To get a lighter or darker color use the `lighter()` and `darker()` functions respectively.
+///
+/// The `is_valid()` function indicates whether a Color is legal at all.
+/// For example, a RGB color with RGB values out of range is illegal.
+/// For performance reasons, Color mostly disregards illegal colors, and for that reason,
+/// the result of using an invalid color is undefined.
+///
+/// The color components can be retrieved individually, e.g with `red()`, `hue()` and `cyan()`.
+/// The values of the color components can also be retrieved in one go using
+/// the `get_rgb()`, `get_hsv()` and `get_cmyk()` functions.
+/// Using the RGB color model, the color components can in addition be accessed with `rgb()`.
+///
+/// There are several related non-members:
+/// Rgb is a typdef for an unsigned int representing the RGB value triplet (r, g, b).
+/// Note that it also can hold a value for the alpha-channel
+/// (for more information, see the Alpha-Blended Drawing section).
+///
+/// # Integer vs. Floating Point Precision
+/// Color supports floating point precision and provides floating point versions
+/// of all the color components functions, e.g. `get_rgbf()`, `huef()` and `from_cmykf()`.
+/// Note that since the components are stored using 16-bit integers, there might be
+/// minor deviations between the values set using, for example, `set_rgbf()`
+/// and the values returned by the `get_rgbf()` function due to rounding.
+///
+/// While the integer based functions take values in the range 0-255
+/// (except hue() which must have values within the range 0-359),
+/// the floating point functions accept values in the range 0.0 - 1.0.
+///
+/// # The Extended RGB Color Model
+/// The extended RGB color model, also known as the scRGB color space,
+/// is the same the RGB color model except it allows values under 0.0, and over 1.0.
+/// This makes it possible to represent colors that would otherwise be outside
+/// the range of the RGB colorspace but still use the same values for colors inside
+/// the RGB colorspace.
+///
+/// # The HSV Color Model
+/// The RGB model is hardware-oriented. Its representation is close to what most monitors show.
+/// In contrast, HSV represents color in a way more suited to the human perception of color.
+/// For example, the relationships "stronger than", "darker than", and "the opposite of"
+/// are easily expressed in HSV but are much harder to express in RGB.
+///
+/// HSV, like RGB, has three components:
+/// - H, for hue, is in the range 0 to 359 if the color is chromatic (not gray),
+/// or meaningless if it is gray. It represents degrees on the color wheel familiar to most people.
+/// Red is 0 (degrees), green is 120, and blue is 240.
+/// - S, for saturation, is in the range 0 to 255, and the bigger it is, the stronger the color is.
+/// Grayish colors have saturation near 0; very strong colors have saturation near 255.
+/// - V, for value, is in the range 0 to 255 and represents lightness or brightness of the color.
+/// 0 is black; 255 is as far from black as possible.
+///
+/// Here are some examples: pure red is H=0, S=255, V=255; a dark red, moving slightly
+/// towards the magenta, could be H=350 (equivalent to -10), S=255, V=180; a grayish light red
+/// could have H about 0 (say 350-359 or 0-10), S about 50-100, and S=255.
+///
+/// `Color` returns a hue value of -1 for achromatic colors. If you pass a hue value
+/// that is too large, `Color` forces it into range. Hue 360 or 720 is treated as 0;
+/// hue 540 is treated as 180.
+///
+/// # The HSL Color Model
+/// HSL is similar to HSV, however instead of the Value parameter, HSL specifies
+/// a Lightness parameter which maps somewhat differently to the brightness of the color.
+///
+/// Similarly, the HSL saturation value is not in general the same as the HSV saturation value
+/// for the same color. hslSaturation() provides the color's HSL saturation value,
+/// while saturation() and hsvSaturation() provides the HSV saturation value.
+///
+/// The hue value is defined to be the same in HSL and HSV.
+///
+/// # The CMYK Color Model
+/// While the RGB and HSV color models are used for display on computer monitors,
+/// the CMYK model is used in the four-color printing process of printing presses and
+/// some hard-copy devices.
+///
+/// CMYK has four components, all in the range 0-255: cyan (C), magenta (M), yellow (Y) and
+/// black (K). Cyan, magenta and yellow are called subtractive colors; the CMYK color model
+/// creates color by starting with a white surface and then subtracting color
+/// by applying the appropriate components. While combining cyan, magenta and yellow
+/// gives the color black, subtracting one or more will yield any other color.
+/// When combined in various percentages, these three colors can create the entire spectrum of colors.
+///
+/// Mixing 100 percent of cyan, magenta and yellow does produce black, but the result
+/// is unsatisfactory since it wastes ink, increases drying time, and gives a muddy colour
+/// when printing. For that reason, black is added in professional printing to provide a solid black tone;
+/// hence the term 'four color process'.
+///
 /// Default is RGBA.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Color(ColorInner);
