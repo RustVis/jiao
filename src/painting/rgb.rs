@@ -85,4 +85,8 @@ impl Rgb {
             rgb: x | t | (alpha << 24),
         }
     }
+
+    pub fn int(&self) -> u32 {
+        self.rgb
+    }
 }

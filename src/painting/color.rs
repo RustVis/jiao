@@ -216,7 +216,6 @@ pub enum Spec {
     Hsv = 2,
     Cmyk = 3,
     Hsl = 4,
-    //ExtendedRgb = 5,
 }
 
 pub const MAX_VALUE: u8 = u8::MAX;
@@ -495,14 +494,17 @@ impl Color {
     ///
     /// The alpha component is ignored and set to solid.
     pub fn from_rgb32(rgb: Rgb) -> Self {
-        Self {
-            inner: ColorInner::rgb(rgb.red() as u8, rgb.green() as u8, rgb.blue() as u8, 0xff),
-        }
+        Self::from_rgba(rgb.red(), rgb.green(), rgb.blue(), 0xff)
     }
 
     /// Constructs a color with the value rgba64.
     pub fn from_rgba64(rgba64: Rgba64) -> Self {
-        unimplemented!()
+        Self::from_rgba(
+            rgba64.red8(),
+            rgba64.green8(),
+            rgba64.blue8(),
+            rgba64.alpha8(),
+        )
     }
 
     /// Creates and returns a CMYK color based on this color.
@@ -1052,12 +1054,17 @@ impl Color {
     ///
     /// i.e. a "#" character followed by three two-digit hexadecimal numbers.
     pub fn name(&self) -> String {
-        unimplemented!()
+        self.name_with_format(NameFormat::HexRgb)
     }
 
     /// Returns the name of the color in the specified format.
     pub fn name_with_format(&self, format: NameFormat) -> String {
-        unimplemented!()
+        let value = self.rgba().int() as u64;
+        match format {
+            NameFormat::HexRgb => format!("#{:x}", value & 0x0ffffff),
+            // it's called rgba() but it does return AARRGGBB
+            NameFormat::HexArgb => format!("#{:x}", value & 0x0ffffffff),
+        }
     }
 
     /// Returns the red color component of this color.
@@ -1077,7 +1084,8 @@ impl Color {
     ///
     /// The alpha value is opaque.
     pub fn rgb(&self) -> Rgb {
-        unimplemented!()
+        let color = self.to_rgb();
+        Rgb::new(color.red(), color.green(), color.blue())
     }
 
     /// Returns the RGB64 value of the color, including its alpha.
@@ -1091,7 +1099,8 @@ impl Color {
     ///
     /// For an invalid color, the alpha value of the returned color is unspecified.
     pub fn rgba(&self) -> Rgb {
-        unimplemented!()
+        let color = self.to_rgb();
+        Rgb::with_alpha(color.red(), color.green(), color.blue(), color.alpha())
     }
 
     /// Returns the HSV saturation color component of this color.
@@ -1141,8 +1150,6 @@ impl Color {
     }
 
     /// Sets the blue color component of this color to blue.
-    ///
-    /// If blue lies outside the 0.0-1.0 range, the color model will be changed to ExtendedRgb.
     pub fn set_blue_f(&mut self, blue: f64) {
         unimplemented!()
     }
@@ -1169,8 +1176,6 @@ impl Color {
     }
 
     /// Sets the green color component of this color to green.
-    ///
-    /// If green lies outside the 0.0-1.0 range, the color model will be changed to ExtendedRgb.
     pub fn set_green_f(&mut self, green: f64) {
         unimplemented!()
     }
@@ -1231,8 +1236,6 @@ impl Color {
     }
 
     /// Sets the red color component of this color to red.
-    ///
-    /// If red lies outside the 0.0-1.0 range, the color model will be changed to ExtendedRgb.
     pub fn set_red_f(&mut self, red: f64) {
         unimplemented!()
     }
@@ -1259,8 +1262,6 @@ impl Color {
     /// Sets the color channels of this color to (red, green, blue).
     ///
     /// The alpha value must be in the range 0.0-1.0.
-    /// If any of the other values are outside the range of 0.0-1.0 the color model
-    /// will be set as ExtendedRgb.
     pub fn set_rgb_f(red: f64, green: f64, blue: f64, alpha: f64) {
         unimplemented!()
     }
@@ -1436,7 +1437,7 @@ mod tests {
     use serde::{Deserialize, Serialize};
     use std::str::FromStr;
 
-    use super::Color;
+    use super::{Color, NameFormat};
 
     #[test]
     fn test_parse_color() {
@@ -1473,5 +1474,12 @@ mod tests {
         let s = serde_json::to_string_pretty(&r).unwrap();
         let r2: Rectangle = serde_json::from_str(&s).unwrap();
         assert_eq!(r, r2);
+    }
+
+    #[test]
+    fn test_name() {
+        let color = Color::from_rgb(240, 248, 255);
+        assert_eq!(color.name(), "#f0f8ff");
+        assert_eq!(color.name_with_format(NameFormat::HexArgb), "#fff0f8ff");
     }
 }
