@@ -7,10 +7,12 @@
 /// The type also holds a value for the alpha-channel.
 /// The default alpha channel is ff, i.e opaque.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Rgb(u32);
+pub struct Rgb {
+    rgb: u32,
+}
 
 /// Masks RGB values.
-pub const RGB_MASK: Rgb = Rgb(0x00ffffff);
+pub const RGB_MASK: Rgb = Rgb { rgb: 0x00ffffff };
 
 impl Default for Rgb {
     fn default() -> Self {
@@ -21,42 +23,42 @@ impl Default for Rgb {
 impl Rgb {
     // Set RGB value.
     pub fn new(red: i32, green: i32, blue: i32) -> Self {
-        Self(
-            (0xff << 24)
+        Self {
+            rgb: (0xff << 24)
                 | ((red as u32 & 0xff) << 16)
                 | ((green as u32 & 0xff) << 8)
                 | (blue as u32 & 0xff),
-        )
+        }
     }
 
     /// Set RGBA value.
     pub fn with_alpha(red: i32, green: i32, blue: i32, alpha: i32) -> Self {
-        Self(
-            ((alpha as u32 & 0xff) << 24)
+        Self {
+            rgb: ((alpha as u32 & 0xff) << 24)
                 | ((red as u32 & 0xff) << 16)
                 | ((green as u32 & 0xff) << 8)
                 | (blue as u32 & 0xff),
-        )
+        }
     }
 
     /// Get red part of RGB.
     pub fn red(&self) -> i32 {
-        ((self.0 >> 16) & 0xff) as i32
+        ((self.rgb >> 16) & 0xff) as i32
     }
 
     /// Get green part of RGB.
     pub fn green(&self) -> i32 {
-        ((self.0 >> 8) & 0xff) as i32
+        ((self.rgb >> 8) & 0xff) as i32
     }
 
     /// Get blue part of RGB.
     pub fn blue(&self) -> i32 {
-        (self.0 & 0xff) as i32
+        (self.rgb & 0xff) as i32
     }
 
     /// Get alpha part of RGB.
     pub fn alpha(&self) -> i32 {
-        (self.0 >> 24) as i32
+        (self.rgb >> 24) as i32
     }
 
     /// Convert R,G,B to gray 0..255
@@ -75,13 +77,15 @@ impl Rgb {
 
     pub fn premultiply(&self) -> Self {
         let alpha = self.alpha() as u32;
-        let mut t = (self.0 & 0xff00ff) * alpha;
+        let mut t = (self.rgb & 0xff00ff) * alpha;
         t = (t + ((t >> 8) & 0xff00ff) + 0x800080) >> 8;
         t &= 0xff00ff;
 
-        let mut x = ((self.0 >> 8) & 0xff) * alpha;
+        let mut x = ((self.rgb >> 8) & 0xff) * alpha;
         x = x + ((x >> 8) & 0xff) + 0x80;
         x &= 0xff00;
-        Self(x | t | (alpha << 24))
+        Self {
+            rgb: x | t | (alpha << 24),
+        }
     }
 }
