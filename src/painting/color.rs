@@ -136,6 +136,45 @@ enum ColorInner {
     Rgb(ColorRgb),
 }
 
+impl ColorInner {
+    const fn cmyk(cyan: u8, magenta: u8, yellow: u8, black: u8, alpha: u8) -> Self {
+        Self::Cmyk(ColorCmyk {
+            alpha,
+            cyan,
+            magenta,
+            yellow,
+            black,
+        })
+    }
+
+    const fn hsl(hue: u8, saturation: u8, lightness: u8, alpha: u8) -> Self {
+        Self::Hsl(ColorHsl {
+            alpha,
+            hue,
+            saturation,
+            lightness,
+        })
+    }
+
+    const fn hsv(hue: u8, saturation: u8, value: u8, alpha: u8) -> Self {
+        Self::Hsv(ColorHsv {
+            alpha,
+            hue,
+            saturation,
+            value,
+        })
+    }
+
+    const fn rgb(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
+        Self::Rgb(ColorRgb {
+            alpha,
+            red,
+            green,
+            blue,
+        })
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct ColorRgb {
     alpha: u8,
@@ -230,7 +269,7 @@ impl Color {
     /// An invalid color is a color that is not properly set up for the underlying window system.
     ///
     /// The alpha value of an invalid color is unspecified.
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self::from_rgb(0, 0, 0)
     }
 
@@ -244,13 +283,7 @@ impl Color {
     /// All the values must be in the range 0-255.
     pub fn from_cmyk(cyan: u8, magenta: u8, yellow: u8, black: u8, alpha: u8) -> Self {
         Self {
-            inner: ColorInner::Cmyk(ColorCmyk {
-                alpha,
-                cyan,
-                magenta,
-                yellow,
-                black,
-            }),
+            inner: ColorInner::cmyk(cyan, magenta, yellow, black, alpha),
         }
     }
 
@@ -279,13 +312,13 @@ impl Color {
         }
 
         Ok(Self {
-            inner: ColorInner::Cmyk(ColorCmyk {
-                alpha: (alpha * MAX_FLOAT_VALUE).round() as u8,
-                cyan: (cyan * MAX_FLOAT_VALUE).round() as u8,
-                magenta: (magenta * MAX_FLOAT_VALUE).round() as u8,
-                yellow: (yellow * MAX_FLOAT_VALUE).round() as u8,
-                black: (black * MAX_FLOAT_VALUE).round() as u8,
-            }),
+            inner: ColorInner::cmyk(
+                (cyan * MAX_FLOAT_VALUE).round() as u8,
+                (magenta * MAX_FLOAT_VALUE).round() as u8,
+                (yellow * MAX_FLOAT_VALUE).round() as u8,
+                (black * MAX_FLOAT_VALUE).round() as u8,
+                (alpha * MAX_FLOAT_VALUE).round() as u8,
+            ),
         })
     }
 
@@ -309,12 +342,7 @@ impl Color {
         };
 
         Ok(Self {
-            inner: ColorInner::Hsl(ColorHsl {
-                alpha,
-                hue: real_hue,
-                saturation,
-                lightness,
-            }),
+            inner: ColorInner::hsl(real_hue, saturation, lightness, alpha),
         })
     }
 
@@ -345,12 +373,12 @@ impl Color {
         };
 
         Ok(Self {
-            inner: ColorInner::Hsl(ColorHsl {
-                alpha: (alpha * MAX_FLOAT_VALUE).round() as u8,
-                hue: real_hue,
-                saturation: (saturation * MAX_FLOAT_VALUE).round() as u8,
-                lightness: (lightness * MAX_FLOAT_VALUE).round() as u8,
-            }),
+            inner: ColorInner::hsl(
+                real_hue,
+                (saturation * MAX_FLOAT_VALUE).round() as u8,
+                (lightness * MAX_FLOAT_VALUE).round() as u8,
+                (alpha * MAX_FLOAT_VALUE).round() as u8,
+            ),
         })
     }
 
@@ -369,12 +397,7 @@ impl Color {
         };
 
         Ok(Self {
-            inner: ColorInner::Hsv(ColorHsv {
-                alpha,
-                hue: real_hue,
-                saturation,
-                value,
-            }),
+            inner: ColorInner::hsv(real_hue, saturation, value, alpha),
         })
     }
 
@@ -405,12 +428,12 @@ impl Color {
         };
 
         Ok(Self {
-            inner: ColorInner::Hsv(ColorHsv {
-                alpha: (alpha * MAX_FLOAT_VALUE).round() as u8,
-                hue: real_hue,
-                saturation: (saturation * MAX_FLOAT_VALUE).round() as u8,
-                value: (value * MAX_FLOAT_VALUE).round() as u8,
-            }),
+            inner: ColorInner::hsv(
+                real_hue,
+                (saturation * MAX_FLOAT_VALUE).round() as u8,
+                (value * MAX_FLOAT_VALUE).round() as u8,
+                (alpha * MAX_FLOAT_VALUE).round() as u8,
+            ),
         })
     }
 
@@ -433,12 +456,7 @@ impl Color {
     /// All the values must be in range 0-255.
     pub const fn from_rgba(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
         Self {
-            inner: ColorInner::Rgb(ColorRgb {
-                alpha,
-                red,
-                green,
-                blue,
-            }),
+            inner: ColorInner::rgb(red, green, blue, alpha),
         }
     }
 
@@ -464,12 +482,12 @@ impl Color {
         }
 
         Ok(Self {
-            inner: ColorInner::Rgb(ColorRgb {
-                alpha: (alpha * MAX_FLOAT_VALUE).round() as u8,
-                red: (red * MAX_FLOAT_VALUE).round() as u8,
-                green: (green * MAX_FLOAT_VALUE).round() as u8,
-                blue: (blue * MAX_FLOAT_VALUE).round() as u8,
-            }),
+            inner: ColorInner::rgb(
+                (red * MAX_FLOAT_VALUE).round() as u8,
+                (green * MAX_FLOAT_VALUE).round() as u8,
+                (blue * MAX_FLOAT_VALUE).round() as u8,
+                (alpha * MAX_FLOAT_VALUE).round() as u8,
+            ),
         })
     }
 
@@ -477,7 +495,9 @@ impl Color {
     ///
     /// The alpha component is ignored and set to solid.
     pub fn from_rgb32(rgb: Rgb) -> Self {
-        unimplemented!()
+        Self {
+            inner: ColorInner::rgb(rgb.red() as u8, rgb.green() as u8, rgb.blue() as u8, 0xff),
+        }
     }
 
     /// Constructs a color with the value rgba64.
@@ -495,13 +515,7 @@ impl Color {
                 if c.red == 0 || c.green == 0 || c.blue == 0 {
                     // Special case, div-by-zero.
                     return Self {
-                        inner: ColorInner::Cmyk(ColorCmyk {
-                            alpha: c.alpha,
-                            cyan: 0,
-                            magenta: 0,
-                            yellow: 0,
-                            black: MAX_VALUE,
-                        }),
+                        inner: ColorInner::cmyk(0, 0, 0, MAX_VALUE, c.alpha),
                     };
                 }
                 // rgb -> cmy
@@ -520,13 +534,13 @@ impl Color {
                 yellow = (yellow - black) / black_revert;
 
                 Self {
-                    inner: ColorInner::Cmyk(ColorCmyk {
-                        alpha: c.alpha,
-                        cyan: (cyan * MAX_FLOAT_VALUE).round() as u8,
-                        magenta: (magenta * MAX_FLOAT_VALUE).round() as u8,
-                        yellow: (yellow * MAX_FLOAT_VALUE).round() as u8,
-                        black: (black * MAX_FLOAT_VALUE).round() as u8,
-                    }),
+                    inner: ColorInner::cmyk(
+                        (cyan * MAX_FLOAT_VALUE).round() as u8,
+                        (magenta * MAX_FLOAT_VALUE).round() as u8,
+                        (yellow * MAX_FLOAT_VALUE).round() as u8,
+                        (black * MAX_FLOAT_VALUE).round() as u8,
+                        c.alpha,
+                    ),
                 }
             }
         }
@@ -546,12 +560,12 @@ impl Color {
                 let blue = 1.0 - (yellow * (1.0 - black) + black);
 
                 Self {
-                    inner: ColorInner::Rgb(ColorRgb {
-                        alpha: c.alpha,
-                        red: (red * MAX_FLOAT_VALUE).round() as u8,
-                        green: (green * MAX_FLOAT_VALUE).round() as u8,
-                        blue: (blue * MAX_FLOAT_VALUE).round() as u8,
-                    }),
+                    inner: ColorInner::rgb(
+                        (red * MAX_FLOAT_VALUE).round() as u8,
+                        (green * MAX_FLOAT_VALUE).round() as u8,
+                        (blue * MAX_FLOAT_VALUE).round() as u8,
+                        c.alpha,
+                    ),
                 }
             }
             ColorInner::Hsl(c) => {
@@ -616,12 +630,7 @@ impl Color {
                 }
 
                 Self {
-                    inner: ColorInner::Rgb(ColorRgb {
-                        alpha: c.alpha,
-                        red,
-                        green,
-                        blue,
-                    }),
+                    inner: ColorInner::rgb(red, green, blue, c.alpha),
                 }
             }
             ColorInner::Hsv(_c) => {
