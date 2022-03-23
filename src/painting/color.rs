@@ -417,7 +417,7 @@ impl Color {
     /// Construct color from the RGB color values.
     ///
     /// All the values must be in range 0-255.
-    pub fn from_rgb(red: u8, green: u8, blue: u8) -> Self {
+    pub const fn from_rgb(red: u8, green: u8, blue: u8) -> Self {
         Self::from_rgba(red, green, blue, MAX_VALUE)
     }
 
@@ -431,7 +431,7 @@ impl Color {
     /// Construct color from the RGBA color values.
     ///
     /// All the values must be in range 0-255.
-    pub fn from_rgba(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
+    pub const fn from_rgba(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
         Self {
             inner: ColorInner::Rgb(ColorRgb {
                 alpha,

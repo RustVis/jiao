@@ -5,6 +5,7 @@
 pub mod bezier;
 pub mod brush;
 pub mod color;
+pub mod color_constants;
 pub mod color_matrix;
 pub mod gradient;
 pub mod linear_gradient;
