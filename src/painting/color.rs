@@ -220,10 +220,6 @@ pub enum Spec {
 
 pub const MAX_VALUE: u8 = u8::MAX;
 pub const MAX_VALUE_F64: f64 = MAX_VALUE as f64;
-pub const MAX_HUE_VALUE: u16 = 360;
-pub const MAX_HUE_VALUE_I32: i32 = 360;
-pub const MAX_HUE_VALUE_F64: f64 = 360.0;
-pub const HUE_BASE: u16 = 36_000;
 pub const HUE_BASE_F64: f64 = 36_000.0;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -335,13 +331,13 @@ impl Color {
         lightness: u8,
         alpha: u8,
     ) -> Result<Self, ParseColorError> {
-        if hue < -1 || hue >= MAX_HUE_VALUE_I32 {
+        if hue < -1 || hue >= 360 {
             return Err(ParseColorError::OutOfRangeError);
         }
         let real_hue = if hue == -1 {
-            MAX_HUE_VALUE
+            u16::MAX
         } else {
-            (hue % MAX_HUE_VALUE_I32 * 100) as u16
+            (hue % 360 * 100) as u16
         };
 
         Ok(Self {
@@ -370,7 +366,7 @@ impl Color {
             return Err(ParseColorError::OutOfRangeError);
         }
         let real_hue = if hue == -1.0 {
-            MAX_HUE_VALUE
+            u16::MAX
         } else {
             (hue * HUE_BASE_F64).round() as u16
         };
@@ -390,13 +386,13 @@ impl Color {
     /// The value of saturation, value, and alpha must all be in the range 0-255;
     /// the value of hue must be in the range 0-359.
     fn from_hsv(hue: i32, saturation: u8, value: u8, alpha: u8) -> Result<Self, ParseColorError> {
-        if hue < -1 || hue >= MAX_HUE_VALUE_I32 {
+        if hue < -1 || hue >= 360 {
             return Err(ParseColorError::OutOfRangeError);
         }
         let real_hue = if hue == -1 {
-            MAX_HUE_VALUE
+            u16::MAX
         } else {
-            ((hue % MAX_HUE_VALUE_I32) * 100) as u16
+            ((hue % 360) * 100) as u16
         };
 
         Ok(Self {
@@ -425,7 +421,7 @@ impl Color {
             return Err(ParseColorError::OutOfRangeError);
         }
         let real_hue = if hue == -1.0 {
-            MAX_HUE_VALUE
+            u16::MAX
         } else {
             (hue * HUE_BASE_F64).round() as u16
         };
@@ -578,7 +574,7 @@ impl Color {
                 let mut red = 0;
                 let mut green = 0;
                 let mut blue = 0;
-                if c.saturation == 0 || c.hue == MAX_HUE_VALUE {
+                if c.saturation == 0 || c.hue == u16::MAX {
                     // achromatic case
                     red = c.lightness;
                     green = c.lightness;
@@ -670,7 +666,7 @@ impl Color {
 
                 if fuzzy_is_zero(delta) {
                     // achromatic case, hue is undefined.
-                    hsl.hue = MAX_HUE_VALUE;
+                    hsl.hue = 360;
                     hsl.saturation = 0;
                 } else {
                     // chromatic case.
@@ -693,7 +689,7 @@ impl Color {
 
                     hue *= 60.0;
                     if hue < 0.0 {
-                        hue += MAX_HUE_VALUE_F64;
+                        hue += 360.0;
                     }
                     hsl.hue = (hue * 100.0).round() as u16;
                 }
@@ -729,7 +725,7 @@ impl Color {
 
                 if fuzzy_is_zero(delta) {
                     // achromatic case, hue is undefined.
-                    hsv.hue = MAX_HUE_VALUE;
+                    hsv.hue = 360;
                     hsv.saturation = 0;
                 } else {
                     // chromatic case.
@@ -748,7 +744,7 @@ impl Color {
 
                     hue *= 60.0;
                     if hue < 0.0 {
-                        hue += MAX_HUE_VALUE_F64;
+                        hue += 360.0;
                     }
                     hsv.hue = (hue * 100.0).round() as u16;
                 }
@@ -908,8 +904,20 @@ impl Color {
     ///
     /// These components can be retrieved individually using the `hue()`, `saturation()`,
     /// `value()` and `alpha()` functions.
-    pub fn get_hsv(&self, hue: &mut u8, saturation: &mut u8, value: &mut u8, alpha: &mut u8) {
-        unimplemented!()
+    pub fn get_hsv(&self, hue: &mut i32, saturation: &mut u8, value: &mut u8, alpha: &mut u8) {
+        match &self.inner {
+            ColorInner::Hsv(c) => {
+                *hue = if c.hue == u16::MAX {
+                    -1
+                } else {
+                    (c.hue / 100) as i32
+                };
+                *saturation = c.saturation;
+                *value = c.value;
+                *alpha = c.alpha;
+            }
+            _ => self.to_hsv().get_hsv(hue, saturation, value, alpha),
+        }
     }
 
     /// Sets the contents to the hue, saturation, value, and alpha-channel (transparency)
@@ -920,7 +928,7 @@ impl Color {
     pub fn get_hsv_f(&self, hue: &mut f64, saturation: &mut f64, value: &mut f64, alpha: &mut f64) {
         match &self.inner {
             ColorInner::Hsv(c) => {
-                *hue = if c.hue == MAX_HUE_VALUE {
+                *hue = if c.hue == u16::MAX {
                     -1.0
                 } else {
                     c.hue as f64 / HUE_BASE_F64
