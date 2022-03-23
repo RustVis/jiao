@@ -134,7 +134,32 @@ impl Rgba64 {
 
     /// Returns the color with the alpha premultiplied.
     pub fn premultiplied(&self) -> Self {
-        unimplemented!()
+        if self.is_opaque() {
+            return *self;
+        }
+        if self.is_transparent() {
+            return Self::from_u64(0);
+        }
+
+        let a = self.alpha() as u64;
+        let mut br = (self.rgba & 0xffff0000ffff_u64) * a;
+        let mut ag = ((self.rgba >> 16) & 0xffff0000ffff_u64) * a;
+        br = br + ((br >> 16) & 0xffff0000ffff_u64) + 0x800000008000_u64;
+        ag = ag + ((ag >> 16) & 0xffff0000ffff_u64) + 0x800000008000_u64;
+
+        #[cfg(target_endian = "big")]
+        {
+            ag = ag & 0xffff0000ffff0000_u64;
+            br = (br >> 16) & 0xffff00000000_u64;
+            return Self::from_u64(a | br | ag);
+        }
+
+        #[cfg(target_endian = "little")]
+        {
+            br = (br >> 16) & 0xffff0000ffff_u64;
+            ag = ag & 0xffff0000_u64;
+            return Self::from_u64((a << 48) | br | ag);
+        }
     }
 
     /// Returns the red color component as an 8-bit.
@@ -196,7 +221,34 @@ impl Rgba64 {
 
     /// Returns the color with the alpha unpremultiplied.
     pub fn unpremultiplied(&self) -> Self {
-        unimplemented!()
+        #[cfg(target_pointer_width = "32")]
+        return self.unpremultiplied_32bit();
+
+        #[cfg(target_pointer_width = "64")]
+        return self.unpremultiplied_64bit();
+    }
+
+    fn unpremultiplied_32bit(&self) -> Self {
+        if self.is_opaque() || self.is_transparent() {
+            return *self;
+        }
+        let a = self.alpha() as u32;
+        let r = ((self.red() as u32 * 0xffff_u32 + a / 2) / a) as u16;
+        let g = ((self.green() as u32 * 0xffff_u32 + a / 2) / a) as u16;
+        let b = ((self.blue() as u32 * 0xffff_u32 + a / 2) / a) as u16;
+        return Self::from_rgba64(r, g, b, a as u16);
+    }
+
+    fn unpremultiplied_64bit(&self) -> Self {
+        if self.is_opaque() || self.is_transparent() {
+            return *self;
+        }
+        let a = self.alpha() as u64;
+        let fa = (0xffff00008000_u64 + a / 2) / a;
+        let r = ((self.red() as u64 * fa + 0x80000000_u64) >> 32) as u16;
+        let g = ((self.green() as u64 * fa + 0x80000000_u64) >> 32) as u16;
+        let b = ((self.blue() as u64 * fa + 0x80000000_u64) >> 32) as u16;
+        return Self::from_rgba64(r, g, b, a as u16);
     }
 
     #[inline]
