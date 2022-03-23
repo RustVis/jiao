@@ -177,8 +177,7 @@ pub enum Spec {
     Hsv = 2,
     Cmyk = 3,
     Hsl = 4,
-    ExtendedRgb = 5,
-    Invalid = 0,
+    //ExtendedRgb = 5,
 }
 
 pub const MAX_VALUE: u8 = u8::MAX;
@@ -792,7 +791,6 @@ impl Color {
 
     /// Create a copy of this color in the specified format.
     pub fn convert_to(&self, spec: Spec) -> Self {
-        assert!(spec != Spec::Invalid);
         if spec == self.spec() {
             return self.clone();
         }
@@ -802,9 +800,6 @@ impl Color {
             Spec::Hsv => self.to_hsv(),
             Spec::Cmyk => self.to_cmyk(),
             Spec::Hsl => self.to_hsl(),
-            // TODO(Shaohua): Support scRGB.
-            Spec::ExtendedRgb => self.to_rgb(),
-            _ => self.to_rgb(),
         }
     }
 
