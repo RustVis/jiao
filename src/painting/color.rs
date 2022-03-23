@@ -1434,17 +1434,14 @@ impl<'de> Deserialize<'de> for Color {
 
 #[cfg(test)]
 mod tests {
-    use serde_derive::{Deserialize, Serialize};
+    use serde::{Deserialize, Serialize};
     use std::str::FromStr;
 
     use super::Color;
 
     #[test]
     fn test_parse_color() {
-        let color = Color::rgba(255, 255, 255, 100);
-        println!("color: {:?}", color);
-        println!("color: {}", color.to_string());
-
+        let color = Color::from_rgba(255, 255, 255, 100);
         let colors = [
             "#fea",
             "#ffeeaa",
@@ -1462,7 +1459,7 @@ mod tests {
 
     #[test]
     fn test_parse_color_structs() {
-        #[derive(Debug, Default, Clone, Copy, PartialEq, Deserialize, Serialize)]
+        #[derive(Debug, Default, Clone, PartialEq, Deserialize, Serialize)]
         struct Rectangle {
             x: i32,
             y: i32,
@@ -1472,10 +1469,9 @@ mod tests {
         let r = Rectangle {
             x: 1,
             y: 2,
-            color: Some(Color::rgb(101, 102, 103)),
+            color: Some(Color::from_rgb(101, 102, 103)),
         };
         let s = serde_json::to_string_pretty(&r).unwrap();
-        println!("s: {}", s);
         let r2: Rectangle = serde_json::from_str(&s).unwrap();
         assert_eq!(r, r2);
     }
