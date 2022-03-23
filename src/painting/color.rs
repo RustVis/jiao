@@ -747,16 +747,6 @@ impl Color {
         }
     }
 
-    /// Returns how the color was specified.
-    pub fn spec(&self) -> Spec {
-        match &self.inner {
-            ColorInner::Rgb(_) => Spec::Rgb,
-            ColorInner::Hsv(_) => Spec::Hsv,
-            ColorInner::Cmyk(_) => Spec::Cmyk,
-            ColorInner::Hsl(_) => Spec::Hsl,
-        }
-    }
-
     /// Returns the alpha color component of this color.
     pub fn alpha(&self) -> u8 {
         match &self.inner {
@@ -993,12 +983,130 @@ impl Color {
         unimplemented!()
     }
 
+    /// Returns the HSV hue color component of this color.
+    ///
+    /// The color is implicitly converted to HSV.
+    pub fn hue(&self) -> u8 {
+        unimplemented!()
+    }
+
+    /// Returns the HSV hue color component of this color.
+    ///
+    /// The color is implicitly converted to HSV.
+    pub fn hue_f(&self) -> f64 {
+        unimplemented!()
+    }
+
+    /// Returns true if the color is valid; otherwise returns false.
+    pub fn is_valid(&self) -> bool {
+        unimplemented!()
+    }
+
+    /// Returns true if the name is a valid color name and can be used
+    /// to construct a valid Color object, otherwise returns false.
+    ///
+    /// It uses the same algorithm used in `set_named_color()`.
+    pub fn is_valid_color(name: &str) -> bool {
+        unimplemented!()
+    }
+
+    /// Returns a lighter color (with factor 50), but does not change this object.
+    pub fn lighter(&self) -> Self {
+        self.lighter_by(50)
+    }
+
+    /// Returns a lighter (or darker) color, but does not change this object.
+    ///
+    /// If the factor is greater than 100, this functions returns a lighter color.
+    /// Setting factor to 150 returns a color that is 50% brighter.
+    /// If the factor is less than 100, the return color is darker,
+    /// but we recommend using the `darker()` function for this purpose.
+    /// If the factor is 0 or negative, the return value is unspecified.
+    ///
+    /// The function converts the current color to HSV, multiplies the value (V) component
+    /// by factor and converts the color back to it's original color spec.
+    pub fn lighter_by(&self, factor: i32) -> Self {
+        unimplemented!()
+    }
+
+    /// Returns the lightness color component of this color.
+    pub fn lightness(&self) -> u8 {
+        unimplemented!()
+    }
+
+    /// Returns the lightness color component of this color.
+    pub fn lightness_f(&self) -> f64 {
+        unimplemented!()
+    }
+
+    /// Returns the magenta color component of this color.
+    pub fn magenta(&self) -> u8 {
+        unimplemented!()
+    }
+
+    /// Returns the magenta color component of this color.
+    pub fn magenta_f(&self) -> f64 {
+        unimplemented!()
+    }
+
+    /// Returns the name of the color in the format "#RRGGBB".
+    ///
+    /// i.e. a "#" character followed by three two-digit hexadecimal numbers.
+    pub fn name(&self) -> String {
+        unimplemented!()
+    }
+
+    /// Returns the name of the color in the specified format.
+    pub fn name_with_format(&self, format: NameFormat) -> String {
+        unimplemented!()
+    }
+
     /// Returns the red color component of this color.
     pub fn red(&self) -> u8 {
         match &self.inner {
             ColorInner::Rgb(c) => c.red,
             _ => self.to_rgb().red(),
         }
+    }
+
+    /// Returns the red color component of this color.
+    pub fn red_f(&self) -> f64 {
+        unimplemented!()
+    }
+
+    /// Returns the RGB value of the color.
+    ///
+    /// The alpha value is opaque.
+    pub fn rgb(&self) -> Rgb {
+        unimplemented!()
+    }
+
+    /// Returns the RGB64 value of the color, including its alpha.
+    ///
+    /// For an invalid color, the alpha value of the returned color is unspecified.
+    pub fn rgba64(&self) -> Rgba64 {
+        unimplemented!()
+    }
+
+    /// Returns the RGB value of the color, including its alpha.
+    ///
+    /// For an invalid color, the alpha value of the returned color is unspecified.
+    pub fn rgba(&self) -> Rgb {
+        unimplemented!()
+    }
+
+    /// Returns the HSV saturation color component of this color.
+    ///
+    /// The color is implicitly converted to HSV.
+    pub fn saturation(&self) -> u8 {
+        unimplemented!()
+    }
+
+    /// Returns the HSV saturation color component of this color.
+    ///
+    /// The color is implicitly converted to HSV.
+    pub fn saturation_f(&self) -> f64 {
+        unimplemented!()
     }
 
     /// Set alpha channel of this color.
@@ -1024,6 +1132,173 @@ impl Color {
             ColorInner::Hsl(c) => c.alpha = alpha_int,
         }
         Ok(())
+    }
+
+    /// Sets the blue color component of this color to blue.
+    ///
+    /// Integer components are specified in the range 0-255.
+    pub fn set_blue(&mut self, blue: u8) {
+        unimplemented!()
+    }
+
+    /// Sets the blue color component of this color to blue.
+    ///
+    /// If blue lies outside the 0.0-1.0 range, the color model will be changed to ExtendedRgb.
+    pub fn set_blue_f(&mut self, blue: f64) {
+        unimplemented!()
+    }
+
+    /// Sets the color to CMYK values, cyan, magenta, yellow, black, and alpha-channel.
+    ///
+    /// All the values must be in the range 0-255.
+    pub fn set_cmyk(&mut self, cyan: u8, magenta: u8, yellow: u8, black: u8, alpha: u8) {
+        unimplemented!()
+    }
+
+    /// Sets the color to CMYK values, cyan, magenta, yellow, black, and alpha-channel.
+    ///
+    /// All the values must be in the range 0.0-1.0.
+    pub fn set_cmyk_f(&mut self, cyan: f64, magenta: f64, yellow: f64, black: f64, alpha: f64) {
+        unimplemented!()
+    }
+
+    /// Sets the green color component of this color to green.
+    ///
+    /// Integer components are specified in the range 0-255.
+    pub fn set_green(&mut self, green: u8) {
+        unimplemented!()
+    }
+
+    /// Sets the green color component of this color to green.
+    ///
+    /// If green lies outside the 0.0-1.0 range, the color model will be changed to ExtendedRgb.
+    pub fn set_green_f(&mut self, green: f64) {
+        unimplemented!()
+    }
+
+    /// Sets a HSL color value.
+    ///
+    /// The saturation, value and alpha values must be in the range 0-255,
+    /// and the hue value must be greater than -1.
+    pub fn set_hsl(&mut self, hue: i32, saturation: u8, value: u8, alpha: u8) {
+        unimplemented!()
+    }
+
+    /// Sets a HSL color lightness.
+    ///
+    /// All the values must be in the range 0.0-1.0.
+    pub fn set_hsl_f(&mut self, hue: f64, saturation: f64, value: f64, alpha: f64) {
+        unimplemented!()
+    }
+
+    /// Sets a HSV color value.
+    ///
+    /// The saturation, value and alpha-channel values must be in the range 0-255,
+    /// and the hue value must be greater than -1.
+    pub fn set_hsv(&mut self, hue: i32, saturation: u8, value: u8, alpha: u8) {
+        unimplemented!()
+    }
+
+    /// Sets a HSV color value.
+    ///
+    /// All the values must be in the range 0.0-1.0.
+    pub fn set_hsv_f(&mut self, hue: f64, saturation: f64, value: f64, alpha: f64) {
+        unimplemented!()
+    }
+
+    /// Sets the RGB value of this Color to name.
+    ///
+    /// May be in one of these formats:
+    /// - `#RGB` (each of R, G, and B is a single hex digit)
+    /// - `#RRGGBB`
+    /// - `#AARRGGBB`
+    /// - `#RRRGGGBBB`
+    /// - `#RRRRGGGGBBBB`
+    /// - A name from the list of colors defined in the list of SVG color keyword names
+    /// provided by the World Wide Web Consortium; for example, "steelblue" or "gainsboro".
+    /// These color names work on all platforms.
+    /// - transparent: representing the absence of a color.
+    ///
+    /// The color is invalid if name cannot be parsed.
+    pub fn set_named_color(&mut self, name: &str) {
+        unimplemented!()
+    }
+
+    /// Sets the red color component of this color to red.
+    ///
+    /// Integer components are specified in the range 0-255.
+    pub fn set_red(&mut self, red: u8) {
+        unimplemented!()
+    }
+
+    /// Sets the red color component of this color to red.
+    ///
+    /// If red lies outside the 0.0-1.0 range, the color model will be changed to ExtendedRgb.
+    pub fn set_red_f(&mut self, red: f64) {
+        unimplemented!()
+    }
+
+    /// Sets the RGB value.
+    ///
+    /// All the values must be in the range 0-255.
+    pub fn set_rgb(&mut self, red: u8, green: u8, blue: u8) {
+        unimplemented!()
+    }
+
+    /// Sets the RGB value to rgb.
+    ///
+    /// The alpha value is set to opaque.
+    pub fn set_rgb32(&mut self, rgb: Rgb) {
+        unimplemented!()
+    }
+
+    /// Sets the RGB64 value to rgba, including its alpha.
+    pub fn set_rgba64(&mut self, rgba: Rgba64) {
+        unimplemented!()
+    }
+
+    /// Sets the color channels of this color to (red, green, blue).
+    ///
+    /// The alpha value must be in the range 0.0-1.0.
+    /// If any of the other values are outside the range of 0.0-1.0 the color model
+    /// will be set as ExtendedRgb.
+    pub fn set_rgb_f(red: f64, green: f64, blue: f64, alpha: f64) {
+        unimplemented!()
+    }
+
+    /// Sets the RGB value to rgba, including its alpha.
+    pub fn set_rgba(&mut self, rgb: Rgb) {
+        unimplemented!()
+    }
+
+    /// Returns how the color was specified.
+    pub fn spec(&self) -> Spec {
+        match &self.inner {
+            ColorInner::Rgb(_) => Spec::Rgb,
+            ColorInner::Hsv(_) => Spec::Hsv,
+            ColorInner::Cmyk(_) => Spec::Cmyk,
+            ColorInner::Hsl(_) => Spec::Hsl,
+        }
+    }
+
+    /// Returns the value color component of this color.
+    pub fn value(&self) -> u8 {
+        unimplemented!()
+    }
+
+    /// Returns the value color component of this color.
+    pub fn value_f(&self) -> f64 {
+        unimplemented!()
+    }
+
+    /// Returns the yellow color component of this color.
+    pub fn yellow(&self) -> u8 {
+        unimplemented!()
+    }
+
+    /// Returns the yellow color component of this color.
+    pub fn yellow_f(&self) -> f64 {
+        unimplemented!()
     }
 
     pub fn to_rgb_str(&self) -> String {
