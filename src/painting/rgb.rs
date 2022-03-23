@@ -22,52 +22,49 @@ impl Default for Rgb {
 
 impl Rgb {
     // Set RGB value.
-    pub fn new(red: i32, green: i32, blue: i32) -> Self {
+    pub fn new(red: u8, green: u8, blue: u8) -> Self {
         Self {
-            rgb: (0xff << 24)
-                | ((red as u32 & 0xff) << 16)
-                | ((green as u32 & 0xff) << 8)
-                | (blue as u32 & 0xff),
+            rgb: (0xff << 24) | ((red as u32) << 16) | ((green as u32) << 8) | (blue as u32),
         }
     }
 
     /// Set RGBA value.
-    pub fn with_alpha(red: i32, green: i32, blue: i32, alpha: i32) -> Self {
+    pub fn with_alpha(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
         Self {
-            rgb: ((alpha as u32 & 0xff) << 24)
-                | ((red as u32 & 0xff) << 16)
-                | ((green as u32 & 0xff) << 8)
-                | (blue as u32 & 0xff),
+            rgb: ((alpha as u32) << 24)
+                | ((red as u32) << 16)
+                | ((green as u32) << 8)
+                | (blue as u32),
         }
     }
 
     /// Get red part of RGB.
-    pub fn red(&self) -> i32 {
-        ((self.rgb >> 16) & 0xff) as i32
+    pub fn red(&self) -> u8 {
+        ((self.rgb >> 16) & 0xff) as u8
     }
 
     /// Get green part of RGB.
-    pub fn green(&self) -> i32 {
-        ((self.rgb >> 8) & 0xff) as i32
+    pub fn green(&self) -> u8 {
+        ((self.rgb >> 8) & 0xff) as u8
     }
 
     /// Get blue part of RGB.
-    pub fn blue(&self) -> i32 {
-        (self.rgb & 0xff) as i32
+    pub fn blue(&self) -> u8 {
+        (self.rgb & 0xff) as u8
     }
 
     /// Get alpha part of RGB.
-    pub fn alpha(&self) -> i32 {
-        (self.rgb >> 24) as i32
+    pub fn alpha(&self) -> u8 {
+        (self.rgb >> 24) as u8
     }
 
     /// Convert R,G,B to gray 0..255
-    pub fn int_to_gray(red: i32, green: i32, blue: i32) -> i32 {
+    pub fn int_to_gray(red: u8, green: u8, blue: u8) -> u8 {
         return (red * 11 + green * 16 + blue * 5) / 32;
     }
 
     /// Convert RGB to gray 0..255
-    pub fn to_gray(&self) -> i32 {
+    pub fn to_gray(&self) -> u8 {
         Self::int_to_gray(self.red(), self.green(), self.blue())
     }
 

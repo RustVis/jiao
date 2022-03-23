@@ -99,7 +99,7 @@ impl Rgba64 {
         div_257(self.alpha())
     }
 
-    /// Returns the alpha channel as an 8-bit.
+    /// Returns the alpha channel as an 16-bit.
     pub fn alpha(&self) -> u16 {
         (self.rgba >> Shifts::RedShift) as u16
     }
