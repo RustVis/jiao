@@ -272,7 +272,7 @@ impl Color {
     }
 
     /// Constructs a named color in the same way as `set_named_color()` using the given name.
-    pub fn from_name(name: &str) -> Self {
+    pub fn from_name(_name: &str) -> Self {
         unimplemented!()
     }
 
@@ -509,7 +509,7 @@ impl Color {
     /// Creates and returns a CMYK color based on this color.
     pub fn to_cmyk(&self) -> Self {
         match &self.inner {
-            ColorInner::Cmyk(c) => self.clone(),
+            ColorInner::Cmyk(_) => self.clone(),
             ColorInner::Hsl(_) => self.to_rgb().to_cmyk(),
             ColorInner::Hsv(_) => self.to_rgb().to_cmyk(),
             ColorInner::Rgb(c) => {
@@ -570,9 +570,9 @@ impl Color {
                 }
             }
             ColorInner::Hsl(c) => {
-                let mut red = 0;
-                let mut green = 0;
-                let mut blue = 0;
+                let red;
+                let green;
+                let blue;
                 if c.saturation == 0 || c.hue == u16::MAX {
                     // achromatic case
                     red = c.lightness;
@@ -633,9 +633,82 @@ impl Color {
                     inner: ColorInner::rgb(red, green, blue, c.alpha),
                 }
             }
-            ColorInner::Hsv(_c) => {
-                // TODO(Shaohua):
-                self.clone()
+            ColorInner::Hsv(c) => {
+                let mut rgb = ColorRgb {
+                    alpha: 0,
+                    red: 0,
+                    green: 0,
+                    blue: 0,
+                };
+                if c.saturation == 0 || c.hue == u16::MAX {
+                    // achromatic case
+                    rgb.red = c.value;
+                    rgb.green = c.value;
+                    rgb.blue = c.value;
+                    println!("c.saturation == 0, value: {}", c.value);
+                    return Self {
+                        inner: ColorInner::Rgb(rgb),
+                    };
+                }
+
+                // chromatic case
+                let h = if c.hue == 36_000 {
+                    0.0
+                } else {
+                    c.hue as f64 / 6000.0
+                };
+                let s = c.saturation as f64 / MAX_VALUE_F64;
+                let v = c.value as f64 / MAX_VALUE_F64;
+                let i = h as i32;
+                let f = h - i as f64;
+                let p = v * (1.0 - s);
+
+                if i % 2 == 1 {
+                    let q = v * (1.0 - (s * f));
+
+                    match i {
+                        1 => {
+                            rgb.red = (q * MAX_VALUE_F64).round() as u8;
+                            rgb.green = (v * MAX_VALUE_F64).round() as u8;
+                            rgb.blue = (p * MAX_VALUE_F64).round() as u8;
+                        }
+                        3 => {
+                            rgb.red = (p * MAX_VALUE_F64).round() as u8;
+                            rgb.green = (q * MAX_VALUE_F64).round() as u8;
+                            rgb.blue = (v * MAX_VALUE_F64).round() as u8;
+                        }
+                        5 => {
+                            rgb.red = (v * MAX_VALUE_F64).round() as u8;
+                            rgb.green = (p * MAX_VALUE_F64).round() as u8;
+                            rgb.blue = (q * MAX_VALUE_F64).round() as u8;
+                        }
+                        _ => (),
+                    }
+                } else {
+                    let t = v * (1.0 - (s * (1.0 - f)));
+
+                    match i {
+                        0 => {
+                            rgb.red = (v * MAX_VALUE_F64).round() as u8;
+                            rgb.green = (t * MAX_VALUE_F64).round() as u8;
+                            rgb.blue = (p * MAX_VALUE_F64).round() as u8;
+                        }
+                        2 => {
+                            rgb.red = (p * MAX_VALUE_F64).round() as u8;
+                            rgb.green = (v * MAX_VALUE_F64).round() as u8;
+                            rgb.blue = (t * MAX_VALUE_F64).round() as u8;
+                        }
+                        4 => {
+                            rgb.red = (t * MAX_VALUE_F64).round() as u8;
+                            rgb.green = (p * MAX_VALUE_F64).round() as u8;
+                            rgb.blue = (v * MAX_VALUE_F64).round() as u8;
+                        }
+                        _ => (),
+                    }
+                }
+                return Self {
+                    inner: ColorInner::Rgb(rgb),
+                };
             }
             ColorInner::Rgb(_) => self.clone(),
         }
@@ -1156,7 +1229,7 @@ impl Color {
     /// to construct a valid Color object, otherwise returns false.
     ///
     /// It uses the same algorithm used in `set_named_color()`.
-    pub fn is_valid_color(name: &str) -> bool {
+    pub fn is_valid_color(_name: &str) -> bool {
         unimplemented!()
     }
 
@@ -1246,7 +1319,16 @@ impl Color {
 
     /// Returns the name of the color in the specified format.
     pub fn name_with_format(&self, format: NameFormat) -> String {
-        let value = self.rgba().int() as u64;
+        println!("alpha: {}", self.alpha());
+        let rgba = self.rgba();
+        println!(
+            "rgba: {:?}, alpha: {}, red: {}",
+            rgba,
+            rgba.alpha(),
+            rgba.red()
+        );
+        let value = rgba.int() as u64;
+        println!("value: {:x}", value);
         match format {
             NameFormat::HexRgb => format!("#{:x}", value & 0x0ffffff),
             // it's called rgba() but it does return AARRGGBB
@@ -1551,7 +1633,7 @@ impl Color {
     /// - transparent: representing the absence of a color.
     ///
     /// The color is invalid if name cannot be parsed.
-    pub fn set_named_color(&mut self, name: &str) {
+    pub fn set_named_color(&mut self, _name: &str) {
         unimplemented!()
     }
 
@@ -1797,13 +1879,13 @@ impl<'de> Deserialize<'de> for Color {
 #[cfg(test)]
 mod tests {
     use serde::{Deserialize, Serialize};
-    use std::str::FromStr;
 
     use super::{Color, NameFormat};
 
     #[test]
     fn test_parse_color() {
         let color = Color::from_rgba(255, 255, 255, 100);
+        println!("color: {:?}", color);
         let colors = [
             "#fea",
             "#ffeeaa",
@@ -1843,5 +1925,16 @@ mod tests {
         let color = Color::from_rgb(240, 248, 255);
         assert_eq!(color.name(), "#f0f8ff");
         assert_eq!(color.name_with_format(NameFormat::HexArgb), "#fff0f8ff");
+    }
+
+    #[test]
+    fn test_from_hsv() {
+        let color = Color::from_hsv(100, 101, 102, 103);
+        assert!(color.is_ok());
+        let color = color.unwrap();
+        println!("color: {:?}", color);
+        assert_eq!(color.hue(), 100);
+        let name = color.name_with_format(NameFormat::HexArgb);
+        assert_eq!(name, "#674b663e");
     }
 }
