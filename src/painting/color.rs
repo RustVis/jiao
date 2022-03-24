@@ -1012,8 +1012,17 @@ impl Color {
     }
 
     /// Returns the HSL hue color component of this color.
-    pub fn hsl_hue(&self) -> u8 {
-        unimplemented!()
+    pub fn hsl_hue(&self) -> i32 {
+        match &self.inner {
+            ColorInner::Hsl(c) => {
+                if c.hue == u16::MAX {
+                    return -1;
+                } else {
+                    return c.hue as i32 / 100;
+                }
+            }
+            _ => self.to_hsl().hsl_hue(),
+        }
     }
 
     /// Returns the HSL hue color component of this color.
@@ -1068,8 +1077,8 @@ impl Color {
     }
 
     /// Returns the HSV saturation color component of this color.
-    pub fn hsv_saturation_v(&self) -> f64 {
-        unimplemented!()
+    pub fn hsv_saturation_f(&self) -> f64 {
+        self.hsv_saturation() as f64 / MAX_VALUE_F64
     }
 
     /// Returns the HSV hue color component of this color.
@@ -1516,7 +1525,7 @@ impl Color {
 
     /// Returns the value color component of this color.
     pub fn value_f(&self) -> f64 {
-        unimplemented!()
+        self.value() as f64 / MAX_VALUE_F64
     }
 
     /// Returns the yellow color component of this color.
