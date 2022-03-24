@@ -1047,7 +1047,16 @@ impl Color {
 
     /// Returns the HSV hue color component of this color.
     pub fn hsv_hue_f(&self) -> f64 {
-        unimplemented!()
+        match &self.inner {
+            ColorInner::Hsv(c) => {
+                if c.hue == u16::MAX {
+                    return -1.0;
+                } else {
+                    return c.hue as f64 / 36_000.0;
+                }
+            }
+            _ => self.to_hsv().hsv_hue_f(),
+        }
     }
 
     /// Returns the HSV saturation color component of this color.
@@ -1074,7 +1083,7 @@ impl Color {
     ///
     /// The color is implicitly converted to HSV.
     pub fn hue_f(&self) -> f64 {
-        unimplemented!()
+        self.hsv_hue_f()
     }
 
     /// Returns true if the name is a valid color name and can be used
@@ -1499,7 +1508,10 @@ impl Color {
 
     /// Returns the value color component of this color.
     pub fn value(&self) -> u8 {
-        unimplemented!()
+        match &self.inner {
+            ColorInner::Hsv(c) => c.value,
+            _ => self.to_hsv().value(),
+        }
     }
 
     /// Returns the value color component of this color.
