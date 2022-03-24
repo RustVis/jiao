@@ -634,7 +634,7 @@ impl Color {
                 }
             }
             ColorInner::Hsv(_c) => {
-                //
+                // TODO(Shaohua):
                 self.clone()
             }
             ColorInner::Rgb(_) => self.clone(),
@@ -861,7 +861,16 @@ impl Color {
         black: &mut u8,
         alpha: &mut u8,
     ) {
-        unimplemented!()
+        match &self.inner {
+            ColorInner::Cmyk(c) => {
+                *cyan = c.cyan;
+                *magenta = c.magenta;
+                *yellow = c.yellow;
+                *black = c.black;
+                *alpha = c.alpha;
+            }
+            _ => self.to_cmyk().get_cmyk(cyan, magenta, yellow, black, alpha),
+        }
     }
 
     /// Sets the contents to the cyan, magenta, yellow, black, and alpha-channel (transparency)
@@ -877,7 +886,18 @@ impl Color {
         black: &mut f64,
         alpha: &mut f64,
     ) {
-        unimplemented!()
+        match &self.inner {
+            ColorInner::Cmyk(c) => {
+                *cyan = c.cyan as f64 / MAX_VALUE_F64;
+                *magenta = c.magenta as f64 / MAX_VALUE_F64;
+                *yellow = c.yellow as f64 / MAX_VALUE_F64;
+                *black = c.black as f64 / MAX_VALUE_F64;
+                *alpha = c.alpha as f64 / MAX_VALUE_F64;
+            }
+            _ => self
+                .to_cmyk()
+                .get_cmyk_f(cyan, magenta, yellow, black, alpha),
+        }
     }
 
     /// Sets the contents to the hue, saturation, lightness, and alpha-channel (transparency)
