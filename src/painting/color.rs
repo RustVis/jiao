@@ -220,7 +220,6 @@ pub enum Spec {
 
 pub const MAX_VALUE: u8 = u8::MAX;
 pub const MAX_VALUE_F64: f64 = MAX_VALUE as f64;
-pub const HUE_BASE_F64: f64 = 36_000.0;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum ParseColorError {
@@ -368,7 +367,7 @@ impl Color {
         let real_hue = if hue == -1.0 {
             u16::MAX
         } else {
-            (hue * HUE_BASE_F64).round() as u16
+            (hue * 36_000.0).round() as u16
         };
 
         Ok(Self {
@@ -423,7 +422,7 @@ impl Color {
         let real_hue = if hue == -1.0 {
             u16::MAX
         } else {
-            (hue * HUE_BASE_F64).round() as u16
+            (hue * 36_000.0).round() as u16
         };
 
         Ok(Self {
@@ -585,10 +584,10 @@ impl Color {
                     blue = 0;
                 } else {
                     // chromatic case
-                    let hue = if c.hue == HUE_BASE {
+                    let hue = if c.hue == 36_000 {
                         0.0
                     } else {
-                        c.hue as f64 / HUE_BASE_F64
+                        c.hue as f64 / 36_000.0
                     };
                     let saturation = c.saturation as f64 / MAX_VALUE_F64;
                     let lightness = c.lightness as f64 / MAX_VALUE_F64;
@@ -931,7 +930,7 @@ impl Color {
                 *hue = if c.hue == u16::MAX {
                     -1.0
                 } else {
-                    c.hue as f64 / HUE_BASE_F64
+                    c.hue as f64 / 36_000.0
                 };
                 *saturation = c.saturation as f64 / MAX_VALUE_F64;
                 *value = c.value as f64 / MAX_VALUE_F64;
