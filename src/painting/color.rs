@@ -1146,23 +1146,30 @@ impl Color {
     ///
     /// The alpha value is opaque.
     pub fn rgb(&self) -> Rgb {
-        let color = self.to_rgb();
-        Rgb::new(color.red(), color.green(), color.blue())
-    }
-
-    /// Returns the RGB64 value of the color, including its alpha.
-    ///
-    /// For an invalid color, the alpha value of the returned color is unspecified.
-    pub fn rgba64(&self) -> Rgba64 {
-        unimplemented!()
+        match &self.inner {
+            ColorInner::Rgb(c) => Rgb::new(c.red, c.green, c.blue),
+            _ => self.to_rgb().rgb(),
+        }
     }
 
     /// Returns the RGB value of the color, including its alpha.
     ///
     /// For an invalid color, the alpha value of the returned color is unspecified.
     pub fn rgba(&self) -> Rgb {
-        let color = self.to_rgb();
-        Rgb::with_alpha(color.red(), color.green(), color.blue(), color.alpha())
+        match &self.inner {
+            ColorInner::Rgb(c) => Rgb::with_alpha(c.red, c.green, c.blue, c.alpha),
+            _ => self.to_rgb().rgba(),
+        }
+    }
+
+    /// Returns the RGB64 value of the color, including its alpha.
+    ///
+    /// For an invalid color, the alpha value of the returned color is unspecified.
+    pub fn rgba64(&self) -> Rgba64 {
+        match &self.inner {
+            ColorInner::Rgb(c) => Rgba64::from_rgba(c.red, c.green, c.blue, c.alpha),
+            _ => self.to_rgb().rgba64(),
+        }
     }
 
     /// Returns the HSV saturation color component of this color.
