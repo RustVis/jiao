@@ -635,7 +635,7 @@ impl Color {
             }
             ColorInner::Hsv(c) => {
                 let mut rgb = ColorRgb {
-                    alpha: 0,
+                    alpha: c.alpha,
                     red: 0,
                     green: 0,
                     blue: 0,
@@ -645,7 +645,6 @@ impl Color {
                     rgb.red = c.value;
                     rgb.green = c.value;
                     rgb.blue = c.value;
-                    println!("c.saturation == 0, value: {}", c.value);
                     return Self {
                         inner: ColorInner::Rgb(rgb),
                     };
@@ -1319,16 +1318,7 @@ impl Color {
 
     /// Returns the name of the color in the specified format.
     pub fn name_with_format(&self, format: NameFormat) -> String {
-        println!("alpha: {}", self.alpha());
-        let rgba = self.rgba();
-        println!(
-            "rgba: {:?}, alpha: {}, red: {}",
-            rgba,
-            rgba.alpha(),
-            rgba.red()
-        );
-        let value = rgba.int() as u64;
-        println!("value: {:x}", value);
+        let value = self.rgba().int() as u64;
         match format {
             NameFormat::HexRgb => format!("#{:x}", value & 0x0ffffff),
             // it's called rgba() but it does return AARRGGBB
