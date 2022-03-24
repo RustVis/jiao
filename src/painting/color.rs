@@ -1139,7 +1139,7 @@ impl Color {
 
     /// Returns the red color component of this color.
     pub fn red_f(&self) -> f64 {
-        unimplemented!()
+        self.red() as f64 / MAX_VALUE_F64
     }
 
     /// Returns the RGB value of the color.
@@ -1389,12 +1389,21 @@ impl Color {
     ///
     /// Integer components are specified in the range 0-255.
     pub fn set_red(&mut self, red: u8) {
-        unimplemented!()
+        match &mut self.inner {
+            ColorInner::Rgb(c) => c.red = red,
+            _ => {
+                let c = self.to_rgb();
+                self.set_rgb(red, c.green(), c.blue(), c.alpha());
+            }
+        }
     }
 
     /// Sets the red color component of this color to red.
-    pub fn set_red_f(&mut self, red: f64) {
-        unimplemented!()
+    pub fn set_red_f(&mut self, red: f64) -> Result<(), ParseColorError> {
+        check_float_range(red)?;
+        let red_int = (red * MAX_VALUE_F64).round() as u8;
+        self.set_red(red_int);
+        Ok(())
     }
 
     /// Sets the RGB value.
