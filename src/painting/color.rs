@@ -1393,32 +1393,52 @@ impl Color {
     /// Sets the RGB value.
     ///
     /// All the values must be in the range 0-255.
-    pub fn set_rgb(&mut self, red: u8, green: u8, blue: u8) {
-        unimplemented!()
+    pub fn set_rgb(&mut self, red: u8, green: u8, blue: u8, alpha: u8) {
+        self.inner = ColorInner::rgb(red, green, blue, alpha);
     }
 
     /// Sets the RGB value to rgb.
     ///
     /// The alpha value is set to opaque.
     pub fn set_rgb32(&mut self, rgb: Rgb) {
-        unimplemented!()
+        self.inner = ColorInner::rgb(rgb.red(), rgb.green(), rgb.blue(), MAX_VALUE);
+    }
+
+    /// Sets the RGB value to rgba, including its alpha.
+    pub fn set_rgba(&mut self, rgb: Rgb) {
+        self.inner = ColorInner::rgb(rgb.red(), rgb.green(), rgb.blue(), rgb.alpha());
     }
 
     /// Sets the RGB64 value to rgba, including its alpha.
     pub fn set_rgba64(&mut self, rgba: Rgba64) {
-        unimplemented!()
+        self.inner = ColorInner::rgb(rgba.red8(), rgba.green8(), rgba.blue8(), rgba.alpha8());
     }
 
     /// Sets the color channels of this color to (red, green, blue).
     ///
     /// The alpha value must be in the range 0.0-1.0.
-    pub fn set_rgb_f(red: f64, green: f64, blue: f64, alpha: f64) {
-        unimplemented!()
-    }
+    pub fn set_rgb_f(
+        &mut self,
+        red: f64,
+        green: f64,
+        blue: f64,
+        alpha: f64,
+    ) -> Result<(), ParseColorError> {
+        if alpha < 0.0 || alpha > 1.0 {
+            return Err(ParseColorError::OutOfRangeError);
+        }
 
-    /// Sets the RGB value to rgba, including its alpha.
-    pub fn set_rgba(&mut self, rgb: Rgb) {
-        unimplemented!()
+        // TODO(Shaohua): Support extended RGB.
+        if red < 0.0 || red > 1.0 || green < 0.0 || green > 1.0 || blue < 0.0 || blue > 1.0 {
+            return Err(ParseColorError::OutOfRangeError);
+        }
+        self.inner = ColorInner::rgb(
+            (red * MAX_VALUE_F64).round() as u8,
+            (green * MAX_VALUE_F64).round() as u8,
+            (blue * MAX_VALUE_F64).round() as u8,
+            (alpha * MAX_VALUE_F64).round() as u8,
+        );
+        return Ok(());
     }
 
     /// Returns how the color was specified.
