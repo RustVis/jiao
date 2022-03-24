@@ -790,7 +790,7 @@ impl Color {
 
     /// Returns the blue color component of this color.
     pub fn blue_f(&self) -> f64 {
-        unimplemented!()
+        self.blue() as f64 / MAX_VALUE_F64
     }
 
     /// Returns a string list containing the color names we knows about.
@@ -1215,12 +1215,21 @@ impl Color {
     ///
     /// Integer components are specified in the range 0-255.
     pub fn set_blue(&mut self, blue: u8) {
-        unimplemented!()
+        match &mut self.inner {
+            ColorInner::Rgb(c) => c.blue = blue,
+            _ => {
+                let c = self.to_rgb();
+                self.set_rgb(c.red(), c.green(), blue, c.alpha());
+            }
+        }
     }
 
     /// Sets the blue color component of this color to blue.
     pub fn set_blue_f(&mut self, blue: f64) {
-        unimplemented!()
+        check_float_range(blue)?;
+        let blue_int = (blue * MAX_VALUE_F64).round() as u8;
+        self.set_blue(blue_int);
+        Ok(())
     }
 
     /// Sets the color to CMYK values, cyan, magenta, yellow, black, and alpha-channel.
@@ -1254,7 +1263,7 @@ impl Color {
     pub fn set_green_f(&mut self, green: f64) -> Result<(), ParseColorError> {
         check_float_range(green)?;
         let green_int = (green * MAX_VALUE_F64).round() as u8;
-        self.set_red(green_int);
+        self.set_green(green_int);
         Ok(())
     }
 
