@@ -1008,7 +1008,7 @@ impl Color {
 
     /// Returns the green color component of this color.
     pub fn green_f(&self) -> f64 {
-        unimplemented!()
+        self.green() as f64 / MAX_VALUE_F64
     }
 
     /// Returns the HSL hue color component of this color.
@@ -1241,12 +1241,21 @@ impl Color {
     ///
     /// Integer components are specified in the range 0-255.
     pub fn set_green(&mut self, green: u8) {
-        unimplemented!()
+        match &mut self.inner {
+            ColorInner::Rgb(c) => c.green = green,
+            _ => {
+                let c = self.to_rgb();
+                self.set_rgb(c.red(), green, c.blue(), c.alpha());
+            }
+        }
     }
 
     /// Sets the green color component of this color to green.
-    pub fn set_green_f(&mut self, green: f64) {
-        unimplemented!()
+    pub fn set_green_f(&mut self, green: f64) -> Result<(), ParseColorError> {
+        check_float_range(green)?;
+        let green_int = (green * MAX_VALUE_F64).round() as u8;
+        self.set_red(green_int);
+        Ok(())
     }
 
     /// Sets a HSL color value.
