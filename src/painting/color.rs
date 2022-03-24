@@ -1310,14 +1310,41 @@ impl Color {
     ///
     /// All the values must be in the range 0-255.
     pub fn set_cmyk(&mut self, cyan: u8, magenta: u8, yellow: u8, black: u8, alpha: u8) {
-        unimplemented!()
+        self.inner = ColorInner::cmyk(cyan, magenta, yellow, black, alpha);
     }
 
     /// Sets the color to CMYK values, cyan, magenta, yellow, black, and alpha-channel.
     ///
     /// All the values must be in the range 0.0-1.0.
-    pub fn set_cmyk_f(&mut self, cyan: f64, magenta: f64, yellow: f64, black: f64, alpha: f64) {
-        unimplemented!()
+    pub fn set_cmyk_f(
+        &mut self,
+        cyan: f64,
+        magenta: f64,
+        yellow: f64,
+        black: f64,
+        alpha: f64,
+    ) -> Result<(), ParseColorError> {
+        if cyan < 0.0
+            || cyan > 1.0
+            || magenta < 0.0
+            || magenta > 1.0
+            || yellow < 0.0
+            || yellow > 1.0
+            || black < 0.0
+            || black > 1.0
+            || alpha < 0.0
+            || alpha > 1.0
+        {
+            return Err(ParseColorError::OutOfRangeError);
+        }
+        self.inner = ColorInner::cmyk(
+            (cyan * MAX_VALUE_F64).round() as u8,
+            (magenta * MAX_VALUE_F64).round() as u8,
+            (yellow * MAX_VALUE_F64).round() as u8,
+            (black * MAX_VALUE_F64).round() as u8,
+            (alpha * MAX_VALUE_F64).round() as u8,
+        );
+        return Ok(());
     }
 
     /// Sets the green color component of this color to green.
