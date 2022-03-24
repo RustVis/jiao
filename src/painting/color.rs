@@ -879,8 +879,20 @@ impl Color {
     ///
     /// These components can be retrieved individually using the `hsl_hue()`, `hsl_saturation()`,
     /// `lightness()` and `alpha()` functions.
-    pub fn get_hsl(&self, hue: &mut u8, saturation: &mut u8, lightness: &mut u8, alpha: &mut u8) {
-        unimplemented!()
+    pub fn get_hsl(&self, hue: &mut i32, saturation: &mut u8, lightness: &mut u8, alpha: &mut u8) {
+        match &self.inner {
+            ColorInner::Hsl(c) => {
+                *hue = if c.hue == u16::MAX {
+                    -1
+                } else {
+                    c.hue as i32 / 100
+                };
+                *saturation = c.saturation;
+                *lightness = c.lightness;
+                *alpha = c.alpha;
+            }
+            _ => self.to_hsl().get_hsl(hue, saturation, lightness, alpha),
+        }
     }
 
     /// Sets the contents to the hue, saturation, lightness, and alpha-channel (transparency)
@@ -895,7 +907,19 @@ impl Color {
         lightness: &mut f64,
         alpha: &mut f64,
     ) {
-        unimplemented!()
+        match &self.inner {
+            ColorInner::Hsl(c) => {
+                *hue = if c.hue == u16::MAX {
+                    -1.0
+                } else {
+                    c.hue as f64 / 36_000.0
+                };
+                *saturation = c.saturation as f64 / MAX_VALUE_F64;
+                *lightness = c.lightness as f64 / MAX_VALUE_F64;
+                *alpha = c.alpha as f64 / MAX_VALUE_F64;
+            }
+            _ => self.to_hsl().get_hsl_f(hue, saturation, lightness, alpha),
+        }
     }
 
     /// Sets the contents to the hue, saturation, value, and alpha-channel (transparency)
