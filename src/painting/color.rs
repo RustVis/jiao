@@ -324,6 +324,7 @@ impl Color {
     ///
     /// The value of saturation, lightness, and alpha must all be in the range 0-255;
     /// the value of hue must be in the range 0-359.
+    #[allow(dead_code)]
     fn from_hsl(
         hue: i32,
         saturation: u8,
@@ -347,6 +348,7 @@ impl Color {
     /// Construct color from the HSL color values.
     ///
     /// All the values must be in range 0.0-1.0.
+    #[allow(dead_code)]
     fn from_hsl_f(
         hue: f64,
         saturation: f64,
@@ -384,6 +386,7 @@ impl Color {
     ///
     /// The value of saturation, value, and alpha must all be in the range 0-255;
     /// the value of hue must be in the range 0-359.
+    #[allow(dead_code)]
     fn from_hsv(hue: i32, saturation: u8, value: u8, alpha: u8) -> Result<Self, ParseColorError> {
         if hue < -1 || hue >= 360 {
             return Err(ParseColorError::OutOfRangeError);
@@ -402,6 +405,7 @@ impl Color {
     /// Construct color from the HSV color values.
     ///
     /// All the values must be in range 0.0-1.0.
+    #[allow(dead_code)]
     fn from_hsv_f(
         hue: f64,
         saturation: f64,
