@@ -1032,8 +1032,17 @@ impl Color {
     }
 
     /// Returns the HSV hue color component of this color.
-    pub fn hsv_hue(&self) -> u8 {
-        unimplemented!()
+    pub fn hsv_hue(&self) -> i32 {
+        match &self.inner {
+            ColorInner::Hsv(c) => {
+                if c.hue == u16::MAX {
+                    return -1;
+                } else {
+                    return c.hue as i32 / 100;
+                }
+            }
+            _ => self.to_hsv().hsv_hue(),
+        }
     }
 
     /// Returns the HSV hue color component of this color.
@@ -1043,7 +1052,10 @@ impl Color {
 
     /// Returns the HSV saturation color component of this color.
     pub fn hsv_saturation(&self) -> u8 {
-        unimplemented!()
+        match &self.inner {
+            ColorInner::Hsv(c) => c.saturation,
+            _ => self.to_hsv().hsv_saturation(),
+        }
     }
 
     /// Returns the HSV saturation color component of this color.
@@ -1054,8 +1066,8 @@ impl Color {
     /// Returns the HSV hue color component of this color.
     ///
     /// The color is implicitly converted to HSV.
-    pub fn hue(&self) -> u8 {
-        unimplemented!()
+    pub fn hue(&self) -> i32 {
+        self.hsv_hue()
     }
 
     /// Returns the HSV hue color component of this color.
@@ -1176,7 +1188,7 @@ impl Color {
     ///
     /// The color is implicitly converted to HSV.
     pub fn saturation(&self) -> u8 {
-        unimplemented!()
+        self.hsv_saturation()
     }
 
     /// Returns the HSV saturation color component of this color.
@@ -1225,7 +1237,7 @@ impl Color {
     }
 
     /// Sets the blue color component of this color to blue.
-    pub fn set_blue_f(&mut self, blue: f64) {
+    pub fn set_blue_f(&mut self, blue: f64) -> Result<(), ParseColorError> {
         check_float_range(blue)?;
         let blue_int = (blue * MAX_VALUE_F64).round() as u8;
         self.set_blue(blue_int);
