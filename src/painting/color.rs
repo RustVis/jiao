@@ -970,7 +970,15 @@ impl Color {
     /// These components can be retrieved individually using the `red()`, `green()`,
     /// `blue()` and `alpha()` functions.
     pub fn get_rgb(&self, red: &mut u8, green: &mut u8, blue: &mut u8, alpha: &mut u8) {
-        unimplemented!()
+        match &self.inner {
+            ColorInner::Rgb(c) => {
+                *red = c.red;
+                *green = c.green;
+                *blue = c.blue;
+                *alpha = c.alpha;
+            }
+            _ => self.to_rgb().get_rgb(red, green, blue, alpha),
+        }
     }
 
     /// Sets the contents to the red, green, blue, and alpha-channel (transparency)
@@ -979,7 +987,15 @@ impl Color {
     /// These components can be retrieved individually using the `red_f()`, `green_f()`,
     /// `blue_f()` and `alpha_f()` functions.
     pub fn get_rgb_f(&self, red: &mut f64, green: &mut f64, blue: &mut f64, alpha: &mut f64) {
-        unimplemented!()
+        match &self.inner {
+            ColorInner::Rgb(c) => {
+                *red = c.red as f64 / MAX_VALUE_F64;
+                *green = c.green as f64 / MAX_VALUE_F64;
+                *blue = c.blue as f64 / MAX_VALUE_F64;
+                *alpha = c.alpha as f64 / MAX_VALUE_F64;
+            }
+            _ => self.to_rgb().get_rgb_f(red, green, blue, alpha),
+        }
     }
 
     /// Returns the green color component of this color.
