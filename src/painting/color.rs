@@ -772,12 +772,15 @@ impl Color {
 
     /// Returns the black color component of this color.
     pub fn black(&self) -> u8 {
-        unimplemented!()
+        match &self.inner {
+            ColorInner::Cmyk(c) => c.black,
+            _ => self.to_cmyk().black(),
+        }
     }
 
     /// Returns the black color component of this color.
     pub fn black_f(&self) -> f64 {
-        unimplemented!()
+        self.black() as f64 / MAX_VALUE_F64
     }
 
     /// Returns the blue color component of this color.
@@ -814,12 +817,15 @@ impl Color {
 
     /// Returns the cyan color component of this color.
     pub fn cyan(&self) -> u8 {
-        unimplemented!()
+        match &self.inner {
+            ColorInner::Cmyk(c) => c.cyan,
+            _ => self.to_cmyk().cyan(),
+        }
     }
 
     /// Returns the cyan color component of this color.
     pub fn cyan_f(&self) -> f64 {
-        unimplemented!()
+        self.cyan() as f64 / MAX_VALUE_F64
     }
 
     /// Returns a darker color (with factor 200), but does not change this object.
@@ -1149,12 +1155,15 @@ impl Color {
 
     /// Returns the magenta color component of this color.
     pub fn magenta(&self) -> u8 {
-        unimplemented!()
+        match &self.inner {
+            ColorInner::Cmyk(c) => c.magenta,
+            _ => self.to_cmyk().magenta(),
+        }
     }
 
     /// Returns the magenta color component of this color.
     pub fn magenta_f(&self) -> f64 {
-        unimplemented!()
+        self.magenta() as f64 / MAX_VALUE_F64
     }
 
     /// Returns the name of the color in the format "#RRGGBB".
@@ -1545,12 +1554,15 @@ impl Color {
 
     /// Returns the yellow color component of this color.
     pub fn yellow(&self) -> u8 {
-        unimplemented!()
+        match &self.inner {
+            ColorInner::Cmyk(c) => c.yellow,
+            _ => self.to_cmyk().yellow(),
+        }
     }
 
     /// Returns the yellow color component of this color.
     pub fn yellow_f(&self) -> f64 {
-        unimplemented!()
+        self.yellow() as f64 / MAX_VALUE_F64
     }
 
     pub fn to_rgb_str(&self) -> String {
