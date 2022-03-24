@@ -1176,7 +1176,39 @@ impl Color {
     /// The function converts the current color to HSV, multiplies the value (V) component
     /// by factor and converts the color back to it's original color spec.
     pub fn lighter_by(&self, factor: i32) -> Self {
-        unimplemented!()
+        // Invalid lightness factor.
+        if factor <= 0 {
+            return self.clone();
+        }
+
+        if factor < 100 {
+            // Makes color darker.
+            return self.darker_by(10000 / factor);
+        }
+
+        let mut hsv = self.to_hsv();
+        match &mut hsv.inner {
+            ColorInner::Hsv(c) => {
+                let mut s = c.saturation as i32;
+                let mut v = c.value as i32;
+                v = (factor * v) / 100;
+                let max_value = MAX_VALUE as i32;
+                if v > max_value {
+                    // overflow... adjust saturation
+                    s -= v - max_value;
+                    if s < 0 {
+                        s = 0;
+                    }
+                    v = max_value;
+                }
+                c.saturation = s as u8;
+                c.value = v as u8;
+            }
+            _ => (),
+        }
+
+        // Convert back to same color spec as original color.
+        return hsv.convert_to(self.spec());
     }
 
     /// Returns the lightness color component of this color.
