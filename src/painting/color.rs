@@ -1027,17 +1027,29 @@ impl Color {
 
     /// Returns the HSL hue color component of this color.
     pub fn hsl_hue_f(&self) -> f64 {
-        unimplemented!()
+        match &self.inner {
+            ColorInner::Hsl(c) => {
+                if c.hue == u16::MAX {
+                    return -1.0;
+                } else {
+                    return c.hue as f64 / 36_000.0;
+                }
+            }
+            _ => self.to_hsl().hsl_hue_f(),
+        }
     }
 
     /// Returns the HSL saturation color component of this color.
     pub fn hsl_saturation(&self) -> u8 {
-        unimplemented!()
+        match &self.inner {
+            ColorInner::Hsl(c) => c.saturation,
+            _ => self.to_hsl().hsl_saturation(),
+        }
     }
 
     /// Returns the HSL saturation color component of this color.
     pub fn hsl_saturation_f(&self) -> f64 {
-        unimplemented!()
+        self.hsl_saturation() as f64 / MAX_VALUE_F64
     }
 
     /// Returns the HSV hue color component of this color.
@@ -1124,12 +1136,15 @@ impl Color {
 
     /// Returns the lightness color component of this color.
     pub fn lightness(&self) -> u8 {
-        unimplemented!()
+        match &self.inner {
+            ColorInner::Hsl(c) => c.lightness,
+            _ => self.to_hsl().lightness(),
+        }
     }
 
     /// Returns the lightness color component of this color.
     pub fn lightness_f(&self) -> f64 {
-        unimplemented!()
+        self.lightness() as f64 / MAX_VALUE_F64
     }
 
     /// Returns the magenta color component of this color.
