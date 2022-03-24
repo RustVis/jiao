@@ -845,7 +845,26 @@ impl Color {
     /// The function converts the current color to HSV, divides the value (V) component
     /// by factor and converts the color back to it's original color spec.
     pub fn darker_by(&self, factor: i32) -> Self {
-        unimplemented!()
+        // Invalid darkness factor.
+        if factor <= 0 {
+            return self.clone();
+        }
+
+        // Makes color lighter.
+        if factor < 100 {
+            return self.lighter_by(10000 / factor);
+        }
+
+        let mut hsv = self.to_hsv();
+        match &mut hsv.inner {
+            ColorInner::Hsv(c) => {
+                c.value = ((c.value as i32 * 100) / factor) as u8;
+            }
+            _ => (),
+        }
+
+        // Convert back to same color spec as original color.
+        return hsv.convert_to(self.spec());
     }
 
     /// Sets the contents to the cyan, magenta, yellow, black, and alpha-channel (transparency)
