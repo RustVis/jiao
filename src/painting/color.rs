@@ -1221,15 +1221,60 @@ impl Color {
     ///
     /// The saturation, value and alpha-channel values must be in the range 0-255,
     /// and the hue value must be greater than -1.
-    pub fn set_hsv(&mut self, hue: i32, saturation: u8, value: u8, alpha: u8) {
-        unimplemented!()
+    pub fn set_hsv(
+        &mut self,
+        hue: i32,
+        saturation: u8,
+        value: u8,
+        alpha: u8,
+    ) -> Result<(), ParseColorError> {
+        if hue < -1 || hue > 360 {
+            return Err(ParseColorError::OutOfRangeError);
+        }
+
+        let real_hue = if hue == -1 {
+            u16::MAX
+        } else {
+            (hue % 360) as u16 * 100
+        };
+        self.inner = ColorInner::hsv(real_hue, saturation, value, alpha);
+        return Ok(());
     }
 
     /// Sets a HSV color value.
     ///
     /// All the values must be in the range 0.0-1.0.
-    pub fn set_hsv_f(&mut self, hue: f64, saturation: f64, value: f64, alpha: f64) {
-        unimplemented!()
+    pub fn set_hsv_f(
+        &mut self,
+        hue: f64,
+        saturation: f64,
+        value: f64,
+        alpha: f64,
+    ) -> Result<(), ParseColorError> {
+        if (hue < 0.0 || hue > 1.0) && hue != -1.0
+            || saturation < 0.0
+            || saturation > 1.0
+            || value < 0.0
+            || value > 1.0
+            || alpha < 0.0
+            || alpha > 1.0
+        {
+            return Err(ParseColorError::OutOfRangeError);
+        }
+
+        let real_hue = if hue == -1.0 {
+            u16::MAX
+        } else {
+            (hue * 36_000.0).round() as u16
+        };
+        self.inner = ColorInner::hsv(
+            real_hue,
+            (saturation * MAX_VALUE_F64).round() as u8,
+            (value * MAX_VALUE_F64).round() as u8,
+            (alpha * MAX_VALUE_F64).round() as u8,
+        );
+
+        return Ok(());
     }
 
     /// Sets the RGB value of this Color to name.
