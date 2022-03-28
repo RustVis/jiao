@@ -873,8 +873,9 @@ impl Color {
     }
 
     /// Returns a string list containing the color names we knows about.
-    pub fn color_names() -> Vec<String> {
-        unimplemented!()
+    pub fn color_names() -> Vec<&'static str> {
+        use super::color_constants::COLOR_TABLE;
+        return COLOR_TABLE.keys().map(|key| *key).collect();
     }
 
     /// Create a copy of this color in the specified format.
@@ -1232,8 +1233,9 @@ impl Color {
     /// to construct a valid Color object, otherwise returns false.
     ///
     /// It uses the same algorithm used in `set_named_color()`.
-    pub fn is_valid_color(_name: &str) -> bool {
-        unimplemented!()
+    pub fn is_valid_color(name: &str) -> bool {
+        let mut color = Color::new();
+        color.set_named_color(name).is_ok()
     }
 
     /// Returns a lighter color (with factor 50), but does not change this object.
@@ -1384,7 +1386,7 @@ impl Color {
     ///
     /// The color is implicitly converted to HSV.
     pub fn saturation_f(&self) -> f64 {
-        unimplemented!()
+        self.hsv_saturation() as f64 / MAX_VALUE_F64
     }
 
     /// Set alpha channel of this color.
@@ -1627,7 +1629,27 @@ impl Color {
     /// - transparent: representing the absence of a color.
     ///
     /// The color is invalid if name cannot be parsed.
-    pub fn set_named_color(&mut self, _name: &str) {
+    pub fn set_named_color(&mut self, name: &str) -> Result<(), ParseColorError> {
+        if name.is_empty() {
+            return Err(ParseColorError::InvalidFormatError);
+        }
+
+        if name.chars().next() == Some('#') {
+            let rgba = Self::get_hex_rgb(name)?;
+            self.set_rgba64(rgba);
+            return Ok(());
+        }
+
+        let rgb = Self::get_named_rgb(name)?;
+        self.set_rgba(rgb);
+        return Ok(());
+    }
+
+    fn get_named_rgb(_name: &str) -> Result<Rgb, ParseColorError> {
+        unimplemented!()
+    }
+
+    fn get_hex_rgb(_name: &str) -> Result<Rgba64, ParseColorError> {
         unimplemented!()
     }
 
