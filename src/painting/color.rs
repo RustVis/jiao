@@ -272,8 +272,10 @@ impl Color {
     }
 
     /// Constructs a named color in the same way as `set_named_color()` using the given name.
-    pub fn from_name(_name: &str) -> Self {
-        unimplemented!()
+    pub fn from_name(name: &str) -> Result<Self, ParseColorError> {
+        let mut color = Color::new();
+        color.set_named_color(name)?;
+        Ok(color)
     }
 
     /// Construct color from the given CMYK color values.
@@ -1725,7 +1727,7 @@ impl Color {
     }
 
     /// Match color by predefined names in SVG-1.1 spec.
-    fn get_color_by_name(s: &str) -> Option<Color> {
+    fn get_color_by_svg_name(s: &str) -> Option<Color> {
         use super::color_constants::COLOR_TABLE;
         // TODO(Shaohua): No need clone()
         COLOR_TABLE.get(s).and_then(|color| Some((*color).clone()))
@@ -1885,7 +1887,7 @@ impl std::str::FromStr for Color {
             let rgba: Rgba64 = Self::get_oct_rgb(s)?;
             return Ok(Self::from_rgba64(rgba));
         }
-        if let Some(color) = Self::get_color_by_name(s) {
+        if let Some(color) = Self::get_color_by_svg_name(s) {
             return Ok(color);
         }
 
