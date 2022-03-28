@@ -496,10 +496,8 @@ impl Color {
     }
 
     /// Constructs a color with the value color.
-    ///
-    /// The alpha component is ignored and set to solid.
     pub fn from_rgb32(rgb: Rgb) -> Self {
-        Self::from_rgba(rgb.red(), rgb.green(), rgb.blue(), 0xff)
+        Self::from_rgba(rgb.red(), rgb.green(), rgb.blue(), rgb.alpha())
     }
 
     /// Constructs a color with the value rgba64.
@@ -1638,7 +1636,7 @@ impl Color {
     }
 
     /// Parse Rgba64 from #RRGGBBAA, #RRGGBB and #RGB patterns.
-    fn get_hex_rgb(s: &str) -> Result<Rgba64, ParseColorError> {
+    fn get_hex_rgb(s: &str) -> Result<Rgb, ParseColorError> {
         match s.len() {
             9 => {
                 // #rrggbbaa
@@ -1646,14 +1644,14 @@ impl Color {
                 let green = u8::from_str_radix(&s[3..5], 16)?;
                 let blue = u8::from_str_radix(&s[5..7], 16)?;
                 let alpha = u8::from_str_radix(&s[7..9], 16)?;
-                Ok(Rgba64::from_rgba(red, green, blue, alpha))
+                Ok(Rgb::with_alpha(red, green, blue, alpha))
             }
             7 => {
                 // #rrggbb
                 let red = u8::from_str_radix(&s[1..3], 16)?;
                 let green = u8::from_str_radix(&s[3..5], 16)?;
                 let blue = u8::from_str_radix(&s[5..7], 16)?;
-                Ok(Rgba64::from_rgb(red, green, blue))
+                Ok(Rgb::new(red, green, blue))
             }
             4 => {
                 // #rgb
@@ -1665,14 +1663,14 @@ impl Color {
                 let red = red * 17;
                 let green = green * 17;
                 let blue = blue * 17;
-                Ok(Rgba64::from_rgb(red, green, blue))
+                Ok(Rgb::new(red, green, blue))
             }
             _ => Err(ParseColorError::InvalidFormatError),
         }
     }
 
     /// Parse Rgba64 from rgb(xx, xx, xx) and rgba(xx, xx, xx, xx) patterns.
-    fn get_oct_rgb(s: &str) -> Result<Rgba64, ParseColorError> {
+    fn get_oct_rgb(s: &str) -> Result<Rgb, ParseColorError> {
         let len = s.len();
         if len > 12 && &s[0..5] == "rgba(" && &s[len - 1..len] == ")" {
             // rgba(0,0,0,0)
@@ -1690,7 +1688,7 @@ impl Color {
             let blue = parts[2].parse::<u8>()?;
             let alpha = parts[3].parse::<u8>()?;
 
-            return Ok(Rgba64::from_rgba(red, green, blue, alpha));
+            return Ok(Rgb::with_alpha(red, green, blue, alpha));
         } else if len > 9 && &s[0..4] == "rgb(" && &s[len - 1..len] == ")" {
             // rgb(0,0,0)
             // rgb(101, 255, 255)
@@ -1706,7 +1704,7 @@ impl Color {
             let green = parts[1].parse::<u8>()?;
             let blue = parts[2].parse::<u8>()?;
 
-            return Ok(Rgba64::from_rgb(red, green, blue));
+            return Ok(Rgb::new(red, green, blue));
         } else {
             return Err(ParseColorError::InvalidFormatError);
         }
@@ -1868,12 +1866,12 @@ impl std::str::FromStr for Color {
 
         if &s[0..1] == "#" {
             // Parse #RRGGBBAA, #RRGGBB and #RGB patterns.
-            let rgba: Rgba64 = Self::get_hex_rgb(&s)?;
-            return Ok(Self::from_rgba64(rgba));
+            let rgb: Rgb = Self::get_hex_rgb(&s)?;
+            return Ok(Self::from_rgb32(rgb));
         } else if len > 9 && &s[0..3] == "rgb" && &s[len - 1..len] == ")" {
             // Parse rgb(16, 18, 24) and rgba(16, 18, 24, 28) patterns.
-            let rgba: Rgba64 = Self::get_oct_rgb(&s)?;
-            return Ok(Self::from_rgba64(rgba));
+            let rgb: Rgb = Self::get_oct_rgb(&s)?;
+            return Ok(Self::from_rgb32(rgb));
         }
         if let Some(color) = Self::get_color_by_svg_name(&s) {
             return Ok(color);
