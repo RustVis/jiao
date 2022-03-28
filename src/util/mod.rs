@@ -20,5 +20,5 @@ pub fn div_257_floor(x: u32) -> u8 {
 }
 
 pub fn div_257(x: u16) -> u8 {
-    div_257_floor((x + 128) as u32)
+    div_257_floor(x as u32 + 128)
 }
