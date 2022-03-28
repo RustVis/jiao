@@ -1649,8 +1649,37 @@ impl Color {
         unimplemented!()
     }
 
-    fn get_hex_rgb(_name: &str) -> Result<Rgba64, ParseColorError> {
-        unimplemented!()
+    fn get_hex_rgb(s: &str) -> Result<Rgba64, ParseColorError> {
+        match s.len() {
+            9 => {
+                // #rrggbbaa
+                let red = u8::from_str_radix(&s[1..3], 16)?;
+                let green = u8::from_str_radix(&s[3..5], 16)?;
+                let blue = u8::from_str_radix(&s[5..7], 16)?;
+                let alpha = u8::from_str_radix(&s[7..9], 16)?;
+                Ok(Rgba64::from_rgba(red, green, blue, alpha))
+            }
+            7 => {
+                // #rrggbb
+                let red = u8::from_str_radix(&s[1..3], 16)?;
+                let green = u8::from_str_radix(&s[3..5], 16)?;
+                let blue = u8::from_str_radix(&s[5..7], 16)?;
+                Ok(Rgba64::from_rgb(red, green, blue))
+            }
+            4 => {
+                // #rgb
+                let red = u8::from_str_radix(&s[1..2], 16)?;
+                let green = u8::from_str_radix(&s[2..3], 16)?;
+                let blue = u8::from_str_radix(&s[3..4], 16)?;
+
+                // Duplicate bytes
+                let red = red * 17;
+                let green = green * 17;
+                let blue = blue * 17;
+                Ok(Rgba64::from_rgb(red, green, blue))
+            }
+            _ => Err(ParseColorError::InvalidFormatError),
+        }
     }
 
     /// Sets the red color component of this color to red.
@@ -1799,39 +1828,8 @@ impl std::str::FromStr for Color {
         }
 
         if &s[0..1] == "#" {
-            return match len {
-                9 => {
-                    // #rrggbbaa
-                    let red = u8::from_str_radix(&s[1..3], 16)?;
-                    let green = u8::from_str_radix(&s[3..5], 16)?;
-                    let blue = u8::from_str_radix(&s[5..7], 16)?;
-                    let alpha = u8::from_str_radix(&s[7..9], 16)?;
-
-                    Ok(Color::from_rgba(red, green, blue, alpha))
-                }
-                7 => {
-                    // #rrggbb
-                    let red = u8::from_str_radix(&s[1..3], 16)?;
-                    let green = u8::from_str_radix(&s[3..5], 16)?;
-                    let blue = u8::from_str_radix(&s[5..7], 16)?;
-
-                    Ok(Color::from_rgb(red, green, blue))
-                }
-                4 => {
-                    // #rgb
-                    let red = u8::from_str_radix(&s[1..2], 16)?;
-                    let green = u8::from_str_radix(&s[2..3], 16)?;
-                    let blue = u8::from_str_radix(&s[3..4], 16)?;
-
-                    // Duplicate bytes
-                    let red = red * 17;
-                    let green = green * 17;
-                    let blue = blue * 17;
-
-                    Ok(Color::from_rgb(red, green, blue))
-                }
-                _ => Err(ParseColorError::InvalidFormatError),
-            };
+            let rgba: Rgba64 = Self::get_hex_rgb(s)?;
+            return Ok(Self::from_rgba64(rgba));
         } else if len > 12 && &s[0..5] == "rgba(" && &s[len - 1..len] == ")" {
             // rgba(0,0,0,0)
             // rgba(101, 255, 255, 100)

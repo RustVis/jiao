@@ -94,6 +94,11 @@ impl Rgba64 {
         return rgb64;
     }
 
+    /// Constructs a Rgba64 value from the four 8-bit color channels red, green and blue.
+    pub fn from_rgb(red: u8, green: u8, blue: u8) -> Self {
+        Self::from_rgba(red, green, blue, u8::MAX)
+    }
+
     /// Returns the alpha channel as an 8-bit.
     pub fn alpha8(&self) -> u8 {
         div_257(self.alpha())
