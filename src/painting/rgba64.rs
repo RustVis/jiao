@@ -24,6 +24,7 @@ pub struct Rgba64 {
 /// This way, vector operations that assume 4 16-bit values see the correct ones.
 #[cfg(target_endian = "big")]
 #[repr(u8)]
+#[derive(Debug)]
 enum Shifts {
     RedShift = 48,
     GreenShift = 32,
@@ -32,6 +33,7 @@ enum Shifts {
 }
 #[cfg(target_endian = "little")]
 #[repr(u8)]
+#[derive(Debug)]
 enum Shifts {
     RedShift = 0,
     GreenShift = 16,
@@ -88,10 +90,10 @@ impl Rgba64 {
 
     /// Constructs a Rgba64 value from the four 8-bit color channels red, green, blue and alpha.
     pub fn from_rgba(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
-        let mut rgb64 = Self::from_rgba64(red as u16, green as u16, blue as u16, alpha as u16);
+        let mut rgba64 = Self::from_rgba64(red as u16, green as u16, blue as u16, alpha as u16);
         // Expand the range so that 0x00 maps to 0x0000 and 0xff maps to 0xffff.
-        rgb64.rgba |= rgb64.rgba << 8;
-        return rgb64;
+        rgba64.rgba |= rgba64.rgba << 8;
+        return rgba64;
     }
 
     /// Constructs a Rgba64 value from the four 8-bit color channels red, green and blue.
@@ -106,7 +108,7 @@ impl Rgba64 {
 
     /// Returns the alpha channel as an 16-bit.
     pub fn alpha(&self) -> u16 {
-        (self.rgba >> Shifts::RedShift) as u16
+        (self.rgba >> Shifts::AlphaShift) as u16
     }
 
     /// Returns the blue color component as an 8-bit.
@@ -263,5 +265,19 @@ impl Rgba64 {
     #[inline]
     fn alpha_mask() -> u64 {
         0xffff_u64 << Shifts::AlphaShift
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_color() {
+        let rgba = Rgba64::from_rgba(255, 238, 170, 153);
+        assert_eq!(rgba.red8(), 255);
+        assert_eq!(rgba.green8(), 238);
+        assert_eq!(rgba.blue8(), 170);
+        assert_eq!(rgba.alpha8(), 153);
     }
 }
