@@ -1682,6 +1682,46 @@ impl Color {
         }
     }
 
+    fn get_oct_rgb(s: &str) -> Result<Rgba64, ParseColorError> {
+        let len = s.len();
+        if len > 12 && &s[0..5] == "rgba(" && &s[len - 1..len] == ")" {
+            // rgba(0,0,0,0)
+            // rgba(101, 255, 255, 100)
+            let parts: Vec<&str> = s[4..]
+                .trim_matches(|p| p == '(' || p == ')')
+                .split(',')
+                .collect();
+            if parts.len() != 4 {
+                return Err(ParseColorError::InvalidFormatError);
+            }
+
+            let red = parts[0].parse::<u8>()?;
+            let green = parts[1].parse::<u8>()?;
+            let blue = parts[2].parse::<u8>()?;
+            let alpha = parts[3].parse::<u8>()?;
+
+            return Ok(Rgba64::from_rgba(red, green, blue, alpha));
+        } else if len > 9 && &s[0..4] == "rgb(" && &s[len - 1..len] == ")" {
+            // rgb(0,0,0)
+            // rgb(101, 255, 255)
+            let parts: Vec<&str> = s[3..]
+                .trim_matches(|p| p == '(' || p == ')')
+                .split(',')
+                .collect();
+            if parts.len() != 3 {
+                return Err(ParseColorError::InvalidFormatError);
+            }
+
+            let red = parts[0].parse::<u8>()?;
+            let green = parts[1].parse::<u8>()?;
+            let blue = parts[2].parse::<u8>()?;
+
+            return Ok(Rgba64::from_rgb(red, green, blue));
+        } else {
+            return Err(ParseColorError::InvalidFormatError);
+        }
+    }
+
     /// Sets the red color component of this color to red.
     ///
     /// Integer components are specified in the range 0-255.
@@ -1828,41 +1868,13 @@ impl std::str::FromStr for Color {
         }
 
         if &s[0..1] == "#" {
+            // Parse #RRGGBBAA, #RRGGBB and #RGB patterns.
             let rgba: Rgba64 = Self::get_hex_rgb(s)?;
             return Ok(Self::from_rgba64(rgba));
-        } else if len > 12 && &s[0..5] == "rgba(" && &s[len - 1..len] == ")" {
-            // rgba(0,0,0,0)
-            // rgba(101, 255, 255, 100)
-            let parts: Vec<&str> = s[4..]
-                .trim_matches(|p| p == '(' || p == ')')
-                .split(',')
-                .collect();
-            if parts.len() != 4 {
-                return Err(ParseColorError::InvalidFormatError);
-            }
-
-            let red = parts[0].parse::<u8>()?;
-            let green = parts[1].parse::<u8>()?;
-            let blue = parts[2].parse::<u8>()?;
-            let alpha = parts[3].parse::<u8>()?;
-
-            return Ok(Color::from_rgba(red, green, blue, alpha));
-        } else if len > 9 && &s[0..4] == "rgb(" && &s[len - 1..len] == ")" {
-            // rgb(0,0,0)
-            // rgb(101, 255, 255)
-            let parts: Vec<&str> = s[3..]
-                .trim_matches(|p| p == '(' || p == ')')
-                .split(',')
-                .collect();
-            if parts.len() != 3 {
-                return Err(ParseColorError::InvalidFormatError);
-            }
-
-            let red = parts[0].parse::<u8>()?;
-            let green = parts[1].parse::<u8>()?;
-            let blue = parts[2].parse::<u8>()?;
-
-            return Ok(Color::from_rgb(red, green, blue));
+        } else if len > 9 && &s[0..3] == "rgb" && &s[len - 1..len] == ")" {
+            // Parse rgb(16, 18, 24) and rgba(16, 18, 24, 28) patterns.
+            let rgba: Rgba64 = Self::get_oct_rgb(s)?;
+            return Ok(Self::from_rgba64(rgba));
         }
 
         return Err(ParseColorError::InvalidFormatError);
