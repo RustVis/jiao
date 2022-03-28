@@ -1632,23 +1632,9 @@ impl Color {
     ///
     /// The color is invalid if name cannot be parsed.
     pub fn set_named_color(&mut self, name: &str) -> Result<(), ParseColorError> {
-        if name.is_empty() {
-            return Err(ParseColorError::InvalidFormatError);
-        }
-
-        if name.chars().next() == Some('#') {
-            let rgba = Self::get_hex_rgb(name)?;
-            self.set_rgba64(rgba);
-            return Ok(());
-        }
-
-        let rgb = Self::get_named_rgb(name)?;
-        self.set_rgba(rgb);
-        return Ok(());
-    }
-
-    fn get_named_rgb(_name: &str) -> Result<Rgb, ParseColorError> {
-        unimplemented!()
+        let color = Color::from_str(name)?;
+        *self = color;
+        Ok(())
     }
 
     /// Parse Rgba64 from #RRGGBBAA, #RRGGBB and #RGB patterns.
@@ -1870,7 +1856,9 @@ impl std::str::FromStr for Color {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let s = s.replace(" ", "");
+        let s = s.replace("\t", "");
         let s = s.trim();
+        let s = s.to_lowercase();
 
         let len = s.len();
 
@@ -1880,14 +1868,14 @@ impl std::str::FromStr for Color {
 
         if &s[0..1] == "#" {
             // Parse #RRGGBBAA, #RRGGBB and #RGB patterns.
-            let rgba: Rgba64 = Self::get_hex_rgb(s)?;
+            let rgba: Rgba64 = Self::get_hex_rgb(&s)?;
             return Ok(Self::from_rgba64(rgba));
         } else if len > 9 && &s[0..3] == "rgb" && &s[len - 1..len] == ")" {
             // Parse rgb(16, 18, 24) and rgba(16, 18, 24, 28) patterns.
-            let rgba: Rgba64 = Self::get_oct_rgb(s)?;
+            let rgba: Rgba64 = Self::get_oct_rgb(&s)?;
             return Ok(Self::from_rgba64(rgba));
         }
-        if let Some(color) = Self::get_color_by_svg_name(s) {
+        if let Some(color) = Self::get_color_by_svg_name(&s) {
             return Ok(color);
         }
 
