@@ -1649,6 +1649,7 @@ impl Color {
         unimplemented!()
     }
 
+    /// Parse Rgba64 from #RRGGBBAA, #RRGGBB and #RGB patterns.
     fn get_hex_rgb(s: &str) -> Result<Rgba64, ParseColorError> {
         match s.len() {
             9 => {
@@ -1682,6 +1683,7 @@ impl Color {
         }
     }
 
+    /// Parse Rgba64 from rgb(xx, xx, xx) and rgba(xx, xx, xx, xx) patterns.
     fn get_oct_rgb(s: &str) -> Result<Rgba64, ParseColorError> {
         let len = s.len();
         if len > 12 && &s[0..5] == "rgba(" && &s[len - 1..len] == ")" {
@@ -1720,6 +1722,13 @@ impl Color {
         } else {
             return Err(ParseColorError::InvalidFormatError);
         }
+    }
+
+    /// Match color by predefined names in SVG-1.1 spec.
+    fn get_color_by_name(s: &str) -> Option<Color> {
+        use super::color_constants::COLOR_TABLE;
+        // TODO(Shaohua): No need clone()
+        COLOR_TABLE.get(s).and_then(|color| Some((*color).clone()))
     }
 
     /// Sets the red color component of this color to red.
@@ -1875,6 +1884,9 @@ impl std::str::FromStr for Color {
             // Parse rgb(16, 18, 24) and rgba(16, 18, 24, 28) patterns.
             let rgba: Rgba64 = Self::get_oct_rgb(s)?;
             return Ok(Self::from_rgba64(rgba));
+        }
+        if let Some(color) = Self::get_color_by_name(s) {
+            return Ok(color);
         }
 
         return Err(ParseColorError::InvalidFormatError);
