@@ -1908,24 +1908,28 @@ impl<'de> Deserialize<'de> for Color {
 mod tests {
     use serde::{Deserialize, Serialize};
 
-    use super::{Color, NameFormat};
+    use super::{Color, NameFormat, ParseColorError};
 
     #[test]
     fn test_parse_color() {
-        let color = Color::from_rgba(255, 255, 255, 100);
-        println!("color: {:?}", color);
         let colors = [
-            "#fea",
-            "#ffeeaa",
-            "#ffeeaa99",
-            "rgb ( 255, 255, 200)",
-            "rgba ( 255, 255, 200, 255)",
-            "rgb ( 255)",
+            ("#fea", Ok(Color::from_rgb(255, 238, 170))),
+            ("#ffeeaa", Ok(Color::from_rgb(255, 238, 170))),
+            ("#ffeeaa99", Ok(Color::from_rgba(255, 238, 170, 153))),
+            ("rgb ( 255, 255, 200)", Ok(Color::from_rgb(255, 255, 200))),
+            (
+                "rgba ( 255, 255, 200, 255)",
+                Ok(Color::from_rgba(255, 255, 200, 255)),
+            ),
+            (" ", Err(ParseColorError::InvalidFormatError)),
+            ("rgb ( 255)", Err(ParseColorError::InvalidFormatError)),
+            ("#4432", Err(ParseColorError::InvalidFormatError)),
         ];
 
-        for color_str in &colors {
-            let color = color_str.parse::<Color>();
-            println!("color_str: {}, color: {:?}", color_str, color);
+        for pair in &colors {
+            println!("color: {}", pair.0);
+            let color = pair.0.parse::<Color>();
+            assert_eq!(color, pair.1);
         }
     }
 
@@ -1943,8 +1947,15 @@ mod tests {
             y: 2,
             color: Some(Color::from_rgb(101, 102, 103)),
         };
-        let s = serde_json::to_string_pretty(&r).unwrap();
-        let r2: Rectangle = serde_json::from_str(&s).unwrap();
+        let color = Color::from_rgb(101, 102, 103);
+        println!("color: {:?}", color);
+        let s = serde_json::to_string_pretty(&r);
+        assert!(s.is_ok());
+        let s = s.unwrap();
+        println!("s: {}", s);
+        let r2 = serde_json::from_str(&s);
+        assert!(r2.is_ok());
+        let r2 = r2.unwrap();
         assert_eq!(r, r2);
     }
 
