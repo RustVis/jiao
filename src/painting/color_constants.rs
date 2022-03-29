@@ -4,7 +4,7 @@
 
 //! SVG names supported by Color.
 //!
-//! See: https://www.w3.org/TR/SVG11/types.html#ColorKeywords
+//! See: <https://www.w3.org/TR/SVG11/types.html#ColorKeywords>
 
 #![allow(non_upper_case_globals)]
 
