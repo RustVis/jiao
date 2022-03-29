@@ -2,6 +2,7 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use core::f64::consts::PI;
 use core::ops;
 
 use crate::base::axis::Axis;
@@ -462,7 +463,90 @@ impl Transform {
     ///
     /// The `angle` is specified in degrees.
     pub fn rotate_with_axis(&mut self, angle: f64, axis: Axis) {
-        unimplemented!()
+        // pi/180
+        const DEG_TO_RAD: f64 = PI / 180.0;
+        const INV_DIST_TO_PLANE: f64 = 1.0 / 1024.0;
+
+        if angle == 0.0 {
+            return;
+        }
+
+        let mut sina = 0.0;
+        let mut cosa = 0.0;
+        if angle == 90.0 || angle == -270.0 {
+            sina = 1.0;
+        } else if angle == 270.0 || angle == -90.0 {
+            sina = -1.0;
+        } else if angle == 180.0 {
+            cosa = -1.0;
+        } else {
+            // convert to radians
+            let b = DEG_TO_RAD * angle;
+            // fast and convenient
+            sina = b.sin();
+            cosa = b.cos();
+        }
+
+        if axis == Axis::Z {
+            match self.get_type() {
+                TransformationType::None | TransformationType::Translate => {
+                    self.m11 = cosa;
+                    self.m12 = sina;
+                    self.m21 = -sina;
+                    self.m22 = cosa;
+                }
+                TransformationType::Scale => {
+                    let tm11 = cosa * self.m11;
+                    let tm12 = sina * self.m22;
+                    let tm21 = -sina * self.m11;
+                    let tm22 = cosa * self.m22;
+                    self.m11 = tm11;
+                    self.m12 = tm12;
+                    self.m21 = tm21;
+                    self.m22 = tm22;
+                }
+                TransformationType::Project => {
+                    let tm13 = cosa * self.m13 + sina * self.m23;
+                    let tm23 = -sina * self.m13 + cosa * self.m23;
+                    self.m13 = tm13;
+                    self.m23 = tm23;
+                    let tm11 = cosa * self.m11 + sina * self.m21;
+                    let tm12 = cosa * self.m12 + sina * self.m22;
+                    let tm21 = -sina * self.m11 + cosa * self.m21;
+                    let tm22 = -sina * self.m12 + cosa * self.m22;
+                    self.m11 = tm11;
+                    self.m12 = tm12;
+                    self.m21 = tm21;
+                    self.m22 = tm22;
+                }
+
+                TransformationType::Rotate | TransformationType::Shear => {
+                    let tm11 = cosa * self.m11 + sina * self.m21;
+                    let tm12 = cosa * self.m12 + sina * self.m22;
+                    let tm21 = -sina * self.m11 + cosa * self.m21;
+                    let tm22 = -sina * self.m12 + cosa * self.m22;
+                    self.m11 = tm11;
+                    self.m12 = tm12;
+                    self.m21 = tm21;
+                    self.m22 = tm22;
+                }
+            }
+
+            if self.dirty < TransformationType::Rotate {
+                self.dirty = TransformationType::Rotate;
+            }
+        } else {
+            let mut result = Self::new();
+            if axis == Axis::Y {
+                result.m11 = cosa;
+                result.m13 = -sina * INV_DIST_TO_PLANE;
+            } else {
+                result.m22 = cosa;
+                result.m23 = -sina * INV_DIST_TO_PLANE;
+            }
+            result.type_ = TransformationType::Project;
+            *self = result * self;
+        }
     }
 
     /// Rotates the coordinate system counterclockwise by the given `angle`
