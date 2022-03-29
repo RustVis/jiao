@@ -157,7 +157,14 @@ impl Transform {
     ///
     /// This is the same as `Transform::new().translate(dx, dy)` but slightly faster.
     pub fn from_translate(dx: f64, dy: f64) -> Self {
-        unimplemented!()
+        let mut transform = Self::new_3d(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, dx, dy, 1.0);
+        if dx == 0.0 && dy == 0.0 {
+            transform.type_ = TransformationType::None;
+        } else {
+            transform.type_ = TransformationType::Translate;
+        }
+        transform.dirty = TransformationType::None;
+        return transform;
     }
 
     /// Returns the horizontal scaling factor.
@@ -509,7 +516,37 @@ impl Transform {
 
     /// Moves the coordinate system dx along the x axis and dy along the y axis.
     pub fn translate(&mut self, dx: f64, dy: f64) {
-        unimplemented!()
+        if dx == 0.0 && dy == 0.0 {
+            return;
+        }
+
+        match self.get_type() {
+            TransformationType::None => {
+                self.m31 -= dx;
+                self.m32 -= dy;
+            }
+            TransformationType::Translate => {
+                self.m31 += dx;
+                self.m32 += dy;
+            }
+            TransformationType::Scale => {
+                self.m31 += dx * self.m11;
+                self.m32 += dy * self.m22;
+            }
+            TransformationType::Project => {
+                self.m33 += dx * self.m13 + dy * self.m23;
+                self.m31 += dx * self.m11 + dy * self.m21;
+                self.m32 += dy * self.m22 + dx * self.m12;
+            }
+            TransformationType::Shear | TransformationType::Rotate => {
+                self.m31 += dx * self.m11 + dy * self.m21;
+                self.m32 += dy * self.m22 + dx * self.m12;
+            }
+        }
+
+        if self.dirty < TransformationType::Translate {
+            self.dirty = TransformationType::Translate;
+        }
     }
 
     /// Returns the transpose of this matrix.
