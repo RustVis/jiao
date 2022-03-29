@@ -543,7 +543,48 @@ impl Transform {
 
     /// Shears the coordinate system by sh horizontally and sv vertically.
     pub fn shear(&mut self, sh: f64, sv: f64) {
-        unimplemented!()
+        if sh == 0.0 && sv == 0.0 {
+            return;
+        }
+
+        match self.get_type() {
+            TransformationType::None | TransformationType::Translate => {
+                self.m12 = sv;
+                self.m21 = sh;
+            }
+            TransformationType::Scale => {
+                self.m12 = sv * self.m22;
+                self.m21 = sh * self.m11;
+            }
+            TransformationType::Project => {
+                let tm13 = sv * self.m23;
+                let tm23 = sh * self.m13;
+                self.m13 += tm13;
+                self.m23 += tm23;
+
+                let tm11 = sv * self.m21;
+                let tm22 = sh * self.m12;
+                let tm12 = sv * self.m22;
+                let tm21 = sh * self.m11;
+                self.m11 += tm11;
+                self.m12 += tm12;
+                self.m21 += tm21;
+                self.m22 += tm22;
+            }
+            TransformationType::Rotate | TransformationType::Shear => {
+                let tm11 = sv * self.m21;
+                let tm22 = sh * self.m12;
+                let tm12 = sv * self.m22;
+                let tm21 = sh * self.m11;
+                self.m11 += tm11;
+                self.m12 += tm12;
+                self.m21 += tm21;
+                self.m22 += tm22;
+            }
+        }
+        if self.dirty < TransformationType::Shear {
+            self.dirty = TransformationType::Shear;
+        }
     }
 
     // Creates a transformation matrix, trans, that maps a unit square to
