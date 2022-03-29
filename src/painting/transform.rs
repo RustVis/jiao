@@ -149,7 +149,14 @@ impl Transform {
     ///
     /// This is the same as `Transform::new().scale(sx, sy)` but slightly faster.
     pub fn from_scale(sx: f64, sy: f64) -> Self {
-        unimplemented!()
+        let mut transform = Self::new_3d(sx, 0.0, 0.0, 0.0, sy, 0.0, 0.0, 0.0, 1.0);
+        if sx == 1.0 && sy == 1.0 {
+            transform.type_ = TransformationType::None;
+        } else {
+            transform.type_ = TransformationType::Scale;
+        }
+        transform.dirty = TransformationType::None;
+        return transform;
     }
 
     /// Creates a matrix which corresponds to a translation of `dx` along the x axis and
@@ -476,7 +483,40 @@ impl Transform {
 
     /// Scales the coordinate system by `sx` horizontally and `sy` vertically.
     pub fn scale(&mut self, sx: f64, sy: f64) {
-        unimplemented!()
+        if sx == 1.0 && sy == 1.0 {
+            return;
+        }
+
+        match self.get_type() {
+            TransformationType::None | TransformationType::Translate => {
+                self.m11 = sx;
+                self.m22 = sy;
+            }
+
+            TransformationType::Project => {
+                self.m13 *= sx;
+                self.m23 *= sy;
+                self.m12 *= sx;
+                self.m21 *= sy;
+                self.m11 *= sx;
+                self.m22 *= sy;
+            }
+            TransformationType::Rotate | TransformationType::Shear => {
+                self.m12 *= sx;
+                self.m21 *= sy;
+                self.m11 *= sx;
+                self.m22 *= sy;
+            }
+
+            TransformationType::Scale => {
+                self.m11 *= sx;
+                self.m22 *= sy;
+            }
+        }
+
+        if self.dirty < TransformationType::Scale {
+            self.dirty = TransformationType::Scale;
+        }
     }
 
     /// Sets the matrix elements to the specified values, m11, m12, m13 m21, m22, m23 m31, m32 and m33.
