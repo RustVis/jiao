@@ -482,20 +482,48 @@ impl ops::MulAssign<f64> for Transform {
 impl ops::AddAssign<f64> for Transform {
     /// Returns the matrix obtained by adding the given scalar to each element of this matrix.
     fn add_assign(&mut self, scalar: f64) {
-        unimplemented!()
+        if scalar == 0.0 {
+            return;
+        }
+        self.m11 += scalar;
+        self.m12 += scalar;
+        self.m13 += scalar;
+        self.m21 += scalar;
+        self.m22 += scalar;
+        self.m23 += scalar;
+        self.m31 += scalar;
+        self.m32 += scalar;
+        self.m33 += scalar;
+        self.dirty = TransformationType::Project;
     }
 }
 
 impl ops::SubAssign<f64> for Transform {
     /// Returns the matrix obtained by subtracting the given scalar from each element of this matrix.
     fn sub_assign(&mut self, scalar: f64) {
-        unimplemented!()
+        if scalar == 0.0 {
+            return;
+        }
+        self.m11 -= scalar;
+        self.m12 -= scalar;
+        self.m13 -= scalar;
+        self.m21 -= scalar;
+        self.m22 -= scalar;
+        self.m23 -= scalar;
+        self.m31 -= scalar;
+        self.m32 -= scalar;
+        self.m33 -= scalar;
+        self.dirty = TransformationType::Project;
     }
 }
 
 impl ops::DivAssign<f64> for Transform {
     /// Returns the result of performing an element-wise division of this matrix by the given scalar.
     fn div_assign(&mut self, scalar: f64) {
-        unimplemented!()
+        if scalar == 0.0 {
+            return;
+        }
+        let scalar = 1.0 / scalar;
+        *self *= scalar;
     }
 }
