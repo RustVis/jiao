@@ -90,6 +90,12 @@ impl Transform {
         }
     }
 
+    fn with_affine(affine: bool) -> Self {
+        let mut trans = Self::new();
+        trans.affine = affine;
+        trans
+    }
+
     /// Constructs a matrix with the elements, `m11`, `m12`, `m21`, `m22`, `dx` and `dy`.
     pub fn new_2d(m11: f64, m12: f64, m21: f64, m22: f64, dx: f64, dy: f64) -> Self {
         Self {
@@ -236,7 +242,50 @@ impl Transform {
     /// If the matrix is singular (not invertible), the returned matrix is the identity matrix.
     /// Value of `invertible` is set to true if the matrix is invertible, otherwise it is set to false.
     pub fn inverted(&self, invertible: &mut bool) -> Self {
-        unimplemented!()
+        let mut invert = Self::with_affine(true);
+        let mut inv = true;
+
+        match self.get_type() {
+            TransformationType::None => {
+                // ignore.
+            }
+            TransformationType::Translate => {
+                invert.m31 = -self.m31;
+                invert.m32 = -self.m32;
+            }
+            TransformationType::Scale => {
+                inv = self.m11 != 0.0;
+                inv &= self.m22 != 0.0;
+                if inv {
+                    invert.m11 = 1. / self.m11;
+                    invert.m22 = 1. / self.m22;
+                    invert.m31 = -self.m31 * invert.m11;
+                    invert.m32 = -self.m32 * invert.m22;
+                }
+            }
+            TransformationType::Rotate | TransformationType::Shear => {
+                // TODO(Shaohua): implements inverted()
+                //invert.affine = affine.inverted(&inv);
+            }
+            _ => {
+                // general case
+                let det = self.determinant();
+                inv = det != 0.0;
+                if inv {
+                    invert = self.adjoint() / det;
+                }
+            }
+        }
+
+        *invertible = inv;
+
+        if inv {
+            // inverting doesn't change the type
+            invert.type_ = self.type_;
+            invert.dirty = self.dirty;
+        }
+
+        return invert;
     }
 
     /// Returns true if the matrix represent an affine transformation, otherwise returns false.
@@ -465,7 +514,10 @@ impl Transform {
 
     /// Returns the transpose of this matrix.
     pub fn transposed(&self) -> Self {
-        unimplemented!()
+        Self::new_3d(
+            self.m11, self.m21, self.m31, self.m12, self.m22, self.m32, self.m13, self.m23,
+            self.m33,
+        )
     }
 
     /// Returns the transformation type of this matrix.
@@ -501,6 +553,19 @@ impl ops::Mul<&Transform> for &Transform {
     /// Note that matrix multiplication is not commutative, i.e. a*b != b*a.
     fn mul(self, trans: &Transform) -> Self::Output {
         unimplemented!()
+    }
+}
+
+impl ops::Div<f64> for Transform {
+    type Output = Transform;
+
+    fn div(mut self, scalar: f64) -> Self::Output {
+        if scalar == 0.0 {
+            return self;
+        }
+        let scalar = 1.0 / scalar;
+        self *= scalar;
+        self
     }
 }
 
