@@ -53,6 +53,8 @@ pub struct Transform {
     m33: f64,
 
     dirty: TransformationType,
+    type_: TransformationType,
+    affine: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
@@ -71,27 +73,69 @@ impl Transform {
     ///
     /// All elements are set to zero except m11 and m22 (specifying the scale) and m33 which are set to 1.
     pub fn new() -> Self {
-        unimplemented!()
+        Self {
+            m11: 1.0,
+            m12: 0.0,
+            m13: 0.0,
+            m21: 0.0,
+            m22: 1.0,
+            m23: 0.0,
+            m31: 0.0,
+            m32: 0.0,
+            m33: 1.0,
+
+            dirty: TransformationType::None,
+            type_: TransformationType::None,
+            affine: false,
+        }
     }
 
     /// Constructs a matrix with the elements, `m11`, `m12`, `m21`, `m22`, `dx` and `dy`.
-    pub fn new_2d(_m11: f64, _m12: f64, _m21: f64, _m22: f64, _dx: f64, _dy: f64) {
-        unimplemented!()
+    pub fn new_2d(m11: f64, m12: f64, m21: f64, m22: f64, dx: f64, dy: f64) -> Self {
+        Self {
+            m11,
+            m12,
+            m13: 0.0,
+            m21,
+            m22,
+            m23: 0.0,
+            m31: dx,
+            m32: dy,
+            m33: 1.0,
+
+            dirty: TransformationType::Shear,
+            type_: TransformationType::None,
+            affine: true,
+        }
     }
 
     /// Constructs a matrix with the elements, `m11`, `m12`, `m13`, `m21`, `m22`, `m23`, `m31`, `m32`, `m33`.
     pub fn new_3d(
-        _m11: f64,
-        _m12: f64,
-        _m13: f64,
-        _m21: f64,
-        _m22: f64,
-        _m23: f64,
-        _m31: f64,
-        _m32: f64,
-        _m33: f64,
+        m11: f64,
+        m12: f64,
+        m13: f64,
+        m21: f64,
+        m22: f64,
+        m23: f64,
+        m31: f64,
+        m32: f64,
+        m33: f64,
     ) -> Self {
-        unimplemented!()
+        Self {
+            m11,
+            m12,
+            m13,
+            m21,
+            m22,
+            m23,
+            m31,
+            m32,
+            m33,
+
+            dirty: TransformationType::Project,
+            type_: TransformationType::None,
+            affine: true,
+        }
     }
 
     /// Creates a matrix which corresponds to a scaling of `sx` horizontally and
@@ -157,7 +201,17 @@ impl Transform {
 
     /// Returns the adjoint of this matrix.
     pub fn adjoint(&self) -> Self {
-        unimplemented!()
+        let h11 = self.m22 * self.m33 - self.m23 * self.m32;
+        let h21 = self.m23 * self.m31 - self.m21 * self.m33;
+        let h31 = self.m21 * self.m32 - self.m22 * self.m31;
+        let h12 = self.m13 * self.m32 - self.m12 * self.m33;
+        let h22 = self.m11 * self.m33 - self.m13 * self.m31;
+        let h32 = self.m12 * self.m31 - self.m11 * self.m32;
+        let h13 = self.m12 * self.m23 - self.m13 * self.m22;
+        let h23 = self.m13 * self.m21 - self.m11 * self.m23;
+        let h33 = self.m11 * self.m22 - self.m12 * self.m21;
+
+        Self::new_3d(h11, h12, h13, h21, h22, h23, h31, h32, h33)
     }
 
     /// Returns the matrix's determinant.
