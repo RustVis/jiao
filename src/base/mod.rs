@@ -3,6 +3,7 @@
 // in the LICENSE file.
 
 pub mod aspect_ratio_mode;
+pub mod axis;
 pub mod event_dispatcher;
 pub mod line;
 pub mod margins;
