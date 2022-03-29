@@ -9,7 +9,6 @@ pub mod color_constants;
 pub mod color_matrix;
 pub mod gradient;
 pub mod linear_gradient;
-pub mod matrix;
 pub mod painter;
 pub mod painter_device;
 pub mod painter_engine;
