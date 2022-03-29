@@ -3,6 +3,9 @@ name = "jiao"
 version = "0.1.0"
 edition = "2021"
 description = "Cross platform 2D rendering engine"
+homepage = "https://github.com/RustVis/jiao"
+readme = "README.md"
+license = "Apache-2.0"
 
 [features]
 default = ["web"]
