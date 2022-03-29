@@ -41,8 +41,21 @@ use crate::base::rect::{Rect, RectF};
 /// Finally, the Transform struct supports matrix multiplication,
 /// addition and subtraction, and objects of the class can be streamed as well as compared.
 #[derive(Debug, Clone, PartialEq)]
-pub struct Transform {}
+pub struct Transform {
+    m11: f64,
+    m12: f64,
+    m13: f64,
+    m21: f64,
+    m22: f64,
+    m23: f64,
+    m31: f64, // alias of dx
+    m32: f64, // alias of dy
+    m33: f64,
 
+    dirty: TransformationType,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 #[repr(u8)]
 pub enum TransformationType {
     None = 0x00,
@@ -99,47 +112,47 @@ impl Transform {
 
     /// Returns the horizontal scaling factor.
     pub fn m11(&self) -> f64 {
-        unimplemented!()
+        self.m11
     }
 
     /// Returns the vertical shearing factor.
     pub fn m12(&self) -> f64 {
-        unimplemented!()
+        self.m12
     }
 
     /// Returns the horizontal projection factor.
     pub fn m13(&self) -> f64 {
-        unimplemented!()
+        self.m13
     }
 
     /// Returns the horizontal shearing factor.
     pub fn m21(&self) -> f64 {
-        unimplemented!()
+        self.m21
     }
 
     /// Returns the vertical scaling factor.
     pub fn m22(&self) -> f64 {
-        unimplemented!()
+        self.m22
     }
 
     /// Returns the vertical projection factor.
     pub fn m23(&self) -> f64 {
-        unimplemented!()
+        self.m23
     }
 
     /// Returns the horizontal translation factor.
     pub fn m31(&self) -> f64 {
-        unimplemented!()
+        self.m31
     }
 
     /// Returns the vertical translation factor.
     pub fn m32(&self) -> f64 {
-        unimplemented!()
+        self.m32
     }
 
     /// Returns the division factor.
     pub fn m33(&self) -> f64 {
-        unimplemented!()
+        self.m33
     }
 
     /// Returns the adjoint of this matrix.
@@ -149,17 +162,19 @@ impl Transform {
 
     /// Returns the matrix's determinant.
     pub fn determinant(&self) -> f64 {
-        unimplemented!()
+        self.m11 * (self.m33 * self.m22 - self.m32 * self.m23)
+            - self.m21 * (self.m33 * self.m12 - self.m32 * self.m13)
+            + self.m31 * (self.m23 * self.m12 - self.m22 * self.m13)
     }
 
     /// Returns the horizontal translation factor.
     pub fn dx(&self) -> f64 {
-        unimplemented!()
+        self.m31
     }
 
     /// Returns the vertical translation factor.
     pub fn dy(&self) -> f64 {
-        unimplemented!()
+        self.m32
     }
 
     /// Returns an inverted copy of this matrix.
@@ -172,17 +187,17 @@ impl Transform {
 
     /// Returns true if the matrix represent an affine transformation, otherwise returns false.
     pub fn is_affine(&self) -> bool {
-        unimplemented!()
+        self.get_type() < TransformationType::Project
     }
 
     /// Returns true if the matrix is the identity matrix, otherwise returns false.
     pub fn is_identity(&self) -> bool {
-        unimplemented!()
+        self.get_type() == TransformationType::None
     }
 
     /// Returns true if the matrix is invertible, otherwise returns false.
     pub fn is_invertible(&self) -> bool {
-        unimplemented!()
+        self.determinant() != 0.0
     }
 
     /// Returns true if the matrix represents some kind of a rotating transformation,
@@ -191,17 +206,17 @@ impl Transform {
     /// Note: A rotation transformation of 180 degrees and/or 360 degrees
     /// is treated as a scaling transformation.
     pub fn is_rotating(&self) -> bool {
-        unimplemented!()
+        self.get_type() >= TransformationType::Rotate
     }
 
     /// Returns true if the matrix represents a scaling transformation, otherwise returns false.
     pub fn is_scaling(&self) -> bool {
-        unimplemented!()
+        self.get_type() >= TransformationType::Scale
     }
 
     /// Returns true if the matrix represents a translating transformation, otherwise returns false.
     pub fn is_translating(&self) -> bool {
-        unimplemented!()
+        self.get_type() >= TransformationType::Translate
     }
 
     /// Maps the given coordinates `x` and `y` into the coordinate system defined by this matrix.
@@ -446,7 +461,21 @@ impl ops::MulAssign<f64> for Transform {
     /// Returns the result of performing an element-wise multiplication of this matrix
     /// with the given scalar.
     fn mul_assign(&mut self, scalar: f64) {
-        unimplemented!()
+        if scalar == 1.0 {
+            return;
+        }
+        self.m11 *= scalar;
+        self.m12 *= scalar;
+        self.m13 *= scalar;
+        self.m21 *= scalar;
+        self.m22 *= scalar;
+        self.m23 *= scalar;
+        self.m31 *= scalar;
+        self.m32 *= scalar;
+        self.m33 *= scalar;
+        if self.dirty < TransformationType::Scale {
+            self.dirty = TransformationType::Scale;
+        }
     }
 }
 
