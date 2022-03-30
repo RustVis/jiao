@@ -344,7 +344,7 @@ impl Transform {
 
     /// Maps the given coordinates `x` and `y` into the coordinate system defined by this matrix.
     pub fn map(&self, x: f64, y: f64) -> (f64, f64) {
-        unimplemented!()
+        self.map_helper(x, y)
     }
 
     /// Maps the given coordinates `x` and `y` into the coordinate system defined by this matrix.
@@ -576,14 +576,52 @@ impl Transform {
     /// mapped into the coordinate system defined by this matrix.
     ///
     /// Note that the transformed coordinates are rounded to the nearest integer.
-    pub fn map_rect(&self, rect: &Rect) -> Rect {
+    pub fn map_rect(&self, _rect: &Rect) -> Rect {
         unimplemented!()
     }
 
     /// Creates and returns a RectF object that is a copy of the given rectangle,
     /// mapped into the coordinate system defined by this matrix.
-    pub fn map_rect_f(&self, rect: &RectF) -> RectF {
+    pub fn map_rect_f(&self, _rect: &RectF) -> RectF {
         unimplemented!()
+    }
+
+    fn map_helper(&self, x: f64, y: f64) -> (f64, f64) {
+        let t = self.get_type();
+        let mut nx;
+        let mut ny;
+        match t {
+            TransformationType::None => {
+                nx = x;
+                ny = y;
+            }
+            TransformationType::Translate => {
+                nx = x + self.m31;
+                ny = y + self.m32;
+            }
+            TransformationType::Scale => {
+                nx = self.m11 * x + self.m31;
+                ny = self.m22 * y + self.m32;
+            }
+            TransformationType::Rotate
+            | TransformationType::Shear
+            | TransformationType::Project => {
+                nx = self.m11 * x + self.m21 * y + self.m31;
+                ny = self.m12 * x + self.m22 * y + self.m32;
+                if t == TransformationType::Project {
+                    let mut w = self.m13 * x + self.m23 * y + self.m33;
+                    const NEAR_CLIP: f64 = 0.000001;
+                    if w < NEAR_CLIP {
+                        w = NEAR_CLIP;
+                    }
+                    w = 1.0 / w;
+                    nx *= w;
+                    ny *= w;
+                }
+            }
+        }
+
+        (nx, ny)
     }
 
     // Creates and returns a Polygon representation of the given rectangle,
