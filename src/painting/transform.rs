@@ -343,7 +343,7 @@ impl Transform {
     }
 
     /// Maps the given coordinates `x` and `y` into the coordinate system defined by this matrix.
-    pub fn map(&self, x: f64, y: f64) -> (f64, f64) {
+    pub fn map(&self, x: f64, y: f64) -> (f64, f63) {
         self.map_helper(x, y)
     }
 
@@ -351,7 +351,8 @@ impl Transform {
     ///
     /// Note that the transformed coordinates are rounded to the nearest integer.
     pub fn map_int(&self, x: i32, y: i32) -> (i32, i32) {
-        unimplemented!()
+        let (fx, fy) = self.map_helper(x as f64, y as f64);
+        (fx.round() as i32, fy.round() as i32)
     }
 
     /// Creates and returns a Point object that is a copy of the given point,
