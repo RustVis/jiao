@@ -63,7 +63,7 @@ pub struct Transform {
     affine: bool,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(u8)]
 pub enum TransformationType {
     None = 0x00,
@@ -834,8 +834,83 @@ impl ops::Div<f64> for Transform {
 
 impl ops::MulAssign<&Transform> for Transform {
     /// Returns the result of multiplying this matrix by the given matrix.
-    fn mul_assign(&mut self, trans: &Transform) {
-        unimplemented!()
+    fn mul_assign(&mut self, other: &Transform) {
+        let other_type = other.get_type();
+        if other_type == TransformationType::None {
+            return;
+        }
+
+        let this_type = self.get_type();
+        if this_type == TransformationType::None {
+            *self = other.clone();
+            return;
+        }
+
+        let new_type = this_type.max(other_type);
+        match new_type {
+            TransformationType::None => {
+                // ignore
+            }
+            TransformationType::Translate => {
+                self.m31 += other.m31;
+                self.m32 += other.m32;
+            }
+            TransformationType::Scale => {
+                let m11 = self.m11 * other.m11;
+                let m22 = self.m22 * other.m22;
+
+                let m31 = self.m31 * other.m11 + other.m31;
+                let m32 = self.m32 * other.m22 + other.m32;
+
+                self.m11 = m11;
+                self.m22 = m22;
+                self.m31 = m31;
+                self.m32 = m32;
+            }
+            TransformationType::Rotate | TransformationType::Shear => {
+                let m11 = self.m11 * other.m11 + self.m12 * other.m21;
+                let m12 = self.m11 * other.m12 + self.m12 * other.m22;
+
+                let m21 = self.m21 * other.m11 + self.m22 * other.m21;
+                let m22 = self.m21 * other.m12 + self.m22 * other.m22;
+
+                let m31 = self.m31 * other.m11 + self.m32 * other.m21 + other.m31;
+                let m32 = self.m31 * other.m12 + self.m32 * other.m22 + other.m32;
+
+                self.m11 = m11;
+                self.m12 = m12;
+                self.m21 = m21;
+                self.m22 = m22;
+                self.m31 = m31;
+                self.m32 = m32;
+            }
+            TransformationType::Project => {
+                let m11 = self.m11 * other.m11 + self.m12 * other.m21 + self.m13 * other.m31;
+                let m12 = self.m11 * other.m12 + self.m12 * other.m22 + self.m13 * other.m32;
+                let m13 = self.m11 * other.m13 + self.m12 * other.m23 + self.m13 * other.m33;
+
+                let m21 = self.m21 * other.m11 + self.m22 * other.m21 + self.m23 * other.m31;
+                let m22 = self.m21 * other.m12 + self.m22 * other.m22 + self.m23 * other.m32;
+                let m23 = self.m21 * other.m13 + self.m22 * other.m23 + self.m23 * other.m33;
+
+                let m31 = self.m31 * other.m11 + self.m32 * other.m21 + self.m33 * other.m31;
+                let m32 = self.m31 * other.m12 + self.m32 * other.m22 + self.m33 * other.m32;
+                let m33 = self.m31 * other.m13 + self.m32 * other.m23 + self.m33 * other.m33;
+
+                self.m11 = m11;
+                self.m12 = m12;
+                self.m13 = m13;
+                self.m21 = m21;
+                self.m22 = m22;
+                self.m23 = m23;
+                self.m31 = m31;
+                self.m32 = m32;
+                self.m33 = m33;
+            }
+        }
+
+        self.dirty = new_type;
+        self.type_ = new_type;
     }
 }
 
