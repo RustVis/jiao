@@ -2,6 +2,7 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use core::cmp;
 use core::f64::consts::PI;
 use core::ops;
 
@@ -45,7 +46,7 @@ const INV_DIST_TO_PLANE: f64 = 1.0 / 1024.0;
 ///
 /// Finally, the Transform struct supports matrix multiplication,
 /// addition and subtraction, and objects of the class can be streamed as well as compared.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub struct Transform {
     m11: f64,
     m12: f64,
@@ -906,5 +907,20 @@ impl ops::DivAssign<f64> for Transform {
         }
         let scalar = 1.0 / scalar;
         *self *= scalar;
+    }
+}
+
+impl cmp::PartialEq for Transform {
+    /// Returns true if this matrix is equal to the given matrix, otherwise returns false.
+    fn eq(&self, other: &Self) -> bool {
+        self.m11 == other.m11
+            && self.m12 == other.m12
+            && self.m21 == other.m21
+            && self.m22 == other.m22
+            && self.m31 == other.m31
+            && self.m32 == other.m32
+            && self.m13 == other.m13
+            && self.m23 == other.m23
+            && self.m33 == other.m33
     }
 }
