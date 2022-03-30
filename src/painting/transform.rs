@@ -396,7 +396,38 @@ impl Transform {
     /// Creates and returns a PointF object that is a copy of the given point,
     /// mapped into the coordinate system defined by this matrix.
     pub fn map_point_f(&self, point: &PointF) -> PointF {
-        unimplemented!()
+        let fx = point.x();
+        let fy = point.y();
+        let mut x = 0.0;
+        let mut y = 0.0;
+
+        let t = self.get_type();
+        match t {
+            TransformationType::None => {
+                x = fx;
+                y = fy;
+            }
+            TransformationType::Translate => {
+                x = fx + self.m31;
+                y = fy + self.m32;
+            }
+            TransformationType::Scale => {
+                x = self.m11 * fx + self.m31;
+                y = self.m22 * fy + self.m32;
+            }
+            TransformationType::Rotate
+            | TransformationType::Shear
+            | TransformationType::Project => {
+                x = self.m11 * fx + self.m21 * fy + self.m31;
+                y = self.m12 * fx + self.m22 * fy + self.m32;
+                if t == TransformationType::Project {
+                    let w = 1. / (self.m13 * fx + self.m23 * fy + self.m33);
+                    x *= w;
+                    y *= w;
+                }
+            }
+        }
+        PointF::from(x, y)
     }
 
     /// Creates and returns a Line object that is a copy of the given line,
