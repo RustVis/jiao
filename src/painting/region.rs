@@ -98,7 +98,24 @@ impl Region {
 
     /// Returns true if this region intersects with region, otherwise returns false.
     pub fn intersects(&self, other: &Self) -> bool {
-        unimplemented!()
+        if self.is_empty() || other.is_empty() {
+            return false;
+        }
+
+        if !Self::rect_intersects(&self.bounding_rect(), &other.bounding_rect()) {
+            return false;
+        }
+        if self.rect_count() == 1 && other.rect_count() == 1 {
+            return true;
+        }
+
+        /*
+        for (const QRect &myRect : *this)
+            for (const QRect &otherRect : region)
+                if (rect_intersects(myRect, otherRect))
+                    return true;
+        */
+        return false;
     }
 
     /// Returns true if this region intersects with rect, otherwise returns false.
@@ -163,7 +180,7 @@ impl Region {
     /// Positive values move the region to the right and down.
     /// Translates to the given point.
     pub fn translate_point(&mut self, point: &Point) {
-        unimplemented!()
+        self.translate(point.x(), point.y());
     }
 
     /// Returns a copy of the region that is translated dx along the x axis and dy along the y axis,
@@ -171,7 +188,9 @@ impl Region {
     ///
     /// Positive values move the region to the right and down.
     pub fn translated(&self, x: i32, y: i32) -> Self {
-        unimplemented!()
+        let mut ret = self.clone();
+        ret.translate(x, y);
+        ret
     }
 
     /// Returns a copy of the regtion that is translated p.x() along the x axis and p.y() along the y axis,
@@ -179,7 +198,7 @@ impl Region {
     ///
     /// Positive values move the rectangle to the right and down.
     pub fn translated_point(&self, point: &Point) -> Self {
-        unimplemented!()
+        self.translated(point.x(), point.y())
     }
 
     /// Returns a region which is the union of this region and other.
@@ -195,6 +214,13 @@ impl Region {
     /// Returns a region which is the exclusive or (XOR) of this region and other.
     pub fn xored(&self, other: &Self) -> Self {
         unimplemented!()
+    }
+
+    fn rect_intersects(r1: &Rect, r2: &Rect) -> bool {
+        r1.right() >= r2.left()
+            && r1.left() <= r2.right()
+            && r1.bottom() >= r2.top()
+            && r1.top() <= r2.bottom()
     }
 }
 
