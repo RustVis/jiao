@@ -359,7 +359,38 @@ impl Transform {
     ///
     /// Note that the transformed coordinates are rounded to the nearest integer.
     pub fn map_point(&self, point: &Point) -> Point {
-        unimplemented!()
+        let fx = point.x() as f64;
+        let fy = point.y() as f64;
+        let mut x = 0.0;
+        let mut y = 0.0;
+        let t = self.get_type();
+        match t {
+            TransformationType::None => {
+                x = fx;
+                y = fy;
+            }
+            TransformationType::Translate => {
+                x = fx + self.m31;
+                y = fy + self.m32;
+            }
+            TransformationType::Scale => {
+                x = self.m11 * fx + self.m31;
+                y = self.m22 * fy + self.m32;
+            }
+            TransformationType::Rotate
+            | TransformationType::Shear
+            | TransformationType::Project => {
+                x = self.m11 * fx + self.m21 * fy + self.m31;
+                y = self.m12 * fx + self.m22 * fy + self.m32;
+                if t == TransformationType::Project {
+                    let w = 1.0 / (self.m13 * fx + self.m23 * fy + self.m33);
+                    x *= w;
+                    y *= w;
+                }
+            }
+        }
+
+        Point::from(x.round() as i32, y.round() as i32)
     }
 
     /// Creates and returns a PointF object that is a copy of the given point,
@@ -452,7 +483,17 @@ impl Transform {
     /// Resets the matrix to an identity matrix, i.e. all elements are set to zero,
     /// except m11 and m22 (specifying the scale) and m33 which are set to 1.
     pub fn reset(&mut self) {
-        unimplemented!()
+        self.m11 = 1.0;
+        self.m12 = 0.0;
+        self.m13 = 0.0;
+        self.m21 = 0.0;
+        self.m22 = 1.0;
+        self.m23 = 0.0;
+        self.m31 = 0.0;
+        self.m32 = 0.0;
+        self.m33 = 1.0;
+        self.type_ = TransformationType::None;
+        self.dirty = TransformationType::None;
     }
 
     /// Rotates the coordinate system counterclockwise by the given `angle`
@@ -882,17 +923,6 @@ impl ops::Mul<&Transform> for Transform {
         t.type_ = new_type;
 
         return t;
-    }
-}
-
-impl ops::Mul<&Transform> for &Transform {
-    type Output = Transform;
-
-    /// Returns the result of multiplying this matrix by the given matrix.
-    ///
-    /// Note that matrix multiplication is not commutative, i.e. a*b != b*a.
-    fn mul(self, trans: &Transform) -> Self::Output {
-        unimplemented!()
     }
 }
 
