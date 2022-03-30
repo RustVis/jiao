@@ -10,6 +10,10 @@ use crate::base::line::{Line, LineF};
 use crate::base::point::{Point, PointF};
 use crate::base::rect::{Rect, RectF};
 
+// pi/180
+const DEG_TO_RAD: f64 = PI / 180.0;
+const INV_DIST_TO_PLANE: f64 = 1.0 / 1024.0;
+
 /// The Transform struct specifies 2D transformations of a coordinate system.
 ///
 /// A transformation specifies how to translate, scale, shear, rotate or
@@ -463,10 +467,6 @@ impl Transform {
     ///
     /// The `angle` is specified in degrees.
     pub fn rotate_with_axis(&mut self, angle: f64, axis: Axis) {
-        // pi/180
-        const DEG_TO_RAD: f64 = PI / 180.0;
-        const INV_DIST_TO_PLANE: f64 = 1.0 / 1024.0;
-
         if angle == 0.0 {
             return;
         }
@@ -562,7 +562,67 @@ impl Transform {
     ///
     /// The `angle` is specified in radians.
     pub fn rotate_radians_with_axis(&mut self, angle: f64, axis: Axis) {
-        unimplemented!()
+        let sina = angle.sin();
+        let cosa = angle.cos();
+
+        if axis == Axis::Z {
+            match self.get_type() {
+                TransformationType::None | TransformationType::Translate => {
+                    self.m11 = cosa;
+                    self.m12 = sina;
+                    self.m21 = -sina;
+                    self.m22 = cosa;
+                }
+                TransformationType::Scale => {
+                    let tm11 = cosa * self.m11;
+                    let tm12 = sina * self.m22;
+                    let tm21 = -sina * self.m11;
+                    let tm22 = cosa * self.m22;
+                    self.m11 = tm11;
+                    self.m12 = tm12;
+                    self.m21 = tm21;
+                    self.m22 = tm22;
+                }
+                TransformationType::Project => {
+                    let tm13 = cosa * self.m13 + sina * self.m23;
+                    let tm23 = -sina * self.m13 + cosa * self.m23;
+                    self.m13 = tm13;
+                    self.m23 = tm23;
+                    let tm11 = cosa * self.m11 + sina * self.m21;
+                    let tm12 = cosa * self.m12 + sina * self.m22;
+                    let tm21 = -sina * self.m11 + cosa * self.m21;
+                    let tm22 = -sina * self.m12 + cosa * self.m22;
+                    self.m11 = tm11;
+                    self.m12 = tm12;
+                    self.m21 = tm21;
+                    self.m22 = tm22;
+                }
+                TransformationType::Rotate | TransformationType::Shear => {
+                    let tm11 = cosa * self.m11 + sina * self.m21;
+                    let tm12 = cosa * self.m12 + sina * self.m22;
+                    let tm21 = -sina * self.m11 + cosa * self.m21;
+                    let tm22 = -sina * self.m12 + cosa * self.m22;
+                    self.m11 = tm11;
+                    self.m12 = tm12;
+                    self.m21 = tm21;
+                    self.m22 = tm22;
+                }
+            }
+            if self.dirty < TransformationType::Rotate {
+                self.dirty = TransformationType::Rotate;
+            }
+        } else {
+            let mut result = Self::new();
+            if axis == Axis::Y {
+                result.m11 = cosa;
+                result.m13 = -sina * INV_DIST_TO_PLANE;
+            } else {
+                result.m22 = cosa;
+                result.m23 = -sina * INV_DIST_TO_PLANE;
+            }
+            result.type_ = TransformationType::Project;
+            *self = result * self;
+        }
     }
 
     /// Scales the coordinate system by `sx` horizontally and `sy` vertically.
