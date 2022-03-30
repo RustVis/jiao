@@ -60,7 +60,6 @@ pub struct Transform {
 
     dirty: TransformationType,
     type_: TransformationType,
-    affine: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
@@ -92,14 +91,7 @@ impl Transform {
 
             dirty: TransformationType::None,
             type_: TransformationType::None,
-            affine: false,
         }
-    }
-
-    fn with_affine(affine: bool) -> Self {
-        let mut trans = Self::new();
-        trans.affine = affine;
-        trans
     }
 
     /// Constructs a matrix with the elements, `m11`, `m12`, `m21`, `m22`, `dx` and `dy`.
@@ -117,7 +109,6 @@ impl Transform {
 
             dirty: TransformationType::Shear,
             type_: TransformationType::None,
-            affine: true,
         }
     }
 
@@ -146,7 +137,6 @@ impl Transform {
 
             dirty: TransformationType::Project,
             type_: TransformationType::None,
-            affine: true,
         }
     }
 
@@ -262,7 +252,7 @@ impl Transform {
     /// If the matrix is singular (not invertible), the returned matrix is the identity matrix.
     /// Value of `invertible` is set to true if the matrix is invertible, otherwise it is set to false.
     pub fn inverted(&self, invertible: &mut bool) -> Self {
-        let mut invert = Self::with_affine(true);
+        let mut invert = Self::new();
         let mut inv = true;
 
         match self.get_type() {
@@ -1069,7 +1059,7 @@ impl ops::Mul<&Transform> for Transform {
             return other.clone();
         }
 
-        let mut t = Self::with_affine(true);
+        let mut t = Self::new();
         let new_type = this_type.max(other_type);
         match new_type {
             TransformationType::None => {
