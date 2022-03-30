@@ -2,6 +2,9 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use core::ops;
+
+use crate::base::point::Point;
 use crate::base::rect::Rect;
 
 /// The Region struct specifies a clip region for a painter.
@@ -62,8 +65,8 @@ impl Region {
     ///
     /// If t is Rectangle, the region is the filled rectangle (x, y, w, h).
     /// If t is Ellipse, the region is the filled ellipse with center at (x + w / 2, y + h / 2) and size (w ,h).
-    pub fn with_int4_type(_x: i32, _y: i32, _width: i32, _height: i32, _t: RegionType) -> Self {
-        unimplemented!()
+    pub fn with_int4_type(x: i32, y: i32, width: i32, height: i32, t: RegionType) -> Self {
+        Self::with_rect_type(&Rect::from(x, y, width, height), t)
     }
 
     /// Returns the bounding rectangle of this region.
@@ -192,5 +195,103 @@ impl Region {
     /// Returns a region which is the exclusive or (XOR) of this region and other.
     pub fn xored(&self, other: &Self) -> Self {
         unimplemented!()
+    }
+}
+
+impl ops::BitXor<&Region> for &Region {
+    type Output = Region;
+    /// Applies the united() function to this region and other.
+    fn bitxor(self, other: &Region) -> Region {
+        self.xored(other)
+    }
+}
+
+impl ops::BitAnd<&Region> for &Region {
+    type Output = Region;
+    /// Applies the `intersected()` function to this region and other.
+    ///
+    /// `r1 & r2` is equivalent to `r1.intersected(r2)`.
+    fn bitand(self, other: &Region) -> Region {
+        self.intersected(other)
+    }
+}
+
+impl ops::BitAnd<&Rect> for &Region {
+    type Output = Region;
+    /// Applies the `intersected()` function to this region and rect.
+    ///
+    /// `r1 & rect` is equivalent to `r1.intersected_rect(rect)`.
+    fn bitand(self, rect: &Rect) -> Region {
+        self.intersected_rect(rect)
+    }
+}
+
+impl ops::Add<&Region> for Region {
+    type Output = Region;
+    /// Applies the united() function to this region and other.
+    ///
+    /// `r1 + r2` is equivalent to `r1.united(r2)`.
+    fn add(self, other: &Region) -> Region {
+        self.united(other)
+    }
+}
+
+impl ops::Add<&Region> for &Region {
+    type Output = Region;
+    /// Applies the united() function to this region and other.
+    ///
+    /// `r1 + r2` is equivalent to `r1.united(r2)`.
+    fn add(self, other: &Region) -> Region {
+        self.united(other)
+    }
+}
+
+impl ops::Add<&Rect> for &Region {
+    type Output = Region;
+    /// Applies the united() function to this region and rect.
+    ///
+    /// `r1 + rect` is equivalent to `r1.united_rect(rect)`.
+    fn add(self, rect: &Rect) -> Region {
+        self.united_rect(rect)
+    }
+}
+
+impl ops::Sub<&Region> for &Region {
+    type Output = Region;
+    /// Applies the `subtracted()` function to this region and other.
+    ///
+    /// `r1 - r2` is equivalent to `r1.subtracted(r2)`.
+    fn sub(self, other: &Region) -> Region {
+        self.subtracted(other)
+    }
+}
+
+impl ops::AddAssign<&Region> for Region {
+    fn add_assign(&mut self, other: &Region) {
+        *self = self.united(other);
+    }
+}
+
+impl ops::SubAssign<&Region> for Region {
+    fn sub_assign(&mut self, other: &Region) {
+        *self = self.subtracted(other);
+    }
+}
+
+impl ops::BitAndAssign<&Region> for Region {
+    fn bitand_assign(&mut self, other: &Region) {
+        *self = self.intersected(other);
+    }
+}
+
+impl ops::BitOrAssign<&Region> for Region {
+    fn bitor_assign(&mut self, other: &Region) {
+        *self = self.united(other);
+    }
+}
+
+impl ops::BitXorAssign<&Region> for Region {
+    fn bitxor_assign(&mut self, other: &Region) {
+        *self = self.xored(other);
     }
 }
