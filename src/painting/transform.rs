@@ -361,8 +361,8 @@ impl Transform {
     pub fn map_point(&self, point: &Point) -> Point {
         let fx = point.x() as f64;
         let fy = point.y() as f64;
-        let mut x = 0.0;
-        let mut y = 0.0;
+        let mut x;
+        let mut y;
         let t = self.get_type();
         match t {
             TransformationType::None => {
@@ -398,8 +398,8 @@ impl Transform {
     pub fn map_point_f(&self, point: &PointF) -> PointF {
         let fx = point.x();
         let fy = point.y();
-        let mut x = 0.0;
-        let mut y = 0.0;
+        let mut x;
+        let mut y;
 
         let t = self.get_type();
         match t {
@@ -440,10 +440,10 @@ impl Transform {
         let fx2 = line.x2() as f64;
         let fy2 = line.y2() as f64;
 
-        let mut x1 = 0.0;
-        let mut y1 = 0.0;
-        let mut x2 = 0.0;
-        let mut y2 = 0.0;
+        let mut x1;
+        let mut y1;
+        let mut x2;
+        let mut y2;
 
         let t = self.get_type();
         match t {
@@ -499,10 +499,10 @@ impl Transform {
         let fx2 = line.x2();
         let fy2 = line.y2();
 
-        let mut x1 = 0.0;
-        let mut y1 = 0.0;
-        let mut x2 = 0.0;
-        let mut y2 = 0.0;
+        let mut x1;
+        let mut y1;
+        let mut x2;
+        let mut y2;
 
         let t = self.get_type();
         match t {
@@ -855,7 +855,17 @@ impl Transform {
         m32: f64,
         m33: f64,
     ) {
-        unimplemented!()
+        self.m11 = m11;
+        self.m12 = m12;
+        self.m13 = m13;
+        self.m21 = m21;
+        self.m22 = m22;
+        self.m23 = m23;
+        self.m31 = m31;
+        self.m32 = m32;
+        self.m33 = m33;
+        self.type_ = TransformationType::None;
+        self.dirty = TransformationType::Project;
     }
 
     /// Shears the coordinate system by sh horizontally and sv vertically.
