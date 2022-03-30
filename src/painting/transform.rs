@@ -494,7 +494,54 @@ impl Transform {
     /// Creates and returns a Line object that is a copy of the given line,
     /// mapped into the coordinate system defined by this matrix.
     pub fn map_line_f(&self, line: &LineF) -> LineF {
-        unimplemented!()
+        let fx1 = line.x1();
+        let fy1 = line.y1();
+        let fx2 = line.x2();
+        let fy2 = line.y2();
+
+        let mut x1 = 0.0;
+        let mut y1 = 0.0;
+        let mut x2 = 0.0;
+        let mut y2 = 0.0;
+
+        let t = self.get_type();
+        match t {
+            TransformationType::None => {
+                x1 = fx1;
+                y1 = fy1;
+                x2 = fx2;
+                y2 = fy2;
+            }
+            TransformationType::Translate => {
+                x1 = fx1 + self.m31;
+                y1 = fy1 + self.m32;
+                x2 = fx2 + self.m31;
+                y2 = fy2 + self.m32;
+            }
+            TransformationType::Scale => {
+                x1 = self.m11 * fx1 + self.m31;
+                y1 = self.m22 * fy1 + self.m32;
+                x2 = self.m11 * fx2 + self.m31;
+                y2 = self.m22 * fy2 + self.m32;
+            }
+            TransformationType::Rotate
+            | TransformationType::Shear
+            | TransformationType::Project => {
+                x1 = self.m11 * fx1 + self.m21 * fy1 + self.m31;
+                y1 = self.m12 * fx1 + self.m22 * fy1 + self.m32;
+                x2 = self.m11 * fx2 + self.m21 * fy2 + self.m31;
+                y2 = self.m12 * fx2 + self.m22 * fy2 + self.m32;
+                if t == TransformationType::Project {
+                    let mut w = 1.0 / (self.m13 * fx1 + self.m23 * fy1 + self.m33);
+                    x1 *= w;
+                    y1 *= w;
+                    w = 1.0 / (self.m13 * fx2 + self.m23 * fy2 + self.m33);
+                    x2 *= w;
+                    y2 *= w;
+                }
+            }
+        }
+        LineF::from(x1, y1, x2, y2)
     }
 
     // Creates and returns a Polygon object that is a copy of the given polygon,
