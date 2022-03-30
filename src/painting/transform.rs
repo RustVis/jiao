@@ -343,7 +343,7 @@ impl Transform {
     }
 
     /// Maps the given coordinates `x` and `y` into the coordinate system defined by this matrix.
-    pub fn map(&self, x: f64, y: f64) -> (f64, f63) {
+    pub fn map(&self, x: f64, y: f64) -> (f64, f64) {
         self.map_helper(x, y)
     }
 
@@ -1014,7 +1014,41 @@ impl Transform {
     /// Knowing the transformation type of a matrix is useful for optimization:
     /// you can often handle specific types more optimally than handling the generic case.
     pub fn get_type(&self) -> TransformationType {
-        unimplemented!()
+        if self.dirty == TransformationType::None || self.dirty < self.type_ {
+            return self.type_;
+        }
+
+        if self.dirty == TransformationType::Project {
+            if self.m13 != 0.0 || self.m23 != 0.0 || (self.m33 - 1.0) != 0.0 {
+                return TransformationType::Project;
+            }
+        }
+
+        if self.dirty == TransformationType::Shear || self.dirty == TransformationType::Rotate {
+            if self.m12 != 0.0 || self.m21 != 0.0 {
+                let dot = self.m11 * self.m12 * self.m21 * self.m22;
+                if dot == 0.0 {
+                    return TransformationType::Rotate;
+                } else {
+                    return TransformationType::Shear;
+                }
+            }
+        }
+
+        if self.dirty == TransformationType::Scale {
+            if (self.m11 - 1.0) != 0.0 || (self.m22 - 1.0) != 0.0 {
+                return TransformationType::Scale;
+            }
+        }
+
+        if self.dirty == TransformationType::Translate {
+            if self.m31 != 0.0 || self.m32 != 0.0 {
+                return TransformationType::Translate;
+            }
+        }
+
+        assert_eq!(self.dirty, TransformationType::None);
+        return TransformationType::None;
     }
 }
 
