@@ -141,6 +141,18 @@ impl Region {
 
     /// Returns the number of rectangles that this region is composed of.
     pub fn rect_count(&self) -> usize {
+        self.num_rects
+    }
+
+    fn reset(&mut self) {
+        self.num_rects = 0;
+        self.inner_area = 0;
+        self.rects.clear();
+        self.extents = Rect::new();
+        self.inner_rect = Rect::new();
+    }
+
+    fn update_inner_rect(&mut self, _rect: &Rect) {
         unimplemented!()
     }
 
@@ -154,7 +166,32 @@ impl Region {
     /// - The rectangles must be sorted in ascending order, with Y as the major sort key
     ///   and X as the minor sort key.
     pub fn set_rects(&mut self, rects: &[Rect]) {
-        unimplemented!()
+        self.reset();
+        if rects.is_empty() {
+            return;
+        }
+
+        let num = rects.len();
+        self.num_rects = num;
+        if num == 1 {
+            self.extents = rects[0].clone();
+            self.inner_rect = rects[0].clone();
+        } else {
+            self.rects.reserve(num);
+            let mut left = i32::MAX;
+            let mut top = i32::MAX;
+            let mut right = i32::MAX;
+            let mut bottom = i32::MAX;
+            for rect in rects {
+                self.rects.push(rect.clone());
+                left = rect.left().min(left);
+                right = rect.right().max(right);
+                top = rect.top().min(top);
+                bottom = rect.bottom().max(bottom);
+                self.update_inner_rect(rect);
+            }
+            self.extents = Rect::from_points(Point::from(left, top), Point::from(right, bottom));
+        }
     }
 
     /// Returns a region which is `other` subtracted from this region.
