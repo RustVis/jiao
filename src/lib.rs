@@ -4,7 +4,6 @@
 
 pub mod animation;
 pub mod base;
-pub mod image;
 pub mod kernel;
 pub mod math3d;
 pub mod painting;

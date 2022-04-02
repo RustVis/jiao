@@ -4,6 +4,8 @@
 
 pub mod cursor;
 pub mod event;
+pub mod event_dispatcher;
 pub mod image;
 pub mod palette;
+pub mod shape_manager;
 pub mod theme;
