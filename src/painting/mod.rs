@@ -10,8 +10,6 @@ pub mod color_matrix;
 pub mod gradient;
 pub mod linear_gradient;
 pub mod painter;
-pub mod painter_device;
-pub mod painter_engine;
 pub mod painter_path;
 pub mod path_clipper;
 pub mod path_simplifier;
