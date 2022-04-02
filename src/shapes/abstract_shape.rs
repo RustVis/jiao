@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use crate::painting::painter::Painter;
+
 pub trait AbstractShape {
-    fn get_width(&self) -> i32;
+    fn update(&mut self, painter: &mut Painter);
 }

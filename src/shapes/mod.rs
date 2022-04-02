@@ -3,3 +3,4 @@
 // in the LICENSE file.
 
 pub mod abstract_shape;
+pub mod line;

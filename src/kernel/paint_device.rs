@@ -5,6 +5,10 @@
 use wasm_bindgen::JsCast;
 use web_sys::{Document, Element, HtmlCanvasElement, HtmlElement, Window};
 
+pub trait PaintDeviceDelegate {
+    fn on_repaint();
+}
+
 pub trait PaintDevice {}
 
 pub struct CanvasPaintDevice {
@@ -20,6 +24,12 @@ impl CanvasPaintDevice {
         let canvas: HtmlCanvasElement = element.dyn_into::<HtmlCanvasElement>().unwrap();
         dom.append_child(&canvas).unwrap();
         Self { canvas, dom }
+    }
+
+    pub fn bind_event(&mut self) {}
+
+    fn on_repaint(&mut self) {
+        //
     }
 }
 
