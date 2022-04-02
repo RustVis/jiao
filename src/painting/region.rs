@@ -36,7 +36,13 @@ pub enum RegionType {
 impl Region {
     /// Constructs an empty region.
     pub fn new() -> Self {
-        unimplemented!()
+        Self {
+            num_rects: 0,
+            inner_area: 0,
+            rects: Vec::new(),
+            extents: Rect::new(),
+            inner_rect: Rect::new(),
+        }
     }
 
     /// Create a region based on the rectangle `rect`.
@@ -77,22 +83,22 @@ impl Region {
     }
 
     /// Returns true if the region contains the point; otherwise returns false.
-    pub fn contains_point(&self, point: &Point) -> bool {
+    pub fn contains_point(&self, _point: &Point) -> bool {
         unimplemented!()
     }
 
     /// Returns true if the region overlaps the rectangle; otherwise returns false.
-    pub fn contains_rect(&self, rect: &Rect) -> bool {
+    pub fn contains_rect(&self, _rect: &Rect) -> bool {
         unimplemented!()
     }
 
     /// Returns a region which is the intersection of this region and other.
-    pub fn intersected(&self, other: &Self) -> Self {
+    pub fn intersected(&self, _other: &Self) -> Self {
         unimplemented!()
     }
 
     /// Returns a region which is the intersection of this region and the given rect.
-    pub fn intersected_rect(&self, rect: &Rect) -> Self {
+    pub fn intersected_rect(&self, _rect: &Rect) -> Self {
         unimplemented!()
     }
 
@@ -119,7 +125,7 @@ impl Region {
     }
 
     /// Returns true if this region intersects with rect, otherwise returns false.
-    pub fn intersects_rect(&self, rect: &Rect) -> bool {
+    pub fn intersects_rect(&self, _rect: &Rect) -> bool {
         unimplemented!()
     }
 
@@ -127,7 +133,7 @@ impl Region {
     ///
     /// An empty region is a region that contains no points.
     pub fn is_empty(&self) -> bool {
-        unimplemented!()
+        self.num_rects == 0
     }
 
     /// Returns true if the region is empty; otherwise returns false.
@@ -136,7 +142,7 @@ impl Region {
     ///
     /// This function is the same as `is_empty`.
     pub fn is_null(&self) -> bool {
-        unimplemented!()
+        self.num_rects == 0
     }
 
     /// Returns the number of rectangles that this region is composed of.
@@ -195,19 +201,19 @@ impl Region {
     }
 
     /// Returns a region which is `other` subtracted from this region.
-    pub fn subtracted(&self, other: &Self) -> Self {
+    pub fn subtracted(&self, _other: &Self) -> Self {
         unimplemented!()
     }
 
     /// Swaps region other with this region.
     ///
     /// This operation is very fast and never fails.
-    pub fn swap(&mut self, other: &mut Self) {
+    pub fn swap(&mut self, _other: &mut Self) {
         unimplemented!()
     }
 
     /// Translates (moves) the region dx along the X axis and dy along the Y axis.
-    pub fn translate(&mut self, x: i32, y: i32) {
+    pub fn translate(&mut self, _x: i32, _y: i32) {
         unimplemented!()
     }
 
@@ -239,17 +245,17 @@ impl Region {
     }
 
     /// Returns a region which is the union of this region and other.
-    pub fn united(&self, other: &Self) -> Self {
+    pub fn united(&self, _other: &Self) -> Self {
         unimplemented!()
     }
 
     /// Returns a region which is the union of this region and the given rect.
-    pub fn united_rect(&self, rect: &Rect) -> Self {
+    pub fn united_rect(&self, _rect: &Rect) -> Self {
         unimplemented!()
     }
 
     /// Returns a region which is the exclusive or (XOR) of this region and other.
-    pub fn xored(&self, other: &Self) -> Self {
+    pub fn xored(&self, _other: &Self) -> Self {
         unimplemented!()
     }
 
