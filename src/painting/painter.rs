@@ -2,16 +2,27 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use js_sys::Object;
+use web_sys::CanvasRenderingContext2d;
+
 use crate::base::point::PointF;
 
-pub struct Painter {}
+pub struct Painter {
+    ctx: CanvasRenderingContext2d,
+}
 
 impl Painter {
-    pub fn move_to(&mut self, _point: PointF) {
-        unimplemented!()
+    pub fn new(obj: CanvasRenderingContext2d) -> Self {
+        Self { ctx: obj }
+    }
+}
+
+impl Painter {
+    pub fn move_to(&mut self, point: PointF) {
+        self.ctx.move_to(point.x(), point.y());
     }
 
-    pub fn line_to(&mut self, _point: PointF) {
-        unimplemented!()
+    pub fn line_to(&mut self, point: PointF) {
+        self.ctx.line_to(point.x(), point.y());
     }
 }

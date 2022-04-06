@@ -16,6 +16,7 @@ web = ["web-sys", "wasm-bindgen"]
 [dependencies]
 serde = { version = "1.0.136", features = ["derive"] }
 lazy_static = "1.4.0"
+js-sys = "0.3.56"
 
 [dependencies.qt_gui]
 version = "0.5.0"

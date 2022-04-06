@@ -3,13 +3,19 @@
 // in the LICENSE file.
 
 use wasm_bindgen::JsCast;
-use web_sys::{Document, Element, HtmlCanvasElement, HtmlElement, Window};
+use web_sys::{
+    CanvasRenderingContext2d, Document, Element, HtmlCanvasElement, HtmlElement, Window,
+};
+
+use crate::painting::painter::Painter;
 
 pub trait PaintDeviceDelegate {
     fn on_repaint();
 }
 
-pub trait PaintDevice {}
+pub trait PaintDevice {
+    fn get_painter(&mut self) -> Painter;
+}
 
 pub struct CanvasPaintDevice {
     canvas: HtmlCanvasElement,
@@ -33,4 +39,15 @@ impl CanvasPaintDevice {
     }
 }
 
-impl PaintDevice for CanvasPaintDevice {}
+impl PaintDevice for CanvasPaintDevice {
+    fn get_painter(&mut self) -> Painter {
+        let canvas_ctx = self
+            .canvas
+            .get_context("2d")
+            .unwrap()
+            .unwrap()
+            .dyn_into::<CanvasRenderingContext2d>()
+            .unwrap();
+        Painter::new(canvas_ctx)
+    }
+}
