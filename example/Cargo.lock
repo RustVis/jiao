@@ -182,6 +182,7 @@ version = "0.1.0"
 dependencies = [
  "js-sys",
  "lazy_static",
+ "log",
  "serde",
  "wasm-bindgen",
  "web-sys",
