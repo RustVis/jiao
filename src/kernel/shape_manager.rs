@@ -2,7 +2,7 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use crate::event::MouseEvent;
+use crate::event::{KeyEvent, MouseEvent, ResizeEvent};
 use crate::shapes::abstract_shape::AbstractShape;
 
 pub struct ShapeManager {
@@ -23,4 +23,12 @@ impl ShapeManager {
     pub fn mouse_press_event(&mut self, _mouse_event: &MouseEvent) {}
 
     pub fn mouse_release_event(&mut self, _mouse_event: &MouseEvent) {}
+
+    pub fn mouse_move_event(&mut self, _mouse_event: &MouseEvent) {}
+
+    pub fn mouse_double_click_event(&mut self, _mouse_event: &MouseEvent) {}
+
+    pub fn resize_event(&mut self, resize_event: &ResizeEvent) {}
+
+    pub fn key_press_event(&mut self, key_event: &KeyEvent) {}
 }

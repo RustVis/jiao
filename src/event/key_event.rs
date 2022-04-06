@@ -2,10 +2,7 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-mod key_event;
-mod mouse_event;
-mod resize_event;
+#[derive(Debug, Clone)]
+pub struct KeyEvent {}
 
-pub use key_event::KeyEvent;
-pub use mouse_event::MouseEvent;
-pub use resize_event::ResizeEvent;
+impl KeyEvent {}
