@@ -7,22 +7,19 @@ use web_sys::{
     CanvasRenderingContext2d, Document, Element, HtmlCanvasElement, HtmlElement, Window,
 };
 
+use crate::base::size::Size;
 use crate::painting::painter::Painter;
 
 pub trait PaintDeviceDelegate {
     fn on_repaint();
 }
 
-pub trait PaintDevice {
-    fn get_painter(&mut self) -> Painter;
-}
-
-pub struct CanvasPaintDevice {
+pub struct PaintDevice {
     canvas: HtmlCanvasElement,
     dom: HtmlElement,
 }
 
-impl CanvasPaintDevice {
+impl PaintDevice {
     pub fn new(dom: HtmlElement) -> Self {
         let window: Window = web_sys::window().unwrap();
         let document: Document = window.document().unwrap();
@@ -35,11 +32,13 @@ impl CanvasPaintDevice {
     pub fn bind_event(&mut self) {}
 
     fn on_repaint(&mut self) {
-        //
+        unimplemented!()
     }
-}
 
-impl PaintDevice for CanvasPaintDevice {
+    fn get_size(&self) -> Size {
+        Size::from(self.canvas.width() as i32, self.canvas.height() as i32)
+    }
+
     fn get_painter(&mut self) -> Painter {
         let canvas_ctx = self
             .canvas

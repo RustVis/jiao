@@ -16,6 +16,10 @@ impl LineShape {
         Self { data: LineF::new() }
     }
 
+    pub fn from_f64(x1: f64, y1: f64, x2: f64, y2: f64) -> Self {
+        Self::from_points(PointF::from(x1, y1), PointF::from(x2, y2))
+    }
+
     pub fn from_points(p1: PointF, p2: PointF) -> Self {
         Self {
             data: LineF::from_points(p1, p2),

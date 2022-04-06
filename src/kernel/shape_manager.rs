@@ -3,7 +3,7 @@
 // in the LICENSE file.
 
 use crate::event::{KeyEvent, MouseEvent, ResizeEvent};
-use crate::shapes::abstract_shape::AbstractShape;
+use crate::shapes::AbstractShape;
 
 pub struct ShapeManager {
     shapes: Vec<Box<dyn AbstractShape>>,

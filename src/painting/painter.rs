@@ -25,4 +25,16 @@ impl Painter {
     pub fn line_to(&mut self, point: PointF) {
         self.ctx.line_to(point.x(), point.y());
     }
+
+    pub fn stroke(&mut self) {
+        self.ctx.stroke();
+    }
+
+    pub fn begin_path(&mut self) {
+        self.ctx.begin_path();
+    }
+
+    pub fn close_path(&mut self) {
+        self.ctx.close_path();
+    }
 }

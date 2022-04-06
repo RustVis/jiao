@@ -4,23 +4,30 @@
 
 use web_sys::HtmlElement;
 
-use super::paint_device::{CanvasPaintDevice, PaintDevice};
+use super::paint_device::PaintDevice;
 use super::shape_manager::ShapeManager;
 
 pub struct PaintContext {
     shape_manager: ShapeManager,
-    paint_device: Box<dyn PaintDevice>,
+    paint_device: PaintDevice,
 }
 
 impl PaintContext {
     pub fn from_dom(dom: HtmlElement) -> Self {
         let shape_manager = ShapeManager::new();
-        let paint_device = CanvasPaintDevice::new(dom);
-        let paint_device = Box::new(paint_device);
+        let paint_device = PaintDevice::new(dom);
 
         Self {
             shape_manager,
             paint_device,
         }
+    }
+
+    pub fn start(&mut self) {
+        log::info!("start()");
+    }
+
+    pub fn shape_manager(&mut self) -> &mut ShapeManager {
+        &mut self.shape_manager
     }
 }
