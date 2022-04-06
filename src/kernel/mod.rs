@@ -3,7 +3,6 @@
 // in the LICENSE file.
 
 pub mod cursor;
-pub mod event;
 pub mod event_dispatcher;
 pub mod image;
 pub mod paint_context;
