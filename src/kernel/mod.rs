@@ -3,10 +3,11 @@
 // in the LICENSE file.
 
 pub mod cursor;
-pub mod event_dispatcher;
+mod event_dispatcher;
 pub mod image;
 mod paint_context;
-pub mod paint_device;
+mod paint_device;
+mod paint_engine;
 pub mod palette;
 mod shape_manager;
 pub mod theme;

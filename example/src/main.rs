@@ -42,7 +42,6 @@ impl Component for Model {
     fn rendered(&mut self, _ctx: &Context<Self>, _first_render: bool) {
         if let Some(node) = self.container_node.cast::<HtmlElement>() {
             let mut paint_ctx = PaintContext::from_dom(node);
-            paint_ctx.start();
             let mut shape_manager = paint_ctx.shape_manager();
             let line = LineShape::from_f64(0.0, 0.0, 50.0, 50.0);
             shape_manager.add(Box::new(line));

@@ -3,6 +3,7 @@
 // in the LICENSE file.
 
 use crate::event::{KeyEvent, MouseEvent, ResizeEvent};
+use crate::painting::Painter;
 use crate::shapes::AbstractShape;
 
 pub struct ShapeManager {
@@ -20,6 +21,13 @@ impl ShapeManager {
 }
 
 impl ShapeManager {
+    pub fn update(&mut self, painter: &mut Painter) {
+        log::info!("ShapeManager::update()");
+        for shape in self.shapes.iter_mut() {
+            shape.update(painter);
+        }
+    }
+
     pub fn mouse_press_event(&mut self, _mouse_event: &MouseEvent) {}
 
     pub fn mouse_release_event(&mut self, _mouse_event: &MouseEvent) {}

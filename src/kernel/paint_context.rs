@@ -24,7 +24,13 @@ impl PaintContext {
     }
 
     pub fn start(&mut self) {
-        log::info!("start()");
+        log::info!("PaintContext::start()");
+    }
+
+    pub fn update(&mut self) {
+        log::info!("PaintContext::update()");
+        let painter = self.paint_device.get_painter();
+        self.shape_manager.update(painter);
     }
 
     pub fn shape_manager(&mut self) -> &mut ShapeManager {

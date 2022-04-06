@@ -5,7 +5,7 @@
 use super::abstract_shape::AbstractShape;
 use crate::base::line::LineF;
 use crate::base::point::PointF;
-use crate::painting::painter::Painter;
+use crate::painting::Painter;
 
 pub struct LineShape {
     data: LineF,

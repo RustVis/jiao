@@ -8,7 +8,7 @@ use web_sys::{
 };
 
 use crate::base::size::Size;
-use crate::painting::painter::Painter;
+use crate::painting::Painter;
 
 pub trait PaintDeviceDelegate {
     fn on_repaint();
@@ -17,6 +17,7 @@ pub trait PaintDeviceDelegate {
 pub struct PaintDevice {
     canvas: HtmlCanvasElement,
     dom: HtmlElement,
+    painter: Painter,
 }
 
 impl PaintDevice {
@@ -25,8 +26,19 @@ impl PaintDevice {
         let document: Document = window.document().unwrap();
         let element: Element = document.create_element("canvas").unwrap();
         let canvas: HtmlCanvasElement = element.dyn_into::<HtmlCanvasElement>().unwrap();
+        let canvas_ctx = canvas
+            .get_context("2d")
+            .unwrap()
+            .unwrap()
+            .dyn_into::<CanvasRenderingContext2d>()
+            .unwrap();
+        let painter = Painter::new(canvas_ctx);
         dom.append_child(&canvas).unwrap();
-        Self { canvas, dom }
+        Self {
+            canvas,
+            dom,
+            painter,
+        }
     }
 
     pub fn bind_event(&mut self) {}
@@ -35,18 +47,11 @@ impl PaintDevice {
         unimplemented!()
     }
 
-    fn get_size(&self) -> Size {
+    pub fn get_size(&self) -> Size {
         Size::from(self.canvas.width() as i32, self.canvas.height() as i32)
     }
 
-    fn get_painter(&mut self) -> Painter {
-        let canvas_ctx = self
-            .canvas
-            .get_context("2d")
-            .unwrap()
-            .unwrap()
-            .dyn_into::<CanvasRenderingContext2d>()
-            .unwrap();
-        Painter::new(canvas_ctx)
+    pub fn get_painter(&mut self) -> &mut Painter {
+        &mut self.painter
     }
 }

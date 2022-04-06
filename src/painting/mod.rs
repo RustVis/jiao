@@ -9,7 +9,7 @@ pub mod color_constants;
 pub mod color_matrix;
 pub mod gradient;
 pub mod linear_gradient;
-pub mod painter;
+mod painter;
 pub mod painter_path;
 pub mod path_clipper;
 pub mod path_simplifier;
@@ -19,3 +19,5 @@ pub mod region;
 pub mod rgb;
 pub mod rgba64;
 pub mod transform;
+
+pub use painter::Painter;

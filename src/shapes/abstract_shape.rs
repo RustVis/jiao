@@ -2,7 +2,7 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use crate::painting::painter::Painter;
+use crate::painting::Painter;
 
 pub trait AbstractShape {
     fn update(&mut self, painter: &mut Painter);
