@@ -4,8 +4,8 @@
 
 use core::ops;
 
-use crate::base::point::Point;
-use crate::base::rect::Rect;
+use crate::base::Point;
+use crate::base::Rect;
 
 /// The Region struct specifies a clip region for a painter.
 ///

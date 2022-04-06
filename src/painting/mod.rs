@@ -4,7 +4,7 @@
 
 pub mod bezier;
 pub mod brush;
-pub mod color;
+mod color;
 pub mod color_constants;
 pub mod color_matrix;
 pub mod gradient;
@@ -16,8 +16,11 @@ pub mod path_simplifier;
 pub mod polygon;
 pub mod radial_gradient;
 pub mod region;
-pub mod rgb;
-pub mod rgba64;
+mod rgb;
+mod rgba64;
 pub mod transform;
 
+pub use color::Color;
 pub use painter::Painter;
+pub use rgb::{Rgb, RGB_MASK};
+pub use rgba64::Rgba64;

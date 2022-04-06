@@ -2,9 +2,9 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use super::abstract_shape::AbstractShape;
-use crate::base::line::LineF;
-use crate::base::point::PointF;
+use super::AbstractShape;
+use crate::base::LineF;
+use crate::base::PointF;
 use crate::painting::Painter;
 
 pub struct LineShape {

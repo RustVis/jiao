@@ -5,7 +5,7 @@
 use core::mem;
 
 use super::easing_curve_funcs as inner;
-use crate::base::point::PointF;
+use crate::base::PointF;
 
 const DEFAULT_AMPLITUDE: f64 = 1.0;
 const DEFAULT_OVERSHOOT: f64 = 1.70158;

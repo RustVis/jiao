@@ -6,10 +6,7 @@ use core::cmp;
 use core::f64::consts::PI;
 use core::ops;
 
-use crate::base::axis::Axis;
-use crate::base::line::{Line, LineF};
-use crate::base::point::{Point, PointF};
-use crate::base::rect::{Rect, RectF};
+use crate::base::{Axis, Line, LineF, Point, PointF, Rect, RectF};
 
 // pi/180
 const DEG_TO_RAD: f64 = PI / 180.0;

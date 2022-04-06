@@ -36,7 +36,7 @@ impl ShapeManager {
 
     pub fn mouse_double_click_event(&mut self, _mouse_event: &MouseEvent) {}
 
-    pub fn resize_event(&mut self, resize_event: &ResizeEvent) {}
+    pub fn resize_event(&mut self, _resize_event: &ResizeEvent) {}
 
-    pub fn key_press_event(&mut self, key_event: &KeyEvent) {}
+    pub fn key_press_event(&mut self, _key_event: &KeyEvent) {}
 }

@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use super::vector2d::Vector2D;
 use super::vector4d::Vector4D;
-use crate::base::point::{Point, PointF};
+use crate::base::{Point, PointF};
 
 /// The Vector3D struct represents a vector or vertex in 3D space.
 ///

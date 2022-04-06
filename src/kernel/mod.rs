@@ -7,7 +7,6 @@ mod event_dispatcher;
 pub mod image;
 mod paint_context;
 mod paint_device;
-mod paint_engine;
 pub mod palette;
 mod shape_manager;
 pub mod theme;

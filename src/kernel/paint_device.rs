@@ -7,7 +7,7 @@ use web_sys::{
     CanvasRenderingContext2d, Document, Element, HtmlCanvasElement, HtmlElement, Window,
 };
 
-use crate::base::size::Size;
+use crate::base::Size;
 use crate::painting::Painter;
 
 pub trait PaintDeviceDelegate {

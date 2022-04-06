@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use super::vector3d::Vector3D;
 use super::vector4d::Vector4D;
-use crate::base::point::{Point, PointF};
+use crate::base::{Point, PointF};
 
 /// The Vector2D class represents a vector or vertex in 2D space.
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]

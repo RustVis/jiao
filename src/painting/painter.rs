@@ -2,10 +2,9 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use js_sys::Object;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
 
-use crate::base::point::PointF;
+use crate::base::PointF;
 
 pub struct Painter {
     canvas: HtmlCanvasElement,
