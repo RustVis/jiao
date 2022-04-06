@@ -5,7 +5,7 @@
 use super::AbstractShape;
 use crate::base::LineF;
 use crate::base::PointF;
-use crate::painting::Painter;
+use crate::kernel::PainterTrait;
 
 pub struct LineShape {
     data: LineF,
@@ -44,7 +44,7 @@ impl LineShape {
 }
 
 impl AbstractShape for LineShape {
-    fn update(&mut self, painter: &mut Painter) {
+    fn update(&mut self, painter: &mut dyn PainterTrait) {
         log::info!(
             "LineShape::update(), p1: {:?}, p2: {:?}",
             self.p1(),

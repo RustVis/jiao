@@ -2,13 +2,17 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-pub trait Canvas {
+use crate::base::PointF;
+
+pub trait PainterTrait {
     /// Makes a copy of current state of canvas and saves it on an internal stack.
     fn save(&mut self);
 
     /// Restores to the state saved by a preceding call to [`Self::save`] and removes
     /// that state from internal stack.
     fn restore(&mut self);
+
+    fn clear_all(&mut self);
 
     /// Turns the current path into the current clipping region.
     fn clip(&mut self);
@@ -27,9 +31,7 @@ pub trait Canvas {
 
     /// Add a translation transformation to the current matrix.
     fn translate(&mut self, x: f64, y: f64);
-}
 
-pub trait Path {
     /// Starts a new path by emptying the list of sub-paths.
     fn begin_path(&mut self);
 
@@ -42,8 +44,8 @@ pub trait Path {
 
     /// Add a straight line to the current sub-path by connecting the sub-path's
     /// last point to the specified (x, y) coordinates.
-    fn line_to(&mut self, x: f64, y: f64);
+    fn line_to(&mut self, point: PointF);
 
     /// Begins a new sub-path at the point specified by the given (x, y) coordinates.
-    fn move_to(&mut self, x: f64, y: f64);
+    fn move_to(&mut self, point: PointF);
 }

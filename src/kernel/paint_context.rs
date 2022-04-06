@@ -2,40 +2,24 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use web_sys::HtmlElement;
-
-use super::paint_device::PaintDevice;
 use super::shape_manager::ShapeManager;
 
-pub struct PaintContext {
-    shape_manager: ShapeManager,
-    paint_device: PaintDevice,
-}
-
-impl PaintContext {
-    pub fn from_dom(dom: HtmlElement) -> Self {
-        let shape_manager = ShapeManager::new();
-        let paint_device = PaintDevice::new(dom);
-
-        Self {
-            shape_manager,
-            paint_device,
-        }
+pub trait PaintContextTrait {
+    #[cfg(feature = "web")]
+    fn new(dom: web_sys::HtmlElement) -> Box<dyn PaintContextTrait>
+    where
+        Self: Sized,
+    {
+        use crate::platforms::web::PaintContext;
+        PaintContext::from_dom(dom)
     }
 
-    pub fn start(&mut self) {
-        log::info!("PaintContext::start()");
-    }
+    /// Repaint immediately.
+    fn repaint(&mut self);
 
-    pub fn update(&mut self) {
-        log::info!("PaintContext::update()");
-        let painter = self.paint_device.get_painter();
-        painter.clear_all();
-        painter.begin_path();
-        self.shape_manager.update(painter);
-    }
+    /// Schedule a repaint operation.
+    fn update(&mut self);
 
-    pub fn shape_manager(&mut self) -> &mut ShapeManager {
-        &mut self.shape_manager
-    }
+    /// Get a mutable reference to internal shape_manager object.
+    fn shape_manager(&mut self) -> &mut ShapeManager;
 }

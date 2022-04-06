@@ -5,11 +5,13 @@
 pub mod cursor;
 mod event_dispatcher;
 pub mod image;
-mod paint_context;
-mod paint_device;
+pub mod paint_context;
+pub mod paint_device;
+pub mod painter;
 pub mod palette;
 mod shape_manager;
 pub mod theme;
 
-pub use paint_context::PaintContext;
+pub use paint_context::PaintContextTrait;
+pub use painter::PainterTrait;
 pub use shape_manager::ShapeManager;

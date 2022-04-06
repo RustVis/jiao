@@ -2,8 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use super::PainterTrait;
 use crate::event::{KeyEvent, MouseEvent, ResizeEvent};
-use crate::painting::Painter;
 use crate::shapes::AbstractShape;
 
 pub struct ShapeManager {
@@ -21,7 +21,7 @@ impl ShapeManager {
 }
 
 impl ShapeManager {
-    pub fn update(&mut self, painter: &mut Painter) {
+    pub fn update(&mut self, painter: &mut dyn PainterTrait) {
         log::info!("ShapeManager::update()");
         for shape in self.shapes.iter_mut() {
             shape.update(painter);
