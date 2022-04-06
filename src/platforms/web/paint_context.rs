@@ -13,14 +13,14 @@ pub struct PaintContext {
 }
 
 impl PaintContext {
-    pub fn from_dom(dom: HtmlElement) -> Box<Self> {
+    pub fn from_dom(dom: HtmlElement) -> Self {
         let shape_manager = ShapeManager::new();
         let paint_device = PaintDevice::new(dom);
 
-        Box::new(Self {
+        Self {
             shape_manager,
             paint_device,
-        })
+        }
     }
 
     pub fn start(&mut self) {

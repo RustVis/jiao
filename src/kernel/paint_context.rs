@@ -5,15 +5,6 @@
 use super::shape_manager::ShapeManager;
 
 pub trait PaintContextTrait {
-    #[cfg(feature = "web")]
-    fn new(dom: web_sys::HtmlElement) -> Box<dyn PaintContextTrait>
-    where
-        Self: Sized,
-    {
-        use crate::platforms::web::PaintContext;
-        PaintContext::from_dom(dom)
-    }
-
     /// Repaint immediately.
     fn repaint(&mut self);
 

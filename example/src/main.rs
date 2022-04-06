@@ -2,7 +2,8 @@
 // Use of this source is governed by General Public License that can be found
 // in the LICENSE file.
 
-use jiao::kernel::PaintContext;
+use jiao::kernel::PaintContextTrait;
+use jiao::platforms::web::PaintContext;
 use jiao::shapes::LineShape;
 use web_sys::HtmlElement;
 use yew::{html, Component, Context, Html, NodeRef};
@@ -42,7 +43,7 @@ impl Component for Model {
     fn rendered(&mut self, _ctx: &Context<Self>, _first_render: bool) {
         if let Some(node) = self.container_node.cast::<HtmlElement>() {
             let mut paint_ctx = PaintContext::from_dom(node);
-            let mut shape_manager = paint_ctx.shape_manager();
+            let shape_manager = paint_ctx.shape_manager();
             let line = LineShape::from_f64(0.0, 0.0, 50.0, 50.0);
             shape_manager.add(Box::new(line));
             paint_ctx.update();
