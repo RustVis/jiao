@@ -30,6 +30,8 @@ impl PaintContext {
     pub fn update(&mut self) {
         log::info!("PaintContext::update()");
         let painter = self.paint_device.get_painter();
+        painter.clear_all();
+        painter.begin_path();
         self.shape_manager.update(painter);
     }
 

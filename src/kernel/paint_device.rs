@@ -32,7 +32,7 @@ impl PaintDevice {
             .unwrap()
             .dyn_into::<CanvasRenderingContext2d>()
             .unwrap();
-        let painter = Painter::new(canvas_ctx);
+        let painter = Painter::new(canvas.clone(), canvas_ctx);
         dom.append_child(&canvas).unwrap();
         Self {
             canvas,

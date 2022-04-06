@@ -26,6 +26,14 @@ impl LineShape {
         }
     }
 
+    pub fn p1(&self) -> PointF {
+        self.data.p1()
+    }
+
+    pub fn p2(&self) -> PointF {
+        self.data.p2()
+    }
+
     pub fn set_p1(&mut self, point: PointF) {
         self.data.set_p1(point);
     }
@@ -37,7 +45,13 @@ impl LineShape {
 
 impl AbstractShape for LineShape {
     fn update(&mut self, painter: &mut Painter) {
+        log::info!(
+            "LineShape::update(), p1: {:?}, p2: {:?}",
+            self.p1(),
+            self.p2()
+        );
         painter.move_to(self.data.p1());
         painter.line_to(self.data.p2());
+        painter.stroke();
     }
 }
