@@ -1,0 +1,8 @@
+[package]
+name = "skia"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+jiao = { path = "../..", default-features=false, features = ["skia"] }
+skia-safe = "0.49.0"
