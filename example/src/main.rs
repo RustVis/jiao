@@ -3,7 +3,7 @@
 // in the LICENSE file.
 
 use jiao::kernel::PaintContextTrait;
-use jiao::platforms::web::PaintContext;
+use jiao::platforms::PaintContext;
 use jiao::shapes::LineShape;
 use web_sys::HtmlElement;
 use yew::{html, Component, Context, Html, NodeRef};
