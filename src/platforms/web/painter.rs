@@ -2,10 +2,10 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
+use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, Path2d};
 
 use crate::base::PointF;
-use crate::kernel::PainterTrait;
+use crate::kernel::{PainterTrait, PathTrait};
 
 pub struct Painter {
     canvas: HtmlCanvasElement,
@@ -19,10 +19,12 @@ impl Painter {
 }
 
 impl PainterTrait for Painter {
+    #[inline]
     fn save(&mut self) {
         self.ctx.save();
     }
 
+    #[inline]
     fn restore(&mut self) {
         self.ctx.restore();
     }
@@ -37,44 +39,66 @@ impl PainterTrait for Painter {
         );
     }
 
+    #[inline]
     fn clip(&mut self) {
         todo!()
     }
 
-    fn fill(&mut self) {
-        todo!()
+    #[inline]
+    fn fill(&mut self, path: &Path) {
+        self.ctx.fill_with_path_2d(path.path());
     }
 
-    fn stroke(&mut self) {
-        self.ctx.stroke();
+    #[inline]
+    fn stroke(&mut self, path: &Path) {
+        self.ctx.stroke_with_path(path.path());
     }
 
-    fn rotate(&mut self, _angle: f64) {
-        todo!()
+    #[inline]
+    fn rotate(&mut self, angle: f64) {
+        self.ctx.rotate(angle);
     }
 
-    fn scale(&mut self, _x: f64, _y: f64) {
-        todo!()
+    #[inline]
+    fn scale(&mut self, x: f64, y: f64) {
+        self.ctx.scale(x, y);
     }
 
-    fn translate(&mut self, _x: f64, _y: f64) {
-        todo!()
+    #[inline]
+    fn translate(&mut self, x: f64, y: f64) {
+        self.ctx.translate(x, y);
+    }
+}
+
+pub struct Path {
+    p: Path2d,
+}
+
+impl Path {
+    pub fn new() -> Self {
+        // TODO(Shaohua): Add error type.
+        let p = Path2d::new().unwrap();
+        Self { p }
     }
 
-    fn begin_path(&mut self) {
-        log::info!("Painter::begin_path()");
-        self.ctx.begin_path();
+    pub fn path(&self) -> &Path2d {
+        &self.p
+    }
+}
+
+impl PathTrait for Path {
+    #[inline]
+    fn close(&mut self) {
+        self.p.close_path();
     }
 
-    fn close_path(&mut self) {
-        self.ctx.close_path();
-    }
-
+    #[inline]
     fn line_to(&mut self, point: PointF) {
-        self.ctx.line_to(point.x(), point.y());
+        self.p.line_to(point.x(), point.y());
     }
 
+    #[inline]
     fn move_to(&mut self, point: PointF) {
-        self.ctx.move_to(point.x(), point.y());
+        self.p.move_to(point.x(), point.y());
     }
 }

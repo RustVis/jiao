@@ -8,4 +8,4 @@ mod painter;
 
 pub use paint_context::PaintContext;
 pub use paint_device::PaintDevice;
-pub use painter::Painter;
+pub use painter::{Painter, Path};

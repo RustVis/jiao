@@ -43,6 +43,7 @@ features = [
     "Document",
     "HtmlCanvasElement",
     "HtmlElement",
+    "Path2d",
     "SvgElement",
     "Window",
 ]

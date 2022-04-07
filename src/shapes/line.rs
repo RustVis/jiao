@@ -5,15 +5,17 @@
 use super::AbstractShape;
 use crate::base::LineF;
 use crate::base::PointF;
-use crate::kernel::PainterTrait;
+use crate::kernel::{PainterTrait, PathTrait};
+use crate::platforms::Path;
 
 pub struct LineShape {
     data: LineF,
+    path: Path,
 }
 
 impl LineShape {
     pub fn new() -> Self {
-        Self { data: LineF::new() }
+        Self::from_points(PointF::new(), PointF::new())
     }
 
     pub fn from_f64(x1: f64, y1: f64, x2: f64, y2: f64) -> Self {
@@ -21,8 +23,10 @@ impl LineShape {
     }
 
     pub fn from_points(p1: PointF, p2: PointF) -> Self {
+        let path = Path::new();
         Self {
             data: LineF::from_points(p1, p2),
+            path,
         }
     }
 
@@ -36,10 +40,12 @@ impl LineShape {
 
     pub fn set_p1(&mut self, point: PointF) {
         self.data.set_p1(point);
+        self.path.move_to(point);
     }
 
     pub fn set_p2(&mut self, point: PointF) {
         self.data.set_p2(point);
+        self.path.line_to(point);
     }
 }
 
@@ -50,8 +56,6 @@ impl AbstractShape for LineShape {
             self.p1(),
             self.p2()
         );
-        painter.move_to(self.data.p1());
-        painter.line_to(self.data.p2());
-        painter.stroke();
+        painter.stroke(&self.path);
     }
 }

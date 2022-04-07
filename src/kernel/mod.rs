@@ -7,11 +7,11 @@ mod event_dispatcher;
 pub mod image;
 pub mod paint_context;
 pub mod paint_device;
-pub mod painter;
+mod painter;
 pub mod palette;
 mod shape_manager;
 pub mod theme;
 
 pub use paint_context::PaintContextTrait;
-pub use painter::PainterTrait;
+pub use painter::{PainterTrait, PathTrait};
 pub use shape_manager::ShapeManager;

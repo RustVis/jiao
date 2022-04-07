@@ -3,6 +3,7 @@
 // in the LICENSE file.
 
 use crate::base::PointF;
+use crate::platforms;
 
 pub trait PainterTrait {
     /// Makes a copy of current state of canvas and saves it on an internal stack.
@@ -17,11 +18,11 @@ pub trait PainterTrait {
     /// Turns the current path into the current clipping region.
     fn clip(&mut self);
 
-    /// Fills the current path with the current fill style.
-    fn fill(&mut self);
+    /// Fills the path with the current fill style.
+    fn fill(&mut self, path: &platforms::Path);
 
-    /// Strokes (outlines) the current path with the current stoke style.
-    fn stroke(&mut self);
+    /// Strokes (outlines) the path with the current stoke style.
+    fn stroke(&mut self, path: &platforms::Path);
 
     /// Add a rotation to the transformation matrix.
     fn rotate(&mut self, angle: f64);
@@ -31,21 +32,18 @@ pub trait PainterTrait {
 
     /// Add a translation transformation to the current matrix.
     fn translate(&mut self, x: f64, y: f64);
+}
 
-    /// Starts a new path by emptying the list of sub-paths.
-    fn begin_path(&mut self);
-
-    /// Attempts to add a straight line from the current point to the start of current
-    /// sub-path.
+pub trait PathTrait {
+    /// Attempts to add a straight line from the current point to the start of current path.
     ///
-    /// If the shape has already been closed or has only one point, this function
-    /// does nothing.
-    fn close_path(&mut self);
+    /// If the shape has already been closed or has only one point, this function does nothing.
+    fn close(&mut self);
 
-    /// Add a straight line to the current sub-path by connecting the sub-path's
-    /// last point to the specified (x, y) coordinates.
+    /// Add a straight line to the current path by connecting last point
+    /// to the specified (x, y) coordinates.
     fn line_to(&mut self, point: PointF);
 
-    /// Begins a new sub-path at the point specified by the given (x, y) coordinates.
+    /// Move path to the point specified by the given (x, y) coordinates.
     fn move_to(&mut self, point: PointF);
 }
