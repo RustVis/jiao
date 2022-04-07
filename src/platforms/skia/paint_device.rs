@@ -26,4 +26,9 @@ impl PaintDevice {
     pub fn get_painter(&mut self) -> &mut Painter {
         &mut self.painter
     }
+
+    pub fn data(&mut self, format: skia_safe::EncodedImageFormat) -> skia_safe::Data {
+        let image = self.surface.image_snapshot();
+        image.encode_to_data(format).unwrap()
+    }
 }

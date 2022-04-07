@@ -24,6 +24,10 @@ impl PaintContext {
     pub fn start(&mut self) {
         log::info!("PaintContext::start()");
     }
+
+    pub fn paint_device(&mut self) -> &mut PaintDevice {
+        &mut self.paint_device
+    }
 }
 
 impl PaintContextTrait for PaintContext {
