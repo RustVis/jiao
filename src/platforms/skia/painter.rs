@@ -21,7 +21,7 @@ impl Painter {
     }
 
     fn canvas(&mut self) -> &mut skia_safe::Canvas {
-        &mut self.surface.canvas()
+        self.surface.canvas()
     }
 }
 
@@ -55,7 +55,7 @@ impl PainterTrait for Painter {
     #[inline]
     fn stroke(&mut self, path: &Path) {
         self.paint.set_style(PaintStyle::Stroke);
-        self.canvas().draw_path(path.path(), &self.paint);
+        self.surface.canvas().draw_path(path.path(), &self.paint);
     }
 
     #[inline]

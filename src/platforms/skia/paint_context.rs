@@ -3,7 +3,7 @@
 // in the LICENSE file.
 
 use super::paint_device::PaintDevice;
-use crate::kernel::{PaintContextTrait, ShapeManager};
+use crate::kernel::{PaintContextTrait, PainterTrait, ShapeManager};
 
 pub struct PaintContext {
     shape_manager: ShapeManager,
