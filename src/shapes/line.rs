@@ -23,7 +23,9 @@ impl LineShape {
     }
 
     pub fn from_points(p1: PointF, p2: PointF) -> Self {
-        let path = Path::new();
+        let mut path = Path::new();
+        path.move_to(p1);
+        path.line_to(p2);
         Self {
             data: LineF::from_points(p1, p2),
             path,
