@@ -11,5 +11,9 @@ cfg_if::cfg_if! {
         pub type Path = web::painter::Path;
     } else if #[cfg(feature = "skia")] {
         pub mod skia;
+        pub type PaintContext = skia::paint_context::PaintContext;
+        pub type PaintDevice = skia::paint_device::PaintDevice;
+        pub type Painter = skia::painter::Painter;
+        pub type Path = skia::painter::Path;
     }
 }
