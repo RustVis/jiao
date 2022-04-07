@@ -20,7 +20,7 @@ fn main() {
 
     // Save to png file
     {
-        let data = paint_device.data(EncodedImageFormat::PNG);
+        let data = paint_device.encode(EncodedImageFormat::PNG);
         let mut file = File::create("out.png").unwrap();
         let bytes = data.as_bytes();
         file.write_all(bytes).unwrap();
@@ -28,7 +28,7 @@ fn main() {
 
     // Save to jpg file
     {
-        let data = paint_device.data(EncodedImageFormat::JPEG);
+        let data = paint_device.encode(EncodedImageFormat::JPEG);
         let mut file = File::create("out.jpg").unwrap();
         let bytes = data.as_bytes();
         file.write_all(bytes).unwrap();

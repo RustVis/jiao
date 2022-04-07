@@ -27,7 +27,8 @@ impl PaintDevice {
         &mut self.painter
     }
 
-    pub fn data(&mut self, format: skia_safe::EncodedImageFormat) -> skia_safe::Data {
+    /// Encode current surface state to specific image format data.
+    pub fn encode(&mut self, format: skia_safe::EncodedImageFormat) -> skia_safe::Data {
         let image = self.surface.image_snapshot();
         image.encode_to_data(format).unwrap()
     }
