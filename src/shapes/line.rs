@@ -54,7 +54,8 @@ impl LineShape {
 
 impl ShapeTrait for LineShape {
     fn bounding_rect(&self) -> RectF {
-        todo!()
+        let rect = RectF::from_points(self.data.p1(), self.data.p2());
+        rect.normalized()
     }
 
     fn repaint(&mut self, painter: &mut dyn PainterTrait) {
