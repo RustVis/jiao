@@ -26,7 +26,11 @@ impl RectShape {
 }
 
 impl ShapeTrait for RectShape {
-    fn update(&mut self, painter: &mut dyn PainterTrait) {
+    fn bounding_rect(&self) -> RectF {
+        self.data.clone()
+    }
+
+    fn repaint(&mut self, painter: &mut dyn PainterTrait) {
         painter.stroke(&self.path);
     }
 }

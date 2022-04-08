@@ -24,7 +24,7 @@ impl ShapeManager {
     pub fn update(&mut self, painter: &mut dyn PainterTrait) {
         log::info!("ShapeManager::update()");
         for shape in self.shapes.iter_mut() {
-            shape.update(painter);
+            shape.repaint(painter);
         }
     }
 

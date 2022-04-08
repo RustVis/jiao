@@ -3,8 +3,8 @@
 // in the LICENSE file.
 
 use super::ShapeTrait;
-use crate::base::LineF;
 use crate::base::PointF;
+use crate::base::{LineF, RectF};
 use crate::kernel::{PainterTrait, PathTrait};
 use crate::platforms::Path;
 
@@ -53,7 +53,11 @@ impl LineShape {
 }
 
 impl ShapeTrait for LineShape {
-    fn update(&mut self, painter: &mut dyn PainterTrait) {
+    fn bounding_rect(&self) -> RectF {
+        todo!()
+    }
+
+    fn repaint(&mut self, painter: &mut dyn PainterTrait) {
         log::info!(
             "LineShape::update(), p1: {:?}, p2: {:?}",
             self.p1(),

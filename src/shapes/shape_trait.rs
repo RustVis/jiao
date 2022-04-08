@@ -2,8 +2,13 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use crate::base::RectF;
 use crate::kernel::PainterTrait;
 
 pub trait ShapeTrait {
-    fn update(&mut self, painter: &mut dyn PainterTrait);
+    /// Returns the bounding rectangle of this shape object as a rectangle with floating point precision.
+    fn bounding_rect(&self) -> RectF;
+
+    /// Repaint shape object.
+    fn repaint(&mut self, painter: &mut dyn PainterTrait);
 }
