@@ -1,17 +1,16 @@
 // Copyright (c) 2022 Xu Shaohua <shaohua@biofan.org>. All rights reserved.
-// Use of this source is governed by General Public License that can be found
+// Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use jiao::base::RectF;
 use jiao::kernel::PaintContextTrait;
 use jiao::platforms::PaintContext;
-use jiao::shapes::LineShape;
+use jiao::shapes::{LineShape, RectShape};
 use web_sys::HtmlElement;
 use yew::{html, Component, Context, Html, NodeRef};
 
 #[derive(Debug)]
-enum Msg {
-    AddOne,
-}
+enum Msg {}
 
 struct Model {
     value: i64,
@@ -31,13 +30,8 @@ impl Component for Model {
         }
     }
 
-    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
-        match msg {
-            Msg::AddOne => {
-                self.value += 1;
-                true
-            }
-        }
+    fn update(&mut self, _ctx: &Context<Self>, _msg: Self::Message) -> bool {
+        false
     }
 
     fn rendered(&mut self, _ctx: &Context<Self>, _first_render: bool) {
@@ -46,6 +40,8 @@ impl Component for Model {
             let shape_manager = paint_ctx.shape_manager();
             let line = LineShape::from_f64(0.0, 0.0, 50.0, 50.0);
             shape_manager.add(Box::new(line));
+            let rect = RectShape::from_rect(RectF::from(10.0, 10.0, 25.0, 25.0));
+            shape_manager.add(Box::new(rect));
             paint_ctx.update();
             self.paint_ctx = Some(paint_ctx);
         }
