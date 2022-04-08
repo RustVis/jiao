@@ -3,11 +3,13 @@
 // in the LICENSE file.
 
 mod circular;
+mod ellipse;
 mod line;
 mod rect;
 mod shape_trait;
 
 pub use circular::CircularShape;
+pub use ellipse::EllipseShape;
 pub use line::LineShape;
 pub use rect::RectShape;
 pub use shape_trait::ShapeTrait;
