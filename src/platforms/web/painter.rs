@@ -4,7 +4,7 @@
 
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, Path2d};
 
-use crate::base::{PointF, RectF};
+use crate::base::PointF;
 use crate::kernel::{PainterTrait, PathTrait};
 
 pub struct Painter {
@@ -73,6 +73,7 @@ impl PainterTrait for Painter {
     }
 }
 
+#[derive(Debug, Clone)]
 pub struct Path {
     p: Path2d,
 }

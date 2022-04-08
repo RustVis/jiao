@@ -3,8 +3,7 @@
 // in the LICENSE file.
 
 use super::AbstractShape;
-use crate::base::PointF;
-use crate::base::{LineF, RectF};
+use crate::base::RectF;
 use crate::kernel::{PainterTrait, PathTrait};
 use crate::platforms::Path;
 
