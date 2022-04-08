@@ -46,12 +46,12 @@ impl PainterTrait for Painter {
 
     #[inline]
     fn fill(&mut self, path: &Path) {
-        self.ctx.fill_with_path_2d(path.path());
+        self.ctx.fill_with_path_2d(path.path2d());
     }
 
     #[inline]
     fn stroke(&mut self, path: &Path) {
-        self.ctx.stroke_with_path(path.path());
+        self.ctx.stroke_with_path(path.path2d());
     }
 
     #[inline]
@@ -75,62 +75,63 @@ impl PainterTrait for Painter {
 
 #[derive(Debug, Clone)]
 pub struct Path {
-    p: Path2d,
+    path2d: Path2d,
 }
 
 impl Path {
     pub fn new() -> Self {
         // TODO(Shaohua): Add error type.
-        let p = Path2d::new().unwrap();
-        Self { p }
+        let path2d = Path2d::new().unwrap();
+        Self { path2d }
     }
 
-    pub fn path(&self) -> &Path2d {
-        &self.p
+    /// Get inner Path2D object.
+    pub fn path2d(&self) -> &Path2d {
+        &self.path2d
     }
 }
 
 impl PathTrait for Path {
     #[inline]
     fn add_path(&mut self, other: &Self) {
-        self.path().add_path(other.path());
+        self.path2d().add_path(other.path2d());
     }
 
     #[inline]
     fn close_path(&mut self) {
-        self.p.close_path();
+        self.path2d.close_path();
     }
 
     #[inline]
     fn move_to(&mut self, point: PointF) {
-        self.p.move_to(point.x(), point.y());
+        self.path2d.move_to(point.x(), point.y());
     }
 
     #[inline]
     fn line_to(&mut self, point: PointF) {
-        self.p.line_to(point.x(), point.y());
+        self.path2d.line_to(point.x(), point.y());
     }
 
     fn rect_f64(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.p.rect(x, y, width, height);
+        self.path2d.rect(x, y, width, height);
     }
 
     fn cubic_to_f64(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
-        self.p.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y);
+        self.path2d.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y);
     }
 
     fn quad_to_f64(&mut self, cpx: f64, cpy: f64, x: f64, y: f64) {
-        self.p.quadratic_curve_to(cpx, cpy, x, y);
+        self.path2d.quadratic_curve_to(cpx, cpy, x, y);
     }
 
     fn arc_f64(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) {
         // TODO(Shaohua): Returns error
-        let _ = self.p.arc(x, y, radius, start_angle, end_angle);
+        let _ = self.path2d.arc(x, y, radius, start_angle, end_angle);
     }
 
     fn arc_to_f64(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, radius: f64) {
         // TODO(Shaohua): Returns error
-        let _ = self.p.arc_to(x1, y1, x2, y2, radius);
+        let _ = self.path2d.arc_to(x1, y1, x2, y2, radius);
     }
 
     fn ellipse_f64(
@@ -144,7 +145,7 @@ impl PathTrait for Path {
         end_angle: f64,
     ) {
         // TODO(Shaohua): Returns error
-        let _ = self.p.ellipse(
+        let _ = self.path2d.ellipse(
             center_x,
             center_y,
             radius_x,

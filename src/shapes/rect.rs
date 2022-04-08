@@ -9,7 +9,7 @@ use crate::platforms::Path;
 
 #[derive(Debug, Clone)]
 pub struct RectShape {
-    data: RectF,
+    rect: RectF,
     path: Path,
 }
 
@@ -21,13 +21,13 @@ impl RectShape {
     pub fn from_rect(rect: RectF) -> Self {
         let mut path = Path::new();
         path.rect(&rect);
-        Self { data: rect, path }
+        Self { rect: rect, path }
     }
 }
 
 impl ShapeTrait for RectShape {
     fn bounding_rect(&self) -> RectF {
-        self.data.clone()
+        self.rect.clone()
     }
 
     fn repaint(&mut self, painter: &mut dyn PainterTrait) {

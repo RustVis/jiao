@@ -10,7 +10,7 @@ use crate::platforms::Path;
 
 #[derive(Debug, Clone)]
 pub struct LineShape {
-    data: LineF,
+    line: LineF,
     path: Path,
 }
 
@@ -28,33 +28,33 @@ impl LineShape {
         path.move_to(p1);
         path.line_to(p2);
         Self {
-            data: LineF::from_points(p1, p2),
+            line: LineF::from_points(p1, p2),
             path,
         }
     }
 
     pub fn p1(&self) -> PointF {
-        self.data.p1()
+        self.line.p1()
     }
 
     pub fn p2(&self) -> PointF {
-        self.data.p2()
+        self.line.p2()
     }
 
     pub fn set_p1(&mut self, point: PointF) {
-        self.data.set_p1(point);
+        self.line.set_p1(point);
         self.path.move_to(point);
     }
 
     pub fn set_p2(&mut self, point: PointF) {
-        self.data.set_p2(point);
+        self.line.set_p2(point);
         self.path.line_to(point);
     }
 }
 
 impl ShapeTrait for LineShape {
     fn bounding_rect(&self) -> RectF {
-        let rect = RectF::from_points(self.data.p1(), self.data.p2());
+        let rect = RectF::from_points(self.line.p1(), self.line.p2());
         rect.normalized()
     }
 
