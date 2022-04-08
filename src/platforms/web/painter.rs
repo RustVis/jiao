@@ -118,4 +118,8 @@ impl PathTrait for Path {
     fn cubic_to_f64(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
         self.p.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y);
     }
+
+    fn quad_to_f64(&mut self, cpx: f64, cpy: f64, x: f64, y: f64) {
+        self.p.quadratic_curve_to(cpx, cpy, x, y);
+    }
 }
