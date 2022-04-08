@@ -4,7 +4,7 @@
 
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, Path2d};
 
-use crate::base::PointF;
+use crate::base::{PointF, RectF};
 use crate::kernel::{PainterTrait, PathTrait};
 
 pub struct Painter {
@@ -91,8 +91,18 @@ impl Path {
 
 impl PathTrait for Path {
     #[inline]
-    fn close(&mut self) {
+    fn add_path(&mut self, other: &Self) {
+        self.path().add_path(other.path());
+    }
+
+    #[inline]
+    fn close_path(&mut self) {
         self.p.close_path();
+    }
+
+    #[inline]
+    fn move_to(&mut self, point: PointF) {
+        self.p.move_to(point.x(), point.y());
     }
 
     #[inline]
@@ -100,8 +110,7 @@ impl PathTrait for Path {
         self.p.line_to(point.x(), point.y());
     }
 
-    #[inline]
-    fn move_to(&mut self, point: PointF) {
-        self.p.move_to(point.x(), point.y());
+    fn rect_f64(&mut self, x: f64, y: f64, width: f64, height: f64) {
+        self.p.rect(x, y, width, height);
     }
 }
