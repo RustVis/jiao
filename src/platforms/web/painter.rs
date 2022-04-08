@@ -122,4 +122,14 @@ impl PathTrait for Path {
     fn quad_to_f64(&mut self, cpx: f64, cpy: f64, x: f64, y: f64) {
         self.p.quadratic_curve_to(cpx, cpy, x, y);
     }
+
+    fn arc_f64(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) {
+        // TODO(Shaohua): Returns error
+        let _ = self.p.arc(x, y, radius, start_angle, end_angle);
+    }
+
+    fn arc_to_f64(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, radius: f64) {
+        // TODO(Shaohua): Returns error
+        let _ = self.p.arc_to(x1, y1, x2, y2, radius);
+    }
 }

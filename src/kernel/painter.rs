@@ -101,4 +101,32 @@ pub trait PathTrait {
     ///
     /// Overload of `quad_to()`.
     fn quad_to_f64(&mut self, cpx: f64, cpy: f64, x: f64, y: f64);
+
+    /// Adds an arc to the path in clockwise direction.
+    ///
+    /// Note that `radius` must be non-negative.
+    #[inline]
+    fn arc(&mut self, center: PointF, radius: f64, start_angle: f64, end_angle: f64) {
+        self.arc_f64(center.x(), center.y(), radius, start_angle, end_angle);
+    }
+
+    /// Adds an arc to the path.
+    ///
+    /// Overload of `arc()`.
+    fn arc_f64(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64);
+
+    /// Adds a circular arc to the path with the given control points and radius,
+    /// connected to the previous point by a straight line.
+    ///
+    /// Note that `radius` must be non-negative.
+    #[inline]
+    fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64) {
+        self.arc_to_f64(p1.x(), p1.y(), p2.x(), p2.y(), radius);
+    }
+
+    /// Adds a circular arc to the path with the given control points and radius,
+    /// connected to the previous point by a straight line.
+    ///
+    /// Overload of `arc_to()`.
+    fn arc_to_f64(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, radius: f64);
 }
