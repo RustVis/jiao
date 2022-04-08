@@ -129,4 +129,40 @@ pub trait PathTrait {
     ///
     /// Overload of `arc_to()`.
     fn arc_to_f64(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, radius: f64);
+
+    /// Adds an elliptical arc to the path, in clockwise direction.
+    #[inline]
+    fn ellipse(
+        &mut self,
+        center: PointF,
+        radius_x: f64,
+        radius_y: f64,
+        rotation: f64,
+        start_angle: f64,
+        end_angle: f64,
+    ) {
+        self.ellipse_f64(
+            center.x(),
+            center.y(),
+            radius_x,
+            radius_y,
+            rotation,
+            start_angle,
+            end_angle,
+        );
+    }
+
+    /// Adds an elliptical arc to the path, in clockwise direction.
+    ///
+    /// Overload of `ellipse()`.
+    fn ellipse_f64(
+        &mut self,
+        center_x: f64,
+        center_y: f64,
+        radius_x: f64,
+        radius_y: f64,
+        rotation: f64,
+        start_angle: f64,
+        end_angle: f64,
+    );
 }

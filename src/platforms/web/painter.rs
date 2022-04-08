@@ -132,4 +132,26 @@ impl PathTrait for Path {
         // TODO(Shaohua): Returns error
         let _ = self.p.arc_to(x1, y1, x2, y2, radius);
     }
+
+    fn ellipse_f64(
+        &mut self,
+        center_x: f64,
+        center_y: f64,
+        radius_x: f64,
+        radius_y: f64,
+        rotation: f64,
+        start_angle: f64,
+        end_angle: f64,
+    ) {
+        // TODO(Shaohua): Returns error
+        let _ = self.p.ellipse(
+            center_x,
+            center_y,
+            radius_x,
+            radius_y,
+            rotation,
+            start_angle,
+            end_angle,
+        );
+    }
 }
