@@ -4,6 +4,8 @@
 
 mod abstract_shape;
 mod line;
+mod rect;
 
 pub use abstract_shape::AbstractShape;
 pub use line::LineShape;
+pub use rect::RectShape;

@@ -8,6 +8,7 @@ use crate::base::PointF;
 use crate::kernel::{PainterTrait, PathTrait};
 use crate::platforms::Path;
 
+#[derive(Debug, Clone)]
 pub struct LineShape {
     data: LineF,
     path: Path,
