@@ -2,7 +2,7 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use super::AbstractShape;
+use super::ShapeTrait;
 use crate::base::RectF;
 use crate::kernel::{PainterTrait, PathTrait};
 use crate::platforms::Path;
@@ -25,7 +25,7 @@ impl RectShape {
     }
 }
 
-impl AbstractShape for RectShape {
+impl ShapeTrait for RectShape {
     fn update(&mut self, painter: &mut dyn PainterTrait) {
         painter.stroke(&self.path);
     }

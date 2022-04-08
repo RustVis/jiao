@@ -2,10 +2,10 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-mod abstract_shape;
 mod line;
 mod rect;
+mod shape_trait;
 
-pub use abstract_shape::AbstractShape;
 pub use line::LineShape;
 pub use rect::RectShape;
+pub use shape_trait::ShapeTrait;

@@ -4,6 +4,6 @@
 
 use crate::kernel::PainterTrait;
 
-pub trait AbstractShape {
+pub trait ShapeTrait {
     fn update(&mut self, painter: &mut dyn PainterTrait);
 }

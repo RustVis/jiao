@@ -4,10 +4,10 @@
 
 use super::PainterTrait;
 use crate::event::{KeyEvent, MouseEvent, ResizeEvent};
-use crate::shapes::AbstractShape;
+use crate::shapes::ShapeTrait;
 
 pub struct ShapeManager {
-    shapes: Vec<Box<dyn AbstractShape>>,
+    shapes: Vec<Box<dyn ShapeTrait>>,
 }
 
 impl ShapeManager {
@@ -15,7 +15,7 @@ impl ShapeManager {
         Self { shapes: Vec::new() }
     }
 
-    pub fn add(&mut self, shape: Box<dyn AbstractShape>) {
+    pub fn add(&mut self, shape: Box<dyn ShapeTrait>) {
         self.shapes.push(shape);
     }
 }

@@ -2,7 +2,7 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use super::AbstractShape;
+use super::ShapeTrait;
 use crate::base::LineF;
 use crate::base::PointF;
 use crate::kernel::{PainterTrait, PathTrait};
@@ -52,7 +52,7 @@ impl LineShape {
     }
 }
 
-impl AbstractShape for LineShape {
+impl ShapeTrait for LineShape {
     fn update(&mut self, painter: &mut dyn PainterTrait) {
         log::info!(
             "LineShape::update(), p1: {:?}, p2: {:?}",
