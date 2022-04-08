@@ -4,12 +4,11 @@
 
 pub mod bezier;
 pub mod brush;
-mod color;
+pub mod color;
 pub mod color_constants;
 pub mod color_matrix;
 pub mod gradient;
 pub mod linear_gradient;
-pub mod painter_path;
 pub mod path_clipper;
 pub mod path_simplifier;
 pub mod polygon;
