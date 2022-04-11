@@ -11,6 +11,7 @@ mod polygon;
 mod rect;
 mod shape_trait;
 mod star;
+mod text;
 
 pub use bracket::BracketShape;
 pub use circular::CircularShape;
@@ -21,3 +22,4 @@ pub use polygon::PolygonShape;
 pub use rect::RectShape;
 pub use shape_trait::ShapeTrait;
 pub use star::StarShape;
+pub use text::TextShape;
