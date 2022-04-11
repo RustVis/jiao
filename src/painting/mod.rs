@@ -7,6 +7,7 @@ pub mod brush;
 pub mod color;
 pub mod color_constants;
 pub mod color_matrix;
+pub mod font;
 pub mod gradient;
 pub mod linear_gradient;
 pub mod path_clipper;
