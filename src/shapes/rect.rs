@@ -3,7 +3,7 @@
 // in the LICENSE file.
 
 use super::ShapeTrait;
-use crate::base::RectF;
+use crate::base::{PointF, RectF};
 use crate::kernel::{PainterTrait, PathTrait};
 use crate::platforms::Path;
 
@@ -15,10 +15,16 @@ pub struct RectShape {
 }
 
 impl RectShape {
-    pub fn new() -> Self {
-        Self::from_rect(RectF::new())
+    /// Create a square shape.
+    pub fn new_square(width: f64, center: &PointF) -> Self {
+        let mut rect = RectF::new();
+        rect.set_width(width);
+        rect.set_height(width);
+        rect.move_center(&center);
+        Self::from_rect(rect)
     }
 
+    /// Create a general rect.
     pub fn from_rect(rect: RectF) -> Self {
         let path = Path::new();
         Self {

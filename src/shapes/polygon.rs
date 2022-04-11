@@ -24,7 +24,7 @@ impl PolygonShape {
     /// Corner radius is set to 0.0.
     pub fn new(corners: usize) -> Self {
         assert!(corners >= MIN_VERTEX && corners <= MAX_VERTEX);
-        let mut path = Path::new();
+        let path = Path::new();
         Self {
             corners,
             corner_radius: 0.0,

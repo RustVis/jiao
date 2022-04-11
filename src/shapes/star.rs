@@ -24,13 +24,35 @@ impl StarShape {
     /// Corner radius is set to 0.0.
     pub fn new(corners: usize) -> Self {
         assert!(corners >= MIN_VERTEX && corners <= MAX_VERTEX);
-        let mut path = Path::new();
+        let path = Path::new();
         Self {
             corners,
             corner_radius: 0.0,
             path,
             path_is_dirty: true,
         }
+    }
+
+    /// Create a new triangle shape.
+    pub fn new_triangle() -> Self {
+        Self::new(3)
+    }
+
+    /// Create a new diamond shape.
+    pub fn new_diamond() -> Self {
+        // TODO(Shaohua): Rotate
+        Self::new(4)
+    }
+
+    /// Create a new parallelogram shape.
+    pub fn new_parallelogram() -> Self {
+        // TODO(Shaohua): Rotate
+        Self::new(4)
+    }
+
+    /// Create a new hexagon shape.
+    pub fn new_hexagon() -> Self {
+        Self::new(6)
     }
 
     /// Get current number of corners.
