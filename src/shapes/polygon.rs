@@ -33,6 +33,28 @@ impl PolygonShape {
         }
     }
 
+    /// Create a new triangle shape.
+    pub fn new_triangle() -> Self {
+        Self::new(3)
+    }
+
+    /// Create a new diamond shape.
+    pub fn new_diamond() -> Self {
+        // TODO(Shaohua): Rotate
+        Self::new(4)
+    }
+
+    /// Create a new parallelogram shape.
+    pub fn new_parallelogram() -> Self {
+        // TODO(Shaohua): Rotate
+        Self::new(4)
+    }
+
+    /// Create a new hexagon shape.
+    pub fn new_hexagon() -> Self {
+        Self::new(6)
+    }
+
     /// Get current number of corners.
     pub fn corners(&self) -> usize {
         self.corners
