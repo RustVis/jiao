@@ -72,6 +72,54 @@ impl BracketShape {
         Self::new(size, Some(handle_base), 16.0, 17.28)
     }
 
+    /// Get bracket size.
+    pub fn size(&self) -> SizeF {
+        self.size
+    }
+
+    /// Update bracket size.
+    pub fn set_size(&mut self, size: SizeF) {
+        self.size = size;
+        self.path_is_dirty = true;
+    }
+
+    /// Get bracket handle base point.
+    pub fn handle_base(&self) -> Option<PointF> {
+        self.handle_base.clone()
+    }
+
+    /// Update bracket handle base point.
+    pub fn set_handle_base(&mut self, point: Option<PointF>) {
+        self.handle_base = point;
+        self.path_is_dirty = true;
+    }
+
+    /// Get handle width.
+    pub fn handle_width(&self) -> f64 {
+        self.handle_width
+    }
+
+    /// Update handle width.
+    pub fn set_handle_width(&mut self, width: f64) {
+        if self.handle_width != width {
+            self.handle_width = width;
+            self.path_is_dirty = true;
+        }
+    }
+
+    /// Get corner radius.
+    pub fn corner_radius(&self) -> f64 {
+        self.corner_radius
+    }
+
+    /// Set corner radius.
+    pub fn set_corner_radius(&mut self, corner_radius: f64) {
+        if self.corner_radius != corner_radius {
+            self.corner_radius = corner_radius;
+            self.path_is_dirty = true;
+        }
+    }
+
     fn update_path(&mut self) {
         if !self.path_is_dirty {
             return;
