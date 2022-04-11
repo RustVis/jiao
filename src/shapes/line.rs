@@ -12,6 +12,7 @@ use crate::platforms::Path;
 pub struct LineShape {
     line: LineF,
     path: Path,
+    path_is_dirty: bool,
 }
 
 impl LineShape {
@@ -24,12 +25,11 @@ impl LineShape {
     }
 
     pub fn from_points(p1: PointF, p2: PointF) -> Self {
-        let mut path = Path::new();
-        path.move_to(p1);
-        path.line_to(p2);
+        let path = Path::new();
         Self {
             line: LineF::from_points(p1, p2),
             path,
+            path_is_dirty: true,
         }
     }
 
@@ -43,12 +43,21 @@ impl LineShape {
 
     pub fn set_p1(&mut self, point: PointF) {
         self.line.set_p1(point);
-        self.path.move_to(point);
+        self.path_is_dirty = true;
     }
 
     pub fn set_p2(&mut self, point: PointF) {
         self.line.set_p2(point);
-        self.path.line_to(point);
+        self.path_is_dirty = true;
+    }
+
+    fn update_path(&mut self) {
+        if self.path_is_dirty {
+            self.path = Path::new();
+            self.path.move_to(self.p1());
+            self.path.line_to(self.p2());
+            self.path_is_dirty = false;
+        }
     }
 }
 
@@ -59,11 +68,7 @@ impl ShapeTrait for LineShape {
     }
 
     fn repaint(&mut self, painter: &mut dyn PainterTrait) {
-        log::info!(
-            "LineShape::update(), p1: {:?}, p2: {:?}",
-            self.p1(),
-            self.p2()
-        );
+        self.update_path();
         painter.stroke(&self.path);
     }
 }

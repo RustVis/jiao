@@ -11,6 +11,7 @@ use crate::platforms::Path;
 pub struct RectShape {
     rect: RectF,
     path: Path,
+    path_is_dirty: bool,
 }
 
 impl RectShape {
@@ -19,9 +20,19 @@ impl RectShape {
     }
 
     pub fn from_rect(rect: RectF) -> Self {
-        let mut path = Path::new();
-        path.rect(&rect);
-        Self { rect: rect, path }
+        let path = Path::new();
+        Self {
+            rect,
+            path,
+            path_is_dirty: true,
+        }
+    }
+
+    fn update_path(&mut self) {
+        if self.path_is_dirty {
+            self.path = Path::new();
+            self.path.rect(&self.rect);
+        }
     }
 }
 
@@ -31,6 +42,7 @@ impl ShapeTrait for RectShape {
     }
 
     fn repaint(&mut self, painter: &mut dyn PainterTrait) {
+        self.update_path();
         painter.stroke(&self.path);
     }
 }

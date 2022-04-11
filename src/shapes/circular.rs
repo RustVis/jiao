@@ -16,8 +16,8 @@ pub struct CircularShape {
     start_angle: f64,
     end_angle: f64,
 
-    path_is_dirty: bool,
     path: Path,
+    path_is_dirty: bool,
 }
 
 impl CircularShape {
@@ -29,8 +29,8 @@ impl CircularShape {
             radius,
             start_angle: 0.0,
             end_angle: DEFAULT_END_ANGLE,
-            path_is_dirty: true,
             path,
+            path_is_dirty: true,
         }
     }
 
@@ -82,9 +82,13 @@ impl CircularShape {
     }
 
     fn update_path(&mut self) {
+        if !self.path_is_dirty {
+            return;
+        }
         self.path = Path::new();
         self.path
             .arc(self.center, self.radius, self.start_angle, self.end_angle);
+        self.path_is_dirty = false;
     }
 }
 
@@ -94,10 +98,7 @@ impl ShapeTrait for CircularShape {
     }
 
     fn repaint(&mut self, painter: &mut dyn PainterTrait) {
-        if self.path_is_dirty {
-            self.update_path();
-            self.path_is_dirty = false;
-        }
+        self.update_path();
         painter.stroke(&self.path);
     }
 }

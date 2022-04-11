@@ -109,6 +109,9 @@ impl EllipseShape {
     }
 
     fn update_path(&mut self) {
+        if !self.path_is_dirty {
+            return;
+        }
         self.path = Path::new();
         self.path.ellipse(
             self.center,
@@ -118,6 +121,7 @@ impl EllipseShape {
             self.start_angle,
             self.end_angle,
         );
+        self.path_is_dirty = false;
     }
 }
 
@@ -127,10 +131,7 @@ impl ShapeTrait for EllipseShape {
     }
 
     fn repaint(&mut self, painter: &mut dyn PainterTrait) {
-        if self.path_is_dirty {
-            self.path_is_dirty = false;
-            self.update_path();
-        }
+        self.update_path();
         painter.stroke(&self.path);
     }
 }
