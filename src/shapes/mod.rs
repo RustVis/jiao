@@ -2,6 +2,7 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+mod bracket;
 mod circular;
 mod ellipse;
 mod grid;
@@ -11,6 +12,7 @@ mod rect;
 mod shape_trait;
 mod star;
 
+pub use bracket::BracketShape;
 pub use circular::CircularShape;
 pub use ellipse::EllipseShape;
 pub use grid::GridShape;
