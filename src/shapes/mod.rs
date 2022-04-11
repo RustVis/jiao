@@ -4,6 +4,7 @@
 
 mod circular;
 mod ellipse;
+mod grid;
 mod line;
 mod polygon;
 mod rect;
@@ -12,6 +13,7 @@ mod star;
 
 pub use circular::CircularShape;
 pub use ellipse::EllipseShape;
+pub use grid::GridShape;
 pub use line::LineShape;
 pub use polygon::PolygonShape;
 pub use rect::RectShape;
