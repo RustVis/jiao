@@ -30,7 +30,7 @@ impl RectShape {
 
     fn update_path(&mut self) {
         if self.path_is_dirty {
-            self.path = Path::new();
+            self.path.clear();
             self.path.rect(&self.rect);
         }
     }

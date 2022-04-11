@@ -112,7 +112,7 @@ impl EllipseShape {
         if !self.path_is_dirty {
             return;
         }
-        self.path = Path::new();
+        self.path.clear();
         self.path.ellipse(
             self.center,
             self.radius_x,

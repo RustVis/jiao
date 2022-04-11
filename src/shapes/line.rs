@@ -52,12 +52,13 @@ impl LineShape {
     }
 
     fn update_path(&mut self) {
-        if self.path_is_dirty {
-            self.path = Path::new();
-            self.path.move_to(self.p1());
-            self.path.line_to(self.p2());
-            self.path_is_dirty = false;
+        if !self.path_is_dirty {
+            return;
         }
+        self.path.clear();
+        self.path.move_to(self.p1());
+        self.path.line_to(self.p2());
+        self.path_is_dirty = false;
     }
 }
 

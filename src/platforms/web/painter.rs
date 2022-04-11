@@ -92,6 +92,10 @@ impl Path {
 }
 
 impl PathTrait for Path {
+    fn clear(&mut self) {
+        self.path2d = Path2d::new().unwrap();
+    }
+
     #[inline]
     fn add_path(&mut self, other: &Self) {
         self.path2d().add_path(other.path2d());

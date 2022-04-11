@@ -85,7 +85,7 @@ impl CircularShape {
         if !self.path_is_dirty {
             return;
         }
-        self.path = Path::new();
+        self.path.clear();
         self.path
             .arc(self.center, self.radius, self.start_angle, self.end_angle);
         self.path_is_dirty = false;

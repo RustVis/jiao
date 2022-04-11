@@ -7,6 +7,7 @@ mod ellipse;
 mod line;
 mod rect;
 mod shape_trait;
+mod star;
 
 pub use circular::CircularShape;
 pub use ellipse::EllipseShape;

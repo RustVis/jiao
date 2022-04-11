@@ -35,6 +35,10 @@ pub trait PainterTrait {
 }
 
 pub trait PathTrait {
+    /// Clears the path elements stored.
+    fn clear(&mut self);
+
+    /// Adds the given path to this path as a closed subpath.
     fn add_path(&mut self, other: &Self);
 
     /// Attempts to add a straight line from the current point to the start of current path.
