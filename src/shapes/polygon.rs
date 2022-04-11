@@ -11,15 +11,15 @@ const MIN_VERTEX: usize = 3;
 const MAX_VERTEX: usize = 99;
 
 #[derive(Debug, Clone)]
-pub struct StarShape {
+pub struct PolygonShape {
     corners: usize,
     corner_radius: f64,
     path: Path,
     path_is_dirty: bool,
 }
 
-impl StarShape {
-    /// Create a new star shape object with specified `corners`.
+impl PolygonShape {
+    /// Create a new polygon shape object with specified `corners`.
     ///
     /// Corner radius is set to 0.0.
     pub fn new(corners: usize) -> Self {
@@ -75,7 +75,7 @@ impl StarShape {
     }
 }
 
-impl ShapeTrait for StarShape {
+impl ShapeTrait for PolygonShape {
     fn bounding_rect(&self) -> RectF {
         todo!()
     }

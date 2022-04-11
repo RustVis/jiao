@@ -5,6 +5,7 @@
 mod circular;
 mod ellipse;
 mod line;
+mod polygon;
 mod rect;
 mod shape_trait;
 mod star;
@@ -12,5 +13,7 @@ mod star;
 pub use circular::CircularShape;
 pub use ellipse::EllipseShape;
 pub use line::LineShape;
+pub use polygon::PolygonShape;
 pub use rect::RectShape;
 pub use shape_trait::ShapeTrait;
+pub use star::StarShape;
