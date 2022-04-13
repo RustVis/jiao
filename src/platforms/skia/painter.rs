@@ -3,26 +3,44 @@
 // in the LICENSE file.
 
 use skia_safe::PaintStyle;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 use crate::base::{PointF, RectF};
 use crate::kernel::{PainterTrait, PathTrait};
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
+enum CanvasWrapper {
+    Surface(skia_safe::Surface),
+    SvgCanvas(Rc<RefCell<skia_safe::svg::Canvas>>),
+}
+
+#[derive(Debug)]
 pub struct Painter {
+    canvas: CanvasWrapper,
     paint: skia_safe::Paint,
-    surface: skia_safe::Surface,
 }
 
 impl Painter {
-    pub fn new(surface: skia_safe::Surface) -> Self {
+    pub fn from_surface(surface: skia_safe::Surface) -> Self {
         let mut paint = skia_safe::Paint::default();
         paint.set_anti_alias(true);
+        let canvas = CanvasWrapper::Surface(surface);
+        Self { paint, canvas }
+    }
 
-        Self { paint, surface }
+    pub fn from_svg_canvas(canvas: Rc<RefCell<skia_safe::svg::Canvas>>) -> Self {
+        let mut paint = skia_safe::Paint::default();
+        paint.set_anti_alias(true);
+        let canvas = CanvasWrapper::SvgCanvas(canvas);
+        Self { paint, canvas }
     }
 
     fn canvas(&mut self) -> &mut skia_safe::Canvas {
-        self.surface.canvas()
+        match &mut self.canvas {
+            CanvasWrapper::Surface(surface) => surface.canvas(),
+            CanvasWrapper::SvgCanvas(_svg_canvas) => todo!(),
+        }
     }
 }
 
@@ -50,13 +68,23 @@ impl PainterTrait for Painter {
     #[inline]
     fn fill(&mut self, path: &Path) {
         self.paint.set_style(PaintStyle::Fill);
-        self.surface.canvas().draw_path(path.path(), &self.paint);
+        match &mut self.canvas {
+            CanvasWrapper::Surface(surface) => {
+                surface.canvas().draw_path(path.path(), &self.paint);
+            }
+            CanvasWrapper::SvgCanvas(_svg_canvas) => todo!(),
+        }
     }
 
     #[inline]
     fn stroke(&mut self, path: &Path) {
         self.paint.set_style(PaintStyle::Stroke);
-        self.surface.canvas().draw_path(path.path(), &self.paint);
+        match &mut self.canvas {
+            CanvasWrapper::Surface(surface) => {
+                surface.canvas().draw_path(path.path(), &self.paint);
+            }
+            CanvasWrapper::SvgCanvas(_svg_canvas) => todo!(),
+        }
     }
 
     #[inline]
