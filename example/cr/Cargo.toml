@@ -1,0 +1,7 @@
+[package]
+name = "cr"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+jiao = { path = "../..", default-features=false, features = ["cairo"] }
