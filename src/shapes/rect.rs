@@ -16,11 +16,11 @@ pub struct RectShape {
 
 impl RectShape {
     /// Create a square shape.
-    pub fn new_square(width: f64, center: &PointF) -> Self {
+    pub fn new_square(width: f64, center: PointF) -> Self {
         let mut rect = RectF::new();
         rect.set_width(width);
         rect.set_height(width);
-        rect.move_center(&center);
+        rect.move_center(center);
         Self::from_rect(rect)
     }
 

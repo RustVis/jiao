@@ -113,62 +113,36 @@ impl PathTrait for Path {
         self.p.line_to(point);
     }
 
-    fn rect_f64(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        let rect = RectF::from(x, y, width, height);
-        self.p.add_rect(
-            skia_safe::Rect::new(
-                rect.left() as f32,
-                rect.top() as f32,
-                rect.right() as f32,
-                rect.bottom() as f32,
-            ),
-            None,
-        );
+    fn rect(&mut self, rect: &RectF) {
+        let rect: skia_safe::Rect = rect.into();
+        self.p.add_rect(&rect, None);
     }
 
-    fn cubic_to_f64(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
-        self.p.cubic_to(
-            (cp1x as f32, cp1y as f32),
-            (cp2x as f32, cp2y as f32),
-            (x as f32, y as f32),
-        );
+    fn cubic_to(&mut self, p1: PointF, p2: PointF, end_point: PointF) {
+        self.p.cubic_to(p1, p2, end_point);
     }
 
-    fn quad_to_f64(&mut self, cpx: f64, cpy: f64, x: f64, y: f64) {
-        self.p
-            .quad_to((cpx as f32, cpy as f32), (x as f32, y as f32));
+    fn quad_to(&mut self, control_point: PointF, end_point: PointF) {
+        self.p.quad_to(control_point, end_point);
     }
 
-    fn arc_f64(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) {
+    fn arc(&mut self, center: PointF, radius: f64, start_angle: f64, end_angle: f64) {
         let mut rect = RectF::new();
-        rect.move_center(&PointF::from(x, y));
+        rect.move_center(center);
         rect.set_width(radius * 2.0);
         rect.set_height(radius * 2.0);
-        self.p.arc_to(
-            skia_safe::Rect::new(
-                rect.left() as f32,
-                rect.top() as f32,
-                rect.right() as f32,
-                rect.bottom() as f32,
-            ),
-            start_angle as f32,
-            end_angle as f32,
-            true,
-        );
+        let rect: skia_safe::Rect = rect.into();
+        self.p
+            .arc_to(&rect, start_angle as f32, end_angle as f32, true);
     }
 
-    fn arc_to_f64(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, radius: f64) {
-        self.p.arc_to_tangent(
-            (x1 as f32, y1 as f32),
-            (x2 as f32, y2 as f32),
-            radius as f32,
-        );
+    fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64) {
+        self.p.arc_to_tangent(p1, p2, radius as f32);
     }
 
-    fn ellipse_f64(
+    fn ellipse(
         &mut self,
-        _center_x: f64,
-        _center_y: f64,
+        _center: PointF,
         _radius_x: f64,
         _radius_y: f64,
         _rotation: f64,

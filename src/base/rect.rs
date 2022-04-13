@@ -1263,7 +1263,7 @@ impl RectF {
     /// Moves the rectangle, leaving the center point at the given `position`.
     ///
     /// The rectangle's size is unchanged.
-    pub fn move_center(&mut self, position: &PointF) {
+    pub fn move_center(&mut self, position: PointF) {
         let width = self.x2 - self.x1;
         let height = self.y2 - self.y1;
         self.x1 = position.x() - width / 2.0;
@@ -1735,6 +1735,12 @@ cfg_if::cfg_if! {
 
         impl From<RectF> for skia_safe::Rect {
             fn from(r: RectF) -> skia_safe::Rect {
+                skia_safe::Rect::new(r.left() as f32, r.top() as f32, r.right() as f32, r.bottom() as f32)
+            }
+        }
+
+        impl From<&RectF> for skia_safe::Rect {
+            fn from(r: &RectF) -> skia_safe::Rect {
                 skia_safe::Rect::new(r.left() as f32, r.top() as f32, r.right() as f32, r.bottom() as f32)
             }
         }
