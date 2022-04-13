@@ -3,33 +3,19 @@
 // in the LICENSE file.
 
 use jiao::kernel::PaintContextTrait;
-use jiao::platforms::PaintContext;
+use jiao::platforms::cr::paint_device::ImagePaintDevice;
+use jiao::platforms::{PaintContext, PaintDevice};
 use jiao::shapes::LineShape;
 use std::fs::File;
-use std::io::Write;
 
 fn main() {
-    let mut paint_ctx = PaintContext::new(300, 150);
+    let paint_device = ImagePaintDevice::new(cairo::Format::ARgb32, 300, 150);
+    let mut paint_ctx = PaintContext::new(PaintDevice::Image(paint_device.clone()));
     let shape_manager = paint_ctx.shape_manager();
     let line = LineShape::from_f64(0.0, 0.0, 50.0, 50.0);
     shape_manager.add(Box::new(line));
     paint_ctx.update();
 
-    let paint_device = paint_ctx.paint_device();
-
-    // Save to png file
-    {
-        let data = paint_device.encode(EncodedImageFormat::PNG);
-        let mut file = File::create("out.png").unwrap();
-        let bytes = data.as_bytes();
-        file.write_all(bytes).unwrap();
-    }
-
-    // Save to jpg file
-    {
-        let data = paint_device.encode(EncodedImageFormat::JPEG);
-        let mut file = File::create("out.jpg").unwrap();
-        let bytes = data.as_bytes();
-        file.write_all(bytes).unwrap();
-    }
+    let mut fd = File::create("out.png").unwrap();
+    paint_device.surface().write_to_png(&mut fd).unwrap();
 }
