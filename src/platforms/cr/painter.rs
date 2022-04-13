@@ -2,7 +2,7 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use crate::kernel::generic_path::GenericPath;
+use crate::kernel::generic_path::{GenericPath, GenericPathToken};
 use crate::kernel::PainterTrait;
 
 // Re-export GenericPath as Path
@@ -17,6 +17,39 @@ impl Painter {
     pub fn new(surface: &cairo::Surface) -> Self {
         let context = cairo::Context::new(surface).unwrap();
         Self { context }
+    }
+
+    fn draw_path(&mut self, path: &Path) {
+        for token in path.tokens() {
+            match token {
+                GenericPathToken::ClosePath => break,
+                GenericPathToken::MoveTo(point) => {
+                    self.context.move_to(point.x(), point.y());
+                }
+                GenericPathToken::LineTo(point) => {
+                    self.context.line_to(point.x(), point.y());
+                }
+                GenericPathToken::Rect(rect) => {
+                    self.context
+                        .rectangle(rect.x(), rect.y(), rect.width(), rect.height());
+                }
+                GenericPathToken::CubicTo(_cubic_to) => {
+                    todo!()
+                }
+                GenericPathToken::QuadTo(_quad_to) => {
+                    todo!()
+                }
+                GenericPathToken::Arc(_arc) => {
+                    todo!()
+                }
+                GenericPathToken::ArcTo(_arc_to) => {
+                    todo!()
+                }
+                GenericPathToken::Ellipse(_ellipse) => {
+                    todo!()
+                }
+            }
+        }
     }
 }
 
@@ -34,7 +67,9 @@ impl PainterTrait for Painter {
     }
 
     fn clear_all(&mut self) {
-        todo!()
+        // TODO(Shaohua): Set color first.
+        // TODO(Shaohua): Catch errors
+        let _ = self.context.paint();
     }
 
     #[inline]
@@ -43,13 +78,15 @@ impl PainterTrait for Painter {
     }
 
     #[inline]
-    fn fill(&mut self, _path: &Path) {
+    fn fill(&mut self, path: &Path) {
+        self.draw_path(path);
         // TODO(Shaohua): Catch errors
         let _ = self.context.fill();
     }
 
     #[inline]
-    fn stroke(&mut self, _path: &Path) {
+    fn stroke(&mut self, path: &Path) {
+        self.draw_path(path);
         // TODO(Shaohua): catch errors
         let _ = self.context.stroke();
     }

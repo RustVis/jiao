@@ -79,6 +79,7 @@ impl PathTrait for GenericPath {
     }
 
     fn add_path(&mut self, other: &Self) {
+        // TODO(Shaohua): Check close-path is the last element or not.
         self.tokens.extend_from_slice(&other.tokens);
     }
 
