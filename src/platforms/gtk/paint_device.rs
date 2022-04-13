@@ -8,6 +8,7 @@ use crate::base::Size;
 #[derive(Debug)]
 pub enum PaintDevice {
     Image(ImagePaintDevice),
+    Pdf(PdfPaintDevice),
     Svg(SvgPaintDevice),
 }
 
@@ -15,6 +16,7 @@ impl PaintDevice {
     pub fn painter(&mut self) -> &mut Painter {
         match self {
             Self::Image(image_device) => image_device.painter(),
+            Self::Pdf(pdf_device) => pdf_device.painter(),
             Self::Svg(svg_device) => svg_device.painter(),
         }
     }
@@ -40,6 +42,33 @@ impl ImagePaintDevice {
 
     pub fn painter(&mut self) -> &mut Painter {
         &mut self.painter
+    }
+}
+
+#[derive(Debug)]
+pub struct PdfPaintDevice {
+    surface: cairo::PdfSurface,
+    painter: Painter,
+}
+
+impl PdfPaintDevice {
+    pub fn new<P: AsRef<std::path::Path>>(width: f64, height: f64, path: P) -> Self {
+        // TODO(Shaohua): Catch errors
+        let surface = cairo::PdfSurface::new(width, height, path).unwrap();
+        let painter = Painter::new(&surface);
+        Self { surface, painter }
+    }
+
+    pub fn size(&self) -> Size {
+        todo!()
+    }
+
+    pub fn painter(&mut self) -> &mut Painter {
+        &mut self.painter
+    }
+
+    pub fn surface(&mut self) -> &mut cairo::PdfSurface {
+        &mut self.surface
     }
 }
 

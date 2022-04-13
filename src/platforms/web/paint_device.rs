@@ -44,11 +44,11 @@ impl PaintDevice {
         unimplemented!()
     }
 
-    pub fn get_size(&self) -> Size {
+    pub fn size(&self) -> Size {
         Size::from(self.canvas.width() as i32, self.canvas.height() as i32)
     }
 
-    pub fn get_painter(&mut self) -> &mut dyn PainterTrait {
+    pub fn painter(&mut self) -> &mut dyn PainterTrait {
         &mut self.painter
     }
 }

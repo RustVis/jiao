@@ -30,7 +30,7 @@ impl PaintContext {
 
 impl PaintContextTrait for PaintContext {
     fn repaint(&mut self) {
-        let painter = self.paint_device.get_painter();
+        let painter = self.paint_device.painter();
         painter.clear_all();
         self.shape_manager.update(painter);
     }
