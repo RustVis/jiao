@@ -3,30 +3,34 @@
 // in the LICENSE file.
 
 use super::surface::SurfaceWrapper;
-use crate::base::PointF;
-use crate::kernel::{PainterTrait, PathTrait};
+use crate::kernel::generic_path::GenericPath;
+use crate::kernel::PainterTrait;
+
+// Re-export GenericPath as Path
+pub type Path = GenericPath;
 
 pub struct Painter {
     context: cairo::Context,
-    surface: SurfaceWrapper,
 }
 
 impl Painter {
-    pub fn new(surface: SurfaceWrapper) -> Self {
+    pub fn new(surface: &SurfaceWrapper) -> Self {
         let context = cairo::Context::new(&*surface).unwrap();
-        Self { context, surface }
+        Self { context }
     }
 }
 
 impl PainterTrait for Painter {
     #[inline]
     fn save(&mut self) {
-        self.context.save();
+        // TODO(Shaohua): Catch errors
+        let _ = self.context.save();
     }
 
     #[inline]
     fn restore(&mut self) {
-        self.context.restore();
+        // TODO(Shaohua): Catch errors
+        let _ = self.context.restore();
     }
 
     fn clear_all(&mut self) {
@@ -40,12 +44,14 @@ impl PainterTrait for Painter {
 
     #[inline]
     fn fill(&mut self, _path: &Path) {
-        self.context.fill();
+        // TODO(Shaohua): Catch errors
+        let _ = self.context.fill();
     }
 
     #[inline]
     fn stroke(&mut self, _path: &Path) {
-        self.context.stroke();
+        // TODO(Shaohua): catch errors
+        let _ = self.context.stroke();
     }
 
     #[inline]
@@ -61,31 +67,5 @@ impl PainterTrait for Painter {
     #[inline]
     fn translate(&mut self, x: f64, y: f64) {
         self.context.translate(x, y);
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct Path {}
-
-impl Path {
-    pub fn new() -> Self {
-        Self {}
-    }
-}
-
-impl PathTrait for Path {
-    #[inline]
-    fn close(&mut self) {
-        todo!()
-    }
-
-    #[inline]
-    fn line_to(&mut self, point: PointF) {
-        todo!()
-    }
-
-    #[inline]
-    fn move_to(&mut self, _point: PointF) {
-        todo!()
     }
 }

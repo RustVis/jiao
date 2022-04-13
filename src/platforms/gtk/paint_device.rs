@@ -16,12 +16,12 @@ impl PaintDevice {
         // TODO(Shaohua): Catch errors
         let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, width, height).unwrap();
         let surface = SurfaceWrapper::Image(surface);
-        let painter = Painter::new(surface.clone());
+        let painter = Painter::new(&surface);
         Self { surface, painter }
     }
 
     pub fn get_size(&self) -> Size {
-        match self.surface {
+        match &self.surface {
             SurfaceWrapper::Image(surface) => Size::from(surface.width(), surface.height()),
         }
     }

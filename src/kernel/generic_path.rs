@@ -150,7 +150,7 @@ impl PathTrait for GenericPath {
     }
 
     fn arc_to_f64(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, radius: f64) {
-        todo!()
+        self.arc_to(PointF::from(x1, y1), PointF::from(x2, y2), radius);
     }
 
     fn ellipse(
