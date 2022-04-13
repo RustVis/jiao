@@ -3,27 +3,37 @@
 // in the LICENSE file.
 
 use super::painter::Painter;
-use super::surface::SurfaceWrapper;
 use crate::base::Size;
 
-pub struct PaintDevice {
-    surface: SurfaceWrapper,
-    painter: Painter,
+#[derive(Debug)]
+pub enum PaintDevice {
+    Image(ImagePaintDevice),
 }
 
 impl PaintDevice {
-    pub fn new_image(width: i32, height: i32) -> Self {
+    pub fn get_painter(&mut self) -> &mut Painter {
+        match self {
+            Self::Image(image_device) => image_device.get_painter(),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct ImagePaintDevice {
+    surface: cairo::ImageSurface,
+    painter: Painter,
+}
+
+impl ImagePaintDevice {
+    pub fn new(format: cairo::Format, width: i32, height: i32) -> Self {
         // TODO(Shaohua): Catch errors
-        let surface = cairo::ImageSurface::create(cairo::Format::ARgb32, width, height).unwrap();
-        let surface = SurfaceWrapper::Image(surface);
+        let surface = cairo::ImageSurface::create(format, width, height).unwrap();
         let painter = Painter::new(&surface);
         Self { surface, painter }
     }
 
     pub fn get_size(&self) -> Size {
-        match &self.surface {
-            SurfaceWrapper::Image(surface) => Size::from(surface.width(), surface.height()),
-        }
+        Size::from(self.surface.width(), self.surface.height())
     }
 
     pub fn get_painter(&mut self) -> &mut Painter {

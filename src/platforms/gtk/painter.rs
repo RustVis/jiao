@@ -2,20 +2,20 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use super::surface::SurfaceWrapper;
 use crate::kernel::generic_path::GenericPath;
 use crate::kernel::PainterTrait;
 
 // Re-export GenericPath as Path
 pub type Path = GenericPath;
 
+#[derive(Debug)]
 pub struct Painter {
     context: cairo::Context,
 }
 
 impl Painter {
-    pub fn new(surface: &SurfaceWrapper) -> Self {
-        let context = cairo::Context::new(&*surface).unwrap();
+    pub fn new(surface: &cairo::Surface) -> Self {
+        let context = cairo::Context::new(surface).unwrap();
         Self { context }
     }
 }

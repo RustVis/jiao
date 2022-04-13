@@ -5,4 +5,3 @@
 pub mod paint_context;
 pub mod paint_device;
 pub mod painter;
-mod surface;
