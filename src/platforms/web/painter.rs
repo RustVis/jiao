@@ -4,7 +4,7 @@
 
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, Path2d};
 
-use crate::base::PointF;
+use crate::base::{PointF, RectF};
 use crate::kernel::{PainterTrait, PathTrait};
 
 pub struct Painter {
@@ -116,32 +116,40 @@ impl PathTrait for Path {
         self.path2d.line_to(point.x(), point.y());
     }
 
-    fn rect_f64(&mut self, x: f64, y: f64, width: f64, height: f64) {
-        self.path2d.rect(x, y, width, height);
+    fn rect(&mut self, rect: &RectF) {
+        self.path2d
+            .rect(rect.x(), rect.y(), rect.width(), rect.height());
     }
 
-    fn cubic_to_f64(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64) {
-        self.path2d.bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y);
+    fn cubic_to(&mut self, p1: PointF, p2: PointF, end_point: PointF) {
+        self.path2d
+            .bezier_curve_to(p1.x(), p1.y(), p2.x(), p2.y(), end_point.x(), end_point.y());
     }
 
-    fn quad_to_f64(&mut self, cpx: f64, cpy: f64, x: f64, y: f64) {
-        self.path2d.quadratic_curve_to(cpx, cpy, x, y);
+    fn quad_to(&mut self, control_point: PointF, end_point: PointF) {
+        self.path2d.quadratic_curve_to(
+            control_point.x(),
+            control_point.y(),
+            end_point.x(),
+            end_point.y(),
+        );
     }
 
-    fn arc_f64(&mut self, x: f64, y: f64, radius: f64, start_angle: f64, end_angle: f64) {
+    fn arc(&mut self, center: PointF, radius: f64, start_angle: f64, end_angle: f64) {
         // TODO(Shaohua): Returns error
-        let _ = self.path2d.arc(x, y, radius, start_angle, end_angle);
+        let _ = self
+            .path2d
+            .arc(center.x(), center.y(), radius, start_angle, end_angle);
     }
 
-    fn arc_to_f64(&mut self, x1: f64, y1: f64, x2: f64, y2: f64, radius: f64) {
+    fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64) {
         // TODO(Shaohua): Returns error
-        let _ = self.path2d.arc_to(x1, y1, x2, y2, radius);
+        let _ = self.path2d.arc_to(p1.x(), p1.y(), p2.x(), p2.y(), radius);
     }
 
-    fn ellipse_f64(
+    fn ellipse(
         &mut self,
-        center_x: f64,
-        center_y: f64,
+        center: PointF,
         radius_x: f64,
         radius_y: f64,
         rotation: f64,
@@ -150,8 +158,8 @@ impl PathTrait for Path {
     ) {
         // TODO(Shaohua): Returns error
         let _ = self.path2d.ellipse(
-            center_x,
-            center_y,
+            center.x(),
+            center.y(),
             radius_x,
             radius_y,
             rotation,
