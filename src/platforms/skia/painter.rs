@@ -105,12 +105,12 @@ impl PathTrait for Path {
 
     #[inline]
     fn move_to(&mut self, point: PointF) {
-        self.p.move_to((point.x() as f32, point.y() as f32));
+        self.p.move_to(point);
     }
 
     #[inline]
     fn line_to(&mut self, point: PointF) {
-        self.p.line_to((point.x() as f32, point.y() as f32));
+        self.p.line_to(point);
     }
 
     fn rect_f64(&mut self, x: f64, y: f64, width: f64, height: f64) {

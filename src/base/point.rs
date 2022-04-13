@@ -311,7 +311,7 @@ impl ops::MulAssign<f64> for PointF {
 
 impl ops::DivAssign<f64> for PointF {
     fn div_assign(&mut self, factor: f64) {
-        assert!(factor != 0.0);
+        assert_ne!(factor, 0.0);
         self.x /= factor;
         self.y /= factor;
     }
@@ -323,7 +323,23 @@ impl ops::Div<f64> for PointF {
     /// Returns the QPointF object formed by dividing both components of the given point
     /// by the given divisor.
     fn div(self, factor: f64) -> Self {
-        assert!(factor != 0.0);
+        assert_ne!(factor, 0.0);
         PointF::from(self.x / factor, self.y / factor)
+    }
+}
+
+cfg_if::cfg_if! {
+    if #[cfg(feature = "skia")] {
+        impl From<skia_safe::Point> for PointF {
+            fn from(p: skia_safe::Point) -> Self {
+                Self::from(p.x as f64, p.y as f64)
+            }
+        }
+
+        impl From<PointF> for skia_safe::Point {
+            fn from(p: PointF) -> skia_safe::Point {
+                skia_safe::Point::new(p.x() as f32, p.y() as f32)
+            }
+        }
     }
 }
