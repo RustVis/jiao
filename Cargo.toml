@@ -8,7 +8,7 @@ readme = "README.md"
 license = "Apache-2.0"
 
 [features]
-default = ["web"]
+default = ["cairo"]
 cairo = ["cairo-rs"]
 qt = ["qt_gui"]
 skia = ["skia-safe"]

@@ -5,7 +5,7 @@
 use super::painter::Painter;
 use crate::base::Size;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum PaintDevice {
     Image(ImagePaintDevice),
     Pdf(PdfPaintDevice),
@@ -22,7 +22,7 @@ impl PaintDevice {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ImagePaintDevice {
     surface: cairo::ImageSurface,
     painter: Painter,
@@ -43,9 +43,13 @@ impl ImagePaintDevice {
     pub fn painter(&mut self) -> &mut Painter {
         &mut self.painter
     }
+
+    pub fn surface(&self) -> &cairo::ImageSurface {
+        &self.surface
+    }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct PdfPaintDevice {
     surface: cairo::PdfSurface,
     painter: Painter,
@@ -72,7 +76,7 @@ impl PdfPaintDevice {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct SvgPaintDevice {
     surface: cairo::SvgSurface,
     painter: Painter,

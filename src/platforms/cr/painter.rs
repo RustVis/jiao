@@ -8,7 +8,7 @@ use crate::kernel::PainterTrait;
 // Re-export GenericPath as Path
 pub type Path = GenericPath;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Painter {
     context: cairo::Context,
 }
