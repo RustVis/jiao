@@ -3,8 +3,9 @@
 // in the LICENSE file.
 
 use jiao::kernel::PaintContextTrait;
-use jiao::platforms::cr::paint_device::{ImagePaintDevice, PdfPaintDevice, SvgPaintDevice};
-use jiao::platforms::{PaintContext, PaintDevice};
+use jiao::platforms::{
+    ImagePaintDevice, PaintContext, PaintDevice, PdfPaintDevice, SvgPaintDevice,
+};
 use jiao::shapes::LineShape;
 use std::fs::File;
 
