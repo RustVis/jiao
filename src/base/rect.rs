@@ -894,6 +894,16 @@ impl RectF {
         }
     }
 
+    /// Constructs a rectangle with four corners.
+    pub fn from_corners(left: f64, top: f64, right: f64, bottom: f64) -> Self {
+        Self {
+            x1: left,
+            y1: top,
+            x2: right,
+            y2: bottom,
+        }
+    }
+
     /// Constructs a rectangle with the given `top_left` corner and the given `size`.
     pub fn from_size(top_left: PointF, size: SizeF) -> Self {
         Self {
@@ -1712,5 +1722,21 @@ impl ops::BitOrAssign<&RectF> for RectF {
     fn bitor_assign(&mut self, rectangle: &RectF) {
         let new_rect = rectangle | self;
         *self = new_rect;
+    }
+}
+
+cfg_if::cfg_if! {
+    if #[cfg(feature = "skia")] {
+        impl From<skia_safe::Rect> for RectF {
+            fn from(r: skia_safe::Rect) -> Self {
+                Self::from_corners(r.left() as f64, r.top() as f64, r.right() as f64, r.bottom() as f64)
+            }
+        }
+
+        impl From<RectF> for skia_safe::Rect {
+            fn from(r: RectF) -> skia_safe::Rect {
+                skia_safe::Rect::new(r.left() as f32, r.top() as f32, r.right() as f32, r.bottom() as f32)
+            }
+        }
     }
 }
