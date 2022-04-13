@@ -95,10 +95,15 @@ pub trait PathTrait {
     fn cubic_to_f64(&mut self, cp1x: f64, cp1y: f64, cp2x: f64, cp2y: f64, x: f64, y: f64);
 
     /// Adds a quadratic Bézier curve between the current position and the given `end_point`
-    /// with the control point specified by `c`.
+    /// with the `control_point`.
     #[inline]
-    fn quad_to(&mut self, c: PointF, end_point: PointF) {
-        self.quad_to_f64(c.x(), c.y(), end_point.x(), end_point.y());
+    fn quad_to(&mut self, control_point: PointF, end_point: PointF) {
+        self.quad_to_f64(
+            control_point.x(),
+            control_point.y(),
+            end_point.x(),
+            end_point.y(),
+        );
     }
 
     /// Adds a quadratic Bézier curve to the current path.
