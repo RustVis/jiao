@@ -44,8 +44,8 @@ impl ImagePaintDevice {
         &mut self.painter
     }
 
-    pub fn surface(&self) -> &cairo::ImageSurface {
-        &self.surface
+    pub fn surface(&mut self) -> &mut cairo::ImageSurface {
+        &mut self.surface
     }
 }
 
@@ -83,9 +83,9 @@ pub struct SvgPaintDevice {
 }
 
 impl SvgPaintDevice {
-    pub fn new<P: AsRef<std::path::Path>>(width: f64, height: f64, path: Option<P>) -> Self {
+    pub fn new<P: AsRef<std::path::Path>>(width: f64, height: f64, path: P) -> Self {
         // TODO(Shaohua): Catch errors
-        let surface = cairo::SvgSurface::new(width, height, path).unwrap();
+        let surface = cairo::SvgSurface::new(width, height, Some(path)).unwrap();
         let painter = Painter::new(&surface);
         Self { surface, painter }
     }
