@@ -8,8 +8,8 @@ readme = "README.md"
 license = "Apache-2.0"
 
 [features]
-default = ["gtk"]
-gtk = ["cairo-rs"]
+default = ["cairo"]
+cairo = ["cairo-rs"]
 qt = ["qt_gui"]
 skia = ["skia-safe"]
 web = ["js-sys", "web-sys", "wasm-bindgen"]
