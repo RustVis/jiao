@@ -7,6 +7,7 @@ use skia_safe::PaintStyle;
 use crate::base::{PointF, RectF};
 use crate::kernel::{PainterTrait, PathTrait};
 
+#[derive(Debug, Clone)]
 pub struct Painter {
     paint: skia_safe::Paint,
     surface: skia_safe::Surface,

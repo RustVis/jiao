@@ -5,16 +5,15 @@
 use super::paint_device::PaintDevice;
 use crate::kernel::{PaintContextTrait, PainterTrait, ShapeManager};
 
+#[derive(Debug)]
 pub struct PaintContext {
     shape_manager: ShapeManager,
     paint_device: PaintDevice,
 }
 
 impl PaintContext {
-    pub fn new(width: i32, height: i32) -> Self {
+    pub fn new(paint_device: PaintDevice) -> Self {
         let shape_manager = ShapeManager::new();
-        let paint_device = PaintDevice::new(width, height);
-
         Self {
             shape_manager,
             paint_device,
@@ -32,7 +31,7 @@ impl PaintContext {
 
 impl PaintContextTrait for PaintContext {
     fn repaint(&mut self) {
-        let painter = self.paint_device.get_painter();
+        let painter = self.paint_device.painter();
         painter.clear_all();
         self.shape_manager.update(painter);
     }

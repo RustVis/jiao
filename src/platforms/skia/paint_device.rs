@@ -7,23 +7,39 @@ use skia_safe::Surface;
 use super::painter::Painter;
 use crate::base::Size;
 
-pub struct PaintDevice {
+#[derive(Debug, Clone)]
+pub enum PaintDevice {
+    Image(ImagePaintDevice),
+}
+
+impl PaintDevice {
+    pub fn painter(&mut self) -> &mut Painter {
+        match self {
+            Self::Image(image_device) => image_device.painter(),
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ImagePaintDevice {
     surface: Surface,
     painter: Painter,
 }
 
-impl PaintDevice {
+impl ImagePaintDevice {
+    /// Create a new image paint device.
     pub fn new(width: i32, height: i32) -> Self {
+        // TODO(Shaohua): Catch errors
         let surface = Surface::new_raster_n32_premul((width, height)).expect("no surface!");
         let painter = Painter::new(surface.clone());
         Self { surface, painter }
     }
 
-    pub fn get_size(&self) -> Size {
+    pub fn size(&self) -> Size {
         Size::from(self.surface.width(), self.surface.height())
     }
 
-    pub fn get_painter(&mut self) -> &mut Painter {
+    pub fn painter(&mut self) -> &mut Painter {
         &mut self.painter
     }
 

@@ -5,7 +5,7 @@
 use crate::base::RectF;
 use crate::kernel::PainterTrait;
 
-pub trait ShapeTrait {
+pub trait ShapeTrait: std::fmt::Debug {
     /// Returns the bounding rectangle of this shape object as a rectangle with floating point precision.
     fn bounding_rect(&self) -> RectF;
 

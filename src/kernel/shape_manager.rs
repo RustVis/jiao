@@ -6,6 +6,7 @@ use super::PainterTrait;
 use crate::event::{KeyEvent, MouseEvent, ResizeEvent};
 use crate::shapes::ShapeTrait;
 
+#[derive(Debug)]
 pub struct ShapeManager {
     shapes: Vec<Box<dyn ShapeTrait>>,
 }
