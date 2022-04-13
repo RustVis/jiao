@@ -127,10 +127,7 @@ impl PathTrait for Path {
     }
 
     fn arc(&mut self, center: PointF, radius: f64, start_angle: f64, end_angle: f64) {
-        let mut rect = RectF::new();
-        rect.move_center(center);
-        rect.set_width(radius * 2.0);
-        rect.set_height(radius * 2.0);
+        let rect = RectF::from_circular(center, radius);
         let rect: skia_safe::Rect = rect.into();
         self.p
             .arc_to(&rect, start_angle as f32, end_angle as f32, true);

@@ -924,6 +924,25 @@ impl RectF {
         }
     }
 
+    /// Get outer square of a circular.
+    pub fn from_circular(center: PointF, radius: f64) -> Self {
+        let offset = radius * std::f64::consts::FRAC_1_SQRT_2;
+        let x1 = center.x() - offset;
+        let y1 = center.y() - offset;
+        let x2 = center.x() + offset;
+        let y2 = center.y() + offset;
+        Self { x1, y1, x2, y2 }
+    }
+
+    /// Get inner square of a circular.
+    pub fn from_outer_circular(center: PointF, radius: f64) -> Self {
+        let x1 = center.x() - radius;
+        let y1 = center.y() - radius;
+        let x2 = center.x() + radius;
+        let y2 = center.y() + radius;
+        Self { x1, y1, x2, y2 }
+    }
+
     /// Adds `dx1`, `dy1`, `dx2` and `dy2` respectively to the existing coordinates of the rectangle.
     pub fn adjust(&mut self, dx1: f64, dy1: f64, dx2: f64, dy2: f64) {
         self.x1 += dx1;
