@@ -8,7 +8,7 @@ readme = "README.md"
 license = "Apache-2.0"
 
 [features]
-default = ["web"]
+default = ["gtk"]
 gtk = ["cairo-rs"]
 qt = ["qt_gui"]
 skia = ["skia-safe"]
@@ -23,6 +23,12 @@ cfg-if = "1.0.0"
 [dependencies.cairo-rs]
 version = "0.15.10"
 optional = true
+features = [
+  "glib",
+  "png",
+  "svg",
+  "pdf",
+]
 
 [dependencies.js-sys]
 version = "0.3.57"
