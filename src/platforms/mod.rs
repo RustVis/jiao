@@ -15,5 +15,11 @@ cfg_if::cfg_if! {
         pub type PaintDevice = skia::paint_device::PaintDevice;
         pub type Painter = skia::painter::Painter;
         pub type Path = skia::painter::Path;
+    } else if #[cfg(feature = "gtk")] {
+        pub mod gtk;
+        pub type PaintContext = gtk::paint_context::PaintContext;
+        pub type PaintDevice = gtk::paint_device::PaintDevice;
+        pub type Painter = gtk::painter::Painter;
+        pub type Path = gtk::painter::Path;
     }
 }
