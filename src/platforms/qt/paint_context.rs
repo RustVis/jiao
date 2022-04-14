@@ -10,33 +10,29 @@ use crate::kernel::{PaintContextTrait, ShapeManager};
 
 pub struct PaintContext {
     shape_manager: ShapeManager,
-    painter: Painter,
 }
 
 impl PaintContext {
     pub fn new() -> Self {
         let shape_manager = ShapeManager::new();
-        let painter = Painter::new();
-        Self {
-            shape_manager,
-            painter,
-        }
+        Self { shape_manager }
     }
 
     pub fn start(&mut self, paint_device: impl CastInto<Ptr<QPaintDevice>>) {
         log::info!("PaintContext::start()");
+        let mut painter = Painter::new();
         unsafe {
-            self.painter.painter().begin(paint_device);
+            painter.painter().begin(paint_device);
         }
+        self.shape_manager.update(&mut painter);
         unsafe {
-            self.painter.painter().end();
+            painter.painter().end();
         }
     }
 }
 
 impl PaintContextTrait for PaintContext {
     fn repaint(&mut self) {
-        todo!()
         //self.shape_manager.update(painter);
     }
 
