@@ -112,7 +112,19 @@ impl PathTrait for Path {
     }
 
     fn arc(&mut self, center: PointF, radius: f64, start_angle: f64, end_angle: f64) {
-        todo!()
+        let rect = RectF::from_circular(center, radius);
+        // FIXME(Shaohua): Calc sweep_length.
+        let sweep_length = end_angle;
+        unsafe {
+            self.path.arc_to_6a(
+                rect.x(),
+                rect.y(),
+                rect.width(),
+                rect.height(),
+                start_angle,
+                sweep_length,
+            );
+        }
     }
 
     fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64) {
@@ -128,6 +140,19 @@ impl PathTrait for Path {
         start_angle: f64,
         end_angle: f64,
     ) {
-        todo!()
+        let rect = RectF::from_ellipse(center, radius_x, radius_y);
+        // TODO(Shaohua): Save rotation value
+        // FIXME(Shaohua): Calc sweep_length.
+        let sweep_length = end_angle;
+        unsafe {
+            self.path.arc_to_6a(
+                rect.x(),
+                rect.y(),
+                rect.width(),
+                rect.height(),
+                start_angle,
+                sweep_length,
+            );
+        }
     }
 }
