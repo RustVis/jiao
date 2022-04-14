@@ -6,7 +6,7 @@ use cpp_core::{CastInto, Ptr};
 use qt_gui::QPaintDevice;
 
 use super::painter::Painter;
-use crate::kernel::{PaintContextTrait, PainterTrait, ShapeManager};
+use crate::kernel::{PaintContextTrait, ShapeManager};
 
 pub struct PaintContext {
     shape_manager: ShapeManager,

@@ -122,7 +122,7 @@ impl PathTrait for Path {
     }
 
     #[inline]
-    fn add_path(&mut self, other: &Self) {
+    fn add_path(&mut self, _other: &Self) {
         todo!()
         //self.path().add_path(other.path());
     }
@@ -189,7 +189,7 @@ impl PathTrait for Path {
         }
     }
 
-    fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64) {
+    fn arc_to(&mut self, _p1: PointF, _p2: PointF, _radius: f64) {
         todo!()
     }
 
