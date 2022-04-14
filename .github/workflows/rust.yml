@@ -41,5 +41,9 @@ jobs:
     - run: env
     - run: ls -l
     - run: cargo build --verbose
+    - run: cargo build --verbose --no-default-features --features=cairo
+    - run: cargo build --verbose --no-default-features --features=qt
+    - run: cargo build --verbose --no-default-features --features=skia
+    - run: cargo build --verbose --no-default-features --features=web
     - run: cargo doc --verbose
     - run: cargo test --verbose
