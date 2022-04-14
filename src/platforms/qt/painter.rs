@@ -31,6 +31,68 @@ impl Painter {
     }
 }
 
+impl PainterTrait for Painter {
+    #[inline]
+    fn save(&mut self) {
+        unsafe {
+            self.painter.save();
+        }
+    }
+
+    #[inline]
+    fn restore(&mut self) {
+        unsafe {
+            self.painter.restore();
+        }
+    }
+
+    fn clear_all(&mut self) {
+        todo!()
+    }
+
+    #[inline]
+    fn clip(&mut self) {
+        todo!()
+    }
+
+    #[inline]
+    fn fill(&mut self, path: &Path) {
+        unsafe {
+            let brush = self.painter.brush();
+            self.painter.fill_path(&path.path, brush);
+        }
+    }
+
+    #[inline]
+    fn stroke(&mut self, path: &Path) {
+        unsafe {
+            let pen = self.painter.pen();
+            self.painter.stroke_path(&path.path, pen);
+        }
+    }
+
+    #[inline]
+    fn rotate(&mut self, angle: f64) {
+        unsafe {
+            self.painter.rotate(angle);
+        }
+    }
+
+    #[inline]
+    fn scale(&mut self, x: f64, y: f64) {
+        unsafe {
+            self.painter.scale(x, y);
+        }
+    }
+
+    #[inline]
+    fn translate(&mut self, x: f64, y: f64) {
+        unsafe {
+            self.painter.translate_2_double(x, y);
+        }
+    }
+}
+
 pub struct Path {
     path: CppBox<QPainterPath>,
 }
