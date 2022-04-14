@@ -5,26 +5,39 @@
 use cpp_core::{CastInto, Ptr};
 use qt_gui::QPaintDevice;
 
+use super::painter::Painter;
 use crate::kernel::{PaintContextTrait, PainterTrait, ShapeManager};
 
 pub struct PaintContext {
     shape_manager: ShapeManager,
+    painter: Painter,
 }
 
 impl PaintContext {
     pub fn new() -> Self {
         let shape_manager = ShapeManager::new();
-        Self { shape_manager }
+        let painter = Painter::new();
+        Self {
+            shape_manager,
+            painter,
+        }
     }
 
     pub fn start(&mut self, paint_device: impl CastInto<Ptr<QPaintDevice>>) {
         log::info!("PaintContext::start()");
+        unsafe {
+            self.painter.painter().begin(paint_device);
+        }
+        unsafe {
+            self.painter.painter().end();
+        }
     }
 }
 
 impl PaintContextTrait for PaintContext {
     fn repaint(&mut self) {
-        self.shape_manager.update(painter);
+        todo!()
+        //self.shape_manager.update(painter);
     }
 
     fn update(&mut self) {

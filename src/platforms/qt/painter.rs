@@ -2,15 +2,16 @@
 // Use of this source is governed by General Public License that can be found
 // in the LICENSE file.
 
+use cpp_core::CppBox;
 use qt_gui::{QPainter, QPainterPath};
 use std::fmt;
 
-use crate::base::PointF;
+use crate::base::{PointF, RectF};
+use crate::kernel::PainterTrait;
 use crate::kernel::PathTrait;
-use crate::kernel::{PainterTrait, RectF};
 
 pub struct Painter {
-    painter: QPainter,
+    painter: CppBox<QPainter>,
 }
 
 impl fmt::Debug for Painter {
@@ -21,13 +22,17 @@ impl fmt::Debug for Painter {
 
 impl Painter {
     pub fn new() -> Self {
-        let painter = QPainter::new();
+        let painter = unsafe { QPainter::new_0a() };
         Self { painter }
+    }
+
+    pub fn painter(&mut self) -> &CppBox<QPainter> {
+        &self.painter
     }
 }
 
 pub struct Path {
-    path: QPainterPath,
+    path: CppBox<QPainterPath>,
 }
 
 impl fmt::Debug for Path {
@@ -38,69 +43,80 @@ impl fmt::Debug for Path {
 
 impl Path {
     pub fn new() -> Self {
-        let path = QPainterPath::new();
+        let path = unsafe { QPainterPath::new_0a() };
         Self { path }
     }
 
-    pub fn path(&mut self) -> &mut QPainterPath {
-        &mut self.path
+    pub fn path(&mut self) -> &CppBox<QPainterPath> {
+        &self.path
     }
 }
 
 impl PathTrait for Path {
     fn clear(&mut self) {
-        self.path = Path2d::new().unwrap();
+        unsafe {
+            self.path.clear();
+        }
     }
 
     #[inline]
     fn add_path(&mut self, other: &Self) {
-        self.path().add_path(other.path());
+        todo!()
+        //self.path().add_path(other.path());
     }
 
     #[inline]
     fn close_path(&mut self) {
-        self.path.close_path();
+        unsafe {
+            self.path.close_subpath();
+        }
     }
 
     #[inline]
     fn move_to(&mut self, point: PointF) {
-        self.path.move_to(point.x(), point.y());
+        unsafe {
+            self.path.move_to_2a(point.x(), point.y());
+        }
     }
 
     #[inline]
     fn line_to(&mut self, point: PointF) {
-        self.path.line_to(point.x(), point.y());
+        unsafe {
+            self.path.line_to_2a(point.x(), point.y());
+        }
     }
 
     fn rect(&mut self, rect: &RectF) {
-        self.path
-            .rect(rect.x(), rect.y(), rect.width(), rect.height());
+        unsafe {
+            self.path
+                .add_rect_4a(rect.x(), rect.y(), rect.width(), rect.height());
+        }
     }
 
     fn cubic_to(&mut self, p1: PointF, p2: PointF, end_point: PointF) {
-        self.path
-            .bezier_curve_to(p1.x(), p1.y(), p2.x(), p2.y(), end_point.x(), end_point.y());
+        unsafe {
+            self.path
+                .cubic_to_6a(p1.x(), p1.y(), p2.x(), p2.y(), end_point.x(), end_point.y());
+        }
     }
 
     fn quad_to(&mut self, control_point: PointF, end_point: PointF) {
-        self.path.quadratic_curve_to(
-            control_point.x(),
-            control_point.y(),
-            end_point.x(),
-            end_point.y(),
-        );
+        unsafe {
+            self.path.quad_to_4a(
+                control_point.x(),
+                control_point.y(),
+                end_point.x(),
+                end_point.y(),
+            );
+        }
     }
 
     fn arc(&mut self, center: PointF, radius: f64, start_angle: f64, end_angle: f64) {
-        // TODO(Shaohua): Returns error
-        let _ = self
-            .path
-            .arc(center.x(), center.y(), radius, start_angle, end_angle);
+        todo!()
     }
 
     fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64) {
-        // TODO(Shaohua): Returns error
-        let _ = self.path.arc_to(p1.x(), p1.y(), p2.x(), p2.y(), radius);
+        todo!()
     }
 
     fn ellipse(
@@ -112,15 +128,6 @@ impl PathTrait for Path {
         start_angle: f64,
         end_angle: f64,
     ) {
-        // TODO(Shaohua): Returns error
-        let _ = self.path.ellipse(
-            center.x(),
-            center.y(),
-            radius_x,
-            radius_y,
-            rotation,
-            start_angle,
-            end_angle,
-        );
+        todo!()
     }
 }
