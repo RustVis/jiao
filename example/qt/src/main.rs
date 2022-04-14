@@ -22,9 +22,9 @@ fn draw_png() {
 }
 
 fn main() {
-    QGuiApplication::init(|_app| unsafe {
+    QGuiApplication::init(|_app| {
         println!("Init qt gui");
         draw_png();
-        QGuiApplication::exec()
+        0
     });
 }
