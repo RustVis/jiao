@@ -7,7 +7,7 @@ use crate::kernel::{PainterTrait, PathTrait};
 use crate::platforms::Path;
 use crate::shapes::ShapeTrait;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct BracketShape {
     size: SizeF,
     handle_base: Option<PointF>,

@@ -9,7 +9,7 @@ use crate::platforms::Path;
 
 const DEFAULT_END_ANGLE: f64 = std::f64::consts::TAU;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct EllipseShape {
     center: PointF,
     radius_x: f64,

@@ -8,7 +8,7 @@ use crate::base::{LineF, RectF};
 use crate::kernel::{PainterTrait, PathTrait};
 use crate::platforms::Path;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct LineShape {
     line: LineF,
     path: Path,

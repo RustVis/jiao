@@ -7,7 +7,7 @@ use crate::kernel::{PainterTrait, PathTrait};
 use crate::platforms::Path;
 use crate::shapes::ShapeTrait;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct GridShape {
     horizontal_step: f64,
     vertical_step: f64,

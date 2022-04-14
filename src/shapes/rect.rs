@@ -7,7 +7,7 @@ use crate::base::{PointF, RectF};
 use crate::kernel::{PainterTrait, PathTrait};
 use crate::platforms::Path;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct RectShape {
     rect: RectF,
     path: Path,

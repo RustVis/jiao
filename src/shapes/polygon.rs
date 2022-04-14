@@ -10,7 +10,7 @@ use crate::shapes::ShapeTrait;
 const MIN_VERTEX: usize = 3;
 const MAX_VERTEX: usize = 99;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct PolygonShape {
     corners: usize,
     corner_radius: f64,
