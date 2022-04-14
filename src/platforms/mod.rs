@@ -14,6 +14,11 @@ cfg_if::cfg_if! {
         };
         pub use cr::painter::Painter;
         pub use cr::painter::Path;
+    } else if #[cfg(feature = "qt")] {
+        pub mod qt;
+        pub use qt::paint_context::PaintContext;
+        pub use qt::painter::Painter;
+        pub use qt::painter::Path;
     } else if #[cfg(feature = "skia")] {
         pub mod skia;
         pub use skia::paint_context::PaintContext;
