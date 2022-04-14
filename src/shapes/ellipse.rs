@@ -14,7 +14,6 @@ pub struct EllipseShape {
     center: PointF,
     radius_x: f64,
     radius_y: f64,
-    rotation: f64,
     start_angle: f64,
     end_angle: f64,
 
@@ -30,7 +29,6 @@ impl EllipseShape {
             center,
             radius_x,
             radius_y,
-            rotation: 0.0,
             start_angle: 0.0,
             end_angle: DEFAULT_END_ANGLE,
             path_is_dirty: true,
@@ -75,17 +73,6 @@ impl EllipseShape {
         self.path_is_dirty = true;
     }
 
-    /// Get rotation of the ellipse shape.
-    pub fn rotation(&self) -> f64 {
-        self.rotation
-    }
-
-    /// Set rotation of the ellipse shape.
-    pub fn set_rotation(&mut self, rotation: f64) {
-        self.rotation = rotation;
-        self.path_is_dirty = true;
-    }
-
     /// Get start angle of the ellipse shape.
     pub fn start_angle(&self) -> f64 {
         self.start_angle
@@ -117,7 +104,6 @@ impl EllipseShape {
             self.center,
             self.radius_x,
             self.radius_y,
-            self.rotation,
             self.start_angle,
             self.end_angle,
         );

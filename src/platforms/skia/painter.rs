@@ -171,7 +171,6 @@ impl PathTrait for Path {
         _center: PointF,
         _radius_x: f64,
         _radius_y: f64,
-        _rotation: f64,
         _start_angle: f64,
         _end_angle: f64,
     ) {

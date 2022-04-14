@@ -38,7 +38,6 @@ pub struct GenericPathEllipse {
     pub center: PointF,
     pub radius_x: f64,
     pub radius_y: f64,
-    pub rotation: f64,
     pub start_angle: f64,
     pub end_angle: f64,
 }
@@ -135,7 +134,6 @@ impl PathTrait for GenericPath {
         center: PointF,
         radius_x: f64,
         radius_y: f64,
-        rotation: f64,
         start_angle: f64,
         end_angle: f64,
     ) {
@@ -144,7 +142,6 @@ impl PathTrait for GenericPath {
                 center,
                 radius_x,
                 radius_y,
-                rotation,
                 start_angle,
                 end_angle,
             }));

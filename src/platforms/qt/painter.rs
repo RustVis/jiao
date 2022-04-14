@@ -136,12 +136,10 @@ impl PathTrait for Path {
         center: PointF,
         radius_x: f64,
         radius_y: f64,
-        rotation: f64,
         start_angle: f64,
         end_angle: f64,
     ) {
         let rect = RectF::from_ellipse(center, radius_x, radius_y);
-        // TODO(Shaohua): Save rotation value
         // FIXME(Shaohua): Calc sweep_length.
         let sweep_length = end_angle;
         unsafe {
