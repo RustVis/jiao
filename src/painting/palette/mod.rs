@@ -5,5 +5,6 @@
 use crate::painting::Color;
 
 pub mod categorical;
+pub mod diverging;
 
 pub type ColorPalette<'a> = &'a [Color];
