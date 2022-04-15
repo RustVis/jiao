@@ -496,7 +496,8 @@ impl Color {
     }
 
     /// Constructs a color with the value color.
-    pub fn from_rgb32(rgb: Rgb) -> Self {
+    pub fn from_rgb32(rgb: impl Into<Rgb>) -> Self {
+        let rgb = rgb.into();
         Self::from_rgba(rgb.red(), rgb.green(), rgb.blue(), rgb.alpha())
     }
 

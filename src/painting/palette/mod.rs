@@ -2,7 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use super::color::Color;
+use crate::painting::Color;
 
-#[derive(Debug, Clone)]
-pub struct ColorPalette(Vec<Color>);
+pub mod categorical;
+
+pub type ColorPalette<'a> = &'a [Color];

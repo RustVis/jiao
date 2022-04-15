@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use std::convert::From;
+
 /// An ARGB quadruplet on the format #AARRGGBB, equivalent to an unsigned int.
 ///
 /// The type also holds a value for the alpha-channel.
@@ -17,6 +19,12 @@ pub const RGB_MASK: Rgb = Rgb { rgb: 0x00ffffff };
 impl Default for Rgb {
     fn default() -> Self {
         Rgb::new(0, 0, 0)
+    }
+}
+
+impl From<u32> for Rgb {
+    fn from(rgb: u32) -> Self {
+        Self { rgb }
     }
 }
 
@@ -39,22 +47,22 @@ impl Rgb {
     }
 
     /// Get red part of RGB.
-    pub fn red(&self) -> u8 {
+    pub const fn red(&self) -> u8 {
         ((self.rgb >> 16) & 0xff) as u8
     }
 
     /// Get green part of RGB.
-    pub fn green(&self) -> u8 {
+    pub const fn green(&self) -> u8 {
         ((self.rgb >> 8) & 0xff) as u8
     }
 
     /// Get blue part of RGB.
-    pub fn blue(&self) -> u8 {
+    pub const fn blue(&self) -> u8 {
         (self.rgb & 0xff) as u8
     }
 
     /// Get alpha part of RGB.
-    pub fn alpha(&self) -> u8 {
+    pub const fn alpha(&self) -> u8 {
         (self.rgb >> 24) as u8
     }
 
