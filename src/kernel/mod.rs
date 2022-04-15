@@ -9,7 +9,6 @@ pub mod image;
 pub mod paint_context;
 pub mod paint_device;
 mod painter;
-pub mod palette;
 mod shape_manager;
 pub mod theme;
 

@@ -10,6 +10,7 @@ pub mod color_matrix;
 pub mod font;
 pub mod gradient;
 pub mod linear_gradient;
+pub mod palette;
 pub mod path_clipper;
 pub mod path_simplifier;
 pub mod polygon;
@@ -20,5 +21,6 @@ mod rgba64;
 pub mod transform;
 
 pub use color::Color;
+pub use palette::ColorPalette;
 pub use rgb::{Rgb, RGB_MASK};
 pub use rgba64::Rgba64;
