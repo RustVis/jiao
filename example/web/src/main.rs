@@ -13,7 +13,6 @@ use yew::{html, Component, Context, Html, NodeRef};
 enum Msg {}
 
 struct Model {
-    value: i64,
     container_node: NodeRef,
     paint_ctx: Option<PaintContext>,
 }
@@ -24,7 +23,6 @@ impl Component for Model {
 
     fn create(_ctx: &Context<Self>) -> Self {
         Self {
-            value: 1,
             container_node: NodeRef::default(),
             paint_ctx: None,
         }
