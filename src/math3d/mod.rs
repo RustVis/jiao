@@ -3,6 +3,7 @@
 // in the LICENSE file.
 
 //pub mod generic_matrix;
+pub mod matrix;
 pub mod matrix4x4;
 pub mod quaternion;
 pub mod vector2d;
