@@ -24,6 +24,7 @@ impl GridShape {
     ///
     /// Note that both `horizontal_step` and `vertical_step` shall be a
     /// non-negative number.
+    #[must_use]
     pub fn new(horizontal_step: f64, vertical_step: f64) -> Self {
         assert!(horizontal_step >= 0.0 && vertical_step >= 0.0);
         let start_point = PointF::new();
@@ -42,6 +43,7 @@ impl GridShape {
     }
 
     /// Get horizontal step value.
+    #[must_use]
     pub fn horizontal_step(&self) -> f64 {
         self.horizontal_step
     }
@@ -56,6 +58,7 @@ impl GridShape {
     }
 
     /// Check if horizontal step is visible.
+    #[must_use]
     pub fn horizontal_visible(&self) -> bool {
         self.horizontal_visible
     }
@@ -69,6 +72,7 @@ impl GridShape {
     }
 
     /// Get vertical step value.
+    #[must_use]
     pub fn vertical_step(&self) -> f64 {
         self.vertical_step
     }
@@ -83,6 +87,7 @@ impl GridShape {
     }
 
     /// Check if vertical step is visible.
+    #[must_use]
     pub fn vertical_visible(&self) -> bool {
         self.vertical_visible
     }
@@ -96,6 +101,7 @@ impl GridShape {
     }
 
     /// Get start point of grid.
+    #[must_use]
     pub fn start_point(&self) -> PointF {
         self.start_point
     }
@@ -107,6 +113,7 @@ impl GridShape {
     }
 
     /// Get current viewport.
+    #[must_use]
     pub fn viewport(&self) -> &RectF {
         &self.viewport
     }

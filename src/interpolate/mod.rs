@@ -6,6 +6,7 @@ pub mod color;
 
 pub type ReturnFunc = Box<dyn Fn(f64) -> f64>;
 
+#[must_use]
 pub fn constant(a: f64) -> ReturnFunc {
     Box::new(move |_t: f64| a)
 }

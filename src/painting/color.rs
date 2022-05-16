@@ -66,7 +66,7 @@ use crate::util::{fuzzy_compare, fuzzy_is_zero};
 /// the floating point functions accept values in the range 0.0 - 1.0.
 ///
 /// # The Extended RGB Color Model
-/// The extended RGB color model, also known as the scRGB color space,
+/// The extended RGB color model, also known as the `scRGB` color space,
 /// is the same the RGB color model except it allows values under 0.0, and over 1.0.
 /// This makes it possible to represent colors that would otherwise be outside
 /// the range of the RGB colorspace but still use the same values for colors inside
@@ -239,7 +239,7 @@ pub enum NameFormat {
 }
 
 fn check_float_range(value: f64) -> Result<(), ParseColorError> {
-    if value < 0.0 || value > 1.0 {
+    if !(0.0..=1.0).contains(&value) {
         return Err(ParseColorError::OutOfRangeError);
     }
     Ok(())
@@ -267,13 +267,14 @@ impl Color {
     /// An invalid color is a color that is not properly set up for the underlying window system.
     ///
     /// The alpha value of an invalid color is unspecified.
+    #[must_use]
     pub const fn new() -> Self {
         Self::from_rgb(0, 0, 0)
     }
 
     /// Constructs a named color in the same way as `set_named_color()` using the given name.
     pub fn from_name(name: &str) -> Result<Self, ParseColorError> {
-        let mut color = Color::new();
+        let mut color = Self::new();
         color.set_named_color(name)?;
         Ok(color)
     }
@@ -281,6 +282,7 @@ impl Color {
     /// Construct color from the given CMYK color values.
     ///
     /// All the values must be in the range 0-255.
+    #[must_use]
     pub fn from_cmyk(cyan: u8, magenta: u8, yellow: u8, black: u8, alpha: u8) -> Self {
         Self {
             inner: ColorInner::cmyk(cyan, magenta, yellow, black, alpha),
@@ -297,8 +299,7 @@ impl Color {
         black: f64,
         alpha: f64,
     ) -> Result<Self, ParseColorError> {
-        if cyan < 0.0
-            || cyan > 1.0
+        if !(0.0..=1.0).contains(&cyan)
             || magenta < 0.0
             || magenta > 1.0
             || yellow < 0.0
@@ -444,6 +445,7 @@ impl Color {
     /// Construct color from the RGB color values.
     ///
     /// All the values must be in range 0-255.
+    #[must_use]
     pub const fn from_rgb(red: u8, green: u8, blue: u8) -> Self {
         Self::from_rgba(red, green, blue, MAX_VALUE)
     }
@@ -458,6 +460,7 @@ impl Color {
     /// Construct color from the RGBA color values.
     ///
     /// All the values must be in range 0-255.
+    #[must_use]
     pub const fn from_rgba(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
         Self {
             inner: ColorInner::rgb(red, green, blue, alpha),
@@ -473,8 +476,7 @@ impl Color {
         blue: f64,
         alpha: f64,
     ) -> Result<Self, ParseColorError> {
-        if red < 0.0
-            || red > 1.0
+        if !(0.0..=1.0).contains(&red)
             || green < 0.0
             || green > 1.0
             || blue < 0.0
@@ -502,6 +504,7 @@ impl Color {
     }
 
     /// Constructs a color with the value rgba64.
+    #[must_use]
     pub fn from_rgba64(rgba64: Rgba64) -> Self {
         Self::from_rgba(
             rgba64.red8(),
@@ -512,6 +515,7 @@ impl Color {
     }
 
     /// Creates and returns a CMYK color based on this color.
+    #[must_use]
     pub fn to_cmyk(&self) -> Self {
         match &self.inner {
             ColorInner::Cmyk(_) => self.clone(),
@@ -525,9 +529,9 @@ impl Color {
                     };
                 }
                 // rgb -> cmy
-                let red = c.red as f64 / MAX_VALUE_F64;
-                let green = c.green as f64 / MAX_VALUE_F64;
-                let blue = c.blue as f64 / MAX_VALUE_F64;
+                let red = f64::from(c.red) / MAX_VALUE_F64;
+                let green = f64::from(c.green) / MAX_VALUE_F64;
+                let blue = f64::from(c.blue) / MAX_VALUE_F64;
                 let mut cyan = 1.0 - red;
                 let mut magenta = 1.0 - green;
                 let mut yellow = 1.0 - blue;
@@ -553,17 +557,18 @@ impl Color {
     }
 
     /// Creates and returns an RGB color based on this color.
+    #[must_use]
     pub fn to_rgb(&self) -> Self {
         match &self.inner {
             ColorInner::Cmyk(c) => {
-                let cyan = c.cyan as f64 / MAX_VALUE_F64;
-                let magenta = c.magenta as f64 / MAX_VALUE_F64;
-                let yellow = c.yellow as f64 / MAX_VALUE_F64;
-                let black = c.black as f64 / MAX_VALUE_F64;
+                let cyan = f64::from(c.cyan) / MAX_VALUE_F64;
+                let magenta = f64::from(c.magenta) / MAX_VALUE_F64;
+                let yellow = f64::from(c.yellow) / MAX_VALUE_F64;
+                let black = f64::from(c.black) / MAX_VALUE_F64;
 
-                let red = 1.0 - (cyan * (1.0 - black) + black);
-                let green = 1.0 - (magenta * (1.0 - black) + black);
-                let blue = 1.0 - (yellow * (1.0 - black) + black);
+                let red = 1.0 - cyan.mul_add(1.0 - black, black);
+                let green = 1.0 - magenta.mul_add(1.0 - black, black);
+                let blue = 1.0 - yellow.mul_add(1.0 - black, black);
 
                 Self {
                     inner: ColorInner::rgb(
@@ -592,10 +597,10 @@ impl Color {
                     let hue = if c.hue == 36_000 {
                         0.0
                     } else {
-                        c.hue as f64 / 36_000.0
+                        f64::from(c.hue) / 36_000.0
                     };
-                    let saturation = c.saturation as f64 / MAX_VALUE_F64;
-                    let lightness = c.lightness as f64 / MAX_VALUE_F64;
+                    let saturation = f64::from(c.saturation) / MAX_VALUE_F64;
+                    let lightness = f64::from(c.lightness) / MAX_VALUE_F64;
                     let temp2 = if lightness < 0.5 {
                         lightness * (1.0 + saturation)
                     } else {
@@ -615,13 +620,14 @@ impl Color {
 
                         let sixtemp3 = temp3[i] * 6.0;
                         if sixtemp3 < 1.0 {
-                            array[i + 1] = ((temp1 + (temp2 - temp1) * sixtemp3) * MAX_VALUE_F64)
+                            array[i + 1] = ((temp2 - temp1).mul_add(sixtemp3, temp1)
+                                * MAX_VALUE_F64)
                                 .round() as u8;
                         } else if (temp3[i] * 2.0) < 1.0 {
                             array[i + 1] = (temp2 * MAX_VALUE_F64).round() as u8;
                         } else if (temp3[i] * 3.0) < 2.0 {
-                            array[i + 1] = ((temp1
-                                + (temp2 - temp1) * (2.0 / 3.0 - temp3[i]) * 6.0)
+                            array[i + 1] = (((temp2 - temp1) * (2.0 / 3.0 - temp3[i]))
+                                .mul_add(6.0, temp1)
                                 * MAX_VALUE_F64)
                                 .round() as u8;
                         } else {
@@ -659,12 +665,12 @@ impl Color {
                 let h = if c.hue == 36_000 {
                     0.0
                 } else {
-                    c.hue as f64 / 6000.0
+                    f64::from(c.hue) / 6000.0
                 };
-                let s = c.saturation as f64 / MAX_VALUE_F64;
-                let v = c.value as f64 / MAX_VALUE_F64;
+                let s = f64::from(c.saturation) / MAX_VALUE_F64;
+                let v = f64::from(c.value) / MAX_VALUE_F64;
                 let i = h as i32;
-                let f = h - i as f64;
+                let f = h - f64::from(i);
                 let p = v * (1.0 - s);
 
                 if i % 2 == 1 {
@@ -710,24 +716,25 @@ impl Color {
                         _ => (),
                     }
                 }
-                return Self {
+                Self {
                     inner: ColorInner::Rgb(rgb),
-                };
+                }
             }
             ColorInner::Rgb(_) => self.clone(),
         }
     }
 
     /// Creates and returns an HSL color based on this color.
+    #[must_use]
     pub fn to_hsl(&self) -> Self {
         match &self.inner {
             ColorInner::Cmyk(_) => self.to_rgb().to_hsl(),
             ColorInner::Hsl(_) => self.clone(),
             ColorInner::Hsv(_) => self.to_rgb().to_hsl(),
             ColorInner::Rgb(c) => {
-                let red = c.red as f64 / MAX_VALUE_F64;
-                let green = c.green as f64 / MAX_VALUE_F64;
-                let blue = c.blue as f64 / MAX_VALUE_F64;
+                let red = f64::from(c.red) / MAX_VALUE_F64;
+                let green = f64::from(c.green) / MAX_VALUE_F64;
+                let blue = f64::from(c.blue) / MAX_VALUE_F64;
                 let max_val = red.max(green.max(blue));
                 let min_val = red.min(green.min(blue));
                 let delta = max_val - min_val;
@@ -778,15 +785,16 @@ impl Color {
     }
 
     /// Creates and returns an HSV color based on this color.
+    #[must_use]
     pub fn to_hsv(&self) -> Self {
         match &self.inner {
             ColorInner::Cmyk(_) => self.to_rgb().to_hsl(),
             ColorInner::Hsl(_) => self.to_rgb().to_hsv(),
             ColorInner::Hsv(_) => self.clone(),
             ColorInner::Rgb(c) => {
-                let red = c.red as f64 / MAX_VALUE_F64;
-                let green = c.green as f64 / MAX_VALUE_F64;
-                let blue = c.blue as f64 / MAX_VALUE_F64;
+                let red = f64::from(c.red) / MAX_VALUE_F64;
+                let green = f64::from(c.green) / MAX_VALUE_F64;
+                let blue = f64::from(c.blue) / MAX_VALUE_F64;
                 let max_val = red.max(green.max(blue));
                 let min_val = red.min(green.min(blue));
                 let delta = max_val - min_val;
@@ -833,6 +841,7 @@ impl Color {
     }
 
     /// Returns the alpha color component of this color.
+    #[must_use]
     pub fn alpha(&self) -> u8 {
         match &self.inner {
             ColorInner::Rgb(c) => c.alpha,
@@ -843,11 +852,13 @@ impl Color {
     }
 
     /// Returns the alpha color component of this color.
+    #[must_use]
     pub fn alpha_f(&self) -> f64 {
-        self.alpha() as f64 / MAX_VALUE_F64
+        f64::from(self.alpha()) / MAX_VALUE_F64
     }
 
     /// Returns the black color component of this color.
+    #[must_use]
     pub fn black(&self) -> u8 {
         match &self.inner {
             ColorInner::Cmyk(c) => c.black,
@@ -856,11 +867,13 @@ impl Color {
     }
 
     /// Returns the black color component of this color.
+    #[must_use]
     pub fn black_f(&self) -> f64 {
-        self.black() as f64 / MAX_VALUE_F64
+        f64::from(self.black()) / MAX_VALUE_F64
     }
 
     /// Returns the blue color component of this color.
+    #[must_use]
     pub fn blue(&self) -> u8 {
         match &self.inner {
             ColorInner::Rgb(c) => c.blue,
@@ -869,17 +882,20 @@ impl Color {
     }
 
     /// Returns the blue color component of this color.
+    #[must_use]
     pub fn blue_f(&self) -> f64 {
-        self.blue() as f64 / MAX_VALUE_F64
+        f64::from(self.blue()) / MAX_VALUE_F64
     }
 
     /// Returns a string list containing the color names we knows about.
+    #[must_use]
     pub fn color_names() -> Vec<&'static str> {
         use super::color_constants::COLOR_TABLE;
-        return COLOR_TABLE.keys().map(|key| *key).collect();
+        return COLOR_TABLE.keys().copied().collect();
     }
 
     /// Create a copy of this color in the specified format.
+    #[must_use]
     pub fn convert_to(&self, spec: Spec) -> Self {
         if spec == self.spec() {
             return self.clone();
@@ -894,6 +910,7 @@ impl Color {
     }
 
     /// Returns the cyan color component of this color.
+    #[must_use]
     pub fn cyan(&self) -> u8 {
         match &self.inner {
             ColorInner::Cmyk(c) => c.cyan,
@@ -902,11 +919,13 @@ impl Color {
     }
 
     /// Returns the cyan color component of this color.
+    #[must_use]
     pub fn cyan_f(&self) -> f64 {
-        self.cyan() as f64 / MAX_VALUE_F64
+        f64::from(self.cyan()) / MAX_VALUE_F64
     }
 
     /// Returns a darker color (with factor 200), but does not change this object.
+    #[must_use]
     pub fn darker(&self) -> Self {
         self.darker_by(200)
     }
@@ -922,6 +941,7 @@ impl Color {
     ///
     /// The function converts the current color to HSV, divides the value (V) component
     /// by factor and converts the color back to it's original color spec.
+    #[must_use]
     pub fn darker_by(&self, factor: i32) -> Self {
         // Invalid darkness factor.
         if factor <= 0 {
@@ -936,13 +956,13 @@ impl Color {
         let mut hsv = self.to_hsv();
         match &mut hsv.inner {
             ColorInner::Hsv(c) => {
-                c.value = ((c.value as i32 * 100) / factor) as u8;
+                c.value = ((i32::from(c.value) * 100) / factor) as u8;
             }
             _ => (),
         }
 
         // Convert back to same color spec as original color.
-        return hsv.convert_to(self.spec());
+        hsv.convert_to(self.spec())
     }
 
     /// Sets the contents to the cyan, magenta, yellow, black, and alpha-channel (transparency)
@@ -985,11 +1005,11 @@ impl Color {
     ) {
         match &self.inner {
             ColorInner::Cmyk(c) => {
-                *cyan = c.cyan as f64 / MAX_VALUE_F64;
-                *magenta = c.magenta as f64 / MAX_VALUE_F64;
-                *yellow = c.yellow as f64 / MAX_VALUE_F64;
-                *black = c.black as f64 / MAX_VALUE_F64;
-                *alpha = c.alpha as f64 / MAX_VALUE_F64;
+                *cyan = f64::from(c.cyan) / MAX_VALUE_F64;
+                *magenta = f64::from(c.magenta) / MAX_VALUE_F64;
+                *yellow = f64::from(c.yellow) / MAX_VALUE_F64;
+                *black = f64::from(c.black) / MAX_VALUE_F64;
+                *alpha = f64::from(c.alpha) / MAX_VALUE_F64;
             }
             _ => self
                 .to_cmyk()
@@ -1008,7 +1028,7 @@ impl Color {
                 *hue = if c.hue == u16::MAX {
                     -1
                 } else {
-                    c.hue as i32 / 100
+                    i32::from(c.hue) / 100
                 };
                 *saturation = c.saturation;
                 *lightness = c.lightness;
@@ -1035,11 +1055,11 @@ impl Color {
                 *hue = if c.hue == u16::MAX {
                     -1.0
                 } else {
-                    c.hue as f64 / 36_000.0
+                    f64::from(c.hue) / 36_000.0
                 };
-                *saturation = c.saturation as f64 / MAX_VALUE_F64;
-                *lightness = c.lightness as f64 / MAX_VALUE_F64;
-                *alpha = c.alpha as f64 / MAX_VALUE_F64;
+                *saturation = f64::from(c.saturation) / MAX_VALUE_F64;
+                *lightness = f64::from(c.lightness) / MAX_VALUE_F64;
+                *alpha = f64::from(c.alpha) / MAX_VALUE_F64;
             }
             _ => self.to_hsl().get_hsl_f(hue, saturation, lightness, alpha),
         }
@@ -1056,7 +1076,7 @@ impl Color {
                 *hue = if c.hue == u16::MAX {
                     -1
                 } else {
-                    (c.hue / 100) as i32
+                    i32::from(c.hue / 100)
                 };
                 *saturation = c.saturation;
                 *value = c.value;
@@ -1077,11 +1097,11 @@ impl Color {
                 *hue = if c.hue == u16::MAX {
                     -1.0
                 } else {
-                    c.hue as f64 / 36_000.0
+                    f64::from(c.hue) / 36_000.0
                 };
-                *saturation = c.saturation as f64 / MAX_VALUE_F64;
-                *value = c.value as f64 / MAX_VALUE_F64;
-                *alpha = c.alpha as f64 / MAX_VALUE_F64;
+                *saturation = f64::from(c.saturation) / MAX_VALUE_F64;
+                *value = f64::from(c.value) / MAX_VALUE_F64;
+                *alpha = f64::from(c.alpha) / MAX_VALUE_F64;
             }
             _ => self.to_hsv().get_hsv_f(hue, saturation, value, alpha),
         }
@@ -1112,16 +1132,17 @@ impl Color {
     pub fn get_rgb_f(&self, red: &mut f64, green: &mut f64, blue: &mut f64, alpha: &mut f64) {
         match &self.inner {
             ColorInner::Rgb(c) => {
-                *red = c.red as f64 / MAX_VALUE_F64;
-                *green = c.green as f64 / MAX_VALUE_F64;
-                *blue = c.blue as f64 / MAX_VALUE_F64;
-                *alpha = c.alpha as f64 / MAX_VALUE_F64;
+                *red = f64::from(c.red) / MAX_VALUE_F64;
+                *green = f64::from(c.green) / MAX_VALUE_F64;
+                *blue = f64::from(c.blue) / MAX_VALUE_F64;
+                *alpha = f64::from(c.alpha) / MAX_VALUE_F64;
             }
             _ => self.to_rgb().get_rgb_f(red, green, blue, alpha),
         }
     }
 
     /// Returns the green color component of this color.
+    #[must_use]
     pub fn green(&self) -> u8 {
         match &self.inner {
             ColorInner::Rgb(c) => c.green,
@@ -1130,18 +1151,20 @@ impl Color {
     }
 
     /// Returns the green color component of this color.
+    #[must_use]
     pub fn green_f(&self) -> f64 {
-        self.green() as f64 / MAX_VALUE_F64
+        f64::from(self.green()) / MAX_VALUE_F64
     }
 
     /// Returns the HSL hue color component of this color.
+    #[must_use]
     pub fn hsl_hue(&self) -> i32 {
         match &self.inner {
             ColorInner::Hsl(c) => {
                 if c.hue == u16::MAX {
-                    return -1;
+                    -1
                 } else {
-                    return c.hue as i32 / 100;
+                    i32::from(c.hue) / 100
                 }
             }
             _ => self.to_hsl().hsl_hue(),
@@ -1149,13 +1172,14 @@ impl Color {
     }
 
     /// Returns the HSL hue color component of this color.
+    #[must_use]
     pub fn hsl_hue_f(&self) -> f64 {
         match &self.inner {
             ColorInner::Hsl(c) => {
                 if c.hue == u16::MAX {
-                    return -1.0;
+                    -1.0
                 } else {
-                    return c.hue as f64 / 36_000.0;
+                    f64::from(c.hue) / 36_000.0
                 }
             }
             _ => self.to_hsl().hsl_hue_f(),
@@ -1163,6 +1187,7 @@ impl Color {
     }
 
     /// Returns the HSL saturation color component of this color.
+    #[must_use]
     pub fn hsl_saturation(&self) -> u8 {
         match &self.inner {
             ColorInner::Hsl(c) => c.saturation,
@@ -1171,18 +1196,20 @@ impl Color {
     }
 
     /// Returns the HSL saturation color component of this color.
+    #[must_use]
     pub fn hsl_saturation_f(&self) -> f64 {
-        self.hsl_saturation() as f64 / MAX_VALUE_F64
+        f64::from(self.hsl_saturation()) / MAX_VALUE_F64
     }
 
     /// Returns the HSV hue color component of this color.
+    #[must_use]
     pub fn hsv_hue(&self) -> i32 {
         match &self.inner {
             ColorInner::Hsv(c) => {
                 if c.hue == u16::MAX {
-                    return -1;
+                    -1
                 } else {
-                    return c.hue as i32 / 100;
+                    i32::from(c.hue) / 100
                 }
             }
             _ => self.to_hsv().hsv_hue(),
@@ -1190,13 +1217,14 @@ impl Color {
     }
 
     /// Returns the HSV hue color component of this color.
+    #[must_use]
     pub fn hsv_hue_f(&self) -> f64 {
         match &self.inner {
             ColorInner::Hsv(c) => {
                 if c.hue == u16::MAX {
-                    return -1.0;
+                    -1.0
                 } else {
-                    return c.hue as f64 / 36_000.0;
+                    f64::from(c.hue) / 36_000.0
                 }
             }
             _ => self.to_hsv().hsv_hue_f(),
@@ -1204,6 +1232,7 @@ impl Color {
     }
 
     /// Returns the HSV saturation color component of this color.
+    #[must_use]
     pub fn hsv_saturation(&self) -> u8 {
         match &self.inner {
             ColorInner::Hsv(c) => c.saturation,
@@ -1212,13 +1241,15 @@ impl Color {
     }
 
     /// Returns the HSV saturation color component of this color.
+    #[must_use]
     pub fn hsv_saturation_f(&self) -> f64 {
-        self.hsv_saturation() as f64 / MAX_VALUE_F64
+        f64::from(self.hsv_saturation()) / MAX_VALUE_F64
     }
 
     /// Returns the HSV hue color component of this color.
     ///
     /// The color is implicitly converted to HSV.
+    #[must_use]
     pub fn hue(&self) -> i32 {
         self.hsv_hue()
     }
@@ -1226,6 +1257,7 @@ impl Color {
     /// Returns the HSV hue color component of this color.
     ///
     /// The color is implicitly converted to HSV.
+    #[must_use]
     pub fn hue_f(&self) -> f64 {
         self.hsv_hue_f()
     }
@@ -1234,12 +1266,14 @@ impl Color {
     /// to construct a valid Color object, otherwise returns false.
     ///
     /// It uses the same algorithm used in `set_named_color()`.
+    #[must_use]
     pub fn is_valid_color(name: &str) -> bool {
-        let mut color = Color::new();
+        let mut color = Self::new();
         color.set_named_color(name).is_ok()
     }
 
     /// Returns a lighter color (with factor 50), but does not change this object.
+    #[must_use]
     pub fn lighter(&self) -> Self {
         self.lighter_by(50)
     }
@@ -1254,6 +1288,7 @@ impl Color {
     ///
     /// The function converts the current color to HSV, multiplies the value (V) component
     /// by factor and converts the color back to it's original color spec.
+    #[must_use]
     pub fn lighter_by(&self, factor: i32) -> Self {
         // Invalid lightness factor.
         if factor <= 0 {
@@ -1268,10 +1303,10 @@ impl Color {
         let mut hsv = self.to_hsv();
         match &mut hsv.inner {
             ColorInner::Hsv(c) => {
-                let mut s = c.saturation as i32;
-                let mut v = c.value as i32;
+                let mut s = i32::from(c.saturation);
+                let mut v = i32::from(c.value);
                 v = (factor * v) / 100;
-                let max_value = MAX_VALUE as i32;
+                let max_value = i32::from(MAX_VALUE);
                 if v > max_value {
                     // overflow... adjust saturation
                     s -= v - max_value;
@@ -1287,10 +1322,11 @@ impl Color {
         }
 
         // Convert back to same color spec as original color.
-        return hsv.convert_to(self.spec());
+        hsv.convert_to(self.spec())
     }
 
     /// Returns the lightness color component of this color.
+    #[must_use]
     pub fn lightness(&self) -> u8 {
         match &self.inner {
             ColorInner::Hsl(c) => c.lightness,
@@ -1299,11 +1335,13 @@ impl Color {
     }
 
     /// Returns the lightness color component of this color.
+    #[must_use]
     pub fn lightness_f(&self) -> f64 {
-        self.lightness() as f64 / MAX_VALUE_F64
+        f64::from(self.lightness()) / MAX_VALUE_F64
     }
 
     /// Returns the magenta color component of this color.
+    #[must_use]
     pub fn magenta(&self) -> u8 {
         match &self.inner {
             ColorInner::Cmyk(c) => c.magenta,
@@ -1312,28 +1350,32 @@ impl Color {
     }
 
     /// Returns the magenta color component of this color.
+    #[must_use]
     pub fn magenta_f(&self) -> f64 {
-        self.magenta() as f64 / MAX_VALUE_F64
+        f64::from(self.magenta()) / MAX_VALUE_F64
     }
 
     /// Returns the name of the color in the format "#RRGGBB".
     ///
     /// i.e. a "#" character followed by three two-digit hexadecimal numbers.
+    #[must_use]
     pub fn name(&self) -> String {
         self.name_with_format(NameFormat::HexRgb)
     }
 
     /// Returns the name of the color in the specified format.
+    #[must_use]
     pub fn name_with_format(&self, format: NameFormat) -> String {
-        let value = self.rgba().int() as u64;
+        let value = u64::from(self.rgba().int());
         match format {
-            NameFormat::HexRgb => format!("#{:x}", value & 0x0ffffff),
+            NameFormat::HexRgb => format!("#{:x}", value & 0x00ff_ffff),
             // it's called rgba() but it does return AARRGGBB
-            NameFormat::HexArgb => format!("#{:x}", value & 0x0ffffffff),
+            NameFormat::HexArgb => format!("#{:x}", value & 0x0000_ffff_ffff),
         }
     }
 
     /// Returns the red color component of this color.
+    #[must_use]
     pub fn red(&self) -> u8 {
         match &self.inner {
             ColorInner::Rgb(c) => c.red,
@@ -1342,13 +1384,15 @@ impl Color {
     }
 
     /// Returns the red color component of this color.
+    #[must_use]
     pub fn red_f(&self) -> f64 {
-        self.red() as f64 / MAX_VALUE_F64
+        f64::from(self.red()) / MAX_VALUE_F64
     }
 
     /// Returns the RGB value of the color.
     ///
     /// The alpha value is opaque.
+    #[must_use]
     pub fn rgb(&self) -> Rgb {
         match &self.inner {
             ColorInner::Rgb(c) => Rgb::new(c.red, c.green, c.blue),
@@ -1359,6 +1403,7 @@ impl Color {
     /// Returns the RGB value of the color, including its alpha.
     ///
     /// For an invalid color, the alpha value of the returned color is unspecified.
+    #[must_use]
     pub fn rgba(&self) -> Rgb {
         match &self.inner {
             ColorInner::Rgb(c) => Rgb::with_alpha(c.red, c.green, c.blue, c.alpha),
@@ -1369,6 +1414,7 @@ impl Color {
     /// Returns the RGB64 value of the color, including its alpha.
     ///
     /// For an invalid color, the alpha value of the returned color is unspecified.
+    #[must_use]
     pub fn rgba64(&self) -> Rgba64 {
         match &self.inner {
             ColorInner::Rgb(c) => Rgba64::from_rgba(c.red, c.green, c.blue, c.alpha),
@@ -1379,6 +1425,7 @@ impl Color {
     /// Returns the HSV saturation color component of this color.
     ///
     /// The color is implicitly converted to HSV.
+    #[must_use]
     pub fn saturation(&self) -> u8 {
         self.hsv_saturation()
     }
@@ -1386,8 +1433,9 @@ impl Color {
     /// Returns the HSV saturation color component of this color.
     ///
     /// The color is implicitly converted to HSV.
+    #[must_use]
     pub fn saturation_f(&self) -> f64 {
-        self.hsv_saturation() as f64 / MAX_VALUE_F64
+        f64::from(self.hsv_saturation()) / MAX_VALUE_F64
     }
 
     /// Set alpha channel of this color.
@@ -1454,8 +1502,7 @@ impl Color {
         black: f64,
         alpha: f64,
     ) -> Result<(), ParseColorError> {
-        if cyan < 0.0
-            || cyan > 1.0
+        if !(0.0..=1.0).contains(&cyan)
             || magenta < 0.0
             || magenta > 1.0
             || yellow < 0.0
@@ -1474,7 +1521,7 @@ impl Color {
             (black * MAX_VALUE_F64).round() as u8,
             (alpha * MAX_VALUE_F64).round() as u8,
         );
-        return Ok(());
+        Ok(())
     }
 
     /// Sets the green color component of this color to green.
@@ -1519,7 +1566,7 @@ impl Color {
             (hue % 360) as u16 * 100
         };
         self.inner = ColorInner::hsl(real_hue, saturation, lightness, alpha);
-        return Ok(());
+        Ok(())
     }
 
     /// Sets a HSL color lightness.
@@ -1532,7 +1579,7 @@ impl Color {
         lightness: f64,
         alpha: f64,
     ) -> Result<(), ParseColorError> {
-        if (hue < 0.0 || hue > 1.0) && hue != -1.0
+        if !(0.0..=1.0).contains(&hue) && hue != -1.0
             || saturation < 0.0
             || saturation > 1.0
             || lightness < 0.0
@@ -1554,7 +1601,7 @@ impl Color {
             (lightness * MAX_VALUE_F64).round() as u8,
             (alpha * MAX_VALUE_F64).round() as u8,
         );
-        return Ok(());
+        Ok(())
     }
 
     /// Sets a HSV color value.
@@ -1578,7 +1625,7 @@ impl Color {
             (hue % 360) as u16 * 100
         };
         self.inner = ColorInner::hsv(real_hue, saturation, value, alpha);
-        return Ok(());
+        Ok(())
     }
 
     /// Sets a HSV color value.
@@ -1591,7 +1638,7 @@ impl Color {
         value: f64,
         alpha: f64,
     ) -> Result<(), ParseColorError> {
-        if (hue < 0.0 || hue > 1.0) && hue != -1.0
+        if !(0.0..=1.0).contains(&hue) && hue != -1.0
             || saturation < 0.0
             || saturation > 1.0
             || value < 0.0
@@ -1613,7 +1660,7 @@ impl Color {
             (value * MAX_VALUE_F64).round() as u8,
             (alpha * MAX_VALUE_F64).round() as u8,
         );
-        return Ok(());
+        Ok(())
     }
 
     /// Sets the RGB value of this Color to name.
@@ -1631,7 +1678,7 @@ impl Color {
     ///
     /// The color is invalid if name cannot be parsed.
     pub fn set_named_color(&mut self, name: &str) -> Result<(), ParseColorError> {
-        let color = Color::from_str(name)?;
+        let color = Self::from_str(name)?;
         *self = color;
         Ok(())
     }
@@ -1689,7 +1736,7 @@ impl Color {
             let blue = parts[2].parse::<u8>()?;
             let alpha = parts[3].parse::<u8>()?;
 
-            return Ok(Rgb::with_alpha(red, green, blue, alpha));
+            Ok(Rgb::with_alpha(red, green, blue, alpha))
         } else if len > 9 && &s[0..4] == "rgb(" && &s[len - 1..len] == ")" {
             // rgb(0,0,0)
             // rgb(101, 255, 255)
@@ -1705,17 +1752,17 @@ impl Color {
             let green = parts[1].parse::<u8>()?;
             let blue = parts[2].parse::<u8>()?;
 
-            return Ok(Rgb::new(red, green, blue));
+            Ok(Rgb::new(red, green, blue))
         } else {
-            return Err(ParseColorError::InvalidFormatError);
+            Err(ParseColorError::InvalidFormatError)
         }
     }
 
     /// Match color by predefined names in SVG-1.1 spec.
-    fn get_color_by_svg_name(s: &str) -> Option<Color> {
+    fn get_color_by_svg_name(s: &str) -> Option<Self> {
         use super::color_constants::COLOR_TABLE;
         // TODO(Shaohua): No need clone()
-        COLOR_TABLE.get(s).and_then(|color| Some((*color).clone()))
+        COLOR_TABLE.get(s).map(|color| (*color).clone())
     }
 
     /// Sets the red color component of this color to red.
@@ -1773,12 +1820,12 @@ impl Color {
         blue: f64,
         alpha: f64,
     ) -> Result<(), ParseColorError> {
-        if alpha < 0.0 || alpha > 1.0 {
+        if !(0.0..=1.0).contains(&alpha) {
             return Err(ParseColorError::OutOfRangeError);
         }
 
         // TODO(Shaohua): Support extended RGB.
-        if red < 0.0 || red > 1.0 || green < 0.0 || green > 1.0 || blue < 0.0 || blue > 1.0 {
+        if !(0.0..=1.0).contains(&red) || green < 0.0 || green > 1.0 || blue < 0.0 || blue > 1.0 {
             return Err(ParseColorError::OutOfRangeError);
         }
         self.inner = ColorInner::rgb(
@@ -1787,10 +1834,11 @@ impl Color {
             (blue * MAX_VALUE_F64).round() as u8,
             (alpha * MAX_VALUE_F64).round() as u8,
         );
-        return Ok(());
+        Ok(())
     }
 
     /// Returns how the color was specified.
+    #[must_use]
     pub fn spec(&self) -> Spec {
         match &self.inner {
             ColorInner::Rgb(_) => Spec::Rgb,
@@ -1801,6 +1849,7 @@ impl Color {
     }
 
     /// Returns the value color component of this color.
+    #[must_use]
     pub fn value(&self) -> u8 {
         match &self.inner {
             ColorInner::Hsv(c) => c.value,
@@ -1809,11 +1858,13 @@ impl Color {
     }
 
     /// Returns the value color component of this color.
+    #[must_use]
     pub fn value_f(&self) -> f64 {
-        self.value() as f64 / MAX_VALUE_F64
+        f64::from(self.value()) / MAX_VALUE_F64
     }
 
     /// Returns the yellow color component of this color.
+    #[must_use]
     pub fn yellow(&self) -> u8 {
         match &self.inner {
             ColorInner::Cmyk(c) => c.yellow,
@@ -1822,10 +1873,12 @@ impl Color {
     }
 
     /// Returns the yellow color component of this color.
+    #[must_use]
     pub fn yellow_f(&self) -> f64 {
-        self.yellow() as f64 / MAX_VALUE_F64
+        f64::from(self.yellow()) / MAX_VALUE_F64
     }
 
+    #[must_use]
     pub fn to_rgb_str(&self) -> String {
         debug_assert!(self.alpha() == MAX_VALUE);
         format!("#{:x}{:x}{:x}", self.red(), self.green(), self.blue())
@@ -1840,13 +1893,13 @@ impl From<std::num::ParseIntError> for ParseColorError {
 
 impl std::string::ToString for Color {
     fn to_string(&self) -> String {
-        String::from(format!(
+        format!(
             "rgba({}, {}, {}, {})",
             self.red(),
             self.green(),
             self.blue(),
             self.alpha()
-        ))
+        )
     }
 }
 
@@ -1854,8 +1907,8 @@ impl std::str::FromStr for Color {
     type Err = ParseColorError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let s = s.replace(" ", "");
-        let s = s.replace("\t", "");
+        let s = s.replace(' ', "");
+        let s = s.replace('\t', "");
         let s = s.trim();
         let s = s.to_lowercase();
 
@@ -1878,7 +1931,7 @@ impl std::str::FromStr for Color {
             return Ok(color);
         }
 
-        return Err(ParseColorError::InvalidFormatError);
+        Err(ParseColorError::InvalidFormatError)
     }
 }
 
@@ -1898,7 +1951,7 @@ impl<'de> Deserialize<'de> for Color {
         D: Deserializer<'de>,
     {
         let s: String = Deserialize::deserialize(deserializer)?;
-        let color = Color::from_str(&s).map_err(de::Error::custom)?;
+        let color = Self::from_str(&s).map_err(de::Error::custom)?;
         Ok(color)
     }
 }

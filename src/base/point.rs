@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
 /// to the coordinates (allowing direct manipulation).
 ///
 /// A Point object can also be used as a vector: Addition and subtraction are defined as for vectors
-/// (each component is added separately). A QPoint object can also be divided or
+/// (each component is added separately). A `QPoint` object can also be divided or
 /// multiplied by an int or a qreal.
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Point {
@@ -27,11 +27,13 @@ pub struct Point {
 
 impl Point {
     /// Constructs a null point, i.e. with coordinates (0, 0)
+    #[must_use]
     pub fn new() -> Self {
         Self::from(0, 0)
     }
 
     /// Constructs a point with the given coordinates `(x, y)`.
+    #[must_use]
     pub fn from(x: i32, y: i32) -> Self {
         Self { x, y }
     }
@@ -42,6 +44,7 @@ impl Point {
     }
 
     /// Returns the x coordinate of this point.
+    #[must_use]
     pub fn x(&self) -> i32 {
         self.x
     }
@@ -57,6 +60,7 @@ impl Point {
     }
 
     /// Returns the y coordinate of this point.
+    #[must_use]
     pub fn y(&self) -> i32 {
         self.y
     }
@@ -73,22 +77,26 @@ impl Point {
     }
 
     /// Returns the dot product of two points.
-    pub fn dot_product(&self, other: Point) -> i32 {
+    #[must_use]
+    pub fn dot_product(&self, other: Self) -> i32 {
         self.x * other.x + self.y * other.y
     }
 
     /// Returns true if both the x and y coordinates are set to 0, otherwise returns false.
+    #[must_use]
     pub fn is_null(&self) -> bool {
         self.x == 0 && self.y == 0
     }
 
     /// Returns the sum of the absolute values of x() and y(),
     /// traditionally known as the "Manhattan length" of the vector from the origin to the point.
+    #[must_use]
     pub fn manhattan_length(&self) -> i32 {
         self.x.abs() + self.y.abs()
     }
 
     /// Returns a point with x and y coordinates exchanged:
+    #[must_use]
     pub fn transposed(&self) -> Self {
         Self {
             x: self.y,
@@ -149,20 +157,20 @@ impl ops::MulAssign<f32> for Point {
 
 impl ops::MulAssign<f64> for Point {
     fn mul_assign(&mut self, factor: f64) {
-        self.x = (self.x as f64 * factor) as i32;
-        self.y = (self.y as f64 * factor) as i32;
+        self.x = (f64::from(self.x) * factor) as i32;
+        self.y = (f64::from(self.y) * factor) as i32;
     }
 }
 
 impl ops::DivAssign<f64> for Point {
     fn div_assign(&mut self, factor: f64) {
         assert!(factor != 0.0);
-        self.x = (self.x as f64 / factor) as i32;
-        self.y = (self.y as f64 / factor) as i32;
+        self.x = (f64::from(self.x) / factor) as i32;
+        self.y = (f64::from(self.y) / factor) as i32;
     }
 }
 
-/// The PointF class defines a point in the plane using floating point precision.
+/// The `PointF` class defines a point in the plane using floating point precision.
 ///
 /// A point is specified by a x coordinate and an y coordinate which can be accessed using
 /// the `x()` and `y()` functions. The coordinates of the point are specified
@@ -181,11 +189,13 @@ pub struct PointF {
 
 impl PointF {
     /// Constructs a null point, i.e. with coordinates (0, 0)
+    #[must_use]
     pub fn new() -> Self {
         Self::from(0.0, 0.0)
     }
 
     /// Constructs a point with the given coordinates `(x, y)`.
+    #[must_use]
     pub fn from(x: f64, y: f64) -> Self {
         Self { x, y }
     }
@@ -196,6 +206,7 @@ impl PointF {
     }
 
     /// Returns the x coordinate of this point.
+    #[must_use]
     pub fn x(&self) -> f64 {
         self.x
     }
@@ -211,6 +222,7 @@ impl PointF {
     }
 
     /// Returns the y coordinate of this point.
+    #[must_use]
     pub fn y(&self) -> f64 {
         self.y
     }
@@ -227,28 +239,33 @@ impl PointF {
     }
 
     /// Returns the dot product of two points.
-    pub fn dot_product(&self, other: PointF) -> f64 {
-        self.x * other.x + self.y * other.y
+    #[must_use]
+    pub fn dot_product(&self, other: Self) -> f64 {
+        self.x.mul_add(other.x, self.y * other.y)
     }
 
     /// Returns true if both the x and y coordinates are set to 0, otherwise returns false.
+    #[must_use]
     pub fn is_null(&self) -> bool {
         self.x == 0.0 && self.y == 0.0
     }
 
     /// Returns the sum of the absolute values of x() and y(),
     /// traditionally known as the "Manhattan length" of the vector from the origin to the point.
+    #[must_use]
     pub fn manhattan_length(&self) -> f64 {
         self.x.abs() + self.y.abs()
     }
 
     /// Rounds the coordinates of this point to the nearest integer,
     /// and returns a Point object with the rounded coordinates.
+    #[must_use]
     pub fn to_point(&self) -> Point {
         Point::from(self.x.round() as i32, self.y.round() as i32)
     }
 
     /// Returns a point with x and y coordinates exchanged:
+    #[must_use]
     pub fn transposed(&self) -> Self {
         Self {
             x: self.y,
@@ -298,7 +315,7 @@ impl ops::Mul<f64> for PointF {
 
     /// Returns a copy of the given point, multiplied by the given `factor`.
     fn mul(self, factor: f64) -> Self {
-        PointF::from(self.x * factor, self.y * factor)
+        Self::from(self.x * factor, self.y * factor)
     }
 }
 
@@ -320,11 +337,11 @@ impl ops::DivAssign<f64> for PointF {
 impl ops::Div<f64> for PointF {
     type Output = Self;
 
-    /// Returns the QPointF object formed by dividing both components of the given point
+    /// Returns the `QPointF` object formed by dividing both components of the given point
     /// by the given divisor.
     fn div(self, factor: f64) -> Self {
         assert_ne!(factor, 0.0);
-        PointF::from(self.x / factor, self.y / factor)
+        Self::from(self.x / factor, self.y / factor)
     }
 }
 

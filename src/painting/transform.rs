@@ -38,7 +38,7 @@ const INV_DIST_TO_PLANE: f64 = 1.0 / 1024.0;
 /// The `inverted()` function returns an inverted copy of this matrix
 /// if it is invertible (otherwise it returns the identity matrix),
 /// and `adjoint()` returns the matrix's classical adjoint.
-/// In addition, QTransform provides the `determinant()` function
+/// In addition, `QTransform` provides the `determinant()` function
 /// which returns the matrix's determinant.
 ///
 /// Finally, the Transform struct supports matrix multiplication,
@@ -74,6 +74,7 @@ impl Transform {
     /// Constructs an identity matrix.
     ///
     /// All elements are set to zero except m11 and m22 (specifying the scale) and m33 which are set to 1.
+    #[must_use]
     pub fn new() -> Self {
         Self {
             m11: 1.0,
@@ -92,6 +93,7 @@ impl Transform {
     }
 
     /// Constructs a matrix with the elements, `m11`, `m12`, `m21`, `m22`, `dx` and `dy`.
+    #[must_use]
     pub fn new_2d(m11: f64, m12: f64, m21: f64, m22: f64, dx: f64, dy: f64) -> Self {
         Self {
             m11,
@@ -110,6 +112,7 @@ impl Transform {
     }
 
     /// Constructs a matrix with the elements, `m11`, `m12`, `m13`, `m21`, `m22`, `m23`, `m31`, `m32`, `m33`.
+    #[must_use]
     pub fn new_3d(
         m11: f64,
         m12: f64,
@@ -141,6 +144,7 @@ impl Transform {
     /// `sy` vertically.
     ///
     /// This is the same as `Transform::new().scale(sx, sy)` but slightly faster.
+    #[must_use]
     pub fn from_scale(sx: f64, sy: f64) -> Self {
         let mut transform = Self::new_3d(sx, 0.0, 0.0, 0.0, sy, 0.0, 0.0, 0.0, 1.0);
         if sx == 1.0 && sy == 1.0 {
@@ -149,13 +153,14 @@ impl Transform {
             transform.type_ = TransformationType::Scale;
         }
         transform.dirty = TransformationType::None;
-        return transform;
+        transform
     }
 
     /// Creates a matrix which corresponds to a translation of `dx` along the x axis and
     /// `dy` along the y axis.
     ///
     /// This is the same as `Transform::new().translate(dx, dy)` but slightly faster.
+    #[must_use]
     pub fn from_translate(dx: f64, dy: f64) -> Self {
         let mut transform = Self::new_3d(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, dx, dy, 1.0);
         if dx == 0.0 && dy == 0.0 {
@@ -164,55 +169,65 @@ impl Transform {
             transform.type_ = TransformationType::Translate;
         }
         transform.dirty = TransformationType::None;
-        return transform;
+        transform
     }
 
     /// Returns the horizontal scaling factor.
+    #[must_use]
     pub fn m11(&self) -> f64 {
         self.m11
     }
 
     /// Returns the vertical shearing factor.
+    #[must_use]
     pub fn m12(&self) -> f64 {
         self.m12
     }
 
     /// Returns the horizontal projection factor.
+    #[must_use]
     pub fn m13(&self) -> f64 {
         self.m13
     }
 
     /// Returns the horizontal shearing factor.
+    #[must_use]
     pub fn m21(&self) -> f64 {
         self.m21
     }
 
     /// Returns the vertical scaling factor.
+    #[must_use]
     pub fn m22(&self) -> f64 {
         self.m22
     }
 
     /// Returns the vertical projection factor.
+    #[must_use]
     pub fn m23(&self) -> f64 {
         self.m23
     }
 
     /// Returns the horizontal translation factor.
+    #[must_use]
     pub fn m31(&self) -> f64 {
         self.m31
     }
 
     /// Returns the vertical translation factor.
+    #[must_use]
     pub fn m32(&self) -> f64 {
         self.m32
     }
 
     /// Returns the division factor.
+    #[must_use]
     pub fn m33(&self) -> f64 {
         self.m33
     }
 
     /// Returns the adjoint of this matrix.
+    #[must_use]
     pub fn adjoint(&self) -> Self {
         let h11 = self.m22 * self.m33 - self.m23 * self.m32;
         let h21 = self.m23 * self.m31 - self.m21 * self.m33;
@@ -228,18 +243,23 @@ impl Transform {
     }
 
     /// Returns the matrix's determinant.
+    #[must_use]
     pub fn determinant(&self) -> f64 {
-        self.m11 * (self.m33 * self.m22 - self.m32 * self.m23)
-            - self.m21 * (self.m33 * self.m12 - self.m32 * self.m13)
-            + self.m31 * (self.m23 * self.m12 - self.m22 * self.m13)
+        self.m31.mul_add(
+            self.m23 * self.m12 - self.m22 * self.m13,
+            self.m11 * (self.m33 * self.m22 - self.m32 * self.m23)
+                - self.m21 * (self.m33 * self.m12 - self.m32 * self.m13),
+        )
     }
 
     /// Returns the horizontal translation factor.
+    #[must_use]
     pub fn dx(&self) -> f64 {
         self.m31
     }
 
     /// Returns the vertical translation factor.
+    #[must_use]
     pub fn dy(&self) -> f64 {
         self.m32
     }
@@ -292,20 +312,23 @@ impl Transform {
             invert.dirty = self.dirty;
         }
 
-        return invert;
+        invert
     }
 
     /// Returns true if the matrix represent an affine transformation, otherwise returns false.
+    #[must_use]
     pub fn is_affine(&self) -> bool {
         self.get_type() < TransformationType::Project
     }
 
     /// Returns true if the matrix is the identity matrix, otherwise returns false.
+    #[must_use]
     pub fn is_identity(&self) -> bool {
         self.get_type() == TransformationType::None
     }
 
     /// Returns true if the matrix is invertible, otherwise returns false.
+    #[must_use]
     pub fn is_invertible(&self) -> bool {
         self.determinant() != 0.0
     }
@@ -315,21 +338,25 @@ impl Transform {
     ///
     /// Note: A rotation transformation of 180 degrees and/or 360 degrees
     /// is treated as a scaling transformation.
+    #[must_use]
     pub fn is_rotating(&self) -> bool {
         self.get_type() >= TransformationType::Rotate
     }
 
     /// Returns true if the matrix represents a scaling transformation, otherwise returns false.
+    #[must_use]
     pub fn is_scaling(&self) -> bool {
         self.get_type() >= TransformationType::Scale
     }
 
     /// Returns true if the matrix represents a translating transformation, otherwise returns false.
+    #[must_use]
     pub fn is_translating(&self) -> bool {
         self.get_type() >= TransformationType::Translate
     }
 
     /// Maps the given coordinates `x` and `y` into the coordinate system defined by this matrix.
+    #[must_use]
     pub fn map(&self, x: f64, y: f64) -> (f64, f64) {
         self.map_helper(x, y)
     }
@@ -337,8 +364,9 @@ impl Transform {
     /// Maps the given coordinates `x` and `y` into the coordinate system defined by this matrix.
     ///
     /// Note that the transformed coordinates are rounded to the nearest integer.
+    #[must_use]
     pub fn map_int(&self, x: i32, y: i32) -> (i32, i32) {
-        let (fx, fy) = self.map_helper(x as f64, y as f64);
+        let (fx, fy) = self.map_helper(f64::from(x), f64::from(y));
         (fx.round() as i32, fy.round() as i32)
     }
 
@@ -346,9 +374,10 @@ impl Transform {
     /// mapped into the coordinate system defined by this matrix.
     ///
     /// Note that the transformed coordinates are rounded to the nearest integer.
+    #[must_use]
     pub fn map_point(&self, point: &Point) -> Point {
-        let fx = point.x() as f64;
-        let fy = point.y() as f64;
+        let fx = f64::from(point.x());
+        let fy = f64::from(point.y());
         let mut x;
         let mut y;
         let t = self.get_type();
@@ -362,16 +391,16 @@ impl Transform {
                 y = fy + self.m32;
             }
             TransformationType::Scale => {
-                x = self.m11 * fx + self.m31;
-                y = self.m22 * fy + self.m32;
+                x = self.m11.mul_add(fx, self.m31);
+                y = self.m22.mul_add(fy, self.m32);
             }
             TransformationType::Rotate
             | TransformationType::Shear
             | TransformationType::Project => {
-                x = self.m11 * fx + self.m21 * fy + self.m31;
-                y = self.m12 * fx + self.m22 * fy + self.m32;
+                x = self.m11.mul_add(fx, self.m21 * fy) + self.m31;
+                y = self.m12.mul_add(fx, self.m22 * fy) + self.m32;
                 if t == TransformationType::Project {
-                    let w = 1.0 / (self.m13 * fx + self.m23 * fy + self.m33);
+                    let w = 1.0 / (self.m13.mul_add(fx, self.m23 * fy) + self.m33);
                     x *= w;
                     y *= w;
                 }
@@ -381,8 +410,9 @@ impl Transform {
         Point::from(x.round() as i32, y.round() as i32)
     }
 
-    /// Creates and returns a PointF object that is a copy of the given point,
+    /// Creates and returns a `PointF` object that is a copy of the given point,
     /// mapped into the coordinate system defined by this matrix.
+    #[must_use]
     pub fn map_point_f(&self, point: &PointF) -> PointF {
         let fx = point.x();
         let fy = point.y();
@@ -400,16 +430,16 @@ impl Transform {
                 y = fy + self.m32;
             }
             TransformationType::Scale => {
-                x = self.m11 * fx + self.m31;
-                y = self.m22 * fy + self.m32;
+                x = self.m11.mul_add(fx, self.m31);
+                y = self.m22.mul_add(fy, self.m32);
             }
             TransformationType::Rotate
             | TransformationType::Shear
             | TransformationType::Project => {
-                x = self.m11 * fx + self.m21 * fy + self.m31;
-                y = self.m12 * fx + self.m22 * fy + self.m32;
+                x = self.m11.mul_add(fx, self.m21 * fy) + self.m31;
+                y = self.m12.mul_add(fx, self.m22 * fy) + self.m32;
                 if t == TransformationType::Project {
-                    let w = 1. / (self.m13 * fx + self.m23 * fy + self.m33);
+                    let w = 1. / (self.m13.mul_add(fx, self.m23 * fy) + self.m33);
                     x *= w;
                     y *= w;
                 }
@@ -422,11 +452,12 @@ impl Transform {
     /// mapped into the coordinate system defined by this matrix.
     ///
     /// Note that the transformed coordinates are rounded to the nearest integer.
+    #[must_use]
     pub fn map_line(&self, line: &Line) -> Line {
-        let fx1 = line.x1() as f64;
-        let fy1 = line.y1() as f64;
-        let fx2 = line.x2() as f64;
-        let fy2 = line.y2() as f64;
+        let fx1 = f64::from(line.x1());
+        let fy1 = f64::from(line.y1());
+        let fx2 = f64::from(line.x2());
+        let fy2 = f64::from(line.y2());
 
         let mut x1;
         let mut y1;
@@ -448,23 +479,23 @@ impl Transform {
                 y2 = fy2 + self.m32;
             }
             TransformationType::Scale => {
-                x1 = self.m11 * fx1 + self.m31;
-                y1 = self.m22 * fy1 + self.m32;
-                x2 = self.m11 * fx2 + self.m31;
-                y2 = self.m22 * fy2 + self.m32;
+                x1 = self.m11.mul_add(fx1, self.m31);
+                y1 = self.m22.mul_add(fy1, self.m32);
+                x2 = self.m11.mul_add(fx2, self.m31);
+                y2 = self.m22.mul_add(fy2, self.m32);
             }
             TransformationType::Rotate
             | TransformationType::Shear
             | TransformationType::Project => {
-                x1 = self.m11 * fx1 + self.m21 * fy1 + self.m31;
-                y1 = self.m12 * fx1 + self.m22 * fy1 + self.m32;
-                x2 = self.m11 * fx2 + self.m21 * fy2 + self.m31;
-                y2 = self.m12 * fx2 + self.m22 * fy2 + self.m32;
+                x1 = self.m11.mul_add(fx1, self.m21 * fy1) + self.m31;
+                y1 = self.m12.mul_add(fx1, self.m22 * fy1) + self.m32;
+                x2 = self.m11.mul_add(fx2, self.m21 * fy2) + self.m31;
+                y2 = self.m12.mul_add(fx2, self.m22 * fy2) + self.m32;
                 if t == TransformationType::Project {
-                    let mut w = 1.0 / (self.m13 * fx1 + self.m23 * fy1 + self.m33);
+                    let mut w = 1.0 / (self.m13.mul_add(fx1, self.m23 * fy1) + self.m33);
                     x1 *= w;
                     y1 *= w;
-                    w = 1.0 / (self.m13 * fx2 + self.m23 * fy2 + self.m33);
+                    w = 1.0 / (self.m13.mul_add(fx2, self.m23 * fy2) + self.m33);
                     x2 *= w;
                     y2 *= w;
                 }
@@ -481,6 +512,7 @@ impl Transform {
 
     /// Creates and returns a Line object that is a copy of the given line,
     /// mapped into the coordinate system defined by this matrix.
+    #[must_use]
     pub fn map_line_f(&self, line: &LineF) -> LineF {
         let fx1 = line.x1();
         let fy1 = line.y1();
@@ -507,23 +539,23 @@ impl Transform {
                 y2 = fy2 + self.m32;
             }
             TransformationType::Scale => {
-                x1 = self.m11 * fx1 + self.m31;
-                y1 = self.m22 * fy1 + self.m32;
-                x2 = self.m11 * fx2 + self.m31;
-                y2 = self.m22 * fy2 + self.m32;
+                x1 = self.m11.mul_add(fx1, self.m31);
+                y1 = self.m22.mul_add(fy1, self.m32);
+                x2 = self.m11.mul_add(fx2, self.m31);
+                y2 = self.m22.mul_add(fy2, self.m32);
             }
             TransformationType::Rotate
             | TransformationType::Shear
             | TransformationType::Project => {
-                x1 = self.m11 * fx1 + self.m21 * fy1 + self.m31;
-                y1 = self.m12 * fx1 + self.m22 * fy1 + self.m32;
-                x2 = self.m11 * fx2 + self.m21 * fy2 + self.m31;
-                y2 = self.m12 * fx2 + self.m22 * fy2 + self.m32;
+                x1 = self.m11.mul_add(fx1, self.m21 * fy1) + self.m31;
+                y1 = self.m12.mul_add(fx1, self.m22 * fy1) + self.m32;
+                x2 = self.m11.mul_add(fx2, self.m21 * fy2) + self.m31;
+                y2 = self.m12.mul_add(fx2, self.m22 * fy2) + self.m32;
                 if t == TransformationType::Project {
-                    let mut w = 1.0 / (self.m13 * fx1 + self.m23 * fy1 + self.m33);
+                    let mut w = 1.0 / (self.m13.mul_add(fx1, self.m23 * fy1) + self.m33);
                     x1 *= w;
                     y1 *= w;
-                    w = 1.0 / (self.m13 * fx2 + self.m23 * fy2 + self.m33);
+                    w = 1.0 / (self.m13.mul_add(fx2, self.m23 * fy2) + self.m33);
                     x2 *= w;
                     y2 *= w;
                 }
@@ -564,12 +596,14 @@ impl Transform {
     /// mapped into the coordinate system defined by this matrix.
     ///
     /// Note that the transformed coordinates are rounded to the nearest integer.
+    #[must_use]
     pub fn map_rect(&self, _rect: &Rect) -> Rect {
         unimplemented!()
     }
 
-    /// Creates and returns a RectF object that is a copy of the given rectangle,
+    /// Creates and returns a `RectF` object that is a copy of the given rectangle,
     /// mapped into the coordinate system defined by this matrix.
+    #[must_use]
     pub fn map_rect_f(&self, _rect: &RectF) -> RectF {
         unimplemented!()
     }
@@ -588,17 +622,17 @@ impl Transform {
                 ny = y + self.m32;
             }
             TransformationType::Scale => {
-                nx = self.m11 * x + self.m31;
-                ny = self.m22 * y + self.m32;
+                nx = self.m11.mul_add(x, self.m31);
+                ny = self.m22.mul_add(y, self.m32);
             }
             TransformationType::Rotate
             | TransformationType::Shear
             | TransformationType::Project => {
-                nx = self.m11 * x + self.m21 * y + self.m31;
-                ny = self.m12 * x + self.m22 * y + self.m32;
+                nx = self.m11.mul_add(x, self.m21 * y) + self.m31;
+                ny = self.m12.mul_add(x, self.m22 * y) + self.m32;
                 if t == TransformationType::Project {
-                    let mut w = self.m13 * x + self.m23 * y + self.m33;
-                    const NEAR_CLIP: f64 = 0.000001;
+                    let mut w = self.m13.mul_add(x, self.m23 * y) + self.m33;
+                    const NEAR_CLIP: f64 = 0.000_001;
                     if w < NEAR_CLIP {
                         w = NEAR_CLIP;
                     }
@@ -705,14 +739,14 @@ impl Transform {
                     self.m22 = tm22;
                 }
                 TransformationType::Project => {
-                    let tm13 = cosa * self.m13 + sina * self.m23;
-                    let tm23 = -sina * self.m13 + cosa * self.m23;
+                    let tm13 = cosa.mul_add(self.m13, sina * self.m23);
+                    let tm23 = (-sina).mul_add(self.m13, cosa * self.m23);
                     self.m13 = tm13;
                     self.m23 = tm23;
-                    let tm11 = cosa * self.m11 + sina * self.m21;
-                    let tm12 = cosa * self.m12 + sina * self.m22;
-                    let tm21 = -sina * self.m11 + cosa * self.m21;
-                    let tm22 = -sina * self.m12 + cosa * self.m22;
+                    let tm11 = cosa.mul_add(self.m11, sina * self.m21);
+                    let tm12 = cosa.mul_add(self.m12, sina * self.m22);
+                    let tm21 = (-sina).mul_add(self.m11, cosa * self.m21);
+                    let tm22 = (-sina).mul_add(self.m12, cosa * self.m22);
                     self.m11 = tm11;
                     self.m12 = tm12;
                     self.m21 = tm21;
@@ -720,10 +754,10 @@ impl Transform {
                 }
 
                 TransformationType::Rotate | TransformationType::Shear => {
-                    let tm11 = cosa * self.m11 + sina * self.m21;
-                    let tm12 = cosa * self.m12 + sina * self.m22;
-                    let tm21 = -sina * self.m11 + cosa * self.m21;
-                    let tm22 = -sina * self.m12 + cosa * self.m22;
+                    let tm11 = cosa.mul_add(self.m11, sina * self.m21);
+                    let tm12 = cosa.mul_add(self.m12, sina * self.m22);
+                    let tm21 = (-sina).mul_add(self.m11, cosa * self.m21);
+                    let tm22 = (-sina).mul_add(self.m12, cosa * self.m22);
                     self.m11 = tm11;
                     self.m12 = tm12;
                     self.m21 = tm21;
@@ -783,24 +817,24 @@ impl Transform {
                     self.m22 = tm22;
                 }
                 TransformationType::Project => {
-                    let tm13 = cosa * self.m13 + sina * self.m23;
-                    let tm23 = -sina * self.m13 + cosa * self.m23;
+                    let tm13 = cosa.mul_add(self.m13, sina * self.m23);
+                    let tm23 = (-sina).mul_add(self.m13, cosa * self.m23);
                     self.m13 = tm13;
                     self.m23 = tm23;
-                    let tm11 = cosa * self.m11 + sina * self.m21;
-                    let tm12 = cosa * self.m12 + sina * self.m22;
-                    let tm21 = -sina * self.m11 + cosa * self.m21;
-                    let tm22 = -sina * self.m12 + cosa * self.m22;
+                    let tm11 = cosa.mul_add(self.m11, sina * self.m21);
+                    let tm12 = cosa.mul_add(self.m12, sina * self.m22);
+                    let tm21 = (-sina).mul_add(self.m11, cosa * self.m21);
+                    let tm22 = (-sina).mul_add(self.m12, cosa * self.m22);
                     self.m11 = tm11;
                     self.m12 = tm12;
                     self.m21 = tm21;
                     self.m22 = tm22;
                 }
                 TransformationType::Rotate | TransformationType::Shear => {
-                    let tm11 = cosa * self.m11 + sina * self.m21;
-                    let tm12 = cosa * self.m12 + sina * self.m22;
-                    let tm21 = -sina * self.m11 + cosa * self.m21;
-                    let tm22 = -sina * self.m12 + cosa * self.m22;
+                    let tm11 = cosa.mul_add(self.m11, sina * self.m21);
+                    let tm12 = cosa.mul_add(self.m12, sina * self.m22);
+                    let tm21 = (-sina).mul_add(self.m11, cosa * self.m21);
+                    let tm22 = (-sina).mul_add(self.m12, cosa * self.m22);
                     self.m11 = tm11;
                     self.m12 = tm12;
                     self.m21 = tm21;
@@ -968,13 +1002,13 @@ impl Transform {
                 self.m32 += dy * self.m22;
             }
             TransformationType::Project => {
-                self.m33 += dx * self.m13 + dy * self.m23;
-                self.m31 += dx * self.m11 + dy * self.m21;
-                self.m32 += dy * self.m22 + dx * self.m12;
+                self.m33 += dx.mul_add(self.m13, dy * self.m23);
+                self.m31 += dx.mul_add(self.m11, dy * self.m21);
+                self.m32 += dy.mul_add(self.m22, dx * self.m12);
             }
             TransformationType::Shear | TransformationType::Rotate => {
-                self.m31 += dx * self.m11 + dy * self.m21;
-                self.m32 += dy * self.m22 + dx * self.m12;
+                self.m31 += dx.mul_add(self.m11, dy * self.m21);
+                self.m32 += dy.mul_add(self.m22, dx * self.m12);
             }
         }
 
@@ -984,6 +1018,7 @@ impl Transform {
     }
 
     /// Returns the transpose of this matrix.
+    #[must_use]
     pub fn transposed(&self) -> Self {
         Self::new_3d(
             self.m11, self.m21, self.m31, self.m12, self.m22, self.m32, self.m13, self.m23,
@@ -1000,52 +1035,51 @@ impl Transform {
     ///
     /// Knowing the transformation type of a matrix is useful for optimization:
     /// you can often handle specific types more optimally than handling the generic case.
+    #[must_use]
     pub fn get_type(&self) -> TransformationType {
         if self.dirty == TransformationType::None || self.dirty < self.type_ {
             return self.type_;
         }
 
-        if self.dirty == TransformationType::Project {
-            if self.m13 != 0.0 || self.m23 != 0.0 || (self.m33 - 1.0) != 0.0 {
-                return TransformationType::Project;
+        if self.dirty == TransformationType::Project
+            && (self.m13 != 0.0 || self.m23 != 0.0 || (self.m33 - 1.0) != 0.0)
+        {
+            return TransformationType::Project;
+        }
+
+        if (self.dirty == TransformationType::Shear || self.dirty == TransformationType::Rotate)
+            && (self.m12 != 0.0 || self.m21 != 0.0)
+        {
+            let dot = self.m11 * self.m12 * self.m21 * self.m22;
+            if dot == 0.0 {
+                return TransformationType::Rotate;
+            } else {
+                return TransformationType::Shear;
             }
         }
 
-        if self.dirty == TransformationType::Shear || self.dirty == TransformationType::Rotate {
-            if self.m12 != 0.0 || self.m21 != 0.0 {
-                let dot = self.m11 * self.m12 * self.m21 * self.m22;
-                if dot == 0.0 {
-                    return TransformationType::Rotate;
-                } else {
-                    return TransformationType::Shear;
-                }
-            }
+        if self.dirty == TransformationType::Scale
+            && ((self.m11 - 1.0) != 0.0 || (self.m22 - 1.0) != 0.0)
+        {
+            return TransformationType::Scale;
         }
 
-        if self.dirty == TransformationType::Scale {
-            if (self.m11 - 1.0) != 0.0 || (self.m22 - 1.0) != 0.0 {
-                return TransformationType::Scale;
-            }
-        }
-
-        if self.dirty == TransformationType::Translate {
-            if self.m31 != 0.0 || self.m32 != 0.0 {
-                return TransformationType::Translate;
-            }
+        if self.dirty == TransformationType::Translate && (self.m31 != 0.0 || self.m32 != 0.0) {
+            return TransformationType::Translate;
         }
 
         assert_eq!(self.dirty, TransformationType::None);
-        return TransformationType::None;
+        TransformationType::None
     }
 }
 
-impl ops::Mul<&Transform> for Transform {
-    type Output = Transform;
+impl ops::Mul<&Self> for Transform {
+    type Output = Self;
 
     /// Returns the result of multiplying this matrix by the given matrix.
     ///
     /// Note that matrix multiplication is not commutative, i.e. a*b != b*a.
-    fn mul(self, other: &Transform) -> Self::Output {
+    fn mul(self, other: &Self) -> Self::Output {
         let other_type = other.get_type();
         if other_type == TransformationType::None {
             return self;
@@ -1070,8 +1104,8 @@ impl ops::Mul<&Transform> for Transform {
                 let m11 = self.m11 * other.m11;
                 let m22 = self.m22 * other.m22;
 
-                let m31 = self.m31 * other.m11 + other.m31;
-                let m32 = self.m32 * other.m22 + other.m32;
+                let m31 = self.m31.mul_add(other.m11, other.m31);
+                let m32 = self.m32.mul_add(other.m22, other.m32);
 
                 t.m11 = m11;
                 t.m22 = m22;
@@ -1079,14 +1113,14 @@ impl ops::Mul<&Transform> for Transform {
                 t.m32 = m32;
             }
             TransformationType::Rotate | TransformationType::Shear => {
-                let m11 = self.m11 * other.m11 + self.m12 * other.m21;
-                let m12 = self.m11 * other.m12 + self.m12 * other.m22;
+                let m11 = self.m11.mul_add(other.m11, self.m12 * other.m21);
+                let m12 = self.m11.mul_add(other.m12, self.m12 * other.m22);
 
-                let m21 = self.m21 * other.m11 + self.m22 * other.m21;
-                let m22 = self.m21 * other.m12 + self.m22 * other.m22;
+                let m21 = self.m21.mul_add(other.m11, self.m22 * other.m21);
+                let m22 = self.m21.mul_add(other.m12, self.m22 * other.m22);
 
-                let m31 = self.m31 * other.m11 + self.m32 * other.m21 + other.m31;
-                let m32 = self.m31 * other.m12 + self.m32 * other.m22 + other.m32;
+                let m31 = self.m31.mul_add(other.m11, self.m32 * other.m21) + other.m31;
+                let m32 = self.m31.mul_add(other.m12, self.m32 * other.m22) + other.m32;
 
                 t.m11 = m11;
                 t.m12 = m12;
@@ -1096,17 +1130,35 @@ impl ops::Mul<&Transform> for Transform {
                 t.m32 = m32;
             }
             TransformationType::Project => {
-                let m11 = self.m11 * other.m11 + self.m12 * other.m21 + self.m13 * other.m31;
-                let m12 = self.m11 * other.m12 + self.m12 * other.m22 + self.m13 * other.m32;
-                let m13 = self.m11 * other.m13 + self.m12 * other.m23 + self.m13 * other.m33;
+                let m11 = self
+                    .m13
+                    .mul_add(other.m31, self.m11.mul_add(other.m11, self.m12 * other.m21));
+                let m12 = self
+                    .m13
+                    .mul_add(other.m32, self.m11.mul_add(other.m12, self.m12 * other.m22));
+                let m13 = self
+                    .m13
+                    .mul_add(other.m33, self.m11.mul_add(other.m13, self.m12 * other.m23));
 
-                let m21 = self.m21 * other.m11 + self.m22 * other.m21 + self.m23 * other.m31;
-                let m22 = self.m21 * other.m12 + self.m22 * other.m22 + self.m23 * other.m32;
-                let m23 = self.m21 * other.m13 + self.m22 * other.m23 + self.m23 * other.m33;
+                let m21 = self
+                    .m23
+                    .mul_add(other.m31, self.m21.mul_add(other.m11, self.m22 * other.m21));
+                let m22 = self
+                    .m23
+                    .mul_add(other.m32, self.m21.mul_add(other.m12, self.m22 * other.m22));
+                let m23 = self
+                    .m23
+                    .mul_add(other.m33, self.m21.mul_add(other.m13, self.m22 * other.m23));
 
-                let m31 = self.m31 * other.m11 + self.m32 * other.m21 + self.m33 * other.m31;
-                let m32 = self.m31 * other.m12 + self.m32 * other.m22 + self.m33 * other.m32;
-                let m33 = self.m31 * other.m13 + self.m32 * other.m23 + self.m33 * other.m33;
+                let m31 = self
+                    .m33
+                    .mul_add(other.m31, self.m31.mul_add(other.m11, self.m32 * other.m21));
+                let m32 = self
+                    .m33
+                    .mul_add(other.m32, self.m31.mul_add(other.m12, self.m32 * other.m22));
+                let m33 = self
+                    .m33
+                    .mul_add(other.m33, self.m31.mul_add(other.m13, self.m32 * other.m23));
 
                 t.m11 = m11;
                 t.m12 = m12;
@@ -1123,12 +1175,12 @@ impl ops::Mul<&Transform> for Transform {
         t.dirty = new_type;
         t.type_ = new_type;
 
-        return t;
+        t
     }
 }
 
 impl ops::Div<f64> for Transform {
-    type Output = Transform;
+    type Output = Self;
 
     fn div(mut self, scalar: f64) -> Self::Output {
         if scalar == 0.0 {
@@ -1140,9 +1192,9 @@ impl ops::Div<f64> for Transform {
     }
 }
 
-impl ops::MulAssign<&Transform> for Transform {
+impl ops::MulAssign<&Self> for Transform {
     /// Returns the result of multiplying this matrix by the given matrix.
-    fn mul_assign(&mut self, other: &Transform) {
+    fn mul_assign(&mut self, other: &Self) {
         let other_type = other.get_type();
         if other_type == TransformationType::None {
             return;
@@ -1167,8 +1219,8 @@ impl ops::MulAssign<&Transform> for Transform {
                 let m11 = self.m11 * other.m11;
                 let m22 = self.m22 * other.m22;
 
-                let m31 = self.m31 * other.m11 + other.m31;
-                let m32 = self.m32 * other.m22 + other.m32;
+                let m31 = self.m31.mul_add(other.m11, other.m31);
+                let m32 = self.m32.mul_add(other.m22, other.m32);
 
                 self.m11 = m11;
                 self.m22 = m22;
@@ -1176,14 +1228,14 @@ impl ops::MulAssign<&Transform> for Transform {
                 self.m32 = m32;
             }
             TransformationType::Rotate | TransformationType::Shear => {
-                let m11 = self.m11 * other.m11 + self.m12 * other.m21;
-                let m12 = self.m11 * other.m12 + self.m12 * other.m22;
+                let m11 = self.m11.mul_add(other.m11, self.m12 * other.m21);
+                let m12 = self.m11.mul_add(other.m12, self.m12 * other.m22);
 
-                let m21 = self.m21 * other.m11 + self.m22 * other.m21;
-                let m22 = self.m21 * other.m12 + self.m22 * other.m22;
+                let m21 = self.m21.mul_add(other.m11, self.m22 * other.m21);
+                let m22 = self.m21.mul_add(other.m12, self.m22 * other.m22);
 
-                let m31 = self.m31 * other.m11 + self.m32 * other.m21 + other.m31;
-                let m32 = self.m31 * other.m12 + self.m32 * other.m22 + other.m32;
+                let m31 = self.m31.mul_add(other.m11, self.m32 * other.m21) + other.m31;
+                let m32 = self.m31.mul_add(other.m12, self.m32 * other.m22) + other.m32;
 
                 self.m11 = m11;
                 self.m12 = m12;
@@ -1193,17 +1245,35 @@ impl ops::MulAssign<&Transform> for Transform {
                 self.m32 = m32;
             }
             TransformationType::Project => {
-                let m11 = self.m11 * other.m11 + self.m12 * other.m21 + self.m13 * other.m31;
-                let m12 = self.m11 * other.m12 + self.m12 * other.m22 + self.m13 * other.m32;
-                let m13 = self.m11 * other.m13 + self.m12 * other.m23 + self.m13 * other.m33;
+                let m11 = self
+                    .m13
+                    .mul_add(other.m31, self.m11.mul_add(other.m11, self.m12 * other.m21));
+                let m12 = self
+                    .m13
+                    .mul_add(other.m32, self.m11.mul_add(other.m12, self.m12 * other.m22));
+                let m13 = self
+                    .m13
+                    .mul_add(other.m33, self.m11.mul_add(other.m13, self.m12 * other.m23));
 
-                let m21 = self.m21 * other.m11 + self.m22 * other.m21 + self.m23 * other.m31;
-                let m22 = self.m21 * other.m12 + self.m22 * other.m22 + self.m23 * other.m32;
-                let m23 = self.m21 * other.m13 + self.m22 * other.m23 + self.m23 * other.m33;
+                let m21 = self
+                    .m23
+                    .mul_add(other.m31, self.m21.mul_add(other.m11, self.m22 * other.m21));
+                let m22 = self
+                    .m23
+                    .mul_add(other.m32, self.m21.mul_add(other.m12, self.m22 * other.m22));
+                let m23 = self
+                    .m23
+                    .mul_add(other.m33, self.m21.mul_add(other.m13, self.m22 * other.m23));
 
-                let m31 = self.m31 * other.m11 + self.m32 * other.m21 + self.m33 * other.m31;
-                let m32 = self.m31 * other.m12 + self.m32 * other.m22 + self.m33 * other.m32;
-                let m33 = self.m31 * other.m13 + self.m32 * other.m23 + self.m33 * other.m33;
+                let m31 = self
+                    .m33
+                    .mul_add(other.m31, self.m31.mul_add(other.m11, self.m32 * other.m21));
+                let m32 = self
+                    .m33
+                    .mul_add(other.m32, self.m31.mul_add(other.m12, self.m32 * other.m22));
+                let m33 = self
+                    .m33
+                    .mul_add(other.m33, self.m31.mul_add(other.m13, self.m32 * other.m23));
 
                 self.m11 = m11;
                 self.m12 = m12;

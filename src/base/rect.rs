@@ -27,11 +27,13 @@ pub struct Rect {
 
 impl Rect {
     /// Constructs a null rectangle.
+    #[must_use]
     pub fn new() -> Self {
         Self::from(0, 0, 0, 0)
     }
 
     /// Constructs a rectangle with `left`, `top` as its top-left corner and the given `width` and `height`.
+    #[must_use]
     pub fn from(left: i32, top: i32, width: i32, height: i32) -> Self {
         Self {
             x1: left,
@@ -42,6 +44,7 @@ impl Rect {
     }
 
     /// Constructs a rectangle with the given `top_left` corner and the given `size`.
+    #[must_use]
     pub fn from_size(top_left: Point, size: Size) -> Self {
         Self {
             x1: top_left.x(),
@@ -52,6 +55,7 @@ impl Rect {
     }
 
     /// Constructs a rectangle with the given `top_left` and `bottom_right` corners.
+    #[must_use]
     pub fn from_points(top_left: Point, bottom_right: Point) -> Self {
         Self {
             x1: top_left.x(),
@@ -71,41 +75,48 @@ impl Rect {
 
     /// Returns a new rectangle with `dx1`, `dy1`, `dx2` and `dy2` added respectively
     /// to the existing coordinates of this rectangle.
+    #[must_use]
     pub fn adjusted(&self, dx1: i32, dy1: i32, dx2: i32, dy2: i32) -> Self {
         Self::from(self.x1 + dx1, self.y1 + dy1, self.x2 + dx2, self.y2 + dy2)
     }
 
     /// Returns the y-coordinate of the rectangle's bottom edge.
+    #[must_use]
     pub fn bottom(&self) -> i32 {
         self.y2
     }
 
     /// Returns the position of the rectangle's bottom-left corner.
+    #[must_use]
     pub fn bottom_left(&self) -> Point {
         Point::from(self.x1, self.y2)
     }
 
     /// Returns the position of the rectangle's bottom-right corner.
+    #[must_use]
     pub fn bottom_right(&self) -> Point {
         Point::from(self.x2, self.y2)
     }
 
     /// Returns the center point of the rectangle.
+    #[must_use]
     pub fn center(&self) -> Point {
         // cast avoids overflow on addition
         Point::from(
-            ((self.x1 as i64 + self.x2 as i64) / 2) as i32,
-            ((self.y1 as i64 + self.y2 as i64) / 2) as i32,
+            ((i64::from(self.x1) + i64::from(self.x2)) / 2) as i32,
+            ((i64::from(self.y1) + i64::from(self.y2)) / 2) as i32,
         )
     }
 
     /// Returns true if the point (`x`, `y`) is inside this rectangle, otherwise returns false.
+    #[must_use]
     pub fn contains(&self, x: i32, y: i32) -> bool {
         self.contains_helper(x, y, false)
     }
 
     /// Returns true if the point (`x`, `y`) is inside this rectangle (not on the edge),
     /// otherwise returns false.
+    #[must_use]
     pub fn contains_proper(&self, x: i32, y: i32) -> bool {
         self.contains_helper(x, y, true)
     }
@@ -125,10 +136,8 @@ impl Rect {
             if x <= l || x >= r {
                 return false;
             }
-        } else {
-            if x < l || x > r {
-                return false;
-            }
+        } else if x < l || x > r {
+            return false;
         }
 
         let t;
@@ -145,34 +154,36 @@ impl Rect {
             if y <= t || y >= b {
                 return false;
             }
-        } else {
-            if y < t || y > b {
-                return false;
-            }
+        } else if y < t || y > b {
+            return false;
         }
-        return true;
+        true
     }
 
     /// Returns true if the given point is inside or on the edge of the rectangle,
     /// otherwise returns false.
+    #[must_use]
     pub fn contains_point(&self, point: &Point) -> bool {
         self.contains(point.x(), point.y())
     }
 
     /// Returns true if the given point is inside of the rectangle,
     /// otherwise returns false (including on the edges).
+    #[must_use]
     pub fn contains_point_proper(&self, point: &Point) -> bool {
         self.contains_proper(point.x(), point.y())
     }
 
     /// Returns true if the given rectangle is inside this rectangle, including
     /// on the edge, otherwise returns false.
+    #[must_use]
     pub fn contains_rect(&self, rect: &Self) -> bool {
         self.contains_rect_helper(rect, false)
     }
 
     /// Returns true if the given rectangle is inside this rectangle,
     /// otherwise returns false.
+    #[must_use]
     pub fn contains_rect_proper(&self, rect: &Self) -> bool {
         self.contains_rect_helper(rect, true)
     }
@@ -203,10 +214,8 @@ impl Rect {
             if l2 <= l1 || r2 >= r1 {
                 return false;
             }
-        } else {
-            if l2 < l1 || r2 > r1 {
-                return false;
-            }
+        } else if l2 < l1 || r2 > r1 {
+            return false;
         }
 
         let mut t1 = self.y1;
@@ -229,13 +238,11 @@ impl Rect {
             if t2 <= t1 || b2 >= b1 {
                 return false;
             }
-        } else {
-            if t2 < t1 || b2 > b1 {
-                return false;
-            }
+        } else if t2 < t1 || b2 > b1 {
+            return false;
         }
 
-        return true;
+        true
     }
 
     /// Extracts the position of the rectangle's top-left corner to `x1` and `y1`,
@@ -257,11 +264,13 @@ impl Rect {
     }
 
     /// Returns the height of the rectangle.
+    #[must_use]
     pub fn height(&self) -> i32 {
         self.y2 - self.y1
     }
 
     /// Returns the intersection of this rectangle and the given `rectangle`.
+    #[must_use]
     pub fn intersected(&self, rectangle: &Self) -> Self {
         self & rectangle
     }
@@ -269,6 +278,7 @@ impl Rect {
     /// Returns true if this rectangle intersects with the given `rectangle`
     /// (i.e., there is at least one pixel that is within both rectangles),
     /// otherwise returns false.
+    #[must_use]
     pub fn intersects(&self, rectangle: &Self) -> bool {
         if self.is_null() || rectangle.is_null() {
             return false;
@@ -314,15 +324,16 @@ impl Rect {
         if t1 > b2 || t2 > b1 {
             return false;
         }
-        return true;
+        true
     }
 
     /// Returns true if the rectangle is empty, otherwise returns false.
     ///
     /// An empty rectangle has a left() >= right() or top() >= bottom().
-    /// An empty rectangle is not valid (i.e., is_empty() == !is_valid()).
+    /// An empty rectangle is not valid (i.e., `is_empty`() == !`is_valid`()).
     ///
     /// Use the `normalized()` function to retrieve a rectangle where the corners are swapped.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.x1 >= self.x2 || self.y1 >= self.y2
     }
@@ -333,6 +344,7 @@ impl Rect {
     /// (i.e., right() == left() and bottom() == top()).
     ///
     /// A null rectangle is also empty, and hence is not valid.
+    #[must_use]
     pub fn is_null(&self) -> bool {
         self.x1 == self.x2 && self.y1 == self.y2
     }
@@ -342,17 +354,20 @@ impl Rect {
     /// A valid rectangle has a left() < right() and top() < bottom().
     /// Note that non-trivial operations like intersections are not defined for invalid rectangles.
     ///
-    /// A valid rectangle is not empty (i.e., is_valid() == !is_empty()).
+    /// A valid rectangle is not empty (i.e., `is_valid`() == !`is_empty`()).
+    #[must_use]
     pub fn is_valid(&self) -> bool {
         self.x1 < self.x2 && self.y1 < self.y2
     }
 
     /// Returns the x-coordinate of the rectangle's left edge. Equivalent to `x()`.
+    #[must_use]
     pub fn left(&self) -> i32 {
         self.x1
     }
 
     /// Returns a rectangle grown by the `margins`.
+    #[must_use]
     pub fn margins_added(&self, margins: &Margins) -> Self {
         Self::from(
             self.x1 - margins.left(),
@@ -363,6 +378,7 @@ impl Rect {
     }
 
     /// Removes the `margins` from the rectangle, shrinking it.
+    #[must_use]
     pub fn margins_removed(&self, margins: &Margins) -> Self {
         Self::from(
             self.x1 + margins.left(),
@@ -471,8 +487,9 @@ impl Rect {
     ///
     /// If width() < 0 the function swaps the left and right corners, and it swaps
     /// the top and bottom corners if height() < 0.
+    #[must_use]
     pub fn normalized(&self) -> Self {
-        let mut r = Rect::new();
+        let mut r = Self::new();
         // TODO(Shaohua): Replace
         if self.x2 < self.x1 - 1 {
             // swap bad x values
@@ -490,10 +507,11 @@ impl Rect {
             r.y1 = self.y1;
             r.y2 = self.y2;
         }
-        return r;
+        r
     }
 
     /// Returns the x-coordinate of the rectangle's right edge.
+    #[must_use]
     pub fn right(&self) -> i32 {
         self.x2
     }
@@ -617,6 +635,7 @@ impl Rect {
     }
 
     /// Returns the size of the rectangle.
+    #[must_use]
     pub fn size(&self) -> Size {
         Size::from(self.width(), self.height())
     }
@@ -624,16 +643,19 @@ impl Rect {
     /// Returns the y-coordinate of the rectangle's top edge.
     ///
     /// Equivalent to `y()`.
+    #[must_use]
     pub fn top(&self) -> i32 {
         self.y1
     }
 
     /// Returns the position of the rectangle's top-left corner.
+    #[must_use]
     pub fn top_left(&self) -> Point {
         Point::from(self.x1, self.y1)
     }
 
     /// Returns the position of the rectangle's top-right corner.
+    #[must_use]
     pub fn top_right(&self) -> Point {
         Point::from(self.x2, self.y1)
     }
@@ -662,12 +684,14 @@ impl Rect {
     /// and `dy` along the y axis, relative to the current position.
     ///
     /// Positive values move the rectangle to the right and down.
+    #[must_use]
     pub fn translated(&self, dx: i32, dy: i32) -> Self {
         Self::from(self.x1 + dx, self.y1 + dy, self.x2 + dx, self.y2 + dy)
     }
 
     /// Returns a copy of the rectangle that is translated `offset.x()` along the x axis
     /// and `offset.y()` along the y axis, relative to the current position.
+    #[must_use]
     pub fn translated_point(&self, offset: &Point) -> Self {
         Self::from(
             self.x1 + offset.x(),
@@ -678,16 +702,19 @@ impl Rect {
     }
 
     /// Returns a copy of the rectangle that has its width and height exchanged:
+    #[must_use]
     pub fn transposed(&self) -> Self {
         Self::from_size(self.top_left(), self.size().transposed())
     }
 
     /// Returns the bounding rectangle of this rectangle and the given `rectangle`.
+    #[must_use]
     pub fn united(&self, rectangle: &Self) -> Self {
         self | rectangle
     }
 
     /// Returns the width of the rectangle.
+    #[must_use]
     pub fn width(&self) -> i32 {
         self.x2 - self.x1
     }
@@ -695,6 +722,7 @@ impl Rect {
     /// Returns the x-coordinate of the rectangle's left edge.
     ///
     /// Equivalent to `left()`.
+    #[must_use]
     pub fn x(&self) -> i32 {
         self.x1
     }
@@ -702,6 +730,7 @@ impl Rect {
     /// Returns the y-coordinate of the rectangle's top edge.
     ///
     /// Equivalent to `top()`.
+    #[must_use]
     pub fn y(&self) -> i32 {
         self.y1
     }
@@ -793,13 +822,13 @@ impl ops::BitAnd<&Rect> for &Rect {
             return Rect::new();
         }
 
-        return Rect::from(l1.max(l2), r1.min(r2), t1.max(t2), b1.min(b2));
+        Rect::from(l1.max(l2), r1.min(r2), t1.max(t2), b1.min(b2))
     }
 }
 
-impl ops::BitAndAssign<&Rect> for Rect {
+impl ops::BitAndAssign<&Self> for Rect {
     /// Intersects this rectangle with the given `rectangle`.
-    fn bitand_assign(&mut self, rectangle: &Rect) {
+    fn bitand_assign(&mut self, rectangle: &Self) {
         let new_rect = rectangle & self;
         *self = new_rect;
     }
@@ -850,26 +879,26 @@ impl ops::BitOr<&Rect> for &Rect {
             b2 = rectangle.y2;
         }
 
-        return Rect::from(l1.min(l2), r1.max(r2), t1.min(t2), b1.max(b2));
+        Rect::from(l1.min(l2), r1.max(r2), t1.min(t2), b1.max(b2))
     }
 }
 
-impl ops::BitOrAssign<&Rect> for Rect {
+impl ops::BitOrAssign<&Self> for Rect {
     /// Unites this rectangle with the given `rectangle`.
-    fn bitor_assign(&mut self, rectangle: &Rect) {
+    fn bitor_assign(&mut self, rectangle: &Self) {
         let new_rect = rectangle | self;
         *self = new_rect;
     }
 }
 
-/// The RectF class defines a rectangle in the plane using floating point precision.
+/// The `RectF` class defines a rectangle in the plane using floating point precision.
 ///
 /// A rectangle is normally expressed as a top-left corner and a size.
-/// The size (width and height) of a RectF is always equivalent to the mathematical rectangle
+/// The size (width and height) of a `RectF` is always equivalent to the mathematical rectangle
 /// that forms the basis for its rendering.
 ///
-/// A RectF can be constructed with a set of left, top, width and height values,
-/// or from a PointF and a SizeF.
+/// A `RectF` can be constructed with a set of left, top, width and height values,
+/// or from a `PointF` and a `SizeF`.
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RectF {
     x1: f64,
@@ -880,11 +909,13 @@ pub struct RectF {
 
 impl RectF {
     /// Constructs a null rectangle.
+    #[must_use]
     pub fn new() -> Self {
         Self::from(0.0, 0.0, 0.0, 0.0)
     }
 
     /// Constructs a rectangle with `left`, `top` as its top-left corner and the given `width` and `height`.
+    #[must_use]
     pub fn from(left: f64, top: f64, width: f64, height: f64) -> Self {
         Self {
             x1: left,
@@ -895,6 +926,7 @@ impl RectF {
     }
 
     /// Constructs a rectangle with four corners.
+    #[must_use]
     pub fn from_corners(left: f64, top: f64, right: f64, bottom: f64) -> Self {
         Self {
             x1: left,
@@ -905,6 +937,7 @@ impl RectF {
     }
 
     /// Constructs a rectangle with the given `top_left` corner and the given `size`.
+    #[must_use]
     pub fn from_size(top_left: PointF, size: SizeF) -> Self {
         Self {
             x1: top_left.x(),
@@ -915,6 +948,7 @@ impl RectF {
     }
 
     /// Constructs a rectangle with the given `top_left` and `bottom_right` corners.
+    #[must_use]
     pub fn from_points(top_left: PointF, bottom_right: PointF) -> Self {
         Self {
             x1: top_left.x(),
@@ -925,6 +959,7 @@ impl RectF {
     }
 
     /// Get outer square of a circular.
+    #[must_use]
     pub fn from_circular(center: PointF, radius: f64) -> Self {
         let x1 = center.x() - radius;
         let y1 = center.y() - radius;
@@ -934,6 +969,7 @@ impl RectF {
     }
 
     /// Get inner square of a circular.
+    #[must_use]
     pub fn from_outer_circular(center: PointF, radius: f64) -> Self {
         let offset = radius * std::f64::consts::FRAC_1_SQRT_2;
         let x1 = center.x() - offset;
@@ -944,6 +980,7 @@ impl RectF {
     }
 
     /// Get outer square of an ellipse.
+    #[must_use]
     pub fn from_ellipse(center: PointF, radius_x: f64, radius_y: f64) -> Self {
         let x1 = center.x() - radius_x;
         let y1 = center.y() - radius_y;
@@ -962,26 +999,31 @@ impl RectF {
 
     /// Returns a new rectangle with `dx1`, `dy1`, `dx2` and `dy2` added respectively
     /// to the existing coordinates of this rectangle.
+    #[must_use]
     pub fn adjusted(&self, dx1: f64, dy1: f64, dx2: f64, dy2: f64) -> Self {
         Self::from(self.x1 + dx1, self.y1 + dy1, self.x2 + dx2, self.y2 + dy2)
     }
 
     /// Returns the y-coordinate of the rectangle's bottom edge.
+    #[must_use]
     pub fn bottom(&self) -> f64 {
         self.y2
     }
 
     /// Returns the position of the rectangle's bottom-left corner.
+    #[must_use]
     pub fn bottom_left(&self) -> PointF {
         PointF::from(self.x1, self.y2)
     }
 
     /// Returns the position of the rectangle's bottom-right corner.
+    #[must_use]
     pub fn bottom_right(&self) -> PointF {
         PointF::from(self.x2, self.y2)
     }
 
     /// Returns the center point of the rectangle.
+    #[must_use]
     pub fn center(&self) -> PointF {
         // cast avoids overflow on addition
         PointF::from(
@@ -991,12 +1033,14 @@ impl RectF {
     }
 
     /// Returns true if the point (`x`, `y`) is inside this rectangle, otherwise returns false.
+    #[must_use]
     pub fn contains(&self, x: f64, y: f64) -> bool {
         self.contains_helper(x, y, false)
     }
 
     /// Returns true if the point (`x`, `y`) is inside this rectangle (not on the edge),
     /// otherwise returns false.
+    #[must_use]
     pub fn contains_proper(&self, x: f64, y: f64) -> bool {
         self.contains_helper(x, y, true)
     }
@@ -1016,10 +1060,8 @@ impl RectF {
             if x <= l || x >= r {
                 return false;
             }
-        } else {
-            if x < l || x > r {
-                return false;
-            }
+        } else if x < l || x > r {
+            return false;
         }
 
         let t;
@@ -1036,34 +1078,36 @@ impl RectF {
             if y <= t || y >= b {
                 return false;
             }
-        } else {
-            if y < t || y > b {
-                return false;
-            }
+        } else if y < t || y > b {
+            return false;
         }
-        return true;
+        true
     }
 
     /// Returns true if the given point is inside or on the edge of the rectangle,
     /// otherwise returns false.
+    #[must_use]
     pub fn contains_point(&self, point: &PointF) -> bool {
         self.contains(point.x(), point.y())
     }
 
     /// Returns true if the given point is inside of the rectangle,
     /// otherwise returns false (including on the edges).
+    #[must_use]
     pub fn contains_point_proper(&self, point: &PointF) -> bool {
         self.contains_proper(point.x(), point.y())
     }
 
     /// Returns true if the given rectangle is inside this rectangle, including
     /// on the edge, otherwise returns false.
+    #[must_use]
     pub fn contains_rect(&self, rect: &Self) -> bool {
         self.contains_rect_helper(rect, false)
     }
 
     /// Returns true if the given rectangle is inside this rectangle,
     /// otherwise returns false.
+    #[must_use]
     pub fn contains_rect_proper(&self, rect: &Self) -> bool {
         self.contains_rect_helper(rect, true)
     }
@@ -1094,10 +1138,8 @@ impl RectF {
             if l2 <= l1 || r2 >= r1 {
                 return false;
             }
-        } else {
-            if l2 < l1 || r2 > r1 {
-                return false;
-            }
+        } else if l2 < l1 || r2 > r1 {
+            return false;
         }
 
         let mut t1 = self.y1;
@@ -1120,13 +1162,11 @@ impl RectF {
             if t2 <= t1 || b2 >= b1 {
                 return false;
             }
-        } else {
-            if t2 < t1 || b2 > b1 {
-                return false;
-            }
+        } else if t2 < t1 || b2 > b1 {
+            return false;
         }
 
-        return true;
+        true
     }
 
     /// Extracts the position of the rectangle's top-left corner to `x1` and `y1`,
@@ -1148,11 +1188,13 @@ impl RectF {
     }
 
     /// Returns the height of the rectangle.
+    #[must_use]
     pub fn height(&self) -> f64 {
         self.y2 - self.y1
     }
 
     /// Returns the intersection of this rectangle and the given `rectangle`.
+    #[must_use]
     pub fn intersected(&self, rectangle: &Self) -> Self {
         self & rectangle
     }
@@ -1160,6 +1202,7 @@ impl RectF {
     /// Returns true if this rectangle intersects with the given `rectangle`
     /// (i.e., there is at least one pixel that is within both rectangles),
     /// otherwise returns false.
+    #[must_use]
     pub fn intersects(&self, rectangle: &Self) -> bool {
         if self.is_null() || rectangle.is_null() {
             return false;
@@ -1205,15 +1248,16 @@ impl RectF {
         if t1 > b2 || t2 > b1 {
             return false;
         }
-        return true;
+        true
     }
 
     /// Returns true if the rectangle is empty, otherwise returns false.
     ///
     /// An empty rectangle has a left() >= right() or top() >= bottom().
-    /// An empty rectangle is not valid (i.e., is_empty() == !is_valid()).
+    /// An empty rectangle is not valid (i.e., `is_empty`() == !`is_valid`()).
     ///
     /// Use the `normalized()` function to retrieve a rectangle where the corners are swapped.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.x1 >= self.x2 || self.y1 >= self.y2
     }
@@ -1224,6 +1268,7 @@ impl RectF {
     /// (i.e., right() == left() and bottom() == top()).
     ///
     /// A null rectangle is also empty, and hence is not valid.
+    #[must_use]
     pub fn is_null(&self) -> bool {
         self.x1 == self.x2 && self.y1 == self.y2
     }
@@ -1233,17 +1278,20 @@ impl RectF {
     /// A valid rectangle has a left() < right() and top() < bottom().
     /// Note that non-trivial operations like intersections are not defined for invalid rectangles.
     ///
-    /// A valid rectangle is not empty (i.e., is_valid() == !is_empty()).
+    /// A valid rectangle is not empty (i.e., `is_valid`() == !`is_empty`()).
+    #[must_use]
     pub fn is_valid(&self) -> bool {
         self.x1 < self.x2 && self.y1 < self.y2
     }
 
     /// Returns the x-coordinate of the rectangle's left edge. Equivalent to `x()`.
+    #[must_use]
     pub fn left(&self) -> f64 {
         self.x1
     }
 
     /// Returns a rectangle grown by the `margins`.
+    #[must_use]
     pub fn margins_added(&self, margins: &MarginsF) -> Self {
         Self::from(
             self.x1 - margins.left(),
@@ -1254,6 +1302,7 @@ impl RectF {
     }
 
     /// Removes the `margins` from the rectangle, shrinking it.
+    #[must_use]
     pub fn margins_removed(&self, margins: &MarginsF) -> Self {
         Self::from(
             self.x1 + margins.left(),
@@ -1362,8 +1411,9 @@ impl RectF {
     ///
     /// If width() < 0 the function swaps the left and right corners, and it swaps
     /// the top and bottom corners if height() < 0.
+    #[must_use]
     pub fn normalized(&self) -> Self {
-        let mut r = RectF::new();
+        let mut r = Self::new();
         // TODO(Shaohua): Replace
         if self.x2 < self.x1 - 1.0 {
             // swap bad x values
@@ -1381,10 +1431,11 @@ impl RectF {
             r.y1 = self.y1;
             r.y2 = self.y2;
         }
-        return r;
+        r
     }
 
     /// Returns the x-coordinate of the rectangle's right edge.
+    #[must_use]
     pub fn right(&self) -> f64 {
         self.x2
     }
@@ -1508,6 +1559,7 @@ impl RectF {
     }
 
     /// Returns the size of the rectangle.
+    #[must_use]
     pub fn size(&self) -> SizeF {
         SizeF::from(self.width(), self.height())
     }
@@ -1515,16 +1567,19 @@ impl RectF {
     /// Returns the y-coordinate of the rectangle's top edge.
     ///
     /// Equivalent to `y()`.
+    #[must_use]
     pub fn top(&self) -> f64 {
         self.y1
     }
 
     /// Returns the position of the rectangle's top-left corner.
+    #[must_use]
     pub fn top_left(&self) -> PointF {
         PointF::from(self.x1, self.y1)
     }
 
     /// Returns the position of the rectangle's top-right corner.
+    #[must_use]
     pub fn top_right(&self) -> PointF {
         PointF::from(self.x2, self.y1)
     }
@@ -1553,12 +1608,14 @@ impl RectF {
     /// and `dy` along the y axis, relative to the current position.
     ///
     /// Positive values move the rectangle to the right and down.
+    #[must_use]
     pub fn translated(&self, dx: f64, dy: f64) -> Self {
         Self::from(self.x1 + dx, self.y1 + dy, self.x2 + dx, self.y2 + dy)
     }
 
     /// Returns a copy of the rectangle that is translated `offset.x()` along the x axis
     /// and `offset.y()` along the y axis, relative to the current position.
+    #[must_use]
     pub fn translated_point(&self, offset: &PointF) -> Self {
         Self::from(
             self.x1 + offset.x(),
@@ -1569,16 +1626,19 @@ impl RectF {
     }
 
     /// Returns a copy of the rectangle that has its width and height exchanged:
+    #[must_use]
     pub fn transposed(&self) -> Self {
         Self::from_size(self.top_left(), self.size().transposed())
     }
 
     /// Returns the bounding rectangle of this rectangle and the given `rectangle`.
+    #[must_use]
     pub fn united(&self, rectangle: &Self) -> Self {
         self | rectangle
     }
 
     /// Returns the width of the rectangle.
+    #[must_use]
     pub fn width(&self) -> f64 {
         self.x2 - self.x1
     }
@@ -1586,6 +1646,7 @@ impl RectF {
     /// Returns the x-coordinate of the rectangle's left edge.
     ///
     /// Equivalent to `left()`.
+    #[must_use]
     pub fn x(&self) -> f64 {
         self.x1
     }
@@ -1593,6 +1654,7 @@ impl RectF {
     /// Returns the y-coordinate of the rectangle's top edge.
     ///
     /// Equivalent to `top()`.
+    #[must_use]
     pub fn y(&self) -> f64 {
         self.y1
     }
@@ -1684,13 +1746,13 @@ impl ops::BitAnd<&RectF> for &RectF {
             return RectF::new();
         }
 
-        return RectF::from(l1.max(l2), r1.min(r2), t1.max(t2), b1.min(b2));
+        RectF::from(l1.max(l2), r1.min(r2), t1.max(t2), b1.min(b2))
     }
 }
 
-impl ops::BitAndAssign<&RectF> for RectF {
+impl ops::BitAndAssign<&Self> for RectF {
     /// Intersects this rectangle with the given `rectangle`.
-    fn bitand_assign(&mut self, rectangle: &RectF) {
+    fn bitand_assign(&mut self, rectangle: &Self) {
         let new_rect = rectangle & self;
         *self = new_rect;
     }
@@ -1741,13 +1803,13 @@ impl ops::BitOr<&RectF> for &RectF {
             b2 = rectangle.y2;
         }
 
-        return RectF::from(l1.min(l2), r1.max(r2), t1.min(t2), b1.max(b2));
+        RectF::from(l1.min(l2), r1.max(r2), t1.min(t2), b1.max(b2))
     }
 }
 
-impl ops::BitOrAssign<&RectF> for RectF {
+impl ops::BitOrAssign<&Self> for RectF {
     /// Unites this rectangle with the given `rectangle`.
-    fn bitor_assign(&mut self, rectangle: &RectF) {
+    fn bitor_assign(&mut self, rectangle: &Self) {
         let new_rect = rectangle | self;
         *self = new_rect;
     }

@@ -22,8 +22,9 @@ impl StarShape {
     /// Create a new star shape object with specified `corners`.
     ///
     /// Corner radius is set to 0.0.
+    #[must_use]
     pub fn new(corners: usize) -> Self {
-        assert!(corners >= MIN_VERTEX && corners <= MAX_VERTEX);
+        assert!((MIN_VERTEX..=MAX_VERTEX).contains(&corners));
         let path = Path::new();
         Self {
             corners,
@@ -34,11 +35,13 @@ impl StarShape {
     }
 
     /// Create a five-corner star shape.
+    #[must_use]
     pub fn new_star() -> Self {
         Self::new(5)
     }
 
     /// Get current number of corners.
+    #[must_use]
     pub fn corners(&self) -> usize {
         self.corners
     }
@@ -47,7 +50,7 @@ impl StarShape {
     ///
     /// Note that minimum corners shall be 3.
     pub fn set_corners(&mut self, corners: usize) {
-        assert!(corners >= MIN_VERTEX && corners <= MAX_VERTEX);
+        assert!((MIN_VERTEX..=MAX_VERTEX).contains(&corners));
         if self.corners != corners {
             self.path_is_dirty = true;
             self.corners = corners;
@@ -55,6 +58,7 @@ impl StarShape {
     }
 
     /// Get current corner radius.
+    #[must_use]
     pub fn corner_radius(&self) -> f64 {
         self.corner_radius
     }

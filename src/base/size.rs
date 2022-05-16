@@ -33,6 +33,7 @@ pub struct Size {
 
 impl Size {
     /// Constructs a size with an invalid width and height (i.e., `is_valid()` returns false).
+    #[must_use]
     pub fn new() -> Self {
         Self {
             width: 0,
@@ -41,11 +42,13 @@ impl Size {
     }
 
     /// Constructs a size with the given width and height.
+    #[must_use]
     pub fn from(width: i32, height: i32) -> Self {
         Self { width, height }
     }
 
     /// Returns the size that results from shrinking this size by margins.
+    #[must_use]
     pub fn shrunk_by(&self, margins: &Margins) -> Self {
         Self {
             width: self.width - margins.left() - margins.right(),
@@ -54,6 +57,7 @@ impl Size {
     }
 
     /// Returns the size that results from growing this size by margins.
+    #[must_use]
     pub fn grown_by(&self, margins: &Margins) -> Self {
         Self {
             width: self.width + margins.left() + margins.right(),
@@ -62,6 +66,7 @@ impl Size {
     }
 
     /// Returns a size holding the minimum width and height of this size and the given `other`.
+    #[must_use]
     pub fn bounded_to(&self, other: &Self) -> Self {
         Self {
             width: self.width.min(other.width),
@@ -70,6 +75,7 @@ impl Size {
     }
 
     /// Returns a size holding the maximum width and height of this size and the given `other`.
+    #[must_use]
     pub fn expanded_to(&self, other: &Self) -> Self {
         Self {
             width: self.width.max(other.width),
@@ -78,23 +84,27 @@ impl Size {
     }
 
     /// Returns the height.
+    #[must_use]
     pub fn height(&self) -> i32 {
         self.height
     }
 
     /// Returns true if either of the width and height is less than or equal to 0;
     /// otherwise returns false.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.width == 0 || self.height == 0
     }
 
     /// Returns true if both the width and height is 0; otherwise returns false.
+    #[must_use]
     pub fn is_null(&self) -> bool {
         self.width == 0 && self.height == 0
     }
 
     /// Returns true if both the width and height is equal to or greater than 0;
     /// otherwise returns false.
+    #[must_use]
     pub fn is_valid(&self) -> bool {
         self.width >= 0 || self.height >= 0
     }
@@ -112,25 +122,27 @@ impl Size {
     /// Scales the size to a rectangle with the given width and height,
     /// according to the specified `mode`.
     pub fn scale(&mut self, width: i32, height: i32, mode: AspectRatioMode) {
-        self.scale_by(Size::from(width, height), mode)
+        self.scale_by(Self::from(width, height), mode)
     }
 
     /// Scales the size to a rectangle with the given width and height,
     /// according to the specified `mode`.
-    pub fn scale_by(&mut self, size: Size, mode: AspectRatioMode) {
+    pub fn scale_by(&mut self, size: Self, mode: AspectRatioMode) {
         let new_size = self.scaled_by(size, mode);
         *self = new_size;
     }
 
     /// Return a size scaled to a rectangle with the given width and height,
     /// according to the specified `mode`.
+    #[must_use]
     pub fn scaled(&self, width: i32, height: i32, mode: AspectRatioMode) -> Self {
-        self.scaled_by(Size::from(width, height), mode)
+        self.scaled_by(Self::from(width, height), mode)
     }
 
     /// Return a size scaled to a rectangle with the given width and height,
     /// according to the specified `mode`.
-    pub fn scaled_by(&self, size: Size, mode: AspectRatioMode) -> Self {
+    #[must_use]
+    pub fn scaled_by(&self, size: Self, mode: AspectRatioMode) -> Self {
         if mode == AspectRatioMode::IgnoreAspectRatio || self.width == 0 || self.height == 0 {
             return size;
         }
@@ -144,10 +156,11 @@ impl Size {
         };
 
         if use_height {
-            return Size::from(rw, size.height);
+            Self::from(rw, size.height)
         } else {
-            let height = (size.width as i64 * self.height as i64 / self.width as i64) as i32;
-            return Size::from(size.width, height);
+            let height =
+                (i64::from(size.width) * i64::from(self.height) / i64::from(self.width)) as i32;
+            Self::from(size.width, height)
         }
     }
 
@@ -167,6 +180,7 @@ impl Size {
     }
 
     /// Returns a Size with width and height swapped.
+    #[must_use]
     pub fn transposed(&self) -> Self {
         Self {
             width: self.height,
@@ -175,27 +189,28 @@ impl Size {
     }
 
     /// Returns the width.
+    #[must_use]
     pub fn width(&self) -> i32 {
         self.width
     }
 }
 
-impl ops::AddAssign<Size> for Size {
-    fn add_assign(&mut self, other: Size) {
+impl ops::AddAssign<Self> for Size {
+    fn add_assign(&mut self, other: Self) {
         self.width += other.width;
         self.height += other.height;
     }
 }
 
-impl ops::AddAssign<&Size> for Size {
-    fn add_assign(&mut self, other: &Size) {
+impl ops::AddAssign<&Self> for Size {
+    fn add_assign(&mut self, other: &Self) {
         self.width += other.width;
         self.height += other.height;
     }
 }
 
-impl ops::Add<Size> for Size {
-    type Output = Size;
+impl ops::Add<Self> for Size {
+    type Output = Self;
 
     fn add(self, other: Self) -> Self {
         Self {
@@ -223,8 +238,8 @@ impl ops::Mul<f64> for &Size {
     /// and returns the result rounded to the nearest integer.
     fn mul(self, factor: f64) -> Self::Output {
         Self::Output {
-            width: (self.width as f64 * factor).round() as i32,
-            height: (self.height as f64 * factor).round() as i32,
+            width: (f64::from(self.width) * factor).round() as i32,
+            height: (f64::from(self.height) * factor).round() as i32,
         }
     }
 }
@@ -233,8 +248,8 @@ impl ops::MulAssign<f64> for Size {
     /// Multiplies the given size by the given `factor`,
     /// and returns the result rounded to the nearest integer.
     fn mul_assign(&mut self, factor: f64) {
-        self.width = (self.width as f64 * factor).round() as i32;
-        self.height = (self.height as f64 * factor).round() as i32;
+        self.width = (f64::from(self.width) * factor).round() as i32;
+        self.height = (f64::from(self.height) * factor).round() as i32;
     }
 }
 
@@ -246,8 +261,8 @@ impl ops::Div<f64> for &Size {
     fn div(self, divisor: f64) -> Self::Output {
         assert!(divisor != 0.0);
         Self::Output {
-            width: (self.width as f64 / divisor).round() as i32,
-            height: (self.height as f64 / divisor).round() as i32,
+            width: (f64::from(self.width) / divisor).round() as i32,
+            height: (f64::from(self.height) / divisor).round() as i32,
         }
     }
 }
@@ -257,12 +272,12 @@ impl ops::DivAssign<f64> for Size {
     /// and returns the result rounded to the nearest integer.
     fn div_assign(&mut self, divisor: f64) {
         assert!(divisor != 0.0);
-        self.width = (self.width as f64 / divisor).round() as i32;
-        self.height = (self.height as f64 / divisor).round() as i32;
+        self.width = (f64::from(self.width) / divisor).round() as i32;
+        self.height = (f64::from(self.height) / divisor).round() as i32;
     }
 }
 
-/// The SizeF class defines the size of a two-dimensional object using floating point precision.
+/// The `SizeF` class defines the size of a two-dimensional object using floating point precision.
 ///
 /// A size is specified by a `width()` and a `height()`. It can be set in the constructor
 /// and changed using the `set_width()`, `set_height()`, or `scale()` functions,
@@ -287,6 +302,7 @@ pub struct SizeF {
 
 impl SizeF {
     /// Constructs a size with an invalid width and height (i.e., `is_valid()` returns false).
+    #[must_use]
     pub fn new() -> Self {
         Self {
             width: 0.0,
@@ -295,11 +311,13 @@ impl SizeF {
     }
 
     /// Constructs a size with the given width and height.
+    #[must_use]
     pub fn from(width: f64, height: f64) -> Self {
         Self { width, height }
     }
 
     /// Returns the size that results from shrinking this size by margins.
+    #[must_use]
     pub fn shrunk_by(&self, margins: &MarginsF) -> Self {
         Self {
             width: self.width - margins.left() - margins.right(),
@@ -308,6 +326,7 @@ impl SizeF {
     }
 
     /// Returns the size that results from growing this size by margins.
+    #[must_use]
     pub fn grown_by(&self, margins: &MarginsF) -> Self {
         Self {
             width: self.width + margins.left() + margins.right(),
@@ -316,6 +335,7 @@ impl SizeF {
     }
 
     /// Returns a size holding the minimum width and height of this size and the given `other`.
+    #[must_use]
     pub fn bounded_to(&self, other: &Self) -> Self {
         Self {
             width: self.width.min(other.width),
@@ -324,6 +344,7 @@ impl SizeF {
     }
 
     /// Returns a size holding the maximum width and height of this size and the given `other`.
+    #[must_use]
     pub fn expanded_to(&self, other: &Self) -> Self {
         Self {
             width: self.width.max(other.width),
@@ -332,23 +353,27 @@ impl SizeF {
     }
 
     /// Returns the height.
+    #[must_use]
     pub fn height(&self) -> f64 {
         self.height
     }
 
     /// Returns true if either of the width and height is less than or equal to 0;
     /// otherwise returns false.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.width == 0.0 || self.height == 0.0
     }
 
     /// Returns true if both the width and height is 0; otherwise returns false.
+    #[must_use]
     pub fn is_null(&self) -> bool {
         self.width == 0.0 && self.height == 0.0
     }
 
     /// Returns true if both the width and height is equal to or greater than 0;
     /// otherwise returns false.
+    #[must_use]
     pub fn is_valid(&self) -> bool {
         self.width >= 0.0 || self.height >= 0.0
     }
@@ -366,25 +391,27 @@ impl SizeF {
     /// Scales the size to a rectangle with the given width and height,
     /// according to the specified `mode`.
     pub fn scale(&mut self, width: f64, height: f64, mode: AspectRatioMode) {
-        self.scale_by(SizeF::from(width, height), mode)
+        self.scale_by(Self::from(width, height), mode)
     }
 
     /// Scales the size to a rectangle with the given width and height,
     /// according to the specified `mode`.
-    pub fn scale_by(&mut self, size: SizeF, mode: AspectRatioMode) {
+    pub fn scale_by(&mut self, size: Self, mode: AspectRatioMode) {
         let new_size = self.scaled_by(size, mode);
         *self = new_size;
     }
 
     /// Return a size scaled to a rectangle with the given width and height,
     /// according to the specified `mode`.
+    #[must_use]
     pub fn scaled(&self, width: f64, height: f64, mode: AspectRatioMode) -> Self {
-        self.scaled_by(SizeF::from(width, height), mode)
+        self.scaled_by(Self::from(width, height), mode)
     }
 
     /// Return a size scaled to a rectangle with the given width and height,
     /// according to the specified `mode`.
-    pub fn scaled_by(&self, size: SizeF, mode: AspectRatioMode) -> Self {
+    #[must_use]
+    pub fn scaled_by(&self, size: Self, mode: AspectRatioMode) -> Self {
         if mode == AspectRatioMode::IgnoreAspectRatio || self.width == 0.0 || self.height == 0.0 {
             return size;
         }
@@ -398,10 +425,10 @@ impl SizeF {
         };
 
         if use_height {
-            return SizeF::from(rw, size.height);
+            Self::from(rw, size.height)
         } else {
             let height = size.width * self.height / self.width;
-            return SizeF::from(size.width, height);
+            Self::from(size.width, height)
         }
     }
 
@@ -418,6 +445,7 @@ impl SizeF {
     /// Returns an integer based copy of this size.
     ///
     /// Note that the coordinates in the returned size will be rounded to the nearest integer.
+    #[must_use]
     pub fn to_size(&self) -> Size {
         Size::from(self.width.round() as i32, self.height.round() as i32)
     }
@@ -427,7 +455,8 @@ impl SizeF {
         mem::swap(&mut self.width, &mut self.height);
     }
 
-    /// Returns a SizeF with width and height swapped.
+    /// Returns a `SizeF` with width and height swapped.
+    #[must_use]
     pub fn transposed(&self) -> Self {
         Self {
             width: self.height,
@@ -436,27 +465,28 @@ impl SizeF {
     }
 
     /// Returns the width.
+    #[must_use]
     pub fn width(&self) -> f64 {
         self.width
     }
 }
 
-impl ops::AddAssign<SizeF> for SizeF {
-    fn add_assign(&mut self, other: SizeF) {
+impl ops::AddAssign<Self> for SizeF {
+    fn add_assign(&mut self, other: Self) {
         self.width += other.width;
         self.height += other.height;
     }
 }
 
-impl ops::AddAssign<&SizeF> for SizeF {
-    fn add_assign(&mut self, other: &SizeF) {
+impl ops::AddAssign<&Self> for SizeF {
+    fn add_assign(&mut self, other: &Self) {
         self.width += other.width;
         self.height += other.height;
     }
 }
 
-impl ops::Add<SizeF> for SizeF {
-    type Output = SizeF;
+impl ops::Add<Self> for SizeF {
+    type Output = Self;
 
     fn add(self, other: Self) -> Self {
         Self {

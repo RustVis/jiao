@@ -62,11 +62,13 @@ pub struct GenericPath {
 
 impl GenericPath {
     /// Create an empty generic path object.
+    #[must_use]
     pub fn new() -> Self {
         Self { tokens: Vec::new() }
     }
 
     /// Get internal tokens.
+    #[must_use]
     pub fn tokens(&self) -> &[GenericPathToken] {
         &self.tokens
     }

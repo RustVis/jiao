@@ -22,6 +22,7 @@ pub struct CircularShape {
 
 impl CircularShape {
     /// Create a new circular shape object.
+    #[must_use]
     pub fn new(center: PointF, radius: f64) -> Self {
         let path = Path::new();
         Self {
@@ -35,6 +36,7 @@ impl CircularShape {
     }
 
     /// Get center point of the circular shape.
+    #[must_use]
     pub fn center(&self) -> PointF {
         self.center
     }
@@ -46,6 +48,7 @@ impl CircularShape {
     }
 
     /// Get radius of the circular shape.
+    #[must_use]
     pub fn radius(&self) -> f64 {
         self.radius
     }
@@ -60,6 +63,7 @@ impl CircularShape {
     }
 
     /// Get start angle of the circular shape.
+    #[must_use]
     pub fn start_angle(&self) -> f64 {
         self.start_angle
     }
@@ -71,6 +75,7 @@ impl CircularShape {
     }
 
     /// Get end angle of the circular shape.
+    #[must_use]
     pub fn end_angle(&self) -> f64 {
         self.end_angle
     }

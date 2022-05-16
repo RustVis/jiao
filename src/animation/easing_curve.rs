@@ -196,16 +196,16 @@ pub enum EasingCurveType {
 
 impl Default for EasingCurveType {
     fn default() -> Self {
-        EasingCurveType::Linear
+        Self::Linear
     }
 }
 
-/// The EasingCurve struct provides easing curves for controlling animation.
+/// The `EasingCurve` struct provides easing curves for controlling animation.
 ///
 /// Easing curves describe a function that controls how the speed of the interpolation
 /// between 0 and 1 should be. Easing curves allow transitions from one value to another
-/// to appear more natural than a simple constant speed would allow. The EasingCurve struct
-/// is usually used in conjunction with the PropertyAnimation struct but can be used on its own.
+/// to appear more natural than a simple constant speed would allow. The `EasingCurve` struct
+/// is usually used in conjunction with the `PropertyAnimation` struct but can be used on its own.
 /// It is usually used to accelerate the interpolation from zero velocity (ease in) or
 /// decelerate to zero velocity (ease out). Ease in and ease out can also be combined
 /// in the same easing curve.
@@ -217,7 +217,7 @@ impl Default for EasingCurveType {
 /// If the returned value is the same as the input value for all input values the easing curve
 /// is a linear curve. This is the default behaviour.
 ///
-/// The ability to set an amplitude, overshoot, or period depends on the EasingCurveType.
+/// The ability to set an amplitude, overshoot, or period depends on the `EasingCurveType`.
 /// Amplitude access is available to curves that behave as springs such as elastic and bounce curves.
 /// Changing the amplitude changes the height of the curve. Period access is only available
 /// to elastic curves and setting a higher period slows the rate of bounce. Only curves
@@ -252,6 +252,7 @@ impl Default for EasingCurve {
 }
 
 impl EasingCurve {
+    #[must_use]
     pub fn new(curve_type: EasingCurveType) -> Self {
         Self {
             curve_type,
@@ -263,6 +264,7 @@ impl EasingCurve {
     ///
     /// This is not applicable for all curve types.
     /// It is only applicable for bounce and elastic curves.
+    #[must_use]
     pub fn amplitude(&self) -> f64 {
         self.amplitude
     }
@@ -270,6 +272,7 @@ impl EasingCurve {
     /// Returns the function pointer to the custom easing curve.
     ///
     /// If `get_type()` does not return `EasingCurveType::Custom`, this function will return `None`.
+    #[must_use]
     pub fn custom_type(&self) -> Option<EasingFunction> {
         self.custom_func
     }
@@ -283,6 +286,7 @@ impl EasingCurve {
     /// - `EasingCurveType::OutBack`
     /// - `EasingCurveType::InOutBack`
     /// - `EasingCurveType::OutInBack`
+    #[must_use]
     pub fn overshoot(&self) -> f64 {
         self.overshoot
     }
@@ -296,6 +300,7 @@ impl EasingCurve {
     /// - `EasingCurveType::OutElastic`
     /// - `EasingCurveType::InOutElastic`
     /// - `EasingCurveType::OutInElastic`
+    #[must_use]
     pub fn period(&self) -> f64 {
         self.period
     }
@@ -346,11 +351,13 @@ impl EasingCurve {
     /// Returns the cubic bezier spline that defines a custom easing curve.
     ///
     /// If the easing curve does not have a custom bezier easing curve the list is empty.
+    #[must_use]
     pub fn to_cubic_spline(&self) -> Vec<PointF> {
         unimplemented!()
     }
 
     /// Returns the type of the easing curve.
+    #[must_use]
     pub fn get_type(&self) -> EasingCurveType {
         self.curve_type
     }
@@ -360,6 +367,7 @@ impl EasingCurve {
     /// Whereas progress must be between 0 and 1, the returned effective progress
     /// can be outside those bounds. For example, `EasingCurveType::InBack` will return
     /// negative values in the beginning of the function.
+    #[must_use]
     pub fn value_for_progress(&self, progress: f64) -> f64 {
         match self.curve_type {
             EasingCurveType::Linear => inner::ease_none(progress),

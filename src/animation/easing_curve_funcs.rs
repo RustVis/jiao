@@ -12,22 +12,26 @@ use core::f64::consts::{FRAC_PI_2, PI};
 ///
 /// # Arguments
 /// * `progress` - Current time (in frames or seconds)
+#[must_use]
 pub fn ease_none(progress: f64) -> f64 {
     progress
 }
 
 /// Easing equation function for a quadratic (t^2) easing in: accelerating from zero velocity.
+#[must_use]
 pub fn ease_in_quad(t: f64) -> f64 {
     t * t
 }
 
 /// Easing equation function for a quadratic (t^2) easing out: decelerating to zero velocity.
+#[must_use]
 pub fn ease_out_quad(t: f64) -> f64 {
     -t * (t - 2.0)
 }
 
 /// Easing equation function for a quadratic (t^2) easing in/out: acceleration until halfway,
 /// then deceleration.
+#[must_use]
 pub fn ease_in_out_quad(mut t: f64) -> f64 {
     t *= 2.0;
     if t < 1.0 {
@@ -40,6 +44,7 @@ pub fn ease_in_out_quad(mut t: f64) -> f64 {
 
 /// Easing equation function for a quadratic (t^2) easing out/in: deceleration until halfway,
 /// then acceleration.
+#[must_use]
 pub fn ease_out_in_quad(t: f64) -> f64 {
     if t < 0.5 {
         ease_out_quad(t * 2.0) / 2.0
@@ -49,30 +54,34 @@ pub fn ease_out_in_quad(t: f64) -> f64 {
 }
 
 /// Easing equation function for a cubic (t^3) easing in: accelerating from zero velocity.
+#[must_use]
 pub fn ease_in_cubic(t: f64) -> f64 {
     t * t * t
 }
 
 /// Easing equation function for a cubic (t^3) easing out: decelerating to zero velocity.
+#[must_use]
 pub fn ease_out_cubic(mut t: f64) -> f64 {
     t -= 1.0;
-    t * t * t + 1.0
+    (t * t).mul_add(t, 1.0)
 }
 
 /// Easing equation function for a cubic (t^3) easing in/out: acceleration until halfway,
 /// then deceleration.
+#[must_use]
 pub fn ease_in_out_cubic(mut t: f64) -> f64 {
     t *= 2.0;
     if t < 1.0 {
         0.5 * t * t * t
     } else {
         t -= 2.0;
-        0.5 * (t * t * t + 2.0)
+        0.5 * (t * t).mul_add(t, 2.0)
     }
 }
 
 /// Easing equation function for a cubic (t^3) easing out/in: deceleration until halfway,
 /// then acceleration.
+#[must_use]
 pub fn ease_out_in_cubic(t: f64) -> f64 {
     if t < 0.5 {
         ease_out_cubic(t * 2.0) / 2.0
@@ -82,11 +91,13 @@ pub fn ease_out_in_cubic(t: f64) -> f64 {
 }
 
 /// Easing equation function for a quartic (t^4) easing in: accelerating from zero velocity.
+#[must_use]
 pub fn ease_in_quart(t: f64) -> f64 {
     t * t * t * t
 }
 
 /// Easing equation function for a quartic (t^4) easing out: decelerating to zero velocity.
+#[must_use]
 pub fn ease_out_quart(mut t: f64) -> f64 {
     t -= 1.0;
     -(t * t * t * t - 1.0)
@@ -94,6 +105,7 @@ pub fn ease_out_quart(mut t: f64) -> f64 {
 
 /// Easing equation function for a quartic (t^4) easing in/out: acceleration until halfway,
 /// then deceleration.
+#[must_use]
 pub fn ease_in_out_quart(mut t: f64) -> f64 {
     t *= 2.0;
     if t < 1.0 {
@@ -106,6 +118,7 @@ pub fn ease_in_out_quart(mut t: f64) -> f64 {
 
 /// Easing equation function for a quartic (t^4) easing out/in: deceleration until halfway,
 /// then acceleration.
+#[must_use]
 pub fn ease_out_in_quart(t: f64) -> f64 {
     if t < 0.5 {
         ease_out_quart(2.0 * t) / 2.0
@@ -115,30 +128,34 @@ pub fn ease_out_in_quart(t: f64) -> f64 {
 }
 
 /// Easing equation function for a quintic (t^5) easing in: accelerating from zero velocity.
+#[must_use]
 pub fn ease_in_quint(t: f64) -> f64 {
     t * t * t * t * t
 }
 
 /// Easing equation function for a quintic (t^5) easing out: decelerating to zero velocity.
+#[must_use]
 pub fn ease_out_quint(mut t: f64) -> f64 {
     t -= 1.0;
-    t * t * t * t * t + 1.0
+    (t * t * t * t).mul_add(t, 1.0)
 }
 
 /// Easing equation function for a quintic (t^5) easing in/out: acceleration until halfway,
 /// then deceleration.
+#[must_use]
 pub fn ease_in_out_quint(mut t: f64) -> f64 {
     t *= 2.0;
     if t < 1.0 {
         0.5 * t * t * t * t * t
     } else {
         t -= 2.0;
-        0.5 * (t * t * t * t * t + 2.0)
+        0.5 * (t * t * t * t).mul_add(t, 2.0)
     }
 }
 
 /// Easing equation function for a quintic (t^5) easing out/in: deceleration until halfway,
 /// then acceleration.
+#[must_use]
 pub fn ease_out_in_quint(t: f64) -> f64 {
     if t < 0.5 {
         ease_out_quint(2.0 * t) / 2.0
@@ -148,6 +165,7 @@ pub fn ease_out_in_quint(t: f64) -> f64 {
 }
 
 /// Easing equation function for a sinusoidal (sin(t)) easing in: accelerating from zero velocity.
+#[must_use]
 pub fn ease_in_sine(t: f64) -> f64 {
     if t == 1.0 {
         1.0
@@ -157,18 +175,21 @@ pub fn ease_in_sine(t: f64) -> f64 {
 }
 
 /// Easing equation function for a sinusoidal (sin(t)) easing out: decelerating to zero velocity.
+#[must_use]
 pub fn ease_out_sine(t: f64) -> f64 {
     (t * FRAC_PI_2).sin()
 }
 
 /// Easing equation function for a sinusoidal (sin(t)) easing in/out: acceleration until halfway,
 /// then deceleration.
+#[must_use]
 pub fn ease_in_out_sine(t: f64) -> f64 {
     -0.5 * ((PI * t).cos() - 1.0)
 }
 
 /// Easing equation function for a sinusoidal (sin(t)) easing out/in: deceleration until halfway,
 /// then acceleration.
+#[must_use]
 pub fn ease_out_in_sine(t: f64) -> f64 {
     if t < 0.5 {
         ease_out_sine(2.0 * t) / 2.0
@@ -178,25 +199,28 @@ pub fn ease_out_in_sine(t: f64) -> f64 {
 }
 
 /// Easing equation function for an exponential (2^t) easing in: accelerating from zero velocity.
+#[must_use]
 pub fn ease_in_expo(t: f64) -> f64 {
     if t == 0.0 || t == 1.0 {
         t
     } else {
-        2.0_f64.powf(10.0 * (t - 1.0)) - 0.001
+        (10.0 * (t - 1.0)).exp2() - 0.001
     }
 }
 
 /// Easing equation function for an exponential (2^t) easing out: decelerating to zero velocity.
+#[must_use]
 pub fn ease_out_expo(t: f64) -> f64 {
     if t == 1.0 {
         1.0
     } else {
-        1.001 * (-2.0_f64.powf(-10.0 * t) + 1.0)
+        1.001 * (-(-10.0 * t).exp2() + 1.0)
     }
 }
 
 /// Easing equation function for an exponential (2^t) easing in/out: acceleration until halfway,
 /// then deceleration.
+#[must_use]
 pub fn ease_in_out_expo(mut t: f64) -> f64 {
     if t == 0.0 {
         return 0.0;
@@ -206,13 +230,14 @@ pub fn ease_in_out_expo(mut t: f64) -> f64 {
     }
     t *= 2.0;
     if t < 1.0 {
-        return 0.5 * 2.0_f64.powf(10.0 * (t - 1.0)) - 0.0005;
+        return 0.5 * (10.0 * (t - 1.0)).exp2() - 0.0005;
     }
-    return 0.5 * 1.0005 * (-2.0_f64.powf(-10.0 * (t - 1.0)) + 2.0);
+    0.5 * 1.0005 * (-(-10.0 * (t - 1.0)).exp2() + 2.0)
 }
 
 /// Easing equation function for an exponential (2^t) easing out/in: deceleration until halfway,
 /// then acceleration.
+#[must_use]
 pub fn ease_out_in_expo(t: f64) -> f64 {
     if t < 0.5 {
         ease_out_expo(2.0 * t) / 2.0
@@ -222,11 +247,13 @@ pub fn ease_out_in_expo(t: f64) -> f64 {
 }
 
 /// Easing equation function for a circular (sqrt(1-t^2)) easing in: accelerating from zero velocity.
+#[must_use]
 pub fn ease_in_circ(t: f64) -> f64 {
     -((1.0 - t * t).sqrt() - 1.0)
 }
 
 /// Easing equation function for a circular (sqrt(1-t^2)) easing out: decelerating to zero velocity.
+#[must_use]
 pub fn ease_out_circ(mut t: f64) -> f64 {
     t -= 1.0;
     (1.0 - t * t).sqrt()
@@ -234,6 +261,7 @@ pub fn ease_out_circ(mut t: f64) -> f64 {
 
 /// Easing equation function for a circular (sqrt(1-t^2)) easing in/out: acceleration until halfway,
 /// then deceleration.
+#[must_use]
 pub fn ease_in_out_circ(mut t: f64) -> f64 {
     t -= 2.0;
     if t < 1.0 {
@@ -246,6 +274,7 @@ pub fn ease_in_out_circ(mut t: f64) -> f64 {
 
 /// Easing equation function for a circular (sqrt(1-t^2)) easing out/in: deceleration until halfway,
 /// then acceleration.
+#[must_use]
 pub fn ease_out_in_circ(t: f64) -> f64 {
     if t < 0.5 {
         ease_out_circ(2.0 * t) / 2.0
@@ -271,11 +300,12 @@ fn ease_in_elastic_helper(t: f64, b: f64, c: f64, d: f64, mut a: f64, p: f64) ->
     };
 
     t_adj -= 1.0;
-    return -(a * 2.0_f64.powf(10.0 * t_adj) * ((t_adj * d - s) * (2.0 * PI) / p).sin()) + b;
+    -(a * (10.0 * t_adj).exp2() * ((t_adj * d - s) * (2.0 * PI) / p).sin()) + b
 }
 
 /// Easing equation function for an elastic (exponentially decaying sine wave) easing in:
 /// accelerating from zero velocity.
+#[must_use]
 pub fn ease_in_elastic(t: f64, amplitude: f64, period: f64) -> f64 {
     ease_in_elastic_helper(t, 0.0, 1.0, 1.0, amplitude, period)
 }
@@ -295,17 +325,19 @@ fn ease_out_elastic_helper(t: f64, _b: f64, c: f64, _d: f64, mut a: f64, p: f64)
         p / (2.0 * PI) * (c / a).asin()
     };
 
-    return a * 2.0_f64.powf(-10.0 * t) * ((t - s) * (2.0 * PI) / p).sin() + c;
+    (a * (-10.0 * t).exp2()).mul_add(((t - s) * (2.0 * PI) / p).sin(), c)
 }
 
 /// Easing equation function for an elastic (exponentially decaying sine wave) easing out:
 /// decelerating to zero velocity.
+#[must_use]
 pub fn ease_out_elastic(t: f64, amplitude: f64, period: f64) -> f64 {
     ease_out_elastic_helper(t, 0.0, 1.0, 1.0, amplitude, period)
 }
 
 /// Easing equation function for an elastic (exponentially decaying sine wave) easing in/out:
 /// acceleration until halfway, then deceleration.
+#[must_use]
 pub fn ease_in_out_elastic(mut t: f64, mut amplitude: f64, period: f64) -> f64 {
     if t == 0.0 {
         return 0.0;
@@ -325,23 +357,21 @@ pub fn ease_in_out_elastic(mut t: f64, mut amplitude: f64, period: f64) -> f64 {
     if t < 1.0 {
         return -0.5
             * (amplitude
-                * 2.0_f64.powf(10.0 * (t - 1.0))
+                * (10.0 * (t - 1.0)).exp2()
                 * ((t - 1.0 - s) * (2.0 * PI) / period).sin());
     }
-    return amplitude
-        * 2.0_f64.powf(-10.0 * (t - 1.0))
-        * ((t - 1.0 - s) * (2.0 * PI) / period).sin()
-        * 0.5
-        + 1.0;
+    (amplitude * (-10.0 * (t - 1.0)).exp2() * ((t - 1.0 - s) * (2.0 * PI) / period).sin())
+        .mul_add(0.5, 1.0)
 }
 
 /// Easing equation function for an elastic (exponentially decaying sine wave) easing out/in:
 /// deceleration until halfway, then acceleration.
+#[must_use]
 pub fn ease_out_in_elastic(t: f64, amplitude: f64, period: f64) -> f64 {
     if t < 0.5 {
         return ease_out_elastic_helper(t * 2.0, 0.0, 0.5, 1.0, amplitude, period);
     }
-    return ease_in_elastic_helper(2.0 * t - 1.0, 0.5, 0.5, 1.0, amplitude, period);
+    ease_in_elastic_helper(2.0 * t - 1.0, 0.5, 0.5, 1.0, amplitude, period)
 }
 
 /// Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing in:
@@ -353,6 +383,7 @@ pub fn ease_out_in_elastic(t: f64, amplitude: f64, period: f64) -> f64 {
 /// * `t` - Current time (in frames or seconds)
 /// * `s` - Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot,
 ///       and the default value of 1.70158 produces an overshoot of 10 percent).
+#[must_use]
 pub fn ease_in_back(t: f64, s: f64) -> f64 {
     t * t * ((s + 1.0) * t - s)
 }
@@ -366,9 +397,10 @@ pub fn ease_in_back(t: f64, s: f64) -> f64 {
 /// * `t` - Current time (in frames or seconds)
 /// * `s` - Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot,
 ///       and the default value of 1.70158 produces an overshoot of 10 percent).
+#[must_use]
 pub fn ease_out_back(mut t: f64, s: f64) -> f64 {
     t -= 1.0;
-    t * t * ((s + 1.0) * t + s) + 1.0
+    (t * t).mul_add((s + 1.0).mul_add(t, s), 1.0)
 }
 
 /// Easing equation function for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) easing in/out:
@@ -380,15 +412,16 @@ pub fn ease_out_back(mut t: f64, s: f64) -> f64 {
 /// * `t` - Current time (in frames or seconds)
 /// * `s` - Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot,
 ///       and the default value of 1.70158 produces an overshoot of 10 percent).
+#[must_use]
 pub fn ease_in_out_back(mut t: f64, mut s: f64) -> f64 {
     t *= 2.0;
     if t < 1.0 {
         s *= 1.525;
-        return 0.5 * (t * t * ((s + 1.0) * t - s));
+        0.5 * (t * t * ((s + 1.0) * t - s))
     } else {
         t -= 2.0;
         s *= 1.525;
-        return 0.5 * (t * t * ((s + 1.0) * t + s) + 2.0);
+        0.5 * (t * t).mul_add((s + 1.0).mul_add(t, s), 2.0)
     }
 }
 
@@ -401,11 +434,12 @@ pub fn ease_in_out_back(mut t: f64, mut s: f64) -> f64 {
 /// * `t` - Current time (in frames or seconds)
 /// * `s` - Overshoot ammount: higher s means greater overshoot (0 produces cubic easing with no overshoot,
 ///       and the default value of 1.70158 produces an overshoot of 10 percent).
+#[must_use]
 pub fn ease_out_in_back(t: f64, s: f64) -> f64 {
     if t < 0.5 {
         return ease_out_back(2.0 * t, s) / 2.0;
     }
-    return ease_in_back(2.0 * t - 1.0, s) / 2.0 + 0.5;
+    ease_in_back(2.0 * t - 1.0, s) / 2.0 + 0.5
 }
 
 fn ease_out_bounce_helper(mut t: f64, c: f64, a: f64) -> f64 {
@@ -413,33 +447,36 @@ fn ease_out_bounce_helper(mut t: f64, c: f64, a: f64) -> f64 {
         return c;
     }
     if t < (4.0 / 11.0) {
-        return c * (7.5625 * t * t);
+        c * (7.5625 * t * t)
     } else if t < (8.0 / 11.0) {
         t -= 6.0 / 11.0;
-        return -a * (1.0 - (7.5625 * t * t + 0.75)) + c;
+        (-a).mul_add(1.0 - (7.5625 * t).mul_add(t, 0.75), c)
     } else if t < (10.0 / 11.0) {
         t -= 9.0 / 11.0;
-        return -a * (1.0 - (7.5625 * t * t + 0.9375)) + c;
+        (-a).mul_add(1.0 - (7.5625 * t).mul_add(t, 0.9375), c)
     } else {
         t -= 21.0 / 22.0;
-        return -a * (1.0 - (7.5625 * t * t + 0.984375)) + c;
+        (-a).mul_add(1.0 - (7.5625 * t).mul_add(t, 0.984_375), c)
     }
 }
 
 /// Easing equation function for a bounce (exponentially decaying parabolic bounce) easing in:
 /// accelerating from zero velocity.
+#[must_use]
 pub fn ease_in_bounce(t: f64, amplitude: f64) -> f64 {
     1.0 - ease_out_bounce_helper(1.0 - t, 1.0, amplitude)
 }
 
 /// Easing equation function for a bounce (exponentially decaying parabolic bounce) easing out:
 /// decelerating to zero velocity.
+#[must_use]
 pub fn ease_out_bounce(t: f64, amplitude: f64) -> f64 {
     ease_out_bounce_helper(t, 1.0, amplitude)
 }
 
 /// Easing equation function for a bounce (exponentially decaying parabolic bounce) easing in/out:
 /// acceleration until halfway, then deceleration.
+#[must_use]
 pub fn ease_in_out_bounce(t: f64, amplitude: f64) -> f64 {
     if t < 0.5 {
         ease_in_bounce(2.0 * t, amplitude) / 2.0
@@ -452,6 +489,7 @@ pub fn ease_in_out_bounce(t: f64, amplitude: f64) -> f64 {
 
 /// Easing equation function for a bounce (exponentially decaying parabolic bounce) easing out/in:
 /// deceleration until halfway, then acceleration.
+#[must_use]
 pub fn ease_out_in_bounce(t: f64, amplitude: f64) -> f64 {
     if t < 0.5 {
         ease_out_bounce_helper(t * 2.0, 0.5, amplitude)
@@ -474,27 +512,30 @@ fn smooth_begin_end_mix_factor(value: f64) -> f64 {
 /// Easing function that starts growing slowly, then increases in speed. At the end of the curve
 /// the speed will be constant.
 ///
-/// SmoothBegin blends Smooth and Linear Interpolation.
+/// `SmoothBegin` blends Smooth and Linear Interpolation.
 /// - Progress 0 - 0.3      : Smooth only
 /// - Progress 0.3 - ~ 0.5  : Mix of Smooth and Linear
 /// - Progress ~ 0.5  - 1   : Linear only
+#[must_use]
 pub fn ease_in_curve(t: f64) -> f64 {
     let sin_progress_val = sin_progress(t);
     let mix = smooth_begin_end_mix_factor(t);
-    sin_progress_val * mix + t * (1.0 - mix)
+    sin_progress_val.mul_add(mix, t * (1.0 - mix))
 }
 
 /// Easing function that starts growing steadily, then ends slowly. The speed will be constant
 /// at the beginning of the curve.
+#[must_use]
 pub fn ease_out_curve(t: f64) -> f64 {
     let sin_progress_val = sin_progress(t);
     let mix = smooth_begin_end_mix_factor(1.0 - t);
-    sin_progress_val * mix + t * (1.0 - mix)
+    sin_progress_val.mul_add(mix, t * (1.0 - mix))
 }
 
 /// Easing function where the value grows sinusoidally.
 ///
 /// Note that the calculated end value will be 0 rather than 1.
+#[must_use]
 pub fn ease_sine_curve(t: f64) -> f64 {
     (((t * PI * 2.0) - FRAC_PI_2).sin() + 1.0) / 2.0
 }
@@ -503,6 +544,7 @@ pub fn ease_sine_curve(t: f64) -> f64 {
 ///
 /// Note that the calculated start value will be 0.5 and the end value will be 0.5
 /// contrary to the usual 0 to 1 easing curve.
+#[must_use]
 pub fn ease_cosine_curve(t: f64) -> f64 {
     (((t * PI * 2.0) - FRAC_PI_2).cos() + 1.0) / 2.0
 }

@@ -22,8 +22,9 @@ impl PolygonShape {
     /// Create a new polygon shape object with specified `corners`.
     ///
     /// Corner radius is set to 0.0.
+    #[must_use]
     pub fn new(corners: usize) -> Self {
-        assert!(corners >= MIN_VERTEX && corners <= MAX_VERTEX);
+        assert!((MIN_VERTEX..=MAX_VERTEX).contains(&corners));
         let path = Path::new();
         Self {
             corners,
@@ -34,28 +35,33 @@ impl PolygonShape {
     }
 
     /// Create a new triangle shape.
+    #[must_use]
     pub fn new_triangle() -> Self {
         Self::new(3)
     }
 
     /// Create a new diamond shape.
+    #[must_use]
     pub fn new_diamond() -> Self {
         // TODO(Shaohua): Rotate
         Self::new(4)
     }
 
     /// Create a new parallelogram shape.
+    #[must_use]
     pub fn new_parallelogram() -> Self {
         // TODO(Shaohua): Rotate
         Self::new(4)
     }
 
     /// Create a new hexagon shape.
+    #[must_use]
     pub fn new_hexagon() -> Self {
         Self::new(6)
     }
 
     /// Get current number of corners.
+    #[must_use]
     pub fn corners(&self) -> usize {
         self.corners
     }
@@ -64,7 +70,7 @@ impl PolygonShape {
     ///
     /// Note that minimum corners shall be 3.
     pub fn set_corners(&mut self, corners: usize) {
-        assert!(corners >= MIN_VERTEX && corners <= MAX_VERTEX);
+        assert!((MIN_VERTEX..=MAX_VERTEX).contains(&corners));
         if self.corners != corners {
             self.path_is_dirty = true;
             self.corners = corners;
@@ -72,6 +78,7 @@ impl PolygonShape {
     }
 
     /// Get current corner radius.
+    #[must_use]
     pub fn corner_radius(&self) -> f64 {
         self.corner_radius
     }

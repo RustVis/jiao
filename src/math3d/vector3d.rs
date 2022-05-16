@@ -9,12 +9,12 @@ use super::vector2d::Vector2D;
 use super::vector4d::Vector4D;
 use crate::base::{Point, PointF};
 
-/// The Vector3D struct represents a vector or vertex in 3D space.
+/// The `Vector3D` struct represents a vector or vertex in 3D space.
 ///
 /// Vectors are one of the main building blocks of 3D representation and drawing.
 /// They consist of three coordinates, traditionally called x, y, and z.
 ///
-/// The Vector3D struct can also be used to represent vertices in 3D space.
+/// The `Vector3D` struct can also be used to represent vertices in 3D space.
 /// We therefore do not need to provide a separate vertex class.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Vector3D {
@@ -29,16 +29,19 @@ impl Default for Vector3D {
 
 impl Vector3D {
     /// Constructs a null vector, i.e. with coordinates (0, 0, 0).
+    #[must_use]
     pub fn new() -> Self {
         Self::from(0.0, 0.0, 0.0)
     }
 
     /// Constructs a vector with coordinates (`x`, `y`, `z`).
+    #[must_use]
     pub fn from(x: f32, y: f32, z: f32) -> Self {
         Self { v: [x, y, z] }
     }
 
     /// Constructs a 3D vector from the specified 4D vector. The w coordinate is dropped.
+    #[must_use]
     pub fn from_vector4d(vector: Vector4D) -> Self {
         Self::from(vector.x(), vector.y(), vector.z())
     }
@@ -46,6 +49,7 @@ impl Vector3D {
     /// Constructs a 3D vector from the specified 2D vector.
     ///
     /// The z coordinate is set to `z`.
+    #[must_use]
     pub fn from_vector2d_and_z(vector: Vector2D, z: f32) -> Self {
         Self::from(vector.x(), vector.y(), z)
     }
@@ -53,24 +57,28 @@ impl Vector3D {
     /// Constructs a 3D vector from the specified 2D vector.
     ///
     /// The z coordinate is set to zero.
+    #[must_use]
     pub fn from_vector2d(vector: Vector2D) -> Self {
         Self::from(vector.x(), vector.y(), 0.0)
     }
 
     /// Constructs a vector with x and y coordinates from a 2D point, and a z coordinate of 0.
+    #[must_use]
     pub fn from_point_f(point: &PointF) -> Self {
         Self::from(point.x() as f32, point.y() as f32, 0.0)
     }
 
     /// Constructs a vector with x and y coordinates from a 2D point, and a z coordinate of 0.
+    #[must_use]
     pub fn from_point(point: &Point) -> Self {
         Self::from(point.x() as f32, point.y() as f32, 0.0)
     }
 
     /// Returns the cross-product of vectors self and `vector`,
     /// which corresponds to the normal vector of a plane defined by self and `vector`.
+    #[must_use]
     pub fn cross_product(&self, vector: &Self) -> Self {
-        Vector3D::from(
+        Self::from(
             self.v[1] * vector.v[2] - self.v[2] * vector.v[1],
             self.v[2] * vector.v[0] - self.v[0] * vector.v[2],
             self.v[0] * vector.v[1] - self.v[1] * vector.v[0],
@@ -81,12 +89,13 @@ impl Vector3D {
     ///
     /// If `direction` is a null vector, then it does not define a line.
     /// In that case, the distance from `point` to this vertex is returned.
+    #[must_use]
     pub fn distance_to_line(&self, point: &Self, direction: &Self) -> f32 {
         if direction.is_null() {
             return (self - point).length();
         }
         let p = (self - point).dot_product(direction) * direction + point;
-        return (self - &p).length();
+        (self - &p).length()
     }
 
     /// Returns the distance from this vertex to a plane defined by the vertex plane and
@@ -95,6 +104,7 @@ impl Vector3D {
     /// The `normal` parameter is assumed to have been normalized to a unit vector.
     /// The return value will be negative if the vertex is below the `plane`,
     /// or zero if it is on the `plane`.
+    #[must_use]
     pub fn distance_to_plane(&self, plane: &Self, normal: &Self) -> f32 {
         (self - plane).dot_product(normal)
     }
@@ -106,27 +116,35 @@ impl Vector3D {
     /// or zero if it is on the plane.
     ///
     /// The two vectors that define the plane are plane2 - plane1 and plane3 - plane1.
+    #[must_use]
     pub fn distance_to_planes(&self, plane1: &Self, plane2: &Self, plane3: &Self) -> f32 {
         let n = (plane2 - plane1).normal(&(plane3 - plane1));
         (self - plane1).dot_product(&n)
     }
 
     /// Returns the distance from this vertex to a point defined by the vertex `point`.
+    #[must_use]
     pub fn distance_to_point(&self, point: &Self) -> f32 {
         (self - point).length()
     }
 
     /// Returns the dot product of self and `vector`.
+    #[must_use]
     pub fn dot_product(&self, vector: &Self) -> f32 {
-        self.v[0] * vector.v[0] + self.v[1] * vector.v[1] + self.v[2] * vector.v[2]
+        self.v[2].mul_add(
+            vector.v[2],
+            self.v[0].mul_add(vector.v[0], self.v[1] * vector.v[1]),
+        )
     }
 
     /// Returns true if the x, y, and z coordinates are set to 0.0, otherwise returns false.
+    #[must_use]
     pub fn is_null(&self) -> bool {
         self.v[0] == 0.0 && self.v[1] == 0.0 && self.v[2] == 0.0
     }
 
     /// Returns the length of the vector from the origin.
+    #[must_use]
     pub fn length(&self) -> f32 {
         let hypot = self.length_squared_precise();
         hypot.sqrt() as f32
@@ -135,16 +153,20 @@ impl Vector3D {
     /// Returns the squared length of the vector from the origin.
     ///
     /// This is equivalent to the dot product of the vector with itself.
+    #[must_use]
     pub fn length_squared(&self) -> f32 {
-        self.v[0] * self.v[0] + self.v[1] * self.v[1] + self.v[2] * self.v[2]
+        self.v[2].mul_add(
+            self.v[2],
+            self.v[0].mul_add(self.v[0], self.v[1] * self.v[1]),
+        )
     }
 
     /// Need some extra precision if the length is very small.
     fn length_squared_precise(&self) -> f64 {
-        let x = self.v[0] as f64;
-        let y = self.v[1] as f64;
-        let z = self.v[2] as f64;
-        x * x + y * y + z * z
+        let x = f64::from(self.v[0]);
+        let y = f64::from(self.v[1]);
+        let z = f64::from(self.v[2]);
+        z.mul_add(z, x.mul_add(x, y * y))
     }
 
     /// Returns the normal vector of a plane defined by vectors self and `vector`,
@@ -152,6 +174,7 @@ impl Vector3D {
     ///
     /// Use `cross_product()` to compute the cross-product of vectors if
     /// you do not need the result to be normalized to a unit vector.
+    #[must_use]
     pub fn normal(&self, vector: &Self) -> Self {
         self.cross_product(vector).normalized()
     }
@@ -161,6 +184,7 @@ impl Vector3D {
     ///
     /// Use `cross_product()` to compute the cross-product of v2 - self and v3 - self
     /// if you do not need the result to be normalized to a unit vector.
+    #[must_use]
     pub fn normal3(&self, v2: &Self, v3: &Self) -> Self {
         (v2 - self).cross_product(&(v3 - self)).normalized()
     }
@@ -174,9 +198,9 @@ impl Vector3D {
             return;
         }
         let sqrt = hypot.sqrt();
-        self.v[0] = (self.v[0] as f64 / sqrt) as f32;
-        self.v[1] = (self.v[1] as f64 / sqrt) as f32;
-        self.v[2] = (self.v[2] as f64 / sqrt) as f32;
+        self.v[0] = (f64::from(self.v[0]) / sqrt) as f32;
+        self.v[1] = (f64::from(self.v[1]) / sqrt) as f32;
+        self.v[2] = (f64::from(self.v[2]) / sqrt) as f32;
     }
 
     /// Returns the normalized unit vector form of this vector.
@@ -185,19 +209,20 @@ impl Vector3D {
     /// If the length of the vector is very close to 1, then the vector
     /// will be returned as-is.
     /// Otherwise the normalized form of the vector of length 1 will be returned.
+    #[must_use]
     pub fn normalized(&self) -> Self {
         let hypot = self.length_squared_precise();
         if hypot == 1.0 {
-            return self.clone();
+            self.clone()
         } else if hypot != 0.0 {
             let sqrt = hypot.sqrt();
-            return Vector3D::from(
-                (self.v[0] as f64 / sqrt) as f32,
-                (self.v[1] as f64 / sqrt) as f32,
-                (self.v[2] as f64 / sqrt) as f32,
-            );
+            Self::from(
+                (f64::from(self.v[0]) / sqrt) as f32,
+                (f64::from(self.v[1]) / sqrt) as f32,
+                (f64::from(self.v[2]) / sqrt) as f32,
+            )
         } else {
-            return Vector3D::new();
+            Self::new()
         }
     }
 
@@ -233,23 +258,27 @@ impl Vector3D {
     /// Returns the Point form of this 3D vector.
     ///
     /// The z coordinate is dropped.
+    #[must_use]
     pub fn to_point(&self) -> Point {
         Point::from(self.v[0].round() as i32, self.v[1].round() as i32)
     }
 
-    /// Returns the PointF form of this 3D vector.
+    /// Returns the `PointF` form of this 3D vector.
     ///
     /// The z coordinate is dropped.
+    #[must_use]
     pub fn to_point_f(&self) -> PointF {
-        PointF::from(self.v[0] as f64, self.v[1] as f64)
+        PointF::from(f64::from(self.v[0]), f64::from(self.v[1]))
     }
 
     /// Returns the 2D vector form of this 3D vector, dropping the z coordinate.
+    #[must_use]
     pub fn to_vector2d(&self) -> Vector2D {
         Vector2D::from(self.v[0], self.v[1])
     }
 
     /// Returns the 4D form of this 3D vector, with the w coordinate set to zero.
+    #[must_use]
     pub fn to_vector4d(&self) -> Vector4D {
         Vector4D::from(self.v[0], self.v[1], self.v[2], 0.0)
     }
@@ -269,22 +298,25 @@ impl Vector3D {
     //}
 
     /// Returns the x coordinate of this point.
+    #[must_use]
     pub fn x(&self) -> f32 {
         self.v[0]
     }
 
     /// Returns the y coordinate of this point.
+    #[must_use]
     pub fn y(&self) -> f32 {
         self.v[1]
     }
 
     /// Returns the z coordinate of this point.
+    #[must_use]
     pub fn z(&self) -> f32 {
         self.v[2]
     }
 }
 
-impl ops::AddAssign<&Vector3D> for Vector3D {
+impl ops::AddAssign<&Self> for Vector3D {
     /// Adds the given vector to this vector.
     fn add_assign(&mut self, vector: &Self) {
         self.v[0] += vector.v[0];
@@ -293,7 +325,7 @@ impl ops::AddAssign<&Vector3D> for Vector3D {
     }
 }
 
-impl ops::SubAssign<&Vector3D> for Vector3D {
+impl ops::SubAssign<&Self> for Vector3D {
     /// Subtracts the given vector from this vector.
     fn sub_assign(&mut self, vector: &Self) {
         self.v[0] -= vector.v[0];
@@ -311,7 +343,7 @@ impl ops::MulAssign<f32> for Vector3D {
     }
 }
 
-impl ops::MulAssign<&Vector3D> for Vector3D {
+impl ops::MulAssign<&Self> for Vector3D {
     /// Multiplies the components of this vector by the corresponding components in vector.
     ///
     /// Note: this is not the same as the `cross_product()` of this vector and vector.
@@ -331,7 +363,7 @@ impl ops::DivAssign<f32> for Vector3D {
     }
 }
 
-impl ops::DivAssign<&Vector3D> for Vector3D {
+impl ops::DivAssign<&Self> for Vector3D {
     /// Divides the components of this vector by the corresponding components in vector.
     fn div_assign(&mut self, vector: &Self) {
         self.v[0] /= vector.v[0];
@@ -362,13 +394,13 @@ impl ops::IndexMut<usize> for Vector3D {
     }
 }
 
-impl ops::Add<&Vector3D> for Vector3D {
-    type Output = Vector3D;
+impl ops::Add<&Self> for Vector3D {
+    type Output = Self;
 
-    /// Returns a Vector3D object that is the sum of the given vectors,
+    /// Returns a `Vector3D` object that is the sum of the given vectors,
     /// each component is added separately.
-    fn add(self, vector: &Vector3D) -> Self::Output {
-        Vector3D::from(
+    fn add(self, vector: &Self) -> Self::Output {
+        Self::from(
             self.v[0] + vector.v[0],
             self.v[1] + vector.v[1],
             self.v[2] + vector.v[2],
@@ -379,7 +411,7 @@ impl ops::Add<&Vector3D> for Vector3D {
 impl ops::Add<&Vector3D> for &Vector3D {
     type Output = Vector3D;
 
-    /// Returns a Vector3D object that is the sum of the given vectors,
+    /// Returns a `Vector3D` object that is the sum of the given vectors,
     /// each component is added separately.
     fn add(self, vector: &Vector3D) -> Self::Output {
         Vector3D::from(
@@ -390,13 +422,13 @@ impl ops::Add<&Vector3D> for &Vector3D {
     }
 }
 
-impl ops::Sub<&Vector3D> for Vector3D {
-    type Output = Vector3D;
+impl ops::Sub<&Self> for Vector3D {
+    type Output = Self;
 
-    /// Returns a Vector3D object that is formed by subtracting vector from self;
+    /// Returns a `Vector3D` object that is formed by subtracting vector from self;
     /// each component is subtracted separately.
-    fn sub(self, vector: &Vector3D) -> Self::Output {
-        Vector3D::from(
+    fn sub(self, vector: &Self) -> Self::Output {
+        Self::from(
             self.v[0] - vector.v[0],
             self.v[1] - vector.v[1],
             self.v[2] - vector.v[2],
@@ -407,7 +439,7 @@ impl ops::Sub<&Vector3D> for Vector3D {
 impl ops::Sub<&Vector3D> for &Vector3D {
     type Output = Vector3D;
 
-    /// Returns a Vector3D object that is formed by subtracting vector from self;
+    /// Returns a `Vector3D` object that is formed by subtracting vector from self;
     /// each component is subtracted separately.
     fn sub(self, vector: &Vector3D) -> Self::Output {
         Vector3D::from(
@@ -421,7 +453,7 @@ impl ops::Sub<&Vector3D> for &Vector3D {
 impl ops::Neg for &Vector3D {
     type Output = Vector3D;
 
-    /// Returns a Vector3D object that is formed by changing the sign of all three components
+    /// Returns a `Vector3D` object that is formed by changing the sign of all three components
     /// of the given vector.
     ///
     /// Equivalent to Vector3D(0, 0, 0) - vector.
@@ -440,11 +472,11 @@ impl ops::Mul<&Vector3D> for f32 {
 }
 
 impl ops::Mul<f32> for Vector3D {
-    type Output = Vector3D;
+    type Output = Self;
 
     /// Returns a copy of the given vector, multiplied by the given factor.
     fn mul(self, factor: f32) -> Self::Output {
-        Vector3D::from(self.v[0] * factor, self.v[1] * factor, self.v[2] * factor)
+        Self::from(self.v[0] * factor, self.v[1] * factor, self.v[2] * factor)
     }
 }
 
@@ -457,14 +489,14 @@ impl ops::Mul<f32> for &Vector3D {
     }
 }
 
-impl ops::Mul<&Vector3D> for Vector3D {
-    type Output = Vector3D;
+impl ops::Mul<&Self> for Vector3D {
+    type Output = Self;
 
     /// Multiplies the components of self by the corresponding components in vector.
     ///
     /// Note: this is not the same as the `cross_product()` of self and vector.
-    fn mul(self, vector: &Vector3D) -> Self::Output {
-        Vector3D::from(
+    fn mul(self, vector: &Self) -> Self::Output {
+        Self::from(
             self.v[0] * vector.v[0],
             self.v[1] * vector.v[1],
             self.v[2] * vector.v[2],
@@ -488,13 +520,13 @@ impl ops::Mul<&Vector3D> for &Vector3D {
 }
 
 impl ops::Div<f32> for Vector3D {
-    type Output = Vector3D;
+    type Output = Self;
 
-    /// Returns the Vector3D object formed by dividing all three components
+    /// Returns the `Vector3D` object formed by dividing all three components
     /// of the given vector by the given divisor.
     fn div(self, divisor: f32) -> Self::Output {
         assert!(divisor != 0.0);
-        Vector3D::from(
+        Self::from(
             self.v[0] / divisor,
             self.v[1] / divisor,
             self.v[2] / divisor,
@@ -505,7 +537,7 @@ impl ops::Div<f32> for Vector3D {
 impl ops::Div<f32> for &Vector3D {
     type Output = Vector3D;
 
-    /// Returns the Vector3D object formed by dividing all three components
+    /// Returns the `Vector3D` object formed by dividing all three components
     /// of the given vector by the given divisor.
     fn div(self, divisor: f32) -> Self::Output {
         assert!(divisor != 0.0);
@@ -517,16 +549,16 @@ impl ops::Div<f32> for &Vector3D {
     }
 }
 
-impl ops::Div<&Vector3D> for Vector3D {
-    type Output = Vector3D;
+impl ops::Div<&Self> for Vector3D {
+    type Output = Self;
 
-    /// Returns the Vector3D object formed by dividing components of the given vector
+    /// Returns the `Vector3D` object formed by dividing components of the given vector
     /// by a respective components of the given divisor.
-    fn div(self, vector: &Vector3D) -> Self::Output {
+    fn div(self, vector: &Self) -> Self::Output {
         assert!(vector.v[0] != 0.0);
         assert!(vector.v[1] != 0.0);
         assert!(vector.v[2] != 0.0);
-        Vector3D::from(
+        Self::from(
             self.v[0] / vector.v[0],
             self.v[1] / vector.v[1],
             self.v[2] / vector.v[2],
@@ -537,7 +569,7 @@ impl ops::Div<&Vector3D> for Vector3D {
 impl ops::Div<&Vector3D> for &Vector3D {
     type Output = Vector3D;
 
-    /// Returns the Vector3D object formed by dividing components of the given vector
+    /// Returns the `Vector3D` object formed by dividing components of the given vector
     /// by a respective components of the given divisor.
     fn div(self, vector: &Vector3D) -> Self::Output {
         assert!(vector.v[0] != 0.0);

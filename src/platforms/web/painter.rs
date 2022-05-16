@@ -13,6 +13,7 @@ pub struct Painter {
 }
 
 impl Painter {
+    #[must_use]
     pub fn new(canvas: HtmlCanvasElement, ctx: CanvasRenderingContext2d) -> Self {
         Self { canvas, ctx }
     }
@@ -34,8 +35,8 @@ impl PainterTrait for Painter {
         self.ctx.clear_rect(
             0.0,
             0.0,
-            self.canvas.width() as f64,
-            self.canvas.height() as f64,
+            f64::from(self.canvas.width()),
+            f64::from(self.canvas.height()),
         );
     }
 
@@ -79,13 +80,15 @@ pub struct Path {
 }
 
 impl Path {
+    #[must_use]
     pub fn new() -> Self {
         // TODO(Shaohua): Add error type.
         let path2d = Path2d::new().unwrap();
         Self { path2d }
     }
 
-    /// Get inner Path2D object.
+    /// Get inner `Path2D` object.
+    #[must_use]
     pub fn path2d(&self) -> &Path2d {
         &self.path2d
     }

@@ -20,11 +20,13 @@ pub struct Margins {
 
 impl Margins {
     /// Constructs a margins object with all margins set to 0.
+    #[must_use]
     pub fn new() -> Self {
         Self::from(0, 0, 0, 0)
     }
 
     /// Constructs margins with the given `left`, `top`, `right`, `bottom`
+    #[must_use]
     pub fn from(top: i32, right: i32, bottom: i32, left: i32) -> Self {
         Self {
             top,
@@ -35,21 +37,25 @@ impl Margins {
     }
 
     /// Returns the bottom margin.
+    #[must_use]
     pub fn bottom(&self) -> i32 {
         self.bottom
     }
 
     /// Returns true if all margins are is 0; otherwise returns false.
+    #[must_use]
     pub fn is_null(&self) -> bool {
         self.top == 0 && self.right == 0 && self.bottom == 0 && self.left == 0
     }
 
     /// Returns the left margin.
+    #[must_use]
     pub fn left(&self) -> i32 {
         self.left
     }
 
     /// Returns the right margin.
+    #[must_use]
     pub fn right(&self) -> i32 {
         self.right
     }
@@ -75,6 +81,7 @@ impl Margins {
     }
 
     /// Returns the top margin.
+    #[must_use]
     pub fn top(&self) -> i32 {
         self.top
     }
@@ -93,16 +100,16 @@ impl ops::MulAssign<i32> for Margins {
 impl ops::MulAssign<f64> for Margins {
     /// Multiplies each component of this object by factor.
     fn mul_assign(&mut self, factor: f64) {
-        self.top = (self.top as f64 * factor).round() as i32;
-        self.right = (self.right as f64 * factor).round() as i32;
-        self.bottom = (self.bottom as f64 * factor).round() as i32;
-        self.left = (self.left as f64 * factor).round() as i32;
+        self.top = (f64::from(self.top) * factor).round() as i32;
+        self.right = (f64::from(self.right) * factor).round() as i32;
+        self.bottom = (f64::from(self.bottom) * factor).round() as i32;
+        self.left = (f64::from(self.left) * factor).round() as i32;
     }
 }
 
-impl ops::AddAssign<&Margins> for Margins {
+impl ops::AddAssign<&Self> for Margins {
     /// Add each component of margins to the respective component of this object.
-    fn add_assign(&mut self, other: &Margins) {
+    fn add_assign(&mut self, other: &Self) {
         self.top += other.top;
         self.right += other.right;
         self.bottom += other.bottom;
@@ -120,9 +127,9 @@ impl ops::AddAssign<i32> for Margins {
     }
 }
 
-impl ops::SubAssign<&Margins> for Margins {
+impl ops::SubAssign<&Self> for Margins {
     /// Subtract each component of margins from the respective component of this object.
-    fn sub_assign(&mut self, other: &Margins) {
+    fn sub_assign(&mut self, other: &Self) {
         self.top -= other.top;
         self.right -= other.right;
         self.bottom -= other.bottom;
@@ -155,10 +162,10 @@ impl ops::DivAssign<f64> for Margins {
     /// Divides each component of this object by `divisor`.
     fn div_assign(&mut self, divisor: f64) {
         assert!(divisor != 0.0);
-        self.top = (self.top as f64 / divisor).round() as i32;
-        self.right = (self.right as f64 / divisor).round() as i32;
-        self.bottom = (self.bottom as f64 / divisor).round() as i32;
-        self.left = (self.left as f64 / divisor).round() as i32;
+        self.top = (f64::from(self.top) / divisor).round() as i32;
+        self.right = (f64::from(self.right) / divisor).round() as i32;
+        self.bottom = (f64::from(self.bottom) / divisor).round() as i32;
+        self.left = (f64::from(self.left) / divisor).round() as i32;
     }
 }
 
@@ -208,7 +215,7 @@ impl ops::Sub<&Margins> for &Margins {
 impl ops::Sub<i32> for &Margins {
     type Output = Margins;
 
-    /// Returns a QMargins object that is formed by subtracting `subtracted` from self.
+    /// Returns a `QMargins` object that is formed by subtracting `subtracted` from self.
     fn sub(self, subtrahend: i32) -> Margins {
         Margins {
             top: self.top - subtrahend,
@@ -222,7 +229,7 @@ impl ops::Sub<i32> for &Margins {
 impl ops::Div<i32> for &Margins {
     type Output = Margins;
 
-    /// Returns a QMargins object that is formed by dividing the components of the given margins by the given `divisor`.
+    /// Returns a `QMargins` object that is formed by dividing the components of the given margins by the given `divisor`.
     fn div(self, divisor: i32) -> Margins {
         assert!(divisor != 0);
         Margins {
@@ -234,7 +241,7 @@ impl ops::Div<i32> for &Margins {
     }
 }
 
-/// The MarginsF class defines the four margins of a rectangle.
+/// The `MarginsF` class defines the four margins of a rectangle.
 ///
 /// Margin defines a set of four margins; left, top, right and bottom, that describe
 /// the size of the borders surrounding a rectangle.
@@ -249,11 +256,13 @@ pub struct MarginsF {
 
 impl MarginsF {
     /// Constructs a margins object with all margins set to 0.
+    #[must_use]
     pub fn new() -> Self {
         Self::from(0.0, 0.0, 0.0, 0.0)
     }
 
     /// Constructs margins with the given `left`, `top`, `right`, `bottom`
+    #[must_use]
     pub fn from(top: f64, right: f64, bottom: f64, left: f64) -> Self {
         Self {
             top,
@@ -264,21 +273,25 @@ impl MarginsF {
     }
 
     /// Returns the bottom margin.
+    #[must_use]
     pub fn bottom(&self) -> f64 {
         self.bottom
     }
 
     /// Returns true if all margins are is 0; otherwise returns false.
+    #[must_use]
     pub fn is_null(&self) -> bool {
         self.top == 0.0 && self.right == 0.0 && self.bottom == 0.0 && self.left == 0.0
     }
 
     /// Returns the left margin.
+    #[must_use]
     pub fn left(&self) -> f64 {
         self.left
     }
 
     /// Returns the right margin.
+    #[must_use]
     pub fn right(&self) -> f64 {
         self.right
     }
@@ -304,6 +317,7 @@ impl MarginsF {
     }
 
     /// Returns the top margin.
+    #[must_use]
     pub fn top(&self) -> f64 {
         self.top
     }
@@ -319,9 +333,9 @@ impl ops::MulAssign<f64> for MarginsF {
     }
 }
 
-impl ops::AddAssign<&MarginsF> for MarginsF {
+impl ops::AddAssign<&Self> for MarginsF {
     /// Add each component of margins to the respective component of this object.
-    fn add_assign(&mut self, other: &MarginsF) {
+    fn add_assign(&mut self, other: &Self) {
         self.top += other.top;
         self.right += other.right;
         self.bottom += other.bottom;
@@ -339,9 +353,9 @@ impl ops::AddAssign<f64> for MarginsF {
     }
 }
 
-impl ops::SubAssign<&MarginsF> for MarginsF {
+impl ops::SubAssign<&Self> for MarginsF {
     /// Subtract each component of margins from the respective component of this object.
-    fn sub_assign(&mut self, other: &MarginsF) {
+    fn sub_assign(&mut self, other: &Self) {
         self.top -= other.top;
         self.right -= other.right;
         self.bottom -= other.bottom;
@@ -401,7 +415,7 @@ impl ops::Add<f64> for &MarginsF {
 impl ops::Sub<&MarginsF> for &MarginsF {
     type Output = MarginsF;
 
-    /// Returns a MarginsF object that is formed by subtracting `other` from self;
+    /// Returns a `MarginsF` object that is formed by subtracting `other` from self;
     /// each component is subtracted separately.
     fn sub(self, other: &MarginsF) -> MarginsF {
         MarginsF {
@@ -416,7 +430,7 @@ impl ops::Sub<&MarginsF> for &MarginsF {
 impl ops::Sub<f64> for &MarginsF {
     type Output = MarginsF;
 
-    /// Returns a QMarginsF object that is formed by subtracting `subtracted` from self.
+    /// Returns a `QMarginsF` object that is formed by subtracting `subtracted` from self.
     fn sub(self, subtrahend: f64) -> MarginsF {
         MarginsF {
             top: self.top - subtrahend,
@@ -430,7 +444,7 @@ impl ops::Sub<f64> for &MarginsF {
 impl ops::Div<f64> for &MarginsF {
     type Output = MarginsF;
 
-    /// Returns a QMarginsF object that is formed by dividing the components of the given margins by the given `divisor`.
+    /// Returns a `QMarginsF` object that is formed by dividing the components of the given margins by the given `divisor`.
     fn div(self, divisor: f64) -> MarginsF {
         assert!(divisor != 0.0);
         MarginsF {

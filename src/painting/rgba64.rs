@@ -59,11 +59,13 @@ impl ops::Shr<Shifts> for u64 {
 
 impl Rgba64 {
     /// Returns the Rgba64 with rgba = 0.
+    #[must_use]
     pub fn new() -> Self {
         Self { rgba: 0 }
     }
 
     /// Constructs a Rgba64 value from the 32bit ARGB value rgb.
+    #[must_use]
     pub fn from_argb32(rgb: u32) -> Self {
         Self::from_rgba(
             (rgb >> 16) as u8,
@@ -74,74 +76,92 @@ impl Rgba64 {
     }
 
     /// Returns rgba as a Rgba64 struct.
+    #[must_use]
     pub fn from_u64(rgba: u64) -> Self {
         Self { rgba }
     }
 
     /// Returns the Rgba64 quadruplet (red, green, blue, alpha).
+    #[must_use]
     pub fn from_rgba64(red: u16, green: u16, blue: u16, alpha: u16) -> Self {
         Self::from_u64(
-            (red as u64) << Shifts::RedShift
-                | (green as u64) << Shifts::GreenShift
-                | (blue as u64) << Shifts::BlueShift
-                | (alpha as u64) << Shifts::AlphaShift,
+            u64::from(red) << Shifts::RedShift
+                | u64::from(green) << Shifts::GreenShift
+                | u64::from(blue) << Shifts::BlueShift
+                | u64::from(alpha) << Shifts::AlphaShift,
         )
     }
 
     /// Constructs a Rgba64 value from the four 8-bit color channels red, green, blue and alpha.
+    #[must_use]
     pub fn from_rgba(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
-        let mut rgba64 = Self::from_rgba64(red as u16, green as u16, blue as u16, alpha as u16);
+        let mut rgba64 = Self::from_rgba64(
+            u16::from(red),
+            u16::from(green),
+            u16::from(blue),
+            u16::from(alpha),
+        );
         // Expand the range so that 0x00 maps to 0x0000 and 0xff maps to 0xffff.
         rgba64.rgba |= rgba64.rgba << 8;
-        return rgba64;
+        rgba64
     }
 
     /// Constructs a Rgba64 value from the four 8-bit color channels red, green and blue.
+    #[must_use]
     pub fn from_rgb(red: u8, green: u8, blue: u8) -> Self {
         Self::from_rgba(red, green, blue, u8::MAX)
     }
 
     /// Returns the alpha channel as an 8-bit.
+    #[must_use]
     pub fn alpha8(&self) -> u8 {
         div_257(self.alpha())
     }
 
     /// Returns the alpha channel as an 16-bit.
+    #[must_use]
     pub fn alpha(&self) -> u16 {
         (self.rgba >> Shifts::AlphaShift) as u16
     }
 
     /// Returns the blue color component as an 8-bit.
+    #[must_use]
     pub fn blue8(&self) -> u8 {
         div_257(self.blue())
     }
 
     /// Returns the 16-bit blue color component.
+    #[must_use]
     pub fn blue(&self) -> u16 {
         (self.rgba >> Shifts::BlueShift) as u16
     }
 
     /// Returns the green color component as an 8-bit.
+    #[must_use]
     pub fn green8(&self) -> u8 {
         div_257(self.green())
     }
 
     /// Returns the 16-bit green color component.
+    #[must_use]
     pub fn green(&self) -> u16 {
         (self.rgba >> Shifts::GreenShift) as u16
     }
 
     /// Returns whether the color is fully opaque.
+    #[must_use]
     pub fn is_opaque(&self) -> bool {
         (self.rgba & Self::alpha_mask()) == Self::alpha_mask()
     }
 
     /// Returns whether the color is transparent.
+    #[must_use]
     pub fn is_transparent(&self) -> bool {
         (self.rgba & Self::alpha_mask()) == 0
     }
 
     /// Returns the color with the alpha premultiplied.
+    #[must_use]
     pub fn premultiplied(&self) -> Self {
         if self.is_opaque() {
             return *self;
@@ -150,11 +170,11 @@ impl Rgba64 {
             return Self::from_u64(0);
         }
 
-        let a = self.alpha() as u64;
-        let mut br = (self.rgba & 0xffff0000ffff_u64) * a;
-        let mut ag = ((self.rgba >> 16) & 0xffff0000ffff_u64) * a;
-        br = br + ((br >> 16) & 0xffff0000ffff_u64) + 0x800000008000_u64;
-        ag = ag + ((ag >> 16) & 0xffff0000ffff_u64) + 0x800000008000_u64;
+        let a = u64::from(self.alpha());
+        let mut br = (self.rgba & 0xffff_0000_ffff_u64) * a;
+        let mut ag = ((self.rgba >> 16) & 0xffff_0000_ffff_u64) * a;
+        br = br + ((br >> 16) & 0xffff_0000_ffff_u64) + 0x8000_0000_8000_u64;
+        ag = ag + ((ag >> 16) & 0xffff_0000_ffff_u64) + 0x8000_0000_8000_u64;
 
         #[cfg(target_endian = "big")]
         {
@@ -165,18 +185,20 @@ impl Rgba64 {
 
         #[cfg(target_endian = "little")]
         {
-            br = (br >> 16) & 0xffff0000ffff_u64;
-            ag = ag & 0xffff0000_u64;
-            return Self::from_u64((a << 48) | br | ag);
+            br = (br >> 16) & 0xffff_0000_ffff_u64;
+            ag &= 0xffff_0000_u64;
+            Self::from_u64((a << 48) | br | ag)
         }
     }
 
     /// Returns the red color component as an 8-bit.
+    #[must_use]
     pub fn red8(&self) -> u8 {
         div_257(self.red())
     }
 
     /// Returns the 16-bit red color component.
+    #[must_use]
     pub fn red(&self) -> u16 {
         (self.rgba >> Shifts::RedShift) as u16
     }
@@ -184,25 +206,25 @@ impl Rgba64 {
     /// Sets the alpha of this color to alpha.
     pub fn set_alpha(&mut self, alpha: u16) {
         self.rgba = (self.rgba & !(0xffff_u64 << Shifts::AlphaShift))
-            | ((alpha as u64) << Shifts::AlphaShift);
+            | (u64::from(alpha) << Shifts::AlphaShift);
     }
 
     /// Sets the blue color component of this color to blue.
     pub fn set_blue(&mut self, blue: u16) {
-        self.rgba =
-            (self.rgba & !(0xffff_u64 << Shifts::BlueShift)) | ((blue as u64) << Shifts::BlueShift);
+        self.rgba = (self.rgba & !(0xffff_u64 << Shifts::BlueShift))
+            | (u64::from(blue) << Shifts::BlueShift);
     }
 
     /// Sets the green color component of this color to green.
     pub fn set_green(&mut self, green: u16) {
         self.rgba = (self.rgba & !(0xffff_u64 << Shifts::GreenShift))
-            | ((green as u64) << Shifts::GreenShift);
+            | (u64::from(green) << Shifts::GreenShift);
     }
 
     /// Sets the red color component of this color to red.
     pub fn set_red(&mut self, red: u16) {
         self.rgba =
-            (self.rgba & !(0xffff_u64 << Shifts::RedShift)) | ((red as u64) << Shifts::RedShift);
+            (self.rgba & !(0xffff_u64 << Shifts::RedShift)) | (u64::from(red) << Shifts::RedShift);
     }
 
     /// Sets the internal rgba value.
@@ -211,24 +233,28 @@ impl Rgba64 {
     }
 
     /// Returns the color as a 32-bit ARGB value.
+    #[must_use]
     pub fn to_argb32(&self) -> u32 {
-        ((self.alpha8() as u32) << 24)
-            | ((self.red8() as u32) << 16)
-            | ((self.green8() as u32) << 8)
-            | (self.blue8() as u32)
+        (u32::from(self.alpha8()) << 24)
+            | (u32::from(self.red8()) << 16)
+            | (u32::from(self.green8()) << 8)
+            | u32::from(self.blue8())
     }
 
     /// Returns the color as a 16-bit RGB value.
+    #[must_use]
     pub fn to_rgb16(&self) -> u16 {
         (self.red() & 0xf800_u16) | ((self.green() >> 10) << 5) | (self.blue() >> 11)
     }
 
     /// Returns the color as a 64bit unsigned integer
+    #[must_use]
     pub fn to_u64(&self) -> u64 {
         self.rgba
     }
 
     /// Returns the color with the alpha unpremultiplied.
+    #[must_use]
     pub fn unpremultiplied(&self) -> Self {
         #[cfg(target_pointer_width = "32")]
         return self.unpremultiplied_32bit();
@@ -242,11 +268,11 @@ impl Rgba64 {
         if self.is_opaque() || self.is_transparent() {
             return *self;
         }
-        let a = self.alpha() as u32;
-        let r = ((self.red() as u32 * 0xffff_u32 + a / 2) / a) as u16;
-        let g = ((self.green() as u32 * 0xffff_u32 + a / 2) / a) as u16;
-        let b = ((self.blue() as u32 * 0xffff_u32 + a / 2) / a) as u16;
-        return Self::from_rgba64(r, g, b, a as u16);
+        let a = u32::from(self.alpha());
+        let r = ((u32::from(self.red()) * 0xffff_u32 + a / 2) / a) as u16;
+        let g = ((u32::from(self.green()) * 0xffff_u32 + a / 2) / a) as u16;
+        let b = ((u32::from(self.blue()) * 0xffff_u32 + a / 2) / a) as u16;
+        Self::from_rgba64(r, g, b, a as u16)
     }
 
     #[allow(dead_code)]
@@ -254,12 +280,12 @@ impl Rgba64 {
         if self.is_opaque() || self.is_transparent() {
             return *self;
         }
-        let a = self.alpha() as u64;
-        let fa = (0xffff00008000_u64 + a / 2) / a;
-        let r = ((self.red() as u64 * fa + 0x80000000_u64) >> 32) as u16;
-        let g = ((self.green() as u64 * fa + 0x80000000_u64) >> 32) as u16;
-        let b = ((self.blue() as u64 * fa + 0x80000000_u64) >> 32) as u16;
-        return Self::from_rgba64(r, g, b, a as u16);
+        let a = u64::from(self.alpha());
+        let fa = (0xffff_0000_8000_u64 + a / 2) / a;
+        let r = ((u64::from(self.red()) * fa + 0x8000_0000_u64) >> 32) as u16;
+        let g = ((u64::from(self.green()) * fa + 0x8000_0000_u64) >> 32) as u16;
+        let b = ((u64::from(self.blue()) * fa + 0x8000_0000_u64) >> 32) as u16;
+        Self::from_rgba64(r, g, b, a as u16)
     }
 
     #[inline]

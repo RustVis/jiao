@@ -21,6 +21,7 @@ pub struct PaintDevice {
 }
 
 impl PaintDevice {
+    #[must_use]
     pub fn new(dom: HtmlElement) -> Self {
         let window: Window = web_sys::window().unwrap();
         let document: Document = window.document().unwrap();
@@ -44,6 +45,7 @@ impl PaintDevice {
         unimplemented!()
     }
 
+    #[must_use]
     pub fn size(&self) -> Size {
         Size::from(self.canvas.width() as i32, self.canvas.height() as i32)
     }

@@ -12,6 +12,7 @@ pub struct ShapeManager {
 }
 
 impl ShapeManager {
+    #[must_use]
     pub fn new() -> Self {
         Self { shapes: Vec::new() }
     }
@@ -24,7 +25,7 @@ impl ShapeManager {
 impl ShapeManager {
     pub fn update(&mut self, painter: &mut dyn PainterTrait) {
         log::info!("ShapeManager::update()");
-        for shape in self.shapes.iter_mut() {
+        for shape in &mut self.shapes {
             shape.repaint(painter);
         }
     }

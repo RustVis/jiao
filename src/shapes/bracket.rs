@@ -20,6 +20,7 @@ pub struct BracketShape {
 
 impl BracketShape {
     /// Create a new bracket.
+    #[must_use]
     pub fn new(
         size: SizeF,
         handle_base: Option<PointF>,
@@ -40,18 +41,21 @@ impl BracketShape {
     }
 
     /// Create a new square bracket.
+    #[must_use]
     pub fn new_square_bracket() -> Self {
         let size = SizeF::from(18.0, 124.0);
         Self::new(size, None, 0.0, 0.0)
     }
 
     /// Create a new rounded square bracket.
+    #[must_use]
     pub fn new_rounded_square_bracket() -> Self {
         let size = SizeF::from(18.0, 124.0);
         Self::new(size, None, 0.0, 17.28)
     }
 
     /// Create a new indented square bracket.
+    #[must_use]
     pub fn new_indented_square_bracket() -> Self {
         let size = SizeF::from(30.0, 124.0);
         let handle_base = PointF::from(-30.0, 124.0 / 2.0);
@@ -59,6 +63,7 @@ impl BracketShape {
     }
 
     /// Create a new straight curly bracket.
+    #[must_use]
     pub fn new_straight_curly_bracket() -> Self {
         let size = SizeF::from(30.0, 124.0);
         let handle_base = PointF::from(-30.0, 124.0 / 2.0);
@@ -66,6 +71,7 @@ impl BracketShape {
     }
 
     /// Create a new curly bracket.
+    #[must_use]
     pub fn new_curly_bracket() -> Self {
         let size = SizeF::from(30.0, 124.0);
         let handle_base = PointF::from(-30.0, 124.0 / 2.0);
@@ -73,6 +79,7 @@ impl BracketShape {
     }
 
     /// Get bracket size.
+    #[must_use]
     pub fn size(&self) -> SizeF {
         self.size
     }
@@ -84,8 +91,9 @@ impl BracketShape {
     }
 
     /// Get bracket handle base point.
+    #[must_use]
     pub fn handle_base(&self) -> Option<PointF> {
-        self.handle_base.clone()
+        self.handle_base
     }
 
     /// Update bracket handle base point.
@@ -95,6 +103,7 @@ impl BracketShape {
     }
 
     /// Get handle width.
+    #[must_use]
     pub fn handle_width(&self) -> f64 {
         self.handle_width
     }
@@ -108,6 +117,7 @@ impl BracketShape {
     }
 
     /// Get corner radius.
+    #[must_use]
     pub fn corner_radius(&self) -> f64 {
         self.corner_radius
     }

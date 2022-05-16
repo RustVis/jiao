@@ -11,6 +11,6 @@ pub trait PaintContextTrait {
     /// Schedule a repaint operation.
     fn update(&mut self);
 
-    /// Get a mutable reference to internal shape_manager object.
+    /// Get a mutable reference to internal `shape_manager` object.
     fn shape_manager(&mut self) -> &mut ShapeManager;
 }

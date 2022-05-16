@@ -14,7 +14,7 @@ use crate::base::Rect;
 /// Region is the best tool for minimizing the amount of screen area to be updated by a repaint.
 ///
 /// This class is not suitable for constructing shapes for rendering, especially as outlines.
-/// Use PainterPath to create paths and shapes for use with Painter.
+/// Use `PainterPath` to create paths and shapes for use with Painter.
 #[derive(Debug, Clone)]
 pub struct Region {
     num_rects: usize,
@@ -35,6 +35,7 @@ pub enum RegionType {
 
 impl Region {
     /// Constructs an empty region.
+    #[must_use]
     pub fn new() -> Self {
         Self {
             num_rects: 0,
@@ -48,6 +49,7 @@ impl Region {
     /// Create a region based on the rectangle `rect`.
     ///
     /// If the rectangle is invalid a null region will be created.
+    #[must_use]
     pub fn with_rect(rect: &Rect) -> Self {
         Self::with_rect_type(rect, RegionType::Rectangle)
     }
@@ -55,6 +57,7 @@ impl Region {
     /// Create a region based on the rectangle `rect` with region type t.
     ///
     /// If the rectangle is invalid a null region will be created.
+    #[must_use]
     pub fn with_rect_type(_rect: &Rect, _t: RegionType) -> Self {
         unimplemented!()
     }
@@ -63,6 +66,7 @@ impl Region {
     ///
     /// If t is Rectangle, the region is the filled rectangle (x, y, w, h).
     /// If t is Ellipse, the region is the filled ellipse with center at (x + w / 2, y + h / 2) and size (w ,h).
+    #[must_use]
     pub fn with_int4(x: i32, y: i32, width: i32, height: i32) -> Self {
         Self::with_int4_type(x, y, width, height, RegionType::Rectangle)
     }
@@ -71,6 +75,7 @@ impl Region {
     ///
     /// If t is Rectangle, the region is the filled rectangle (x, y, w, h).
     /// If t is Ellipse, the region is the filled ellipse with center at (x + w / 2, y + h / 2) and size (w ,h).
+    #[must_use]
     pub fn with_int4_type(x: i32, y: i32, width: i32, height: i32, t: RegionType) -> Self {
         Self::with_rect_type(&Rect::from(x, y, width, height), t)
     }
@@ -78,31 +83,37 @@ impl Region {
     /// Returns the bounding rectangle of this region.
     ///
     /// An empty region gives a rectangle that is `Rect::is_null()`.
+    #[must_use]
     pub fn bounding_rect(&self) -> Rect {
         unimplemented!()
     }
 
     /// Returns true if the region contains the point; otherwise returns false.
+    #[must_use]
     pub fn contains_point(&self, _point: &Point) -> bool {
         unimplemented!()
     }
 
     /// Returns true if the region overlaps the rectangle; otherwise returns false.
+    #[must_use]
     pub fn contains_rect(&self, _rect: &Rect) -> bool {
         unimplemented!()
     }
 
     /// Returns a region which is the intersection of this region and other.
+    #[must_use]
     pub fn intersected(&self, _other: &Self) -> Self {
         unimplemented!()
     }
 
     /// Returns a region which is the intersection of this region and the given rect.
+    #[must_use]
     pub fn intersected_rect(&self, _rect: &Rect) -> Self {
         unimplemented!()
     }
 
     /// Returns true if this region intersects with region, otherwise returns false.
+    #[must_use]
     pub fn intersects(&self, other: &Self) -> bool {
         if self.is_empty() || other.is_empty() {
             return false;
@@ -121,10 +132,11 @@ impl Region {
                 if (rect_intersects(myRect, otherRect))
                     return true;
         */
-        return false;
+        false
     }
 
     /// Returns true if this region intersects with rect, otherwise returns false.
+    #[must_use]
     pub fn intersects_rect(&self, _rect: &Rect) -> bool {
         unimplemented!()
     }
@@ -132,6 +144,7 @@ impl Region {
     /// Returns true if the region is empty; otherwise returns false.
     ///
     /// An empty region is a region that contains no points.
+    #[must_use]
     pub fn is_empty(&self) -> bool {
         self.num_rects == 0
     }
@@ -141,11 +154,13 @@ impl Region {
     /// An empty region is a region that contains no points.
     ///
     /// This function is the same as `is_empty`.
+    #[must_use]
     pub fn is_null(&self) -> bool {
         self.num_rects == 0
     }
 
     /// Returns the number of rectangles that this region is composed of.
+    #[must_use]
     pub fn rect_count(&self) -> usize {
         self.num_rects
     }
@@ -201,6 +216,7 @@ impl Region {
     }
 
     /// Returns a region which is `other` subtracted from this region.
+    #[must_use]
     pub fn subtracted(&self, _other: &Self) -> Self {
         unimplemented!()
     }
@@ -230,6 +246,7 @@ impl Region {
     /// relative to the current position.
     ///
     /// Positive values move the region to the right and down.
+    #[must_use]
     pub fn translated(&self, x: i32, y: i32) -> Self {
         let mut ret = self.clone();
         ret.translate(x, y);
@@ -240,21 +257,25 @@ impl Region {
     /// relative to the current position.
     ///
     /// Positive values move the rectangle to the right and down.
+    #[must_use]
     pub fn translated_point(&self, point: &Point) -> Self {
         self.translated(point.x(), point.y())
     }
 
     /// Returns a region which is the union of this region and other.
+    #[must_use]
     pub fn united(&self, _other: &Self) -> Self {
         unimplemented!()
     }
 
     /// Returns a region which is the union of this region and the given rect.
+    #[must_use]
     pub fn united_rect(&self, _rect: &Rect) -> Self {
         unimplemented!()
     }
 
     /// Returns a region which is the exclusive or (XOR) of this region and other.
+    #[must_use]
     pub fn xored(&self, _other: &Self) -> Self {
         unimplemented!()
     }
@@ -295,12 +316,12 @@ impl ops::BitAnd<&Rect> for &Region {
     }
 }
 
-impl ops::Add<&Region> for Region {
-    type Output = Region;
+impl ops::Add<&Self> for Region {
+    type Output = Self;
     /// Applies the united() function to this region and other.
     ///
     /// `r1 + r2` is equivalent to `r1.united(r2)`.
-    fn add(self, other: &Region) -> Region {
+    fn add(self, other: &Self) -> Self {
         self.united(other)
     }
 }
@@ -335,32 +356,32 @@ impl ops::Sub<&Region> for &Region {
     }
 }
 
-impl ops::AddAssign<&Region> for Region {
-    fn add_assign(&mut self, other: &Region) {
+impl ops::AddAssign<&Self> for Region {
+    fn add_assign(&mut self, other: &Self) {
         *self = self.united(other);
     }
 }
 
-impl ops::SubAssign<&Region> for Region {
-    fn sub_assign(&mut self, other: &Region) {
+impl ops::SubAssign<&Self> for Region {
+    fn sub_assign(&mut self, other: &Self) {
         *self = self.subtracted(other);
     }
 }
 
-impl ops::BitAndAssign<&Region> for Region {
-    fn bitand_assign(&mut self, other: &Region) {
+impl ops::BitAndAssign<&Self> for Region {
+    fn bitand_assign(&mut self, other: &Self) {
         *self = self.intersected(other);
     }
 }
 
-impl ops::BitOrAssign<&Region> for Region {
-    fn bitor_assign(&mut self, other: &Region) {
+impl ops::BitOrAssign<&Self> for Region {
+    fn bitor_assign(&mut self, other: &Self) {
         *self = self.united(other);
     }
 }
 
-impl ops::BitXorAssign<&Region> for Region {
-    fn bitxor_assign(&mut self, other: &Region) {
+impl ops::BitXorAssign<&Self> for Region {
+    fn bitxor_assign(&mut self, other: &Self) {
         *self = self.xored(other);
     }
 }

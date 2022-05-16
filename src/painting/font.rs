@@ -10,6 +10,7 @@ pub struct Font {
 }
 
 impl Font {
+    #[must_use]
     pub fn font_family(&self) -> Option<&String> {
         self.font_family.as_ref()
     }
@@ -22,6 +23,7 @@ impl Font {
         self.font_size = pixel_size;
     }
 
+    #[must_use]
     pub fn font_stretch(&self) -> f64 {
         self.font_stretch
     }

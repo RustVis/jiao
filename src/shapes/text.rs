@@ -14,6 +14,7 @@ pub struct TextShape {
 }
 
 impl TextShape {
+    #[must_use]
     pub fn new(text: String, container_rect: RectF) -> Self {
         Self {
             text,
@@ -23,6 +24,7 @@ impl TextShape {
     }
 
     /// Get text content.
+    #[must_use]
     pub fn text(&self) -> &str {
         &self.text
     }
@@ -36,6 +38,7 @@ impl TextShape {
     }
 
     /// Get container rectangle.
+    #[must_use]
     pub fn container_rect(&self) -> &RectF {
         &self.container_rect
     }

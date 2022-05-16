@@ -16,6 +16,7 @@ pub struct RectShape {
 
 impl RectShape {
     /// Create a square shape.
+    #[must_use]
     pub fn new_square(width: f64, center: PointF) -> Self {
         let mut rect = RectF::new();
         rect.set_width(width);
@@ -25,6 +26,7 @@ impl RectShape {
     }
 
     /// Create a general rect.
+    #[must_use]
     pub fn from_rect(rect: RectF) -> Self {
         let path = Path::new();
         Self {

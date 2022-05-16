@@ -67,7 +67,7 @@ pub enum AnimationState {
 /// By implementing `update_state()`, you can track the animation's state changes,
 /// which is particularly useful for animations that are not driven by time.
 pub trait AbstractAnimation {
-    /// AbstractAnimation emits this signal after the animation has stopped and has reached the end.
+    /// `AbstractAnimation` emits this signal after the animation has stopped and has reached the end.
     ///
     /// This signal is emitted after `state_changed()`.
     fn finished(&mut self);
@@ -82,7 +82,7 @@ pub trait AbstractAnimation {
     /// Resumes the animation after it was paused.
     ///
     /// When the animation is resumed, it emits the `resumed()` and `state_changed()` signals.
-    /// The current_time is not changed.
+    /// The `current_time` is not changed.
     fn resume(&mut self);
 
     /// If `paused` is true, the animation is paused. If `paused` is false, the animation is resumed.
@@ -117,7 +117,7 @@ pub trait AbstractAnimation {
     fn current_loop_time(&self) -> i32;
 
     /// This function returns the duration of the animation,
-    /// and defines for how long AbstractAnimation should update the current time.
+    /// and defines for how long `AbstractAnimation` should update the current time.
     ///
     /// This duration is local, and does not include the loop count.
     ///
@@ -126,8 +126,8 @@ pub trait AbstractAnimation {
     /// that are not time driven, or where you cannot easily predict its duration
     /// (e.g., event driven audio playback in a game).
     ///
-    /// If the animation is a parallel AnimationGroup, the duration will be the longest duration
-    /// of all its animations. If the animation is a sequential AnimationGroup,
+    /// If the animation is a parallel `AnimationGroup`, the duration will be the longest duration
+    /// of all its animations. If the animation is a sequential `AnimationGroup`,
     /// the duration will be the sum of the duration of all its animations.
     fn duration(&self) -> i32;
 
@@ -142,7 +142,7 @@ pub trait AbstractAnimation {
     /// and restart at current time 0, and current loop 1, and so on.
     fn current_loop(&self) -> i32;
 
-    /// AbstractAnimation emits this signal whenever the current loop changes.
+    /// `AbstractAnimation` emits this signal whenever the current loop changes.
     ///
     /// `current_loop` is the current loop.
     fn current_loop_changed(&mut self, current_loop: i32);
@@ -168,11 +168,11 @@ pub trait AbstractAnimation {
     /// By default, this property is set to `Forward`.
     fn direction(&self) -> AnimationDirection;
 
-    /// This function is called by AbstractAnimation when the direction of the animation is changed.
+    /// This function is called by `AbstractAnimation` when the direction of the animation is changed.
     /// The `direction` argument is the new direction.
     fn update_direction(&mut self, direction: AnimationDirection);
 
-    /// AbstractAnimation emits this signal whenever the direction has been changed.
+    /// `AbstractAnimation` emits this signal whenever the direction has been changed.
     /// `new_direction` is the new direction.
     fn direction_changed(&mut self, new_direction: AnimationDirection);
 
@@ -191,14 +191,14 @@ pub trait AbstractAnimation {
 
     /// This property describes the current state of the animation.
     ///
-    /// When the animation state changes, AbstractAnimation emits the `state_changed()` signal.
+    /// When the animation state changes, `AbstractAnimation` emits the `state_changed()` signal.
     fn state(&self) -> AnimationState;
 
-    /// This function is called by AbstractAnimation when the state of the animation is changed
+    /// This function is called by `AbstractAnimation` when the state of the animation is changed
     /// from `old_state` to `new_state`.
     fn update_state(&mut self, new_state: AnimationState, old_state: AnimationState);
 
-    /// AbstractAnimation emits this signal whenever the state of the animation has changed
+    /// `AbstractAnimation` emits this signal whenever the state of the animation has changed
     /// from `old_state` to `new_state`.
     ///
     /// This signal is emitted after the `update_state()` function is called.

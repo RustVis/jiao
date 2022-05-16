@@ -14,11 +14,11 @@ pub struct Rgb {
 }
 
 /// Masks RGB values.
-pub const RGB_MASK: Rgb = Rgb { rgb: 0x00ffffff };
+pub const RGB_MASK: Rgb = Rgb { rgb: 0x00ff_ffff };
 
 impl Default for Rgb {
     fn default() -> Self {
-        Rgb::new(0, 0, 0)
+        Self::new(0, 0, 0)
     }
 }
 
@@ -30,61 +30,71 @@ impl From<u32> for Rgb {
 
 impl Rgb {
     // Set RGB value.
+    #[must_use]
     pub fn new(red: u8, green: u8, blue: u8) -> Self {
         Self {
-            rgb: (0xff << 24) | ((red as u32) << 16) | ((green as u32) << 8) | (blue as u32),
+            rgb: (0xff << 24) | (u32::from(red) << 16) | (u32::from(green) << 8) | u32::from(blue),
         }
     }
 
     /// Set RGBA value.
+    #[must_use]
     pub fn with_alpha(red: u8, green: u8, blue: u8, alpha: u8) -> Self {
         Self {
-            rgb: ((alpha as u32) << 24)
-                | ((red as u32) << 16)
-                | ((green as u32) << 8)
-                | (blue as u32),
+            rgb: (u32::from(alpha) << 24)
+                | (u32::from(red) << 16)
+                | (u32::from(green) << 8)
+                | u32::from(blue),
         }
     }
 
     /// Get red part of RGB.
+    #[must_use]
     pub const fn red(&self) -> u8 {
         ((self.rgb >> 16) & 0xff) as u8
     }
 
     /// Get green part of RGB.
+    #[must_use]
     pub const fn green(&self) -> u8 {
         ((self.rgb >> 8) & 0xff) as u8
     }
 
     /// Get blue part of RGB.
+    #[must_use]
     pub const fn blue(&self) -> u8 {
         (self.rgb & 0xff) as u8
     }
 
     /// Get alpha part of RGB.
+    #[must_use]
     pub const fn alpha(&self) -> u8 {
         (self.rgb >> 24) as u8
     }
 
     /// Convert R,G,B to gray 0..255
+    #[must_use]
     pub fn int_to_gray(red: u8, green: u8, blue: u8) -> u8 {
-        return (red * 11 + green * 16 + blue * 5) / 32;
+        (red * 11 + green * 16 + blue * 5) / 32
     }
 
     /// Convert RGB to gray 0..255
+    #[must_use]
     pub fn to_gray(&self) -> u8 {
         Self::int_to_gray(self.red(), self.green(), self.blue())
     }
 
+    #[must_use]
     pub fn is_gray(&self) -> bool {
         self.red() == self.green() && self.red() == self.blue()
     }
 
+    #[must_use]
     pub fn premultiply(&self) -> Self {
-        let alpha = self.alpha() as u32;
-        let mut t = (self.rgb & 0xff00ff) * alpha;
-        t = (t + ((t >> 8) & 0xff00ff) + 0x800080) >> 8;
-        t &= 0xff00ff;
+        let alpha = u32::from(self.alpha());
+        let mut t = (self.rgb & 0x00ff_00ff) * alpha;
+        t = (t + ((t >> 8) & 0x00ff_00ff) + 0x0080_0080) >> 8;
+        t &= 0x00ff_00ff;
 
         let mut x = ((self.rgb >> 8) & 0xff) * alpha;
         x = x + ((x >> 8) & 0xff) + 0x80;
@@ -94,6 +104,7 @@ impl Rgb {
         }
     }
 
+    #[must_use]
     pub fn int(&self) -> u32 {
         self.rgb
     }
