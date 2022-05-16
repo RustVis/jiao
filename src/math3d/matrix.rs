@@ -38,6 +38,19 @@ impl Matrix {
         Self::identity()
     }
 
+    /// Constructs a matrix with the elements, `m11`, `m12`, `m21`, `m22`, `dx` and `dy`.
+    #[must_use]
+    pub const fn from(m11: f64, m12: f64, m21: f64, m22: f64, dx: f64, dy: f64) -> Self {
+        Self {
+            m11,
+            m12,
+            m21,
+            m22,
+            dx,
+            dy,
+        }
+    }
+
     /// Create an identity matrix.
     #[must_use]
     pub const fn identity() -> Self {
@@ -104,8 +117,24 @@ impl Matrix {
     ///
     /// Second value of pair is true if the matrix is invertible, otherwise it is set to false.
     #[must_use]
-    pub const fn inverted(&self) -> (Self, bool) {
-        todo!()
+    pub fn inverted(&self) -> (Self, bool) {
+        let dtr = self.determinant();
+        if dtr == 0.0 {
+            // singular matrix
+            (Matrix::new(), false)
+        } else {
+            // invertible matrix
+            let dinv = 1.0 / dtr;
+            let matrix = Self::from(
+                self.m22 * dinv,
+                -self.m12 * dinv,
+                -self.m21 * dinv,
+                self.m11 * dinv,
+                (self.m21 * self.dy - self.m22 * self.dx) * dinv,
+                (self.m12 * self.dx - self.m11 * self.dy) * dinv,
+            );
+            (matrix, true)
+        }
     }
 
     /// Returns true if the matrix is the identity matrix, otherwise returns false.
@@ -166,16 +195,16 @@ impl Matrix {
     /// If rotation or shearing has been specified, this function returns the bounding rectangle.
     #[must_use]
     pub fn map_rect(&self, rect: &RectF) -> RectF {
-        if (self.m12 == 0.0 && self.m21 == 0.0) {
+        if self.m12 == 0.0 && self.m21 == 0.0 {
             let mut x = self.m11 * rect.x() + self.dx;
             let mut y = self.m22 * rect.y() + self.dy;
             let mut w = self.m11 * rect.width();
             let mut h = self.m22 * rect.height();
-            if (w < 0.0) {
+            if w < 0.0 {
                 w = -w;
                 x -= w;
             }
-            if (h < 0.0) {
+            if h < 0.0 {
                 h = -h;
                 y -= h;
             }
@@ -220,7 +249,7 @@ impl Matrix {
     /// Rotates the coordinate system the given degrees counterclockwise.
     pub fn rotate(&mut self, degree: f64) -> &mut Self {
         // pi/180
-        const deg2rad: f64 = PI / 180.0;
+        const DEG2RAD: f64 = PI / 180.0;
         let mut sina = 0.0;
         let mut cosa = 0.0;
         if degree == 90.0 || degree == -270.0 {
@@ -231,7 +260,7 @@ impl Matrix {
             cosa = -1.0;
         } else {
             // convert to radians
-            let b = deg2rad * degree;
+            let b = DEG2RAD * degree;
             // fast and convenient
             sina = b.sin();
             cosa = b.cos();
@@ -301,15 +330,36 @@ impl ops::Mul<&Matrix> for &Matrix {
     /// Returns the result of multiplying this matrix by the given matrix.
     ///
     /// Note that matrix multiplication is not commutative, i.e. a*b != b*a.
-    fn mul(self, other: &Matrix) -> Self::Output {
-        todo!()
+    fn mul(self, m: &Matrix) -> Self::Output {
+        let tm11 = self.m11 * m.m11 + self.m12 * m.m21;
+        let tm12 = self.m11 * m.m12 + self.m12 * m.m22;
+        let tm21 = self.m21 * m.m11 + self.m22 * m.m21;
+        let tm22 = self.m21 * m.m12 + self.m22 * m.m22;
+
+        let tdx = self.dx * m.m11 + self.dy * m.m21 + m.dx;
+        let tdy = self.dx * m.m12 + self.dy * m.m22 + m.dy;
+
+        Matrix::from(tm11, tm12, tm21, tm22, tdx, tdy)
     }
 }
 
 impl ops::MulAssign<&Matrix> for Matrix {
     /// Returns the result of multiplying this matrix by the given matrix.
-    fn mul_assign(&mut self, other: &Matrix) {
-        todo!()
+    fn mul_assign(&mut self, m: &Matrix) {
+        let tm11 = self.m11 * m.m11 + self.m12 * m.m21;
+        let tm12 = self.m11 * m.m12 + self.m12 * m.m22;
+        let tm21 = self.m21 * m.m11 + self.m22 * m.m21;
+        let tm22 = self.m21 * m.m12 + self.m22 * m.m22;
+
+        let tdx = self.dx * m.m11 + self.dy * m.m21 + m.dx;
+        let tdy = self.dx * m.m12 + self.dy * m.m22 + m.dy;
+
+        self.m11 = tm11;
+        self.m12 = tm12;
+        self.m21 = tm21;
+        self.m22 = tm22;
+        self.dx = tdx;
+        self.dy = tdy;
     }
 }
 
@@ -318,7 +368,7 @@ impl ops::Mul<&Matrix> for PointF {
 
     /// This is the same as matrix.map(point).
     fn mul(self, matrix: &Matrix) -> Self::Output {
-        todo!()
+        matrix.map_point(self)
     }
 }
 
@@ -327,6 +377,6 @@ impl ops::Mul<&Matrix> for &LineF {
 
     /// This is the same as matrix.map(line).
     fn mul(self, matrix: &Matrix) -> Self::Output {
-        todo!()
+        matrix.map_line(self)
     }
 }
