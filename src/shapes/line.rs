@@ -8,6 +8,7 @@ use crate::base::{LineF, RectF};
 use crate::kernel::{PainterTrait, PathTrait};
 use crate::platforms::Path;
 
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug)]
 pub struct LineShape {
     line: LineF,
@@ -15,10 +16,16 @@ pub struct LineShape {
     path_is_dirty: bool,
 }
 
+impl Default for LineShape {
+    fn default() -> Self {
+        Self::from_points(PointF::new(), PointF::new())
+    }
+}
+
 impl LineShape {
     #[must_use]
     pub fn new() -> Self {
-        Self::from_points(PointF::new(), PointF::new())
+        Self::default()
     }
 
     #[must_use]

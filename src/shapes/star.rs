@@ -30,7 +30,7 @@ impl StarShape {
     /// Note that corners shall be in range 3..90.
     #[must_use]
     pub fn new(corners: usize) -> Self {
-        assert!(corners >= VERTEX_MIN && corners <= VERTEX_MAX);
+        assert!((VERTEX_MIN..=VERTEX_MAX).contains(&corners));
         let path = Path::new();
         Self {
             corners,
@@ -58,7 +58,7 @@ impl StarShape {
     ///
     /// Note that corners shall be in range 3..90.
     pub fn set_corners(&mut self, corners: usize) {
-        assert!(corners >= VERTEX_MIN && corners <= VERTEX_MAX);
+        assert!((VERTEX_MIN..=VERTEX_MAX).contains(&corners));
         if self.corners != corners {
             self.path_is_dirty = true;
             self.corners = corners;

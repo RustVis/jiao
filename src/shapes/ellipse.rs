@@ -9,6 +9,7 @@ use crate::platforms::Path;
 
 const DEFAULT_END_ANGLE: f64 = std::f64::consts::TAU;
 
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug)]
 pub struct EllipseShape {
     center: PointF,
@@ -23,8 +24,14 @@ pub struct EllipseShape {
 
 impl EllipseShape {
     /// Create a new ellipse shape.
+    ///
+    /// # Panics
+    ///
+    /// Both `radius_x` and `radius_y` shall be >= 0.0.
     #[must_use]
     pub fn new(center: PointF, radius_x: f64, radius_y: f64) -> Self {
+        assert!(radius_x >= 0.0);
+        assert!(radius_y >= 0.0);
         let path = Path::new();
         Self {
             center,
@@ -39,7 +46,7 @@ impl EllipseShape {
 
     /// Get center point of the ellipse shape.
     #[must_use]
-    pub fn center(&self) -> PointF {
+    pub const fn center(&self) -> PointF {
         self.center
     }
 
@@ -51,13 +58,15 @@ impl EllipseShape {
 
     /// Get x-axis radius of the ellipse shape.
     #[must_use]
-    pub fn radius_x(&self) -> f64 {
+    pub const fn radius_x(&self) -> f64 {
         self.radius_x
     }
 
     /// Set x-axis radius of the ellipse shape.
     ///
-    /// Note that `radius_x` shall be non-negative.
+    /// # Panics
+    ///
+    /// `radius_x` shall be non-negative.
     pub fn set_radius_x(&mut self, radius_x: f64) {
         assert!(radius_x >= 0.0);
         self.radius_x = radius_x;
@@ -66,11 +75,15 @@ impl EllipseShape {
 
     /// Get y-axis radius of the ellipse shape.
     #[must_use]
-    pub fn radius_y(&self) -> f64 {
+    pub const fn radius_y(&self) -> f64 {
         self.radius_y
     }
 
     /// Set y-axis radius of the ellipse shape.
+    ///
+    /// # Panics
+    ///
+    /// `radius_y` shall be >= 0.0.
     pub fn set_radius_y(&mut self, radius_y: f64) {
         assert!(radius_y >= 0.0);
         self.radius_y = radius_y;
@@ -79,7 +92,7 @@ impl EllipseShape {
 
     /// Get start angle of the ellipse shape.
     #[must_use]
-    pub fn start_angle(&self) -> f64 {
+    pub const fn start_angle(&self) -> f64 {
         self.start_angle
     }
 
@@ -91,7 +104,7 @@ impl EllipseShape {
 
     /// Get end angle of the ellipse shape.
     #[must_use]
-    pub fn end_angle(&self) -> f64 {
+    pub const fn end_angle(&self) -> f64 {
         self.end_angle
     }
 

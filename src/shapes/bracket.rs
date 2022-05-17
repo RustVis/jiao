@@ -6,7 +6,9 @@ use crate::base::{PointF, RectF, SizeF};
 use crate::kernel::{PainterTrait, PathTrait};
 use crate::platforms::Path;
 use crate::shapes::ShapeTrait;
+use crate::util::fuzzy_compare;
 
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug)]
 pub struct BracketShape {
     size: SizeF,
@@ -20,6 +22,10 @@ pub struct BracketShape {
 
 impl BracketShape {
     /// Create a new bracket.
+    ///
+    /// # Panics
+    ///
+    /// Both `handle_width` and `corner_radius` shall be non-negative.
     #[must_use]
     pub fn new(
         size: SizeF,
@@ -80,7 +86,7 @@ impl BracketShape {
 
     /// Get bracket size.
     #[must_use]
-    pub fn size(&self) -> SizeF {
+    pub const fn size(&self) -> SizeF {
         self.size
     }
 
@@ -92,7 +98,7 @@ impl BracketShape {
 
     /// Get bracket handle base point.
     #[must_use]
-    pub fn handle_base(&self) -> Option<PointF> {
+    pub const fn handle_base(&self) -> Option<PointF> {
         self.handle_base
     }
 
@@ -104,13 +110,13 @@ impl BracketShape {
 
     /// Get handle width.
     #[must_use]
-    pub fn handle_width(&self) -> f64 {
+    pub const fn handle_width(&self) -> f64 {
         self.handle_width
     }
 
     /// Update handle width.
     pub fn set_handle_width(&mut self, width: f64) {
-        if self.handle_width != width {
+        if !fuzzy_compare(self.handle_width, width) {
             self.handle_width = width;
             self.path_is_dirty = true;
         }
@@ -118,13 +124,13 @@ impl BracketShape {
 
     /// Get corner radius.
     #[must_use]
-    pub fn corner_radius(&self) -> f64 {
+    pub const fn corner_radius(&self) -> f64 {
         self.corner_radius
     }
 
     /// Set corner radius.
     pub fn set_corner_radius(&mut self, corner_radius: f64) {
-        if self.corner_radius != corner_radius {
+        if !fuzzy_compare(self.corner_radius, corner_radius) {
             self.corner_radius = corner_radius;
             self.path_is_dirty = true;
         }

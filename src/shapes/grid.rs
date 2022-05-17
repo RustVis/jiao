@@ -6,7 +6,9 @@ use crate::base::{PointF, RectF};
 use crate::kernel::{PainterTrait, PathTrait};
 use crate::platforms::Path;
 use crate::shapes::ShapeTrait;
+use crate::util::fuzzy_compare;
 
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug)]
 pub struct GridShape {
     horizontal_step: f64,
@@ -22,8 +24,9 @@ pub struct GridShape {
 impl GridShape {
     /// Create a new grid shape.
     ///
-    /// Note that both `horizontal_step` and `vertical_step` shall be a
-    /// non-negative number.
+    /// # Panics
+    ///
+    /// Both `horizontal_step` and `vertical_step` shall be >= 0.0.
     #[must_use]
     pub fn new(horizontal_step: f64, vertical_step: f64) -> Self {
         assert!(horizontal_step >= 0.0 && vertical_step >= 0.0);
@@ -44,14 +47,18 @@ impl GridShape {
 
     /// Get horizontal step value.
     #[must_use]
-    pub fn horizontal_step(&self) -> f64 {
+    pub const fn horizontal_step(&self) -> f64 {
         self.horizontal_step
     }
 
     /// Update value of horizontal step.
+    ///
+    /// # Panics
+    ///
+    /// `horizontal_step` shall be >= 0.0.
     pub fn set_horizontal_step(&mut self, horizontal_step: f64) {
         assert!(horizontal_step >= 0.0);
-        if self.horizontal_step != horizontal_step {
+        if !fuzzy_compare(self.horizontal_step, horizontal_step) {
             self.horizontal_step = horizontal_step;
             self.path_is_dirty = true;
         }
@@ -59,7 +66,7 @@ impl GridShape {
 
     /// Check if horizontal step is visible.
     #[must_use]
-    pub fn horizontal_visible(&self) -> bool {
+    pub const fn horizontal_visible(&self) -> bool {
         self.horizontal_visible
     }
 
@@ -73,14 +80,18 @@ impl GridShape {
 
     /// Get vertical step value.
     #[must_use]
-    pub fn vertical_step(&self) -> f64 {
+    pub const fn vertical_step(&self) -> f64 {
         self.vertical_step
     }
 
     /// Update value of vertical step.
+    ///
+    /// # Panics
+    ///
+    /// `vertical_step` shall be >= 0.0.
     pub fn set_vertical_step(&mut self, vertical_step: f64) {
         assert!(vertical_step >= 0.0);
-        if self.vertical_step != vertical_step {
+        if !fuzzy_compare(self.vertical_step, vertical_step) {
             self.vertical_step = vertical_step;
             self.path_is_dirty = true;
         }
@@ -88,7 +99,7 @@ impl GridShape {
 
     /// Check if vertical step is visible.
     #[must_use]
-    pub fn vertical_visible(&self) -> bool {
+    pub const fn vertical_visible(&self) -> bool {
         self.vertical_visible
     }
 
@@ -102,7 +113,7 @@ impl GridShape {
 
     /// Get start point of grid.
     #[must_use]
-    pub fn start_point(&self) -> PointF {
+    pub const fn start_point(&self) -> PointF {
         self.start_point
     }
 
@@ -114,7 +125,7 @@ impl GridShape {
 
     /// Get current viewport.
     #[must_use]
-    pub fn viewport(&self) -> &RectF {
+    pub const fn viewport(&self) -> &RectF {
         &self.viewport
     }
 

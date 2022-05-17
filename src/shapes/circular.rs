@@ -9,6 +9,7 @@ use crate::platforms::Path;
 
 const DEFAULT_END_ANGLE: f64 = std::f64::consts::TAU;
 
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug)]
 pub struct CircularShape {
     center: PointF,
@@ -22,8 +23,13 @@ pub struct CircularShape {
 
 impl CircularShape {
     /// Create a new circular shape object.
+    ///
+    /// # Panics
+    ///
+    /// `radius` shall be non-negative.
     #[must_use]
     pub fn new(center: PointF, radius: f64) -> Self {
+        assert!(radius >= 0.0);
         let path = Path::new();
         Self {
             center,
@@ -37,7 +43,7 @@ impl CircularShape {
 
     /// Get center point of the circular shape.
     #[must_use]
-    pub fn center(&self) -> PointF {
+    pub const fn center(&self) -> PointF {
         self.center
     }
 
@@ -49,13 +55,15 @@ impl CircularShape {
 
     /// Get radius of the circular shape.
     #[must_use]
-    pub fn radius(&self) -> f64 {
+    pub const fn radius(&self) -> f64 {
         self.radius
     }
 
     /// Set radius of the circular shape.
     ///
-    /// Note that radius shall be non-negative.
+    /// # Panics
+    ///
+    /// `radius` shall be non-negative.
     pub fn set_radius(&mut self, radius: f64) {
         assert!(radius >= 0.0);
         self.radius = radius;
@@ -64,7 +72,7 @@ impl CircularShape {
 
     /// Get start angle of the circular shape.
     #[must_use]
-    pub fn start_angle(&self) -> f64 {
+    pub const fn start_angle(&self) -> f64 {
         self.start_angle
     }
 
@@ -76,7 +84,7 @@ impl CircularShape {
 
     /// Get end angle of the circular shape.
     #[must_use]
-    pub fn end_angle(&self) -> f64 {
+    pub const fn end_angle(&self) -> f64 {
         self.end_angle
     }
 
