@@ -10,6 +10,7 @@ pub mod color_matrix;
 pub mod font;
 pub mod gradient;
 pub mod linear_gradient;
+pub mod matrix;
 pub mod palette;
 pub mod path_clipper;
 pub mod path_simplifier;
