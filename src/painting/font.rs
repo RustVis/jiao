@@ -76,7 +76,7 @@ impl Font {
     /// The first family in families will be set as the main family for the font.
     ///
     /// Each family name entry in families may optionally also include a foundry name,
-    /// e.g. "Helvetica [Cronyx]".
+    /// e.g. `Helvetica [Cronyx]`.
     /// If the family is available from more than one foundry and the foundry isn't specified,
     /// an arbitrary foundry is chosen. If the family isn't available a family will be set
     /// using the font matching algorithm.
@@ -87,7 +87,7 @@ impl Font {
     /// Sets the family name of the font.
     ///
     /// The name is case insensitive and may include a foundry name.
-    /// The family name may optionally also include a foundry name, e.g. "Helvetica [Cronyx]".
+    /// The family name may optionally also include a foundry name, e.g. `Helvetica [Cronyx]`.
     /// If the family is available from more than one foundry and the foundry isn't specified,
     /// an arbitrary foundry is chosen.
     /// If the family isn't available a family will be set using the font matching algorithm.

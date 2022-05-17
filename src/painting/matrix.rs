@@ -161,9 +161,9 @@ impl Matrix {
     /// The resulting values are put in `(tx, ty)` pair.
     ///
     /// The coordinates are transformed using the following formulas:
-    /// ```
-    /// x' = m11*x + m21*y + dx
-    /// y' = m22*y + m12*x + dy
+    /// ```text
+    /// x2 = m11 * x + m21 * y + dx
+    /// y2 = m22 * y + m12 * x + dy
     /// ```
     /// The point `(x, y)` is the original point, and `(x', y')` is the transformed point.
     #[must_use]
@@ -195,9 +195,9 @@ impl Matrix {
     /// mapped into the coordinate system defined by this matrix.
     ///
     /// The rectangle's coordinates are transformed using the following formulas:
-    /// ```
-    /// x' = m11*x + m21*y + dx
-    /// y' = m22*y + m12*x + dy
+    /// ```text
+    /// x2 = m11 * x + m21 * y + dx
+    /// y2 = m22 * y + m12 * x + dy
     /// ```
     /// If rotation or shearing has been specified, this function returns the bounding rectangle.
     #[must_use]
