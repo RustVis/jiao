@@ -35,7 +35,7 @@ impl Font {
         &self.font_family
     }
 
-    /// Returns true if the `style()` of the font is not FontStyle::Normal
+    /// Returns true if the `style()` of the font is not `FontStyle::Normal`
     #[must_use]
     pub fn is_italic(&self) -> bool {
         self.style != FontStyle::Normal
@@ -127,7 +127,7 @@ impl Font {
     /// For example, setting factor to 150 results in all characters in the font
     /// being 1.5 times (ie. 150%) wider.
     /// The minimum stretch factor is 1, and the maximum stretch factor is 4000.
-    /// The default stretch factor is AnyStretch, which will accept any stretch factor
+    /// The default stretch factor is `AnyStretch`, which will accept any stretch factor
     /// and not apply any transform on the font.
     ///
     /// The stretch factor is only applied to outline fonts.

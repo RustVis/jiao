@@ -514,9 +514,10 @@ mod tests {
 
     #[test]
     fn test_angle() {
+        use float_cmp::ApproxEq;
         let line = LineF::from(0.0, 0.0, 3.0, 4.0);
         let angle = line.angle();
-        assert_eq!(angle, 306.869_897_645_844_05);
+        angle.approx_eq(306.869_897_645_844_05, (0.0, 1));
     }
 
     #[test]

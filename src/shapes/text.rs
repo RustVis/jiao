@@ -6,6 +6,7 @@ use crate::base::RectF;
 use crate::kernel::PainterTrait;
 use crate::shapes::ShapeTrait;
 
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug)]
 pub struct TextShape {
     text: String,
@@ -15,7 +16,7 @@ pub struct TextShape {
 
 impl TextShape {
     #[must_use]
-    pub fn new(text: String, container_rect: RectF) -> Self {
+    pub const fn new(text: String, container_rect: RectF) -> Self {
         Self {
             text,
             container_rect,
@@ -39,7 +40,7 @@ impl TextShape {
 
     /// Get container rectangle.
     #[must_use]
-    pub fn container_rect(&self) -> &RectF {
+    pub const fn container_rect(&self) -> &RectF {
         &self.container_rect
     }
 

@@ -7,6 +7,7 @@ use crate::base::{PointF, RectF};
 use crate::kernel::{PainterTrait, PathTrait};
 use crate::platforms::Path;
 
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug)]
 pub struct RectShape {
     rect: RectF,

@@ -6,10 +6,12 @@ use crate::base::RectF;
 use crate::kernel::{PainterTrait, PathTrait};
 use crate::platforms::Path;
 use crate::shapes::ShapeTrait;
+use crate::util::fuzzy_compare;
 
-const MIN_VERTEX: usize = 3;
-const MAX_VERTEX: usize = 99;
+const VERTEX_MIN: usize = 3;
+const VERTEX_MAX: usize = 99;
 
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug)]
 pub struct PolygonShape {
     corners: usize,
@@ -22,9 +24,13 @@ impl PolygonShape {
     /// Create a new polygon shape object with specified `corners`.
     ///
     /// Corner radius is set to 0.0.
+    ///
+    /// # Panics
+    ///
+    /// Note that corners shall be in range 3..90.
     #[must_use]
     pub fn new(corners: usize) -> Self {
-        assert!((MIN_VERTEX..=MAX_VERTEX).contains(&corners));
+        assert!(corners >= VERTEX_MIN && corners <= VERTEX_MAX);
         let path = Path::new();
         Self {
             corners,
@@ -62,15 +68,17 @@ impl PolygonShape {
 
     /// Get current number of corners.
     #[must_use]
-    pub fn corners(&self) -> usize {
+    pub const fn corners(&self) -> usize {
         self.corners
     }
 
     /// Set number of corners.
     ///
-    /// Note that minimum corners shall be 3.
+    /// # Panics
+    ///
+    /// Note that corners shall be in range 3..90.
     pub fn set_corners(&mut self, corners: usize) {
-        assert!((MIN_VERTEX..=MAX_VERTEX).contains(&corners));
+        assert!(corners >= VERTEX_MIN && corners <= VERTEX_MAX);
         if self.corners != corners {
             self.path_is_dirty = true;
             self.corners = corners;
@@ -79,16 +87,18 @@ impl PolygonShape {
 
     /// Get current corner radius.
     #[must_use]
-    pub fn corner_radius(&self) -> f64 {
+    pub const fn corner_radius(&self) -> f64 {
         self.corner_radius
     }
 
     /// Set corner radius.
     ///
-    /// Note that radius shall be a non-negative number.
+    /// # Panics
+    ///
+    /// `radius` shall be a non-negative number.
     pub fn set_corner_radius(&mut self, radius: f64) {
         assert!(radius >= 0.0);
-        if self.corner_radius != radius {
+        if !fuzzy_compare(self.corner_radius, radius) {
             self.path_is_dirty = true;
             self.corner_radius = radius;
         }

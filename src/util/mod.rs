@@ -35,7 +35,8 @@ pub fn fuzzy_is_zero_f32(p: f32) -> bool {
 }
 
 #[must_use]
-pub fn div_257_floor(x: u32) -> u8 {
+#[allow(clippy::cast_possible_truncation)]
+pub const fn div_257_floor(x: u32) -> u8 {
     ((x - (x >> 8)) >> 8) as u8
 }
 
