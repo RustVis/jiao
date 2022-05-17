@@ -6,6 +6,7 @@ use core::mem;
 
 use super::easing_curve_funcs as inner;
 use crate::base::PointF;
+use crate::util::fuzzy_compare;
 
 const DEFAULT_AMPLITUDE: f64 = 1.0;
 const DEFAULT_OVERSHOOT: f64 = 1.70158;
@@ -224,13 +225,23 @@ impl Default for EasingCurveType {
 /// that have "boomerang" behaviors such as the `InBack`, `OutBack`, `InOutBack`, and `OutInBack`
 /// have overshoot settings. These curves will interpolate beyond the end points and
 /// return to the end point, acting similar to a boomerang.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub struct EasingCurve {
     curve_type: EasingCurveType,
     amplitude: f64,
     overshoot: f64,
     period: f64,
     custom_func: Option<EasingFunction>,
+}
+
+impl PartialEq for EasingCurve {
+    fn eq(&self, other: &Self) -> bool {
+        self.curve_type == other.curve_type
+            && fuzzy_compare(self.amplitude, other.amplitude)
+            && fuzzy_compare(self.overshoot, other.overshoot)
+            && fuzzy_compare(self.period, other.period)
+            && self.custom_func == other.custom_func
+    }
 }
 
 /// Function for custom easing curve type.
