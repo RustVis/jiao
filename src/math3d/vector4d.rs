@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use super::vector2d::Vector2D;
 use super::vector3d::Vector3D;
 use crate::base::{Point, PointF};
+use crate::util::{fuzzy_compare_f32, fuzzy_is_zero};
 
 /// The `Vector4D` struct represents a vector or vertex in 4D space.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -121,7 +122,7 @@ impl Vector4D {
         let y = f64::from(self.y());
         let z = f64::from(self.z());
         let w = f64::from(self.w());
-        w.mul_add(w, z.mul_add(z, x.mul_add(x, y * y)))
+        w.mul_add(w, z.mul_add(z, y.mul_add(y, x * x)))
     }
 
     /// Normalizes the currect vector in place.
@@ -129,7 +130,7 @@ impl Vector4D {
     /// Nothing happens if this vector is a null vector or the length of the vector is very close to 1.
     pub fn normalize(&mut self) {
         let hypot = self.length_squared_precise();
-        if hypot == 1.0 || hypot == 0.0 {
+        if fuzzy_is_zero(hypot - 1.0) || fuzzy_is_zero(hypot) {
             return;
         }
         let sqrt = hypot.sqrt();
@@ -147,9 +148,9 @@ impl Vector4D {
     #[must_use]
     pub fn normalized(&self) -> Self {
         let hypot = self.length_squared_precise();
-        if hypot == 1.0 {
+        if fuzzy_is_zero(hypot - 1.0) {
             self.clone()
-        } else if hypot == 0.0 {
+        } else if fuzzy_is_zero(hypot) {
             Self::new()
         } else {
             let sqrt = hypot.sqrt();
@@ -260,6 +261,14 @@ impl Vector4D {
     #[must_use]
     pub fn z(&self) -> f32 {
         self.v[2]
+    }
+
+    #[must_use]
+    pub fn fuzzy_compare(&self, other: &Self) -> bool {
+        fuzzy_compare_f32(self.v[0], other.v[0])
+            && fuzzy_compare_f32(self.v[1], other.v[1])
+            && fuzzy_compare_f32(self.v[2], other.v[2])
+            && fuzzy_compare_f32(self.v[3], other.v[3])
     }
 }
 

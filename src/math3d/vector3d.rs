@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use super::vector2d::Vector2D;
 use super::vector4d::Vector4D;
 use crate::base::{Point, PointF};
+use crate::util::{fuzzy_compare_f32, fuzzy_is_zero};
 
 /// The `Vector3D` struct represents a vector or vertex in 3D space.
 ///
@@ -194,7 +195,7 @@ impl Vector3D {
     /// Nothing happens if this vector is a null vector or the length of the vector is very close to 1.
     pub fn normalize(&mut self) {
         let hypot = self.length_squared_precise();
-        if hypot == 1.0 || hypot == 0.0 {
+        if fuzzy_is_zero(hypot - 1.0) || fuzzy_is_zero(hypot) {
             return;
         }
         let sqrt = hypot.sqrt();
@@ -212,17 +213,17 @@ impl Vector3D {
     #[must_use]
     pub fn normalized(&self) -> Self {
         let hypot = self.length_squared_precise();
-        if hypot == 1.0 {
+        if fuzzy_is_zero(hypot - 1.0) {
             self.clone()
-        } else if hypot != 0.0 {
+        } else if fuzzy_is_zero(hypot) {
+            Self::new()
+        } else {
             let sqrt = hypot.sqrt();
             Self::from(
                 (f64::from(self.v[0]) / sqrt) as f32,
                 (f64::from(self.v[1]) / sqrt) as f32,
                 (f64::from(self.v[2]) / sqrt) as f32,
             )
-        } else {
-            Self::new()
         }
     }
 
@@ -313,6 +314,13 @@ impl Vector3D {
     #[must_use]
     pub fn z(&self) -> f32 {
         self.v[2]
+    }
+
+    #[must_use]
+    pub fn fuzzy_compare(&self, other: &Self) -> bool {
+        fuzzy_compare_f32(self.v[0], other.v[0])
+            && fuzzy_compare_f32(self.v[1], other.v[1])
+            && fuzzy_compare_f32(self.v[2], other.v[2])
     }
 }
 

@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use super::vector3d::Vector3D;
 use super::vector4d::Vector4D;
 use crate::base::{Point, PointF};
+use crate::util::{fuzzy_compare_f32, fuzzy_is_zero};
 
 /// The `Vector2D` class represents a vector or vertex in 2D space.
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
@@ -121,7 +122,7 @@ impl Vector2D {
     /// Nothing happens if this vector is a null vector or the length of the vector is very close to 1.
     pub fn normalize(&mut self) {
         let hypot = self.length_squared_precise();
-        if hypot == 1.0 || hypot == 0.0 {
+        if fuzzy_is_zero(hypot - 1.0) || fuzzy_is_zero(hypot) {
             return;
         }
 
@@ -138,9 +139,9 @@ impl Vector2D {
     #[must_use]
     pub fn normalized(&self) -> Self {
         let hypot = self.length_squared_precise();
-        if hypot == 1.0 {
+        if fuzzy_is_zero(hypot - 1.0) {
             *self
-        } else if hypot == 0.0 {
+        } else if fuzzy_is_zero(hypot) {
             Self::new()
         } else {
             let sqrt = hypot.sqrt();
@@ -195,6 +196,11 @@ impl Vector2D {
     #[must_use]
     pub fn y(&self) -> f32 {
         self.v[1]
+    }
+
+    #[must_use]
+    pub fn fuzzy_compare(&self, other: &Self) -> bool {
+        fuzzy_compare_f32(self.v[0], other.v[0]) && fuzzy_compare_f32(self.v[1], other.v[1])
     }
 }
 
