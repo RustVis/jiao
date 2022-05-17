@@ -5,6 +5,8 @@
 use core::ops;
 use serde::{Deserialize, Serialize};
 
+use crate::util::{fuzzy_compare, fuzzy_is_zero};
+
 /// The Margins struct defines the four margins of a rectangle.
 ///
 /// Margin defines a set of four margins; left, top, right and bottom, that describe
@@ -246,12 +248,21 @@ impl ops::Div<i32> for &Margins {
 /// Margin defines a set of four margins; left, top, right and bottom, that describe
 /// the size of the borders surrounding a rectangle.
 /// The `is_null()` function returns true only if all margins are set to zero.
-#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct MarginsF {
     top: f64,
     right: f64,
     bottom: f64,
     left: f64,
+}
+
+impl PartialEq for MarginsF {
+    fn eq(&self, other: &Self) -> bool {
+        fuzzy_compare(self.top, other.top)
+            && fuzzy_compare(self.right, other.right)
+            && fuzzy_compare(self.bottom, other.bottom)
+            && fuzzy_compare(self.left, other.left)
+    }
 }
 
 impl MarginsF {
@@ -281,7 +292,10 @@ impl MarginsF {
     /// Returns true if all margins are is 0; otherwise returns false.
     #[must_use]
     pub fn is_null(&self) -> bool {
-        self.top == 0.0 && self.right == 0.0 && self.bottom == 0.0 && self.left == 0.0
+        fuzzy_is_zero(self.top)
+            && fuzzy_is_zero(self.right)
+            && fuzzy_is_zero(self.bottom)
+            && fuzzy_is_zero(self.left)
     }
 
     /// Returns the left margin.
@@ -376,7 +390,7 @@ impl ops::SubAssign<f64> for MarginsF {
 impl ops::DivAssign<f64> for MarginsF {
     /// Divides each component of this object by `divisor`.
     fn div_assign(&mut self, divisor: f64) {
-        assert!(divisor != 0.0);
+        assert!(!fuzzy_is_zero(divisor));
         self.top /= divisor;
         self.right /= divisor;
         self.bottom /= divisor;
@@ -446,7 +460,7 @@ impl ops::Div<f64> for &MarginsF {
 
     /// Returns a `QMarginsF` object that is formed by dividing the components of the given margins by the given `divisor`.
     fn div(self, divisor: f64) -> MarginsF {
-        assert!(divisor != 0.0);
+        assert!(!fuzzy_is_zero(divisor));
         MarginsF {
             top: self.top / divisor,
             right: self.right / divisor,

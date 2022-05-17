@@ -5,6 +5,8 @@
 use core::ops;
 use serde::{Deserialize, Serialize};
 
+use crate::util::{fuzzy_compare, fuzzy_is_zero};
+
 /// The Point struct defines a point in the plane using integer precision.
 ///
 /// A point is specified by a x coordinate and an y coordinate which can be accessed
@@ -181,10 +183,16 @@ impl ops::DivAssign<f64> for Point {
 /// The coordinates can be set (or altered) using the `set_x()` and `set_y()` functions,
 /// or alternatively the `rx()` and `ry()` functions which return
 /// references to the coordinates (allowing direct manipulation).
-#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 pub struct PointF {
     x: f64,
     y: f64,
+}
+
+impl PartialEq for PointF {
+    fn eq(&self, other: &Self) -> bool {
+        fuzzy_compare(self.x, other.x) && fuzzy_compare(self.y, other.y)
+    }
 }
 
 impl PointF {
@@ -328,7 +336,7 @@ impl ops::MulAssign<f64> for PointF {
 
 impl ops::DivAssign<f64> for PointF {
     fn div_assign(&mut self, factor: f64) {
-        assert_ne!(factor, 0.0);
+        assert!(!fuzzy_is_zero(factor));
         self.x /= factor;
         self.y /= factor;
     }
@@ -340,7 +348,7 @@ impl ops::Div<f64> for PointF {
     /// Returns the `QPointF` object formed by dividing both components of the given point
     /// by the given divisor.
     fn div(self, factor: f64) -> Self {
-        assert_ne!(factor, 0.0);
+        assert!(!fuzzy_is_zero(factor));
         Self::from(self.x / factor, self.y / factor)
     }
 }

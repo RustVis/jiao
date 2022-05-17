@@ -6,6 +6,7 @@ use core::f64::consts::PI;
 use serde::{Deserialize, Serialize};
 
 use super::point::{Point, PointF};
+use crate::util::fuzzy_compare;
 
 /// The Line class provides a two-dimensional vector using integer precision.
 ///
@@ -280,7 +281,7 @@ impl LineF {
 
         let theta_normalized = if theta < 0.0 { theta + 360.0 } else { theta };
 
-        if theta_normalized == 360.0 {
+        if fuzzy_compare(theta_normalized, 360.0) {
             0.0
         } else {
             theta_normalized
@@ -307,7 +308,7 @@ impl LineF {
         let delta = a2 - a1;
         let delta_normalized = if delta < 0.0 { delta + 360.0 } else { delta };
 
-        if delta == 360.0 {
+        if fuzzy_compare(delta, 360.0) {
             0.0
         } else {
             delta_normalized

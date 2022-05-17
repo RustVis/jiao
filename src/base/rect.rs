@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use super::margins::{Margins, MarginsF};
 use super::point::{Point, PointF};
 use super::size::{Size, SizeF};
+use crate::util::fuzzy_compare;
 
 /// The Rect struct defines a rectangle in the plane using integer precision.
 ///
@@ -899,12 +900,21 @@ impl ops::BitOrAssign<&Self> for Rect {
 ///
 /// A `RectF` can be constructed with a set of left, top, width and height values,
 /// or from a `PointF` and a `SizeF`.
-#[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct RectF {
     x1: f64,
     y1: f64,
     x2: f64,
     y2: f64,
+}
+
+impl PartialEq for RectF {
+    fn eq(&self, other: &Self) -> bool {
+        fuzzy_compare(self.x1, other.x1)
+            && fuzzy_compare(self.y1, other.y1)
+            && fuzzy_compare(self.x2, other.x2)
+            && fuzzy_compare(self.y2, other.y2)
+    }
 }
 
 impl RectF {

@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use super::aspect_ratio_mode::AspectRatioMode;
 use super::margins::{Margins, MarginsF};
+use crate::util::{fuzzy_compare, fuzzy_is_zero};
 
 /// The Size struct defines the size of a two-dimensional object using integer point precision.
 ///
@@ -294,10 +295,16 @@ impl ops::DivAssign<f64> for Size {
 /// The `is_empty()` function returns true if either of the width and height is less than,
 /// or equal to, zero, while the `is_null()` function returns true only if both the width
 /// and the height is zero.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 pub struct SizeF {
     width: f64,
     height: f64,
+}
+
+impl PartialEq for SizeF {
+    fn eq(&self, other: &Self) -> bool {
+        fuzzy_compare(self.width, other.width) && fuzzy_compare(self.height, other.height)
+    }
 }
 
 impl SizeF {
@@ -533,7 +540,7 @@ impl ops::Div<f64> for &SizeF {
 
     /// Divides the given size by the given divisor and returns the result.
     fn div(self, divisor: f64) -> Self::Output {
-        assert!(divisor != 0.0);
+        assert!(!fuzzy_is_zero(divisor));
         Self::Output {
             width: self.width / divisor,
             height: self.height / divisor,
@@ -544,7 +551,7 @@ impl ops::Div<f64> for &SizeF {
 impl ops::DivAssign<f64> for SizeF {
     /// Divides the given size by the given `divisor`.
     fn div_assign(&mut self, divisor: f64) {
-        assert!(divisor != 0.0);
+        assert!(!fuzzy_is_zero(divisor));
         self.width /= divisor;
         self.height /= divisor;
     }
