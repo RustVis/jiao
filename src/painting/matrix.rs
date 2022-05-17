@@ -6,6 +6,7 @@ use core::f64::consts::PI;
 use core::ops;
 
 use crate::base::{LineF, PointF, RectF};
+use crate::util::{fuzzy_compare, fuzzy_is_zero};
 
 /// The `Matrix` struct specifies 2D transformations of a coordinate system.
 ///
@@ -13,7 +14,7 @@ use crate::base::{LineF, PointF, RectF};
 /// coordinate system, and is typically used when rendering graphics.
 /// `Matrix`, in contrast to `Transform`, does not allow perspective
 /// transformations.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Matrix {
     m11: f64,
     m12: f64,
@@ -140,14 +141,19 @@ impl Matrix {
 
     /// Returns true if the matrix is the identity matrix, otherwise returns false.
     #[must_use]
-    pub const fn is_identity(&self) -> bool {
-        todo!()
+    pub fn is_identity(&self) -> bool {
+        fuzzy_is_zero(self.m11 - 1.0)
+            && fuzzy_is_zero(self.m22 - 1.0)
+            && fuzzy_is_zero(self.m12)
+            && fuzzy_is_zero(self.m21)
+            && fuzzy_is_zero(self.dx)
+            && fuzzy_is_zero(self.dy)
     }
 
     /// Returns true if the matrix is invertible, otherwise returns false.
     #[must_use]
     pub fn is_invertible(&self) -> bool {
-        self.m11 * self.m22 != self.m12 * self.m21
+        !fuzzy_is_zero(self.m11 * self.m22 - self.m12 * self.m21)
     }
 
     /// Maps the given coordinates x and y into the coordinate system defined by this matrix.
@@ -322,6 +328,20 @@ impl Matrix {
         self.dx += dx.mul_add(self.m11, dy * self.m21);
         self.dy += dy.mul_add(self.m22, dx * self.m12);
         self
+    }
+
+    /// The `fuzzy_compare` method is for comparing two matrices using a fuzziness factor.
+    ///
+    /// Returns true if `self` and `other` are equal, allowing for a small
+    /// fuzziness factor for floating-point comparisons; false otherwise.
+    #[must_use]
+    pub fn fuzzy_compare(&self, other: &Self) -> bool {
+        fuzzy_compare(self.m11, other.m11)
+            && fuzzy_compare(self.m12, other.m12)
+            && fuzzy_compare(self.m21, other.m21)
+            && fuzzy_compare(self.m22, other.m22)
+            && fuzzy_compare(self.dx, other.dx)
+            && fuzzy_compare(self.dy, other.dy)
     }
 }
 

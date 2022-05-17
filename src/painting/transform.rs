@@ -7,6 +7,7 @@ use core::f64::consts::PI;
 use core::ops;
 
 use crate::base::{Axis, Line, LineF, Point, PointF, Rect, RectF};
+use crate::util::{fuzzy_compare, fuzzy_is_zero};
 
 // pi/180
 const DEG_TO_RAD: f64 = PI / 180.0;
@@ -281,8 +282,8 @@ impl Transform {
                 invert.m32 = -self.m32;
             }
             TransformationType::Scale => {
-                inv = self.m11 != 0.0;
-                inv &= self.m22 != 0.0;
+                inv = !fuzzy_is_zero(self.m11);
+                inv &= !fuzzy_is_zero(self.m22);
                 if inv {
                     invert.m11 = 1. / self.m11;
                     invert.m22 = 1. / self.m22;
@@ -297,7 +298,7 @@ impl Transform {
             _ => {
                 // general case
                 let det = self.determinant();
-                inv = det != 0.0;
+                inv = !fuzzy_is_zero(det);
                 if inv {
                     invert = self.adjoint() / det;
                 }
@@ -330,7 +331,7 @@ impl Transform {
     /// Returns true if the matrix is invertible, otherwise returns false.
     #[must_use]
     pub fn is_invertible(&self) -> bool {
-        self.determinant() != 0.0
+        !fuzzy_is_zero(self.determinant())
     }
 
     /// Returns true if the matrix represents some kind of a rotating transformation,
@@ -1042,16 +1043,18 @@ impl Transform {
         }
 
         if self.dirty == TransformationType::Project
-            && (self.m13 != 0.0 || self.m23 != 0.0 || (self.m33 - 1.0) != 0.0)
+            && (!fuzzy_is_zero(self.m13)
+                || !fuzzy_is_zero(self.m23)
+                || !fuzzy_is_zero(self.m33 - 1.0))
         {
             return TransformationType::Project;
         }
 
         if (self.dirty == TransformationType::Shear || self.dirty == TransformationType::Rotate)
-            && (self.m12 != 0.0 || self.m21 != 0.0)
+            && (!fuzzy_is_zero(self.m12) || !fuzzy_is_zero(self.m21))
         {
             let dot = self.m11 * self.m12 * self.m21 * self.m22;
-            if dot == 0.0 {
+            if fuzzy_is_zero(dot) {
                 return TransformationType::Rotate;
             } else {
                 return TransformationType::Shear;
@@ -1059,17 +1062,36 @@ impl Transform {
         }
 
         if self.dirty == TransformationType::Scale
-            && ((self.m11 - 1.0) != 0.0 || (self.m22 - 1.0) != 0.0)
+            && (!fuzzy_is_zero(self.m11 - 1.0) || !fuzzy_is_zero(self.m22 - 1.0))
         {
             return TransformationType::Scale;
         }
 
-        if self.dirty == TransformationType::Translate && (self.m31 != 0.0 || self.m32 != 0.0) {
+        if self.dirty == TransformationType::Translate
+            && (!fuzzy_is_zero(self.m31) || !fuzzy_is_zero(self.m32))
+        {
             return TransformationType::Translate;
         }
 
         assert_eq!(self.dirty, TransformationType::None);
         TransformationType::None
+    }
+
+    /// The `fuzzy_compare` method is for comparing two matrices using a fuzziness factor.
+    ///
+    /// Returns true if `self` and `other` are equal, allowing for a small
+    /// fuzziness factor for floating-point comparisons; false otherwise.
+    #[must_use]
+    pub fn fuzzy_compare(&self, other: &Self) -> bool {
+        fuzzy_compare(self.m11, other.m11)
+            && fuzzy_compare(self.m12, other.m12)
+            && fuzzy_compare(self.m13, other.m13)
+            && fuzzy_compare(self.m21, other.m21)
+            && fuzzy_compare(self.m22, other.m22)
+            && fuzzy_compare(self.m23, other.m23)
+            && fuzzy_compare(self.m31, other.m31)
+            && fuzzy_compare(self.m32, other.m32)
+            && fuzzy_compare(self.m33, other.m33)
     }
 }
 
