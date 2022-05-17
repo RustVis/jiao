@@ -93,6 +93,7 @@ impl Matrix {
     }
 
     /// Returns the matrix's determinant.
+    #[must_use]
     pub fn determinant(&self) -> f64 {
         self.m11 * self.m22 - self.m12 * self.m21
     }
@@ -121,7 +122,7 @@ impl Matrix {
         let dtr = self.determinant();
         if dtr == 0.0 {
             // singular matrix
-            (Matrix::new(), false)
+            (Self::new(), false)
         } else {
             // invertible matrix
             let dinv = 1.0 / dtr;
@@ -161,8 +162,8 @@ impl Matrix {
     /// The point `(x, y)` is the original point, and `(x', y')` is the transformed point.
     #[must_use]
     pub fn map(&self, x: f64, y: f64) -> (f64, f64) {
-        let nx = self.m11 * x + self.m21 * y + self.dx;
-        let ny = self.m12 * x + self.m22 * y + self.dy;
+        let nx = self.m11.mul_add(x, self.m21 * y) + self.dx;
+        let ny = self.m12.mul_add(x, self.m22 * y) + self.dy;
         (nx, ny)
     }
 
@@ -196,8 +197,8 @@ impl Matrix {
     #[must_use]
     pub fn map_rect(&self, rect: &RectF) -> RectF {
         if self.m12 == 0.0 && self.m21 == 0.0 {
-            let mut x = self.m11 * rect.x() + self.dx;
-            let mut y = self.m22 * rect.y() + self.dy;
+            let mut x = self.m11.mul_add(rect.x(), self.dx);
+            let mut y = self.m22.mul_add(rect.y(), self.dy);
             let mut w = self.m11 * rect.width();
             let mut h = self.m22 * rect.height();
             if w < 0.0 {
@@ -265,10 +266,10 @@ impl Matrix {
             sina = b.sin();
             cosa = b.cos();
         }
-        let tm11 = cosa * self.m11 + sina * self.m21;
-        let tm12 = cosa * self.m12 + sina * self.m22;
-        let tm21 = -sina * self.m11 + cosa * self.m21;
-        let tm22 = -sina * self.m12 + cosa * self.m22;
+        let tm11 = cosa.mul_add(self.m11, sina * self.m21);
+        let tm12 = cosa.mul_add(self.m12, sina * self.m22);
+        let tm21 = (-sina).mul_add(self.m11, cosa * self.m21);
+        let tm22 = (-sina).mul_add(self.m12, cosa * self.m22);
         self.m11 = tm11;
         self.m12 = tm12;
         self.m21 = tm21;
@@ -318,8 +319,8 @@ impl Matrix {
     /// Moves the coordinate system `dx` along the x axis and `dy` along the y axis,
     /// and returns a reference to the matrix.
     pub fn translate(&mut self, dx: f64, dy: f64) -> &mut Self {
-        self.dx += dx * self.m11 + dy * self.m21;
-        self.dy += dy * self.m22 + dx * self.m12;
+        self.dx += dx.mul_add(self.m11, dy * self.m21);
+        self.dy += dy.mul_add(self.m22, dx * self.m12);
         self
     }
 }
@@ -331,28 +332,28 @@ impl ops::Mul<&Matrix> for &Matrix {
     ///
     /// Note that matrix multiplication is not commutative, i.e. a*b != b*a.
     fn mul(self, m: &Matrix) -> Self::Output {
-        let tm11 = self.m11 * m.m11 + self.m12 * m.m21;
-        let tm12 = self.m11 * m.m12 + self.m12 * m.m22;
-        let tm21 = self.m21 * m.m11 + self.m22 * m.m21;
-        let tm22 = self.m21 * m.m12 + self.m22 * m.m22;
+        let tm11 = self.m11.mul_add(m.m11, self.m12 * m.m21);
+        let tm12 = self.m11.mul_add(m.m12, self.m12 * m.m22);
+        let tm21 = self.m21.mul_add(m.m11, self.m22 * m.m21);
+        let tm22 = self.m21.mul_add(m.m12, self.m22 * m.m22);
 
-        let tdx = self.dx * m.m11 + self.dy * m.m21 + m.dx;
-        let tdy = self.dx * m.m12 + self.dy * m.m22 + m.dy;
+        let tdx = self.dx.mul_add(m.m11, self.dy * m.m21) + m.dx;
+        let tdy = self.dx.mul_add(m.m12, self.dy * m.m22) + m.dy;
 
         Matrix::from(tm11, tm12, tm21, tm22, tdx, tdy)
     }
 }
 
-impl ops::MulAssign<&Matrix> for Matrix {
+impl ops::MulAssign<&Self> for Matrix {
     /// Returns the result of multiplying this matrix by the given matrix.
-    fn mul_assign(&mut self, m: &Matrix) {
-        let tm11 = self.m11 * m.m11 + self.m12 * m.m21;
-        let tm12 = self.m11 * m.m12 + self.m12 * m.m22;
-        let tm21 = self.m21 * m.m11 + self.m22 * m.m21;
-        let tm22 = self.m21 * m.m12 + self.m22 * m.m22;
+    fn mul_assign(&mut self, m: &Self) {
+        let tm11 = self.m11.mul_add(m.m11, self.m12 * m.m21);
+        let tm12 = self.m11.mul_add(m.m12, self.m12 * m.m22);
+        let tm21 = self.m21.mul_add(m.m11, self.m22 * m.m21);
+        let tm22 = self.m21.mul_add(m.m12, self.m22 * m.m22);
 
-        let tdx = self.dx * m.m11 + self.dy * m.m21 + m.dx;
-        let tdy = self.dx * m.m12 + self.dy * m.m22 + m.dy;
+        let tdx = self.dx.mul_add(m.m11, self.dy * m.m21) + m.dx;
+        let tdy = self.dx.mul_add(m.m12, self.dy * m.m22) + m.dy;
 
         self.m11 = tm11;
         self.m12 = tm12;
@@ -364,7 +365,7 @@ impl ops::MulAssign<&Matrix> for Matrix {
 }
 
 impl ops::Mul<&Matrix> for PointF {
-    type Output = PointF;
+    type Output = Self;
 
     /// This is the same as matrix.map(point).
     fn mul(self, matrix: &Matrix) -> Self::Output {
