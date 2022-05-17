@@ -2,19 +2,28 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use float_cmp::ApproxEq;
+
 /// Compares two floating point values and returns true if they are considered equal,
 /// otherwise false.
 #[inline]
 #[must_use]
 pub fn fuzzy_compare(p1: f64, p2: f64) -> bool {
-    p1.to_bits() == p2.to_bits()
+    p1.approx_eq(p2, (0.0, 1))
 }
 
-/// Check floating point equals zero.
+/// Check floating point equals 0.0.
 #[inline]
 #[must_use]
 pub fn fuzzy_is_zero(p: f64) -> bool {
     fuzzy_compare(p, 0.0)
+}
+
+/// Check floating point equals 1.0.
+#[inline]
+#[must_use]
+pub fn fuzzy_is_one(p: f64) -> bool {
+    fuzzy_compare(p, 1.0)
 }
 
 #[must_use]
