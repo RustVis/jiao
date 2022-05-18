@@ -35,7 +35,7 @@ pub struct Size {
 impl Size {
     /// Constructs a size with an invalid width and height (i.e., `is_valid()` returns false).
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             width: 0,
             height: 0,
@@ -86,44 +86,44 @@ impl Size {
 
     /// Returns the height.
     #[must_use]
-    pub fn height(&self) -> i32 {
+    pub const fn height(&self) -> i32 {
         self.height
     }
 
     /// Returns true if either of the width and height is less than or equal to 0;
     /// otherwise returns false.
     #[must_use]
-    pub fn is_empty(&self) -> bool {
+    pub const fn is_empty(&self) -> bool {
         self.width == 0 || self.height == 0
     }
 
     /// Returns true if both the width and height is 0; otherwise returns false.
     #[must_use]
-    pub fn is_null(&self) -> bool {
+    pub const fn is_null(&self) -> bool {
         self.width == 0 && self.height == 0
     }
 
     /// Returns true if both the width and height is equal to or greater than 0;
     /// otherwise returns false.
     #[must_use]
-    pub fn is_valid(&self) -> bool {
+    pub const fn is_valid(&self) -> bool {
         self.width >= 0 || self.height >= 0
     }
 
-    /// Returns a reference to the height.
-    pub fn rheight(&mut self) -> &mut i32 {
+    /// Returns a mutable reference to the height.
+    pub fn height_mut(&mut self) -> &mut i32 {
         &mut self.height
     }
 
-    /// Returns a reference to the width.
-    pub fn rwidth(&mut self) -> &mut i32 {
+    /// Returns a mutable reference to the width.
+    pub fn width_mut(&mut self) -> &mut i32 {
         &mut self.width
     }
 
     /// Scales the size to a rectangle with the given width and height,
     /// according to the specified `mode`.
     pub fn scale(&mut self, width: i32, height: i32, mode: AspectRatioMode) {
-        self.scale_by(Self::from(width, height), mode)
+        self.scale_by(Self::from(width, height), mode);
     }
 
     /// Scales the size to a rectangle with the given width and height,
@@ -152,13 +152,14 @@ impl Size {
         let use_height = if mode == AspectRatioMode::KeepAspectRatio {
             rw <= size.width
         } else {
-            assert!(mode == AspectRatioMode::KeepAspectRatioByExpanding);
+            debug_assert!(mode == AspectRatioMode::KeepAspectRatioByExpanding);
             rw >= size.width
         };
 
         if use_height {
             Self::from(rw, size.height)
         } else {
+            #[allow(clippy::cast_possible_truncation)]
             let height =
                 (i64::from(size.width) * i64::from(self.height) / i64::from(self.width)) as i32;
             Self::from(size.width, height)
@@ -182,7 +183,7 @@ impl Size {
 
     /// Returns a Size with width and height swapped.
     #[must_use]
-    pub fn transposed(&self) -> Self {
+    pub const fn transposed(&self) -> Self {
         Self {
             width: self.height,
             height: self.width,
@@ -191,7 +192,7 @@ impl Size {
 
     /// Returns the width.
     #[must_use]
-    pub fn width(&self) -> i32 {
+    pub const fn width(&self) -> i32 {
         self.width
     }
 }
@@ -238,6 +239,7 @@ impl ops::Mul<f64> for &Size {
     /// Multiplies the given size by the given `factor`,
     /// and returns the result rounded to the nearest integer.
     fn mul(self, factor: f64) -> Self::Output {
+        #[allow(clippy::cast_possible_truncation)]
         Self::Output {
             width: (f64::from(self.width) * factor).round() as i32,
             height: (f64::from(self.height) * factor).round() as i32,
@@ -248,6 +250,7 @@ impl ops::Mul<f64> for &Size {
 impl ops::MulAssign<f64> for Size {
     /// Multiplies the given size by the given `factor`,
     /// and returns the result rounded to the nearest integer.
+    #[allow(clippy::cast_possible_truncation)]
     fn mul_assign(&mut self, factor: f64) {
         self.width = (f64::from(self.width) * factor).round() as i32;
         self.height = (f64::from(self.height) * factor).round() as i32;
@@ -261,6 +264,7 @@ impl ops::Div<f64> for &Size {
     /// and returns the result rounded to the nearest integer.
     fn div(self, divisor: f64) -> Self::Output {
         assert!(divisor != 0.0);
+        #[allow(clippy::cast_possible_truncation)]
         Self::Output {
             width: (f64::from(self.width) / divisor).round() as i32,
             height: (f64::from(self.height) / divisor).round() as i32,
@@ -271,6 +275,7 @@ impl ops::Div<f64> for &Size {
 impl ops::DivAssign<f64> for Size {
     /// Divides the given size by the given `divisor`,
     /// and returns the result rounded to the nearest integer.
+    #[allow(clippy::cast_possible_truncation)]
     fn div_assign(&mut self, divisor: f64) {
         assert!(divisor != 0.0);
         self.width = (f64::from(self.width) / divisor).round() as i32;
@@ -295,6 +300,7 @@ impl ops::DivAssign<f64> for Size {
 /// The `is_empty()` function returns true if either of the width and height is less than,
 /// or equal to, zero, while the `is_null()` function returns true only if both the width
 /// and the height is zero.
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 pub struct SizeF {
     width: f64,
@@ -310,7 +316,7 @@ impl PartialEq for SizeF {
 impl SizeF {
     /// Constructs a size with an invalid width and height (i.e., `is_valid()` returns false).
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             width: 0.0,
             height: 0.0,
@@ -319,7 +325,7 @@ impl SizeF {
 
     /// Constructs a size with the given width and height.
     #[must_use]
-    pub fn from(width: f64, height: f64) -> Self {
+    pub const fn from(width: f64, height: f64) -> Self {
         Self { width, height }
     }
 
@@ -361,7 +367,7 @@ impl SizeF {
 
     /// Returns the height.
     #[must_use]
-    pub fn height(&self) -> f64 {
+    pub const fn height(&self) -> f64 {
         self.height
     }
 
@@ -385,20 +391,20 @@ impl SizeF {
         self.width >= 0.0 || self.height >= 0.0
     }
 
-    /// Returns a reference to the height.
-    pub fn rheight(&mut self) -> &mut f64 {
+    /// Returns a mutable reference to the height.
+    pub fn height_mut(&mut self) -> &mut f64 {
         &mut self.height
     }
 
-    /// Returns a reference to the width.
-    pub fn rwidth(&mut self) -> &mut f64 {
+    /// Returns a mutable reference to the width.
+    pub fn width_mut(&mut self) -> &mut f64 {
         &mut self.width
     }
 
     /// Scales the size to a rectangle with the given width and height,
     /// according to the specified `mode`.
     pub fn scale(&mut self, width: f64, height: f64, mode: AspectRatioMode) {
-        self.scale_by(Self::from(width, height), mode)
+        self.scale_by(Self::from(width, height), mode);
     }
 
     /// Scales the size to a rectangle with the given width and height,
@@ -427,7 +433,7 @@ impl SizeF {
         let use_height = if mode == AspectRatioMode::KeepAspectRatio {
             rw <= size.width
         } else {
-            assert!(mode == AspectRatioMode::KeepAspectRatioByExpanding);
+            debug_assert!(mode == AspectRatioMode::KeepAspectRatioByExpanding);
             rw >= size.width
         };
 
@@ -454,6 +460,7 @@ impl SizeF {
     /// Note that the coordinates in the returned size will be rounded to the nearest integer.
     #[must_use]
     pub fn to_size(&self) -> Size {
+        #[allow(clippy::cast_possible_truncation)]
         Size::from(self.width.round() as i32, self.height.round() as i32)
     }
 
@@ -464,7 +471,7 @@ impl SizeF {
 
     /// Returns a `SizeF` with width and height swapped.
     #[must_use]
-    pub fn transposed(&self) -> Self {
+    pub const fn transposed(&self) -> Self {
         Self {
             width: self.height,
             height: self.width,
@@ -473,7 +480,7 @@ impl SizeF {
 
     /// Returns the width.
     #[must_use]
-    pub fn width(&self) -> f64 {
+    pub const fn width(&self) -> f64 {
         self.width
     }
 }

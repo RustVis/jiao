@@ -173,14 +173,14 @@ impl Rect {
     /// Returns true if the given rectangle is inside this rectangle, including
     /// on the edge, otherwise returns false.
     #[must_use]
-    pub fn contains_rect(&self, rect: &Self) -> bool {
+    pub const fn contains_rect(&self, rect: &Self) -> bool {
         self.contains_rect_helper(rect, false)
     }
 
     /// Returns true if the given rectangle is inside this rectangle,
     /// otherwise returns false.
     #[must_use]
-    pub fn contains_rect_proper(&self, rect: &Self) -> bool {
+    pub const fn contains_rect_proper(&self, rect: &Self) -> bool {
         self.contains_rect_helper(rect, true)
     }
 
