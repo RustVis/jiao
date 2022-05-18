@@ -6,6 +6,8 @@
 
 use core::f64::consts::{FRAC_PI_2, PI};
 
+use crate::util::{fuzzy_compare, fuzzy_is_zero};
+
 /// Easing equation function for a simple linear tweening, with no easing.
 ///
 /// Returns current value.
@@ -13,7 +15,7 @@ use core::f64::consts::{FRAC_PI_2, PI};
 /// # Arguments
 /// * `progress` - Current time (in frames or seconds)
 #[must_use]
-pub fn ease_none(progress: f64) -> f64 {
+pub const fn ease_none(progress: f64) -> f64 {
     progress
 }
 
@@ -167,7 +169,7 @@ pub fn ease_out_in_quint(t: f64) -> f64 {
 /// Easing equation function for a sinusoidal (sin(t)) easing in: accelerating from zero velocity.
 #[must_use]
 pub fn ease_in_sine(t: f64) -> f64 {
-    if t == 1.0 {
+    if fuzzy_compare(t, 1.0) {
         1.0
     } else {
         -(t * FRAC_PI_2).cos() + 1.0
@@ -201,7 +203,7 @@ pub fn ease_out_in_sine(t: f64) -> f64 {
 /// Easing equation function for an exponential (2^t) easing in: accelerating from zero velocity.
 #[must_use]
 pub fn ease_in_expo(t: f64) -> f64 {
-    if t == 0.0 || t == 1.0 {
+    if fuzzy_is_zero(t) || fuzzy_compare(t, 1.0) {
         t
     } else {
         (10.0 * (t - 1.0)).exp2() - 0.001
@@ -211,7 +213,7 @@ pub fn ease_in_expo(t: f64) -> f64 {
 /// Easing equation function for an exponential (2^t) easing out: decelerating to zero velocity.
 #[must_use]
 pub fn ease_out_expo(t: f64) -> f64 {
-    if t == 1.0 {
+    if fuzzy_compare(t, 1.0) {
         1.0
     } else {
         1.001 * (-(-10.0 * t).exp2() + 1.0)
@@ -222,10 +224,10 @@ pub fn ease_out_expo(t: f64) -> f64 {
 /// then deceleration.
 #[must_use]
 pub fn ease_in_out_expo(mut t: f64) -> f64 {
-    if t == 0.0 {
+    if fuzzy_is_zero(t) {
         return 0.0;
     }
-    if t == 1.0 {
+    if fuzzy_compare(t, 1.0) {
         return 1.0;
     }
     t *= 2.0;
@@ -283,24 +285,24 @@ pub fn ease_out_in_circ(t: f64) -> f64 {
     }
 }
 
-fn ease_in_elastic_helper(t: f64, b: f64, c: f64, d: f64, mut a: f64, p: f64) -> f64 {
-    if t == 0.0 {
+fn ease_in_elastic_helper(t: f64, b: f64, c: f64, d: f64, mut amplitude: f64, period: f64) -> f64 {
+    if fuzzy_is_zero(t) {
         return b;
     }
     let mut t_adj = t / d;
-    if t_adj == 1.0 {
+    if fuzzy_compare(t_adj, 1.0) {
         return b + c;
     }
 
-    let s = if a < c.abs() {
-        a = c;
-        p / 4.0
+    let step = if amplitude < c.abs() {
+        amplitude = c;
+        period / 4.0
     } else {
-        p / (2.0 * PI) * (c / a).asin()
+        period / (2.0 * PI) * (c / amplitude).asin()
     };
 
     t_adj -= 1.0;
-    -(a * (10.0 * t_adj).exp2() * ((t_adj * d - s) * (2.0 * PI) / p).sin()) + b
+    -(amplitude * (10.0 * t_adj).exp2() * ((t_adj * d - step) * (2.0 * PI) / period).sin()) + b
 }
 
 /// Easing equation function for an elastic (exponentially decaying sine wave) easing in:
@@ -310,22 +312,29 @@ pub fn ease_in_elastic(t: f64, amplitude: f64, period: f64) -> f64 {
     ease_in_elastic_helper(t, 0.0, 1.0, 1.0, amplitude, period)
 }
 
-fn ease_out_elastic_helper(t: f64, _b: f64, c: f64, _d: f64, mut a: f64, p: f64) -> f64 {
-    if t == 0.0 {
+fn ease_out_elastic_helper(
+    t: f64,
+    _b: f64,
+    c: f64,
+    _d: f64,
+    mut amplitude: f64,
+    period: f64,
+) -> f64 {
+    if fuzzy_is_zero(t) {
         return 0.0;
     }
-    if t == 1.0 {
+    if fuzzy_compare(t, 1.0) {
         return c;
     }
 
-    let s = if a < c {
-        a = c;
-        p / 4.0
+    let step = if amplitude < c {
+        amplitude = c;
+        period / 4.0
     } else {
-        p / (2.0 * PI) * (c / a).asin()
+        period / (2.0 * PI) * (c / amplitude).asin()
     };
 
-    (a * (-10.0 * t).exp2()).mul_add(((t - s) * (2.0 * PI) / p).sin(), c)
+    (amplitude * (-10.0 * t).exp2()).mul_add(((t - step) * (2.0 * PI) / period).sin(), c)
 }
 
 /// Easing equation function for an elastic (exponentially decaying sine wave) easing out:
@@ -339,11 +348,11 @@ pub fn ease_out_elastic(t: f64, amplitude: f64, period: f64) -> f64 {
 /// acceleration until halfway, then deceleration.
 #[must_use]
 pub fn ease_in_out_elastic(mut t: f64, mut amplitude: f64, period: f64) -> f64 {
-    if t == 0.0 {
+    if fuzzy_is_zero(t) {
         return 0.0;
     }
     t *= 2.0;
-    if t == 2.0 {
+    if fuzzy_compare(t, 2.0) {
         return 1.0;
     }
 
@@ -443,7 +452,7 @@ pub fn ease_out_in_back(t: f64, s: f64) -> f64 {
 }
 
 fn ease_out_bounce_helper(mut t: f64, c: f64, a: f64) -> f64 {
-    if t == 1.0 {
+    if fuzzy_compare(t, 1.0) {
         return c;
     }
     if t < (4.0 / 11.0) {
@@ -480,7 +489,7 @@ pub fn ease_out_bounce(t: f64, amplitude: f64) -> f64 {
 pub fn ease_in_out_bounce(t: f64, amplitude: f64) -> f64 {
     if t < 0.5 {
         ease_in_bounce(2.0 * t, amplitude) / 2.0
-    } else if t == 1.0 {
+    } else if fuzzy_compare(t, 1.0) {
         1.0
     } else {
         ease_out_bounce(2.0 * t - 1.0, amplitude) / 2.0 + 0.5
