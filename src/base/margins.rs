@@ -23,13 +23,13 @@ pub struct Margins {
 impl Margins {
     /// Constructs a margins object with all margins set to 0.
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self::from(0, 0, 0, 0)
     }
 
     /// Constructs margins with the given `left`, `top`, `right`, `bottom`
     #[must_use]
-    pub fn from(top: i32, right: i32, bottom: i32, left: i32) -> Self {
+    pub const fn from(top: i32, right: i32, bottom: i32, left: i32) -> Self {
         Self {
             top,
             right,
@@ -40,25 +40,25 @@ impl Margins {
 
     /// Returns the bottom margin.
     #[must_use]
-    pub fn bottom(&self) -> i32 {
+    pub const fn bottom(&self) -> i32 {
         self.bottom
     }
 
     /// Returns true if all margins are is 0; otherwise returns false.
     #[must_use]
-    pub fn is_null(&self) -> bool {
+    pub const fn is_null(&self) -> bool {
         self.top == 0 && self.right == 0 && self.bottom == 0 && self.left == 0
     }
 
     /// Returns the left margin.
     #[must_use]
-    pub fn left(&self) -> i32 {
+    pub const fn left(&self) -> i32 {
         self.left
     }
 
     /// Returns the right margin.
     #[must_use]
-    pub fn right(&self) -> i32 {
+    pub const fn right(&self) -> i32 {
         self.right
     }
 
@@ -84,7 +84,7 @@ impl Margins {
 
     /// Returns the top margin.
     #[must_use]
-    pub fn top(&self) -> i32 {
+    pub const fn top(&self) -> i32 {
         self.top
     }
 }
@@ -101,6 +101,7 @@ impl ops::MulAssign<i32> for Margins {
 
 impl ops::MulAssign<f64> for Margins {
     /// Multiplies each component of this object by factor.
+    #[allow(clippy::cast_possible_truncation)]
     fn mul_assign(&mut self, factor: f64) {
         self.top = (f64::from(self.top) * factor).round() as i32;
         self.right = (f64::from(self.right) * factor).round() as i32;
@@ -162,6 +163,7 @@ impl ops::DivAssign<i32> for Margins {
 
 impl ops::DivAssign<f64> for Margins {
     /// Divides each component of this object by `divisor`.
+    #[allow(clippy::cast_possible_truncation)]
     fn div_assign(&mut self, divisor: f64) {
         assert!(divisor != 0.0);
         self.top = (f64::from(self.top) / divisor).round() as i32;
@@ -248,6 +250,7 @@ impl ops::Div<i32> for &Margins {
 /// Margin defines a set of four margins; left, top, right and bottom, that describe
 /// the size of the borders surrounding a rectangle.
 /// The `is_null()` function returns true only if all margins are set to zero.
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct MarginsF {
     top: f64,
@@ -268,13 +271,13 @@ impl PartialEq for MarginsF {
 impl MarginsF {
     /// Constructs a margins object with all margins set to 0.
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self::from(0.0, 0.0, 0.0, 0.0)
     }
 
     /// Constructs margins with the given `left`, `top`, `right`, `bottom`
     #[must_use]
-    pub fn from(top: f64, right: f64, bottom: f64, left: f64) -> Self {
+    pub const fn from(top: f64, right: f64, bottom: f64, left: f64) -> Self {
         Self {
             top,
             right,
@@ -285,7 +288,7 @@ impl MarginsF {
 
     /// Returns the bottom margin.
     #[must_use]
-    pub fn bottom(&self) -> f64 {
+    pub const fn bottom(&self) -> f64 {
         self.bottom
     }
 
@@ -300,13 +303,13 @@ impl MarginsF {
 
     /// Returns the left margin.
     #[must_use]
-    pub fn left(&self) -> f64 {
+    pub const fn left(&self) -> f64 {
         self.left
     }
 
     /// Returns the right margin.
     #[must_use]
-    pub fn right(&self) -> f64 {
+    pub const fn right(&self) -> f64 {
         self.right
     }
 
@@ -332,7 +335,7 @@ impl MarginsF {
 
     /// Returns the top margin.
     #[must_use]
-    pub fn top(&self) -> f64 {
+    pub const fn top(&self) -> f64 {
         self.top
     }
 }

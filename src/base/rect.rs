@@ -364,7 +364,7 @@ impl Rect {
 
     /// Returns a rectangle grown by the `margins`.
     #[must_use]
-    pub fn margins_added(&self, margins: &Margins) -> Self {
+    pub const fn margins_added(&self, margins: &Margins) -> Self {
         Self::from(
             self.x1 - margins.left(),
             self.y1 - margins.top(),
@@ -375,7 +375,7 @@ impl Rect {
 
     /// Removes the `margins` from the rectangle, shrinking it.
     #[must_use]
-    pub fn margins_removed(&self, margins: &Margins) -> Self {
+    pub const fn margins_removed(&self, margins: &Margins) -> Self {
         Self::from(
             self.x1 + margins.left(),
             self.y1 + margins.top(),
