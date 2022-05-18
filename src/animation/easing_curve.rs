@@ -14,6 +14,7 @@ const DEFAULT_PERIOD: f64 = 0.3;
 
 /// The type of easing curve.
 // TODO(Shaohua): Add images to rust doc.
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EasingCurveType {
     /// Easing curve for a linear (t) function: velocity is constant.
@@ -276,7 +277,7 @@ impl EasingCurve {
     /// This is not applicable for all curve types.
     /// It is only applicable for bounce and elastic curves.
     #[must_use]
-    pub fn amplitude(&self) -> f64 {
+    pub const fn amplitude(&self) -> f64 {
         self.amplitude
     }
 
@@ -298,7 +299,7 @@ impl EasingCurve {
     /// - `EasingCurveType::InOutBack`
     /// - `EasingCurveType::OutInBack`
     #[must_use]
-    pub fn overshoot(&self) -> f64 {
+    pub const fn overshoot(&self) -> f64 {
         self.overshoot
     }
 
@@ -312,7 +313,7 @@ impl EasingCurve {
     /// - `EasingCurveType::InOutElastic`
     /// - `EasingCurveType::OutInElastic`
     #[must_use]
-    pub fn period(&self) -> f64 {
+    pub const fn period(&self) -> f64 {
         self.period
     }
 
@@ -369,7 +370,7 @@ impl EasingCurve {
 
     /// Returns the type of the easing curve.
     #[must_use]
-    pub fn get_type(&self) -> EasingCurveType {
+    pub const fn get_type(&self) -> EasingCurveType {
         self.curve_type
     }
 
