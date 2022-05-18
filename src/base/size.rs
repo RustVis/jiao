@@ -44,7 +44,7 @@ impl Size {
 
     /// Constructs a size with the given width and height.
     #[must_use]
-    pub fn from(width: i32, height: i32) -> Self {
+    pub const fn from(width: i32, height: i32) -> Self {
         Self { width, height }
     }
 

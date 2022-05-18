@@ -36,7 +36,7 @@ impl Point {
 
     /// Constructs a point with the given coordinates `(x, y)`.
     #[must_use]
-    pub fn from(x: i32, y: i32) -> Self {
+    pub const fn from(x: i32, y: i32) -> Self {
         Self { x, y }
     }
 

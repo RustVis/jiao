@@ -30,12 +30,12 @@ impl Rect {
     /// Constructs a null rectangle.
     #[must_use]
     pub fn new() -> Self {
-        Self::from(0, 0, 0, 0)
+        Self::default()
     }
 
     /// Constructs a rectangle with `left`, `top` as its top-left corner and the given `width` and `height`.
     #[must_use]
-    pub fn from(left: i32, top: i32, width: i32, height: i32) -> Self {
+    pub const fn from(left: i32, top: i32, width: i32, height: i32) -> Self {
         Self {
             x1: left,
             y1: top,
@@ -67,6 +67,7 @@ impl Rect {
     }
 
     /// Adds `dx1`, `dy1`, `dx2` and `dy2` respectively to the existing coordinates of the rectangle.
+    #[allow(clippy::similar_names)]
     pub fn adjust(&mut self, dx1: i32, dy1: i32, dx2: i32, dy2: i32) {
         self.x1 += dx1;
         self.y1 += dy1;
@@ -77,32 +78,34 @@ impl Rect {
     /// Returns a new rectangle with `dx1`, `dy1`, `dx2` and `dy2` added respectively
     /// to the existing coordinates of this rectangle.
     #[must_use]
-    pub fn adjusted(&self, dx1: i32, dy1: i32, dx2: i32, dy2: i32) -> Self {
+    #[allow(clippy::similar_names)]
+    pub const fn adjusted(&self, dx1: i32, dy1: i32, dx2: i32, dy2: i32) -> Self {
         Self::from(self.x1 + dx1, self.y1 + dy1, self.x2 + dx2, self.y2 + dy2)
     }
 
     /// Returns the y-coordinate of the rectangle's bottom edge.
     #[must_use]
-    pub fn bottom(&self) -> i32 {
+    pub const fn bottom(&self) -> i32 {
         self.y2
     }
 
     /// Returns the position of the rectangle's bottom-left corner.
     #[must_use]
-    pub fn bottom_left(&self) -> Point {
+    pub const fn bottom_left(&self) -> Point {
         Point::from(self.x1, self.y2)
     }
 
     /// Returns the position of the rectangle's bottom-right corner.
     #[must_use]
-    pub fn bottom_right(&self) -> Point {
+    pub const fn bottom_right(&self) -> Point {
         Point::from(self.x2, self.y2)
     }
 
     /// Returns the center point of the rectangle.
     #[must_use]
     pub fn center(&self) -> Point {
-        // cast avoids overflow on addition
+        // Cast avoids overflow on addition.
+        #[allow(clippy::cast_possible_truncation)]
         Point::from(
             ((i64::from(self.x1) + i64::from(self.x2)) / 2) as i32,
             ((i64::from(self.y1) + i64::from(self.y2)) / 2) as i32,
@@ -111,51 +114,43 @@ impl Rect {
 
     /// Returns true if the point (`x`, `y`) is inside this rectangle, otherwise returns false.
     #[must_use]
-    pub fn contains(&self, x: i32, y: i32) -> bool {
+    pub const fn contains(&self, x: i32, y: i32) -> bool {
         self.contains_helper(x, y, false)
     }
 
     /// Returns true if the point (`x`, `y`) is inside this rectangle (not on the edge),
     /// otherwise returns false.
     #[must_use]
-    pub fn contains_proper(&self, x: i32, y: i32) -> bool {
+    pub const fn contains_proper(&self, x: i32, y: i32) -> bool {
         self.contains_helper(x, y, true)
     }
 
-    fn contains_helper(&self, x: i32, y: i32, proper: bool) -> bool {
-        let l;
-        let r;
-        // TODO(Shaohua): Replace with self.x2 < self.x1
-        if self.x2 < self.x1 - 1 {
-            l = self.x2;
-            r = self.x1;
+    const fn contains_helper(&self, x: i32, y: i32, proper: bool) -> bool {
+        let (left, right) = if self.x2 < self.x1 - 1 {
+            (self.x2, self.x1)
         } else {
-            l = self.x1;
-            r = self.x2;
-        }
+            (self.x1, self.x2)
+        };
+
         if proper {
-            if x <= l || x >= r {
+            if x <= left || x >= right {
                 return false;
             }
-        } else if x < l || x > r {
+        } else if x < left || x > right {
             return false;
         }
 
-        let t;
-        let b;
-        if self.y2 < self.y1 - 1 {
-            t = self.y2;
-            b = self.y1;
+        let (top, bottom) = if self.y2 < self.y1 - 1 {
+            (self.y2, self.y1)
         } else {
-            t = self.y1;
-            b = self.y2;
-        }
+            (self.y1, self.y2)
+        };
 
         if proper {
-            if y <= t || y >= b {
+            if y <= top || y >= bottom {
                 return false;
             }
-        } else if y < t || y > b {
+        } else if y < top || y > bottom {
             return false;
         }
         true
@@ -189,7 +184,7 @@ impl Rect {
         self.contains_rect_helper(rect, true)
     }
 
-    fn contains_rect_helper(&self, rect: &Self, proper: bool) -> bool {
+    const fn contains_rect_helper(&self, rect: &Self, proper: bool) -> bool {
         if self.is_null() || rect.is_null() {
             return false;
         }
@@ -266,7 +261,7 @@ impl Rect {
 
     /// Returns the height of the rectangle.
     #[must_use]
-    pub fn height(&self) -> i32 {
+    pub const fn height(&self) -> i32 {
         self.y2 - self.y1
     }
 
@@ -280,7 +275,7 @@ impl Rect {
     /// (i.e., there is at least one pixel that is within both rectangles),
     /// otherwise returns false.
     #[must_use]
-    pub fn intersects(&self, rectangle: &Self) -> bool {
+    pub const fn intersects(&self, rectangle: &Self) -> bool {
         if self.is_null() || rectangle.is_null() {
             return false;
         }
@@ -335,7 +330,7 @@ impl Rect {
     ///
     /// Use the `normalized()` function to retrieve a rectangle where the corners are swapped.
     #[must_use]
-    pub fn is_empty(&self) -> bool {
+    pub const fn is_empty(&self) -> bool {
         self.x1 >= self.x2 || self.y1 >= self.y2
     }
 
@@ -346,7 +341,7 @@ impl Rect {
     ///
     /// A null rectangle is also empty, and hence is not valid.
     #[must_use]
-    pub fn is_null(&self) -> bool {
+    pub const fn is_null(&self) -> bool {
         self.x1 == self.x2 && self.y1 == self.y2
     }
 
@@ -357,13 +352,13 @@ impl Rect {
     ///
     /// A valid rectangle is not empty (i.e., `is_valid`() == !`is_empty`()).
     #[must_use]
-    pub fn is_valid(&self) -> bool {
+    pub const fn is_valid(&self) -> bool {
         self.x1 < self.x2 && self.y1 < self.y2
     }
 
     /// Returns the x-coordinate of the rectangle's left edge. Equivalent to `x()`.
     #[must_use]
-    pub fn left(&self) -> i32 {
+    pub const fn left(&self) -> i32 {
         self.x1
     }
 
@@ -513,7 +508,7 @@ impl Rect {
 
     /// Returns the x-coordinate of the rectangle's right edge.
     #[must_use]
-    pub fn right(&self) -> i32 {
+    pub const fn right(&self) -> i32 {
         self.x2
     }
 
@@ -637,7 +632,7 @@ impl Rect {
 
     /// Returns the size of the rectangle.
     #[must_use]
-    pub fn size(&self) -> Size {
+    pub const fn size(&self) -> Size {
         Size::from(self.width(), self.height())
     }
 
@@ -645,19 +640,19 @@ impl Rect {
     ///
     /// Equivalent to `y()`.
     #[must_use]
-    pub fn top(&self) -> i32 {
+    pub const fn top(&self) -> i32 {
         self.y1
     }
 
     /// Returns the position of the rectangle's top-left corner.
     #[must_use]
-    pub fn top_left(&self) -> Point {
+    pub const fn top_left(&self) -> Point {
         Point::from(self.x1, self.y1)
     }
 
     /// Returns the position of the rectangle's top-right corner.
     #[must_use]
-    pub fn top_right(&self) -> Point {
+    pub const fn top_right(&self) -> Point {
         Point::from(self.x2, self.y1)
     }
 
@@ -686,7 +681,7 @@ impl Rect {
     ///
     /// Positive values move the rectangle to the right and down.
     #[must_use]
-    pub fn translated(&self, dx: i32, dy: i32) -> Self {
+    pub const fn translated(&self, dx: i32, dy: i32) -> Self {
         Self::from(self.x1 + dx, self.y1 + dy, self.x2 + dx, self.y2 + dy)
     }
 
@@ -716,7 +711,7 @@ impl Rect {
 
     /// Returns the width of the rectangle.
     #[must_use]
-    pub fn width(&self) -> i32 {
+    pub const fn width(&self) -> i32 {
         self.x2 - self.x1
     }
 
@@ -724,7 +719,7 @@ impl Rect {
     ///
     /// Equivalent to `left()`.
     #[must_use]
-    pub fn x(&self) -> i32 {
+    pub const fn x(&self) -> i32 {
         self.x1
     }
 
@@ -732,7 +727,7 @@ impl Rect {
     ///
     /// Equivalent to `top()`.
     #[must_use]
-    pub fn y(&self) -> i32 {
+    pub const fn y(&self) -> i32 {
         self.y1
     }
 }
@@ -900,6 +895,7 @@ impl ops::BitOrAssign<&Self> for Rect {
 ///
 /// A `RectF` can be constructed with a set of left, top, width and height values,
 /// or from a `PointF` and a `SizeF`.
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct RectF {
     x1: f64,
@@ -921,7 +917,7 @@ impl RectF {
     /// Constructs a null rectangle.
     #[must_use]
     pub fn new() -> Self {
-        Self::from(0.0, 0.0, 0.0, 0.0)
+        Self::default()
     }
 
     /// Constructs a rectangle with `left`, `top` as its top-left corner and the given `width` and `height`.
@@ -937,7 +933,7 @@ impl RectF {
 
     /// Constructs a rectangle with four corners.
     #[must_use]
-    pub fn from_corners(left: f64, top: f64, right: f64, bottom: f64) -> Self {
+    pub const fn from_corners(left: f64, top: f64, right: f64, bottom: f64) -> Self {
         Self {
             x1: left,
             y1: top,
@@ -1000,6 +996,7 @@ impl RectF {
     }
 
     /// Adds `dx1`, `dy1`, `dx2` and `dy2` respectively to the existing coordinates of the rectangle.
+    #[allow(clippy::similar_names)]
     pub fn adjust(&mut self, dx1: f64, dy1: f64, dx2: f64, dy2: f64) {
         self.x1 += dx1;
         self.y1 += dy1;
@@ -1010,13 +1007,14 @@ impl RectF {
     /// Returns a new rectangle with `dx1`, `dy1`, `dx2` and `dy2` added respectively
     /// to the existing coordinates of this rectangle.
     #[must_use]
+    #[allow(clippy::similar_names)]
     pub fn adjusted(&self, dx1: f64, dy1: f64, dx2: f64, dy2: f64) -> Self {
         Self::from(self.x1 + dx1, self.y1 + dy1, self.x2 + dx2, self.y2 + dy2)
     }
 
     /// Returns the y-coordinate of the rectangle's bottom edge.
     #[must_use]
-    pub fn bottom(&self) -> f64 {
+    pub const fn bottom(&self) -> f64 {
         self.y2
     }
 
@@ -1035,11 +1033,7 @@ impl RectF {
     /// Returns the center point of the rectangle.
     #[must_use]
     pub fn center(&self) -> PointF {
-        // cast avoids overflow on addition
-        PointF::from(
-            ((self.x1 as i64 + self.x2 as i64) / 2) as f64,
-            ((self.y1 as i64 + self.y2 as i64) / 2) as f64,
-        )
+        PointF::from((self.x1 + self.x2) / 2.0, (self.y1 + self.y2) / 2.0)
     }
 
     /// Returns true if the point (`x`, `y`) is inside this rectangle, otherwise returns false.
@@ -1056,39 +1050,30 @@ impl RectF {
     }
 
     fn contains_helper(&self, x: f64, y: f64, proper: bool) -> bool {
-        let l;
-        let r;
-        // TODO(Shaohua): Replace with self.x2 < self.x1
-        if self.x2 < self.x1 - 1.0 {
-            l = self.x2;
-            r = self.x1;
+        let (left, right) = if self.x2 < self.x1 - 1.0 {
+            (self.x2, self.x1)
         } else {
-            l = self.x1;
-            r = self.x2;
-        }
+            (self.x1, self.x2)
+        };
         if proper {
-            if x <= l || x >= r {
+            if x <= left || x >= right {
                 return false;
             }
-        } else if x < l || x > r {
+        } else if x < left || x > right {
             return false;
         }
 
-        let t;
-        let b;
-        if self.y2 < self.y1 - 1.0 {
-            t = self.y2;
-            b = self.y1;
+        let (top, bottom) = if self.y2 < self.y1 - 1.0 {
+            (self.y2, self.y1)
         } else {
-            t = self.y1;
-            b = self.y2;
-        }
+            (self.y1, self.y2)
+        };
 
         if proper {
-            if y <= t || y >= b {
+            if y <= top || y >= bottom {
                 return false;
             }
-        } else if y < t || y > b {
+        } else if y < top || y > bottom {
             return false;
         }
         true
@@ -1280,7 +1265,7 @@ impl RectF {
     /// A null rectangle is also empty, and hence is not valid.
     #[must_use]
     pub fn is_null(&self) -> bool {
-        self.x1 == self.x2 && self.y1 == self.y2
+        fuzzy_compare(self.x1, self.x2) && fuzzy_compare(self.y1, self.y2)
     }
 
     /// Returns true if the rectangle is valid, otherwise returns false.
@@ -1296,7 +1281,7 @@ impl RectF {
 
     /// Returns the x-coordinate of the rectangle's left edge. Equivalent to `x()`.
     #[must_use]
-    pub fn left(&self) -> f64 {
+    pub const fn left(&self) -> f64 {
         self.x1
     }
 
@@ -1446,7 +1431,7 @@ impl RectF {
 
     /// Returns the x-coordinate of the rectangle's right edge.
     #[must_use]
-    pub fn right(&self) -> f64 {
+    pub const fn right(&self) -> f64 {
         self.x2
     }
 
@@ -1578,7 +1563,7 @@ impl RectF {
     ///
     /// Equivalent to `y()`.
     #[must_use]
-    pub fn top(&self) -> f64 {
+    pub const fn top(&self) -> f64 {
         self.y1
     }
 
@@ -1657,7 +1642,7 @@ impl RectF {
     ///
     /// Equivalent to `left()`.
     #[must_use]
-    pub fn x(&self) -> f64 {
+    pub const fn x(&self) -> f64 {
         self.x1
     }
 
@@ -1665,7 +1650,7 @@ impl RectF {
     ///
     /// Equivalent to `top()`.
     #[must_use]
-    pub fn y(&self) -> f64 {
+    pub const fn y(&self) -> f64 {
         self.y1
     }
 }
