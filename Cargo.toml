@@ -1,12 +1,27 @@
 [package]
 name = "jiao"
 version = "0.1.1"
-authors = ["Xu Shaohua <shaohua@biofan.org>"]
+authors = [
+  "Xu Shaohua <shaohua@biofan.org>"
+]
 description = "Cross platform 2D rendering engine"
 homepage = "https://github.com/RustVis/jiao"
 repository = "https://github.com/RustVis/jiao"
 documentation = "https://docs.rs/jiao"
 readme = "README.md"
+categories = [
+  "computer-vision",
+  "graphics",
+  "rendering",
+  "visualization",
+]
+keywords = [
+  "2d",
+  "canvas",
+  "painting",
+  "rendering",
+  "svg",
+]
 edition = "2021"
 license = "Apache-2.0"
 publish = true
