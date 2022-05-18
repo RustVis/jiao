@@ -201,6 +201,7 @@ impl Matrix {
     /// ```
     /// If rotation or shearing has been specified, this function returns the bounding rectangle.
     #[must_use]
+    #[allow(clippy::similar_names)]
     pub fn map_rect(&self, rect: &RectF) -> RectF {
         if self.m12 == 0.0 && self.m21 == 0.0 {
             let mut x = self.m11.mul_add(rect.x(), self.dx);
@@ -259,11 +260,11 @@ impl Matrix {
         const DEG2RAD: f64 = PI / 180.0;
         let mut sina = 0.0;
         let mut cosa = 0.0;
-        if degree == 90.0 || degree == -270.0 {
+        if fuzzy_compare(degree, 90.0) || fuzzy_compare(degree, -270.0) {
             sina = 1.0;
-        } else if degree == 270.0 || degree == -90.0 {
+        } else if fuzzy_compare(degree, 270.0) || fuzzy_compare(degree, -90.0) {
             sina = -1.0;
-        } else if degree == 180.0 {
+        } else if fuzzy_compare(degree, 180.0) {
             cosa = -1.0;
         } else {
             // convert to radians
@@ -351,6 +352,7 @@ impl ops::Mul<&Matrix> for &Matrix {
     /// Returns the result of multiplying this matrix by the given matrix.
     ///
     /// Note that matrix multiplication is not commutative, i.e. a*b != b*a.
+    #[allow(clippy::similar_names)]
     fn mul(self, m: &Matrix) -> Self::Output {
         let tm11 = self.m11.mul_add(m.m11, self.m12 * m.m21);
         let tm12 = self.m11.mul_add(m.m12, self.m12 * m.m22);
@@ -366,6 +368,7 @@ impl ops::Mul<&Matrix> for &Matrix {
 
 impl ops::MulAssign<&Self> for Matrix {
     /// Returns the result of multiplying this matrix by the given matrix.
+    #[allow(clippy::similar_names)]
     fn mul_assign(&mut self, m: &Self) {
         let tm11 = self.m11.mul_add(m.m11, self.m12 * m.m21);
         let tm12 = self.m11.mul_add(m.m12, self.m12 * m.m22);

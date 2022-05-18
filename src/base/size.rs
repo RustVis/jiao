@@ -50,7 +50,7 @@ impl Size {
 
     /// Returns the size that results from shrinking this size by margins.
     #[must_use]
-    pub fn shrunk_by(&self, margins: &Margins) -> Self {
+    pub const fn shrunk_by(&self, margins: &Margins) -> Self {
         Self {
             width: self.width - margins.left() - margins.right(),
             height: self.height - margins.top() - margins.bottom(),
@@ -59,7 +59,7 @@ impl Size {
 
     /// Returns the size that results from growing this size by margins.
     #[must_use]
-    pub fn grown_by(&self, margins: &Margins) -> Self {
+    pub const fn grown_by(&self, margins: &Margins) -> Self {
         Self {
             width: self.width + margins.left() + margins.right(),
             height: self.height + margins.top() + margins.bottom(),

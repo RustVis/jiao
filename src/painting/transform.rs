@@ -464,6 +464,7 @@ impl Transform {
     ///
     /// Note that the transformed coordinates are rounded to the nearest integer.
     #[must_use]
+    #[allow(clippy::similar_names)]
     pub fn map_line(&self, line: &Line) -> Line {
         let fx1 = f64::from(line.x1());
         let fy1 = f64::from(line.y1());
@@ -525,6 +526,7 @@ impl Transform {
     /// Creates and returns a Line object that is a copy of the given line,
     /// mapped into the coordinate system defined by this matrix.
     #[must_use]
+    #[allow(clippy::similar_names)]
     pub fn map_line_f(&self, line: &LineF) -> LineF {
         let fx1 = line.x1();
         let fy1 = line.y1();
@@ -621,6 +623,8 @@ impl Transform {
     }
 
     fn map_helper(&self, x: f64, y: f64) -> (f64, f64) {
+        const NEAR_CLIP: f64 = 0.000_001;
+
         let t = self.get_type();
         let mut nx;
         let mut ny;
@@ -644,7 +648,6 @@ impl Transform {
                 ny = self.m12.mul_add(x, self.m22 * y) + self.m32;
                 if t == TransformationType::Project {
                     let mut w = self.m13.mul_add(x, self.m23 * y) + self.m33;
-                    const NEAR_CLIP: f64 = 0.000_001;
                     if w < NEAR_CLIP {
                         w = NEAR_CLIP;
                     }
@@ -1032,7 +1035,7 @@ impl Transform {
 
     /// Returns the transpose of this matrix.
     #[must_use]
-    pub fn transposed(&self) -> Self {
+    pub const fn transposed(&self) -> Self {
         Self::new_3d(
             self.m11, self.m21, self.m31, self.m12, self.m22, self.m32, self.m13, self.m23,
             self.m33,
@@ -1068,9 +1071,8 @@ impl Transform {
             let dot = self.m11 * self.m12 * self.m21 * self.m22;
             if fuzzy_is_zero(dot) {
                 return TransformationType::Rotate;
-            } else {
-                return TransformationType::Shear;
             }
+            return TransformationType::Shear;
         }
 
         if self.dirty == TransformationType::Scale

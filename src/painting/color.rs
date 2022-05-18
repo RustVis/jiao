@@ -662,56 +662,56 @@ impl Color {
                 }
 
                 // chromatic case
-                let h = if c.hue == 36_000 {
+                let hue = if c.hue == 36_000 {
                     0.0
                 } else {
                     f64::from(c.hue) / 6000.0
                 };
-                let s = f64::from(c.saturation) / MAX_VALUE_F64;
-                let v = f64::from(c.value) / MAX_VALUE_F64;
-                let i = h as i32;
-                let f = h - f64::from(i);
-                let p = v * (1.0 - s);
+                let saturation = f64::from(c.saturation) / MAX_VALUE_F64;
+                let value = f64::from(c.value) / MAX_VALUE_F64;
+                let hue_int = hue as i32;
+                let f = hue - f64::from(hue_int);
+                let p = value * (1.0 - saturation);
 
-                if i % 2 == 1 {
-                    let q = v * (1.0 - (s * f));
+                if hue_int % 2 == 1 {
+                    let q = value * (1.0 - (saturation * f));
 
-                    match i {
+                    match hue_int {
                         1 => {
                             rgb.red = (q * MAX_VALUE_F64).round() as u8;
-                            rgb.green = (v * MAX_VALUE_F64).round() as u8;
+                            rgb.green = (value * MAX_VALUE_F64).round() as u8;
                             rgb.blue = (p * MAX_VALUE_F64).round() as u8;
                         }
                         3 => {
                             rgb.red = (p * MAX_VALUE_F64).round() as u8;
                             rgb.green = (q * MAX_VALUE_F64).round() as u8;
-                            rgb.blue = (v * MAX_VALUE_F64).round() as u8;
+                            rgb.blue = (value * MAX_VALUE_F64).round() as u8;
                         }
                         5 => {
-                            rgb.red = (v * MAX_VALUE_F64).round() as u8;
+                            rgb.red = (value * MAX_VALUE_F64).round() as u8;
                             rgb.green = (p * MAX_VALUE_F64).round() as u8;
                             rgb.blue = (q * MAX_VALUE_F64).round() as u8;
                         }
                         _ => (),
                     }
                 } else {
-                    let t = v * (1.0 - (s * (1.0 - f)));
+                    let t = value * (1.0 - (saturation * (1.0 - f)));
 
-                    match i {
+                    match hue_int {
                         0 => {
-                            rgb.red = (v * MAX_VALUE_F64).round() as u8;
+                            rgb.red = (value * MAX_VALUE_F64).round() as u8;
                             rgb.green = (t * MAX_VALUE_F64).round() as u8;
                             rgb.blue = (p * MAX_VALUE_F64).round() as u8;
                         }
                         2 => {
                             rgb.red = (p * MAX_VALUE_F64).round() as u8;
-                            rgb.green = (v * MAX_VALUE_F64).round() as u8;
+                            rgb.green = (value * MAX_VALUE_F64).round() as u8;
                             rgb.blue = (t * MAX_VALUE_F64).round() as u8;
                         }
                         4 => {
                             rgb.red = (t * MAX_VALUE_F64).round() as u8;
                             rgb.green = (p * MAX_VALUE_F64).round() as u8;
-                            rgb.blue = (v * MAX_VALUE_F64).round() as u8;
+                            rgb.blue = (value * MAX_VALUE_F64).round() as u8;
                         }
                         _ => (),
                     }
