@@ -71,12 +71,18 @@ pub enum TransformationType {
     Project = 0x10,
 }
 
+impl Default for Transform {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Transform {
     /// Constructs an identity matrix.
     ///
     /// All elements are set to zero except m11 and m22 (specifying the scale) and m33 which are set to 1.
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             m11: 1.0,
             m12: 0.0,
@@ -95,7 +101,7 @@ impl Transform {
 
     /// Constructs a matrix with the elements, `m11`, `m12`, `m21`, `m22`, `dx` and `dy`.
     #[must_use]
-    pub fn new_2d(m11: f64, m12: f64, m21: f64, m22: f64, dx: f64, dy: f64) -> Self {
+    pub const fn new_2d(m11: f64, m12: f64, m21: f64, m22: f64, dx: f64, dy: f64) -> Self {
         Self {
             m11,
             m12,
@@ -113,8 +119,9 @@ impl Transform {
     }
 
     /// Constructs a matrix with the elements, `m11`, `m12`, `m13`, `m21`, `m22`, `m23`, `m31`, `m32`, `m33`.
+    #[allow(clippy::too_many_arguments)]
     #[must_use]
-    pub fn new_3d(
+    pub const fn new_3d(
         m11: f64,
         m12: f64,
         m13: f64,
@@ -148,7 +155,7 @@ impl Transform {
     #[must_use]
     pub fn from_scale(sx: f64, sy: f64) -> Self {
         let mut transform = Self::new_3d(sx, 0.0, 0.0, 0.0, sy, 0.0, 0.0, 0.0, 1.0);
-        if sx == 1.0 && sy == 1.0 {
+        if fuzzy_compare(sx, 1.0) && fuzzy_compare(sy, 1.0) {
             transform.type_ = TransformationType::None;
         } else {
             transform.type_ = TransformationType::Scale;
@@ -164,7 +171,7 @@ impl Transform {
     #[must_use]
     pub fn from_translate(dx: f64, dy: f64) -> Self {
         let mut transform = Self::new_3d(1.0, 0.0, 0.0, 0.0, 1.0, 0.0, dx, dy, 1.0);
-        if dx == 0.0 && dy == 0.0 {
+        if fuzzy_is_zero(dx) && fuzzy_is_zero(dy) {
             transform.type_ = TransformationType::None;
         } else {
             transform.type_ = TransformationType::Translate;
@@ -175,55 +182,55 @@ impl Transform {
 
     /// Returns the horizontal scaling factor.
     #[must_use]
-    pub fn m11(&self) -> f64 {
+    pub const fn m11(&self) -> f64 {
         self.m11
     }
 
     /// Returns the vertical shearing factor.
     #[must_use]
-    pub fn m12(&self) -> f64 {
+    pub const fn m12(&self) -> f64 {
         self.m12
     }
 
     /// Returns the horizontal projection factor.
     #[must_use]
-    pub fn m13(&self) -> f64 {
+    pub const fn m13(&self) -> f64 {
         self.m13
     }
 
     /// Returns the horizontal shearing factor.
     #[must_use]
-    pub fn m21(&self) -> f64 {
+    pub const fn m21(&self) -> f64 {
         self.m21
     }
 
     /// Returns the vertical scaling factor.
     #[must_use]
-    pub fn m22(&self) -> f64 {
+    pub const fn m22(&self) -> f64 {
         self.m22
     }
 
     /// Returns the vertical projection factor.
     #[must_use]
-    pub fn m23(&self) -> f64 {
+    pub const fn m23(&self) -> f64 {
         self.m23
     }
 
     /// Returns the horizontal translation factor.
     #[must_use]
-    pub fn m31(&self) -> f64 {
+    pub const fn m31(&self) -> f64 {
         self.m31
     }
 
     /// Returns the vertical translation factor.
     #[must_use]
-    pub fn m32(&self) -> f64 {
+    pub const fn m32(&self) -> f64 {
         self.m32
     }
 
     /// Returns the division factor.
     #[must_use]
-    pub fn m33(&self) -> f64 {
+    pub const fn m33(&self) -> f64 {
         self.m33
     }
 
@@ -255,13 +262,13 @@ impl Transform {
 
     /// Returns the horizontal translation factor.
     #[must_use]
-    pub fn dx(&self) -> f64 {
+    pub const fn dx(&self) -> f64 {
         self.m31
     }
 
     /// Returns the vertical translation factor.
     #[must_use]
-    pub fn dy(&self) -> f64 {
+    pub const fn dy(&self) -> f64 {
         self.m32
     }
 
@@ -269,6 +276,7 @@ impl Transform {
     ///
     /// If the matrix is singular (not invertible), the returned matrix is the identity matrix.
     /// Value of `invertible` is set to true if the matrix is invertible, otherwise it is set to false.
+    #[must_use]
     pub fn inverted(&self, invertible: &mut bool) -> Self {
         let mut invert = Self::new();
         let mut inv = true;
@@ -295,7 +303,7 @@ impl Transform {
                 // TODO(Shaohua): implements inverted()
                 //invert.affine = affine.inverted(&inv);
             }
-            _ => {
+            TransformationType::Project => {
                 // general case
                 let det = self.determinant();
                 inv = !fuzzy_is_zero(det);
@@ -368,6 +376,7 @@ impl Transform {
     #[must_use]
     pub fn map_int(&self, x: i32, y: i32) -> (i32, i32) {
         let (fx, fy) = self.map_helper(f64::from(x), f64::from(y));
+        #[allow(clippy::cast_possible_truncation)]
         (fx.round() as i32, fy.round() as i32)
     }
 
@@ -408,6 +417,7 @@ impl Transform {
             }
         }
 
+        #[allow(clippy::cast_possible_truncation)]
         Point::from(x.round() as i32, y.round() as i32)
     }
 
@@ -503,6 +513,7 @@ impl Transform {
             }
         }
 
+        #[allow(clippy::cast_possible_truncation)]
         Line::from(
             x1.round() as i32,
             y1.round() as i32,
@@ -701,17 +712,17 @@ impl Transform {
     ///
     /// The `angle` is specified in degrees.
     pub fn rotate_with_axis(&mut self, angle: f64, axis: Axis) {
-        if angle == 0.0 {
+        if fuzzy_is_zero(angle) {
             return;
         }
 
         let mut sina = 0.0;
         let mut cosa = 0.0;
-        if angle == 90.0 || angle == -270.0 {
+        if fuzzy_compare(angle, 90.0) || fuzzy_compare(angle, -270.0) {
             sina = 1.0;
-        } else if angle == 270.0 || angle == -90.0 {
+        } else if fuzzy_compare(angle, 270.0) || fuzzy_compare(angle, -90.0) {
             sina = -1.0;
-        } else if angle == 180.0 {
+        } else if fuzzy_compare(angle, 180.0) {
             cosa = -1.0;
         } else {
             // convert to radians
@@ -861,7 +872,7 @@ impl Transform {
 
     /// Scales the coordinate system by `sx` horizontally and `sy` vertically.
     pub fn scale(&mut self, sx: f64, sy: f64) {
-        if sx == 1.0 && sy == 1.0 {
+        if fuzzy_compare(sx, 1.0) && fuzzy_compare(sy, 1.0) {
             return;
         }
 
@@ -904,6 +915,7 @@ impl Transform {
     /// Transform provides the `translate()`, `rotate()`, `scale()` and `shear()`
     /// convenience functions to manipulate the various matrix elements
     /// based on the currently defined coordinate system.
+    #[allow(clippy::too_many_arguments)]
     pub fn set_matrix(
         &mut self,
         m11: f64,
@@ -1073,7 +1085,7 @@ impl Transform {
             return TransformationType::Translate;
         }
 
-        assert_eq!(self.dirty, TransformationType::None);
+        debug_assert!(self.dirty == TransformationType::None);
         TransformationType::None
     }
 
@@ -1318,7 +1330,7 @@ impl ops::MulAssign<f64> for Transform {
     /// Returns the result of performing an element-wise multiplication of this matrix
     /// with the given scalar.
     fn mul_assign(&mut self, scalar: f64) {
-        if scalar == 1.0 {
+        if fuzzy_compare(scalar, 1.0) {
             return;
         }
         self.m11 *= scalar;
