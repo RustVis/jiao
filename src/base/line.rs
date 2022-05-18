@@ -424,8 +424,8 @@ impl LineF {
         let dx = angle_r.cos() * len;
         let dy = -angle_r.sin() * len;
 
-        *self.p2.rx() = self.p1.x() + dx;
-        *self.p2.ry() = self.p1.y() + dy;
+        *self.p2.x_mut() = self.p1.x() + dx;
+        *self.p2.y_mut() = self.p1.y() + dy;
     }
 
     /// Sets the length of the line to the given length.

@@ -15,7 +15,7 @@ use crate::util::{fuzzy_compare, fuzzy_is_zero};
 /// The `is_null()` function returns true if both x and y are set to 0.
 ///
 /// The coordinates can be set (or altered) using the `set_x()` and `sety()` functions,
-/// or alternatively the `rx()` and `ry()` functions which return references
+/// or alternatively the `x_mut()` and `y_mut()` functions which return references
 /// to the coordinates (allowing direct manipulation).
 ///
 /// A Point object can also be used as a vector: Addition and subtraction are defined as for vectors
@@ -30,7 +30,7 @@ pub struct Point {
 impl Point {
     /// Constructs a null point, i.e. with coordinates (0, 0)
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self::from(0, 0)
     }
 
@@ -47,12 +47,12 @@ impl Point {
 
     /// Returns the x coordinate of this point.
     #[must_use]
-    pub fn x(&self) -> i32 {
+    pub const fn x(&self) -> i32 {
         self.x
     }
 
-    /// Returns a reference to the x coordinate of this point.
-    pub fn rx(&mut self) -> &mut i32 {
+    /// Returns a mutable reference to the x coordinate of this point.
+    pub fn x_mut(&mut self) -> &mut i32 {
         &mut self.x
     }
 
@@ -63,12 +63,12 @@ impl Point {
 
     /// Returns the y coordinate of this point.
     #[must_use]
-    pub fn y(&self) -> i32 {
+    pub const fn y(&self) -> i32 {
         self.y
     }
 
-    /// Returns a reference to the y coordinate of this point.
-    pub fn ry(&mut self) -> &mut i32 {
+    /// Returns a mutable reference to the y coordinate of this point.
+    pub fn y_mut(&mut self) -> &mut i32 {
         &mut self.y
     }
 
@@ -80,26 +80,26 @@ impl Point {
 
     /// Returns the dot product of two points.
     #[must_use]
-    pub fn dot_product(&self, other: Self) -> i32 {
+    pub const fn dot_product(&self, other: Self) -> i32 {
         self.x * other.x + self.y * other.y
     }
 
     /// Returns true if both the x and y coordinates are set to 0, otherwise returns false.
     #[must_use]
-    pub fn is_null(&self) -> bool {
+    pub const fn is_null(&self) -> bool {
         self.x == 0 && self.y == 0
     }
 
     /// Returns the sum of the absolute values of x() and y(),
     /// traditionally known as the "Manhattan length" of the vector from the origin to the point.
     #[must_use]
-    pub fn manhattan_length(&self) -> i32 {
+    pub const fn manhattan_length(&self) -> i32 {
         self.x.abs() + self.y.abs()
     }
 
     /// Returns a point with x and y coordinates exchanged:
     #[must_use]
-    pub fn transposed(&self) -> Self {
+    pub const fn transposed(&self) -> Self {
         Self {
             x: self.y,
             y: self.x,
@@ -151,24 +151,30 @@ impl ops::MulAssign<i32> for Point {
 }
 
 impl ops::MulAssign<f32> for Point {
+    #[allow(clippy::cast_possible_truncation)]
+    #[allow(clippy::cast_precision_loss)]
     fn mul_assign(&mut self, factor: f32) {
-        self.x = (self.x as f32 * factor) as i32;
-        self.y = (self.y as f32 * factor) as i32;
+        self.x = (self.x as f32 * factor).round() as i32;
+        self.y = (self.y as f32 * factor).round() as i32;
     }
 }
 
 impl ops::MulAssign<f64> for Point {
+    #[allow(clippy::cast_possible_truncation)]
+    #[allow(clippy::cast_precision_loss)]
     fn mul_assign(&mut self, factor: f64) {
-        self.x = (f64::from(self.x) * factor) as i32;
-        self.y = (f64::from(self.y) * factor) as i32;
+        self.x = (f64::from(self.x) * factor).round() as i32;
+        self.y = (f64::from(self.y) * factor).round() as i32;
     }
 }
 
 impl ops::DivAssign<f64> for Point {
+    #[allow(clippy::cast_possible_truncation)]
+    #[allow(clippy::cast_precision_loss)]
     fn div_assign(&mut self, factor: f64) {
         assert!(factor != 0.0);
-        self.x = (f64::from(self.x) / factor) as i32;
-        self.y = (f64::from(self.y) / factor) as i32;
+        self.x = (f64::from(self.x) / factor).round() as i32;
+        self.y = (f64::from(self.y) / factor).round() as i32;
     }
 }
 
@@ -181,8 +187,9 @@ impl ops::DivAssign<f64> for Point {
 /// The `is_null()` function returns true if both x and y are set to 0.0.
 ///
 /// The coordinates can be set (or altered) using the `set_x()` and `set_y()` functions,
-/// or alternatively the `rx()` and `ry()` functions which return
+/// or alternatively the `x_mut()` and `y_mut()` functions which return
 /// references to the coordinates (allowing direct manipulation).
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize)]
 pub struct PointF {
     x: f64,
@@ -198,13 +205,13 @@ impl PartialEq for PointF {
 impl PointF {
     /// Constructs a null point, i.e. with coordinates (0, 0)
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self::from(0.0, 0.0)
     }
 
     /// Constructs a point with the given coordinates `(x, y)`.
     #[must_use]
-    pub fn from(x: f64, y: f64) -> Self {
+    pub const fn from(x: f64, y: f64) -> Self {
         Self { x, y }
     }
 
@@ -215,12 +222,12 @@ impl PointF {
 
     /// Returns the x coordinate of this point.
     #[must_use]
-    pub fn x(&self) -> f64 {
+    pub const fn x(&self) -> f64 {
         self.x
     }
 
-    /// Returns a reference to the x coordinate of this point.
-    pub fn rx(&mut self) -> &mut f64 {
+    /// Returns a mutable reference to the x coordinate of this point.
+    pub fn x_mut(&mut self) -> &mut f64 {
         &mut self.x
     }
 
@@ -231,12 +238,12 @@ impl PointF {
 
     /// Returns the y coordinate of this point.
     #[must_use]
-    pub fn y(&self) -> f64 {
+    pub const fn y(&self) -> f64 {
         self.y
     }
 
-    /// Returns a reference to the y coordinate of this point.
-    pub fn ry(&mut self) -> &mut f64 {
+    /// Returns a mutable reference to the y coordinate of this point.
+    pub fn y_mut(&mut self) -> &mut f64 {
         &mut self.y
     }
 
@@ -269,12 +276,13 @@ impl PointF {
     /// and returns a Point object with the rounded coordinates.
     #[must_use]
     pub fn to_point(&self) -> Point {
+        #[allow(clippy::cast_possible_truncation)]
         Point::from(self.x.round() as i32, self.y.round() as i32)
     }
 
     /// Returns a point with x and y coordinates exchanged:
     #[must_use]
-    pub fn transposed(&self) -> Self {
+    pub const fn transposed(&self) -> Self {
         Self {
             x: self.y,
             y: self.x,

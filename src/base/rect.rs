@@ -46,7 +46,7 @@ impl Rect {
 
     /// Constructs a rectangle with the given `top_left` corner and the given `size`.
     #[must_use]
-    pub fn from_size(top_left: Point, size: Size) -> Self {
+    pub const fn from_size(top_left: Point, size: Size) -> Self {
         Self {
             x1: top_left.x(),
             y1: top_left.y(),
@@ -57,7 +57,7 @@ impl Rect {
 
     /// Constructs a rectangle with the given `top_left` and `bottom_right` corners.
     #[must_use]
-    pub fn from_points(top_left: Point, bottom_right: Point) -> Self {
+    pub const fn from_points(top_left: Point, bottom_right: Point) -> Self {
         Self {
             x1: top_left.x(),
             y1: top_left.y(),
@@ -159,14 +159,14 @@ impl Rect {
     /// Returns true if the given point is inside or on the edge of the rectangle,
     /// otherwise returns false.
     #[must_use]
-    pub fn contains_point(&self, point: &Point) -> bool {
+    pub const fn contains_point(&self, point: &Point) -> bool {
         self.contains(point.x(), point.y())
     }
 
     /// Returns true if the given point is inside of the rectangle,
     /// otherwise returns false (including on the edges).
     #[must_use]
-    pub fn contains_point_proper(&self, point: &Point) -> bool {
+    pub const fn contains_point_proper(&self, point: &Point) -> bool {
         self.contains_proper(point.x(), point.y())
     }
 
@@ -688,7 +688,7 @@ impl Rect {
     /// Returns a copy of the rectangle that is translated `offset.x()` along the x axis
     /// and `offset.y()` along the y axis, relative to the current position.
     #[must_use]
-    pub fn translated_point(&self, offset: &Point) -> Self {
+    pub const fn translated_point(&self, offset: &Point) -> Self {
         Self::from(
             self.x1 + offset.x(),
             self.y1 + offset.y(),
@@ -699,7 +699,7 @@ impl Rect {
 
     /// Returns a copy of the rectangle that has its width and height exchanged:
     #[must_use]
-    pub fn transposed(&self) -> Self {
+    pub const fn transposed(&self) -> Self {
         Self::from_size(self.top_left(), self.size().transposed())
     }
 
@@ -955,7 +955,7 @@ impl RectF {
 
     /// Constructs a rectangle with the given `top_left` and `bottom_right` corners.
     #[must_use]
-    pub fn from_points(top_left: PointF, bottom_right: PointF) -> Self {
+    pub const fn from_points(top_left: PointF, bottom_right: PointF) -> Self {
         Self {
             x1: top_left.x(),
             y1: top_left.y(),
@@ -1020,13 +1020,13 @@ impl RectF {
 
     /// Returns the position of the rectangle's bottom-left corner.
     #[must_use]
-    pub fn bottom_left(&self) -> PointF {
+    pub const fn bottom_left(&self) -> PointF {
         PointF::from(self.x1, self.y2)
     }
 
     /// Returns the position of the rectangle's bottom-right corner.
     #[must_use]
-    pub fn bottom_right(&self) -> PointF {
+    pub const fn bottom_right(&self) -> PointF {
         PointF::from(self.x2, self.y2)
     }
 
@@ -1569,13 +1569,13 @@ impl RectF {
 
     /// Returns the position of the rectangle's top-left corner.
     #[must_use]
-    pub fn top_left(&self) -> PointF {
+    pub const fn top_left(&self) -> PointF {
         PointF::from(self.x1, self.y1)
     }
 
     /// Returns the position of the rectangle's top-right corner.
     #[must_use]
-    pub fn top_right(&self) -> PointF {
+    pub const fn top_right(&self) -> PointF {
         PointF::from(self.x2, self.y1)
     }
 

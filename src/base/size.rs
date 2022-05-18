@@ -16,7 +16,7 @@ use crate::util::{fuzzy_compare, fuzzy_is_zero};
 /// or using arithmetic operators.
 ///
 /// A size can also be manipulated directly by retrieving references to the width and height
-/// using the `rwidth()` and `rheight()` functions.
+/// using the `width_mut()` and `height_mut()` functions.
 ///
 /// Finally, the width and height can be swapped using the `transpose()` function.
 ///
@@ -290,7 +290,7 @@ impl ops::DivAssign<f64> for Size {
 /// or using arithmetic operators.
 ///
 /// A size can also be manipulated directly by retrieving references to the width and height
-/// using the `rwidth()` and `rheight()` functions.
+/// using the `width_mut()` and `height_mut()` functions.
 ///
 /// Finally, the width and height can be swapped using the `transpose()` function.
 ///
