@@ -3,6 +3,7 @@
 // in the LICENSE file.
 
 /// Specify the text alignment when drawing text.
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug, Clone, Copy, PartialEq)]
 #[repr(u8)]
 pub enum TextAlignment {

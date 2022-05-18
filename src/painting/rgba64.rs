@@ -26,19 +26,19 @@ pub struct Rgba64 {
 #[repr(u8)]
 #[derive(Debug)]
 enum Shifts {
-    RedShift = 48,
-    GreenShift = 32,
-    BlueShift = 16,
-    AlphaShift = 0,
+    Red = 48,
+    Green = 32,
+    Blue = 16,
+    Alpha = 0,
 }
 #[cfg(target_endian = "little")]
 #[repr(u8)]
 #[derive(Debug)]
 enum Shifts {
-    RedShift = 0,
-    GreenShift = 16,
-    BlueShift = 32,
-    AlphaShift = 48,
+    Red = 0,
+    Green = 16,
+    Blue = 32,
+    Alpha = 48,
 }
 
 impl ops::Shl<Shifts> for u64 {
@@ -57,16 +57,23 @@ impl ops::Shr<Shifts> for u64 {
     }
 }
 
+impl Default for Rgba64 {
+    fn default() -> Self {
+        Self { rgba: 0 }
+    }
+}
+
 impl Rgba64 {
     /// Returns the Rgba64 with rgba = 0.
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self { rgba: 0 }
     }
 
     /// Constructs a Rgba64 value from the 32bit ARGB value rgb.
     #[must_use]
     pub fn from_argb32(rgb: u32) -> Self {
+        #[allow(clippy::cast_possible_truncation)]
         Self::from_rgba(
             (rgb >> 16) as u8,
             (rgb >> 8) as u8,
@@ -85,10 +92,10 @@ impl Rgba64 {
     #[must_use]
     pub fn from_rgba64(red: u16, green: u16, blue: u16, alpha: u16) -> Self {
         Self::from_u64(
-            u64::from(red) << Shifts::RedShift
-                | u64::from(green) << Shifts::GreenShift
-                | u64::from(blue) << Shifts::BlueShift
-                | u64::from(alpha) << Shifts::AlphaShift,
+            u64::from(red) << Shifts::Red
+                | u64::from(green) << Shifts::Green
+                | u64::from(blue) << Shifts::Blue
+                | u64::from(alpha) << Shifts::Alpha,
         )
     }
 
@@ -121,7 +128,7 @@ impl Rgba64 {
     /// Returns the alpha channel as an 16-bit.
     #[must_use]
     pub fn alpha(&self) -> u16 {
-        (self.rgba >> Shifts::AlphaShift) as u16
+        (self.rgba >> Shifts::Alpha) as u16
     }
 
     /// Returns the blue color component as an 8-bit.
@@ -133,7 +140,7 @@ impl Rgba64 {
     /// Returns the 16-bit blue color component.
     #[must_use]
     pub fn blue(&self) -> u16 {
-        (self.rgba >> Shifts::BlueShift) as u16
+        (self.rgba >> Shifts::Blue) as u16
     }
 
     /// Returns the green color component as an 8-bit.
@@ -145,7 +152,7 @@ impl Rgba64 {
     /// Returns the 16-bit green color component.
     #[must_use]
     pub fn green(&self) -> u16 {
-        (self.rgba >> Shifts::GreenShift) as u16
+        (self.rgba >> Shifts::Green) as u16
     }
 
     /// Returns whether the color is fully opaque.
@@ -200,31 +207,29 @@ impl Rgba64 {
     /// Returns the 16-bit red color component.
     #[must_use]
     pub fn red(&self) -> u16 {
-        (self.rgba >> Shifts::RedShift) as u16
+        (self.rgba >> Shifts::Red) as u16
     }
 
     /// Sets the alpha of this color to alpha.
     pub fn set_alpha(&mut self, alpha: u16) {
-        self.rgba = (self.rgba & !(0xffff_u64 << Shifts::AlphaShift))
-            | (u64::from(alpha) << Shifts::AlphaShift);
+        self.rgba =
+            (self.rgba & !(0xffff_u64 << Shifts::Alpha)) | (u64::from(alpha) << Shifts::Alpha);
     }
 
     /// Sets the blue color component of this color to blue.
     pub fn set_blue(&mut self, blue: u16) {
-        self.rgba = (self.rgba & !(0xffff_u64 << Shifts::BlueShift))
-            | (u64::from(blue) << Shifts::BlueShift);
+        self.rgba = (self.rgba & !(0xffff_u64 << Shifts::Blue)) | (u64::from(blue) << Shifts::Blue);
     }
 
     /// Sets the green color component of this color to green.
     pub fn set_green(&mut self, green: u16) {
-        self.rgba = (self.rgba & !(0xffff_u64 << Shifts::GreenShift))
-            | (u64::from(green) << Shifts::GreenShift);
+        self.rgba =
+            (self.rgba & !(0xffff_u64 << Shifts::Green)) | (u64::from(green) << Shifts::Green);
     }
 
     /// Sets the red color component of this color to red.
     pub fn set_red(&mut self, red: u16) {
-        self.rgba =
-            (self.rgba & !(0xffff_u64 << Shifts::RedShift)) | (u64::from(red) << Shifts::RedShift);
+        self.rgba = (self.rgba & !(0xffff_u64 << Shifts::Red)) | (u64::from(red) << Shifts::Red);
     }
 
     /// Sets the internal rgba value.
@@ -290,7 +295,7 @@ impl Rgba64 {
 
     #[inline]
     fn alpha_mask() -> u64 {
-        0xffff_u64 << Shifts::AlphaShift
+        0xffff_u64 << Shifts::Alpha
     }
 }
 

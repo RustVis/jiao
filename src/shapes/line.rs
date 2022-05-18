@@ -44,12 +44,12 @@ impl LineShape {
     }
 
     #[must_use]
-    pub fn p1(&self) -> PointF {
+    pub const fn p1(&self) -> PointF {
         self.line.p1()
     }
 
     #[must_use]
-    pub fn p2(&self) -> PointF {
+    pub const fn p2(&self) -> PointF {
         self.line.p2()
     }
 

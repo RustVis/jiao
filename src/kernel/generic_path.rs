@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+#![allow(clippy::module_name_repetitions)]
+
 use super::painter::PathTrait;
 use crate::base::{PointF, RectF};
 
@@ -55,7 +57,7 @@ pub enum GenericPathToken {
     ClosePath,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct GenericPath {
     tokens: Vec<GenericPathToken>,
 }
@@ -63,7 +65,7 @@ pub struct GenericPath {
 impl GenericPath {
     /// Create an empty generic path object.
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self { tokens: Vec::new() }
     }
 

@@ -109,7 +109,7 @@ pub trait AbstractAnimation {
     /// and `state()` returns `Stopped`. The current time is not changed.
     ///
     /// If the animation stops by itself after reaching the end
-    /// (i.e., `current_loop_time() == `duration()` and `current_loop()` > `loop_count()` - 1),
+    /// (i.e., `current_loop_time() == duration() && current_loop() > loop_count() - 1`),
     /// the `finished()` signal is emitted.
     fn stop(&mut self);
 
