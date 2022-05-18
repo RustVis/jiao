@@ -31,13 +31,13 @@ pub struct Line {
 impl Line {
     /// Constructs a null line.
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self::from(0, 0, 0, 0)
     }
 
     /// Constructs a line object that represents the line between (x1, y1) and (x2, y2).
     #[must_use]
-    pub fn from(x1: i32, y1: i32, x2: i32, y2: i32) -> Self {
+    pub const fn from(x1: i32, y1: i32, x2: i32, y2: i32) -> Self {
         Self {
             p1: Point::from(x1, y1),
             p2: Point::from(x2, y2),
@@ -46,43 +46,43 @@ impl Line {
 
     /// Constructs a line object that represents the line between p1 and p2.
     #[must_use]
-    pub fn from_points(p1: Point, p2: Point) -> Self {
+    pub const fn from_points(p1: Point, p2: Point) -> Self {
         Self { p1, p2 }
     }
 
     /// Returns the line's start point.
     #[must_use]
-    pub fn p1(&self) -> Point {
+    pub const fn p1(&self) -> Point {
         self.p1
     }
 
     /// Returns the line's end point.
     #[must_use]
-    pub fn p2(&self) -> Point {
+    pub const fn p2(&self) -> Point {
         self.p2
     }
 
     /// Returns the x-coordinate of the line's start point.
     #[must_use]
-    pub fn x1(&self) -> i32 {
+    pub const fn x1(&self) -> i32 {
         self.p1.x()
     }
 
     /// Returns the x-coordinate of the line's end point.
     #[must_use]
-    pub fn x2(&self) -> i32 {
+    pub const fn x2(&self) -> i32 {
         self.p2.x()
     }
 
     /// Returns the y-coordinate of the line's start point.
     #[must_use]
-    pub fn y1(&self) -> i32 {
+    pub const fn y1(&self) -> i32 {
         self.p1.y()
     }
 
     /// Returns the y-coordinate of the line's end point.
     #[must_use]
-    pub fn y2(&self) -> i32 {
+    pub const fn y2(&self) -> i32 {
         self.p2.y()
     }
 
@@ -91,6 +91,7 @@ impl Line {
     /// This is equivalent to (p1() + p2()) / 2, except it will never overflow.
     #[must_use]
     pub fn center(&self) -> Point {
+        #[allow(clippy::cast_possible_truncation)]
         Point::from(
             ((i64::from(self.p1.x()) + i64::from(self.p2.x())) / 2) as i32,
             ((i64::from(self.p1.y()) + i64::from(self.p2.y())) / 2) as i32,
@@ -99,13 +100,13 @@ impl Line {
 
     /// Returns the horizontal component of the line's vector.
     #[must_use]
-    pub fn dx(&self) -> i32 {
+    pub const fn dx(&self) -> i32 {
         self.p2.x() - self.p1.x()
     }
 
     /// Returns the vertical component of the line's vector.
     #[must_use]
-    pub fn dy(&self) -> i32 {
+    pub const fn dy(&self) -> i32 {
         self.p2.y() - self.p1.y()
     }
 
@@ -140,7 +141,7 @@ impl Line {
 
     /// Translates this line by the given point (`x`, `y`).
     pub fn translate(&mut self, x: i32, y: i32) {
-        self.translate_point(Point::from(x, y))
+        self.translate_point(Point::from(x, y));
     }
 
     /// Translates this line by the given `offset`.
@@ -175,6 +176,7 @@ impl Line {
 /// Use `is_null`() to determine whether the `LineF` represents a valid line or a null line.
 ///
 /// Finally, the line can be translated a given offset using the translate() function.
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug, Default, Clone, PartialEq, Serialize, Deserialize)]
 pub struct LineF {
     p1: PointF,
@@ -184,7 +186,7 @@ pub struct LineF {
 /// Describes the intersection between two lines.
 pub enum IntersectType {
     /// Indicates that the lines do not intersect; i.e. they are parallel.
-    NoIntersection,
+    No,
 
     /// The two lines intersect, but not within the range defined by their lengths.
     ///
@@ -192,22 +194,22 @@ pub enum IntersectType {
     ///
     /// `LineF::intersect()` will also return this value if the intersect point
     /// is within the start and end point of only one of the lines.
-    UnboundedIntersection,
+    Unbounded,
 
     /// The two lines intersect with each other within the start and end points of each line.
-    BoundedIntersection,
+    Bounded,
 }
 
 impl LineF {
     /// Constructs a null line.
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self::from(0.0, 0.0, 0.0, 0.0)
     }
 
     /// Constructs a line object that represents the line between (x1, y1) and (x2, y2).
     #[must_use]
-    pub fn from(x1: f64, y1: f64, x2: f64, y2: f64) -> Self {
+    pub const fn from(x1: f64, y1: f64, x2: f64, y2: f64) -> Self {
         Self {
             p1: PointF::from(x1, y1),
             p2: PointF::from(x2, y2),
@@ -216,7 +218,7 @@ impl LineF {
 
     /// Constructs a line object that represents the line between p1 and p2.
     #[must_use]
-    pub fn from_points(p1: PointF, p2: PointF) -> Self {
+    pub const fn from_points(p1: PointF, p2: PointF) -> Self {
         Self { p1, p2 }
     }
 
@@ -234,37 +236,37 @@ impl LineF {
 
     /// Returns the line's start point.
     #[must_use]
-    pub fn p1(&self) -> PointF {
+    pub const fn p1(&self) -> PointF {
         self.p1
     }
 
     /// Returns the line's end point.
     #[must_use]
-    pub fn p2(&self) -> PointF {
+    pub const fn p2(&self) -> PointF {
         self.p2
     }
 
     /// Returns the x-coordinate of the line's start point.
     #[must_use]
-    pub fn x1(&self) -> f64 {
+    pub const fn x1(&self) -> f64 {
         self.p1.x()
     }
 
     /// Returns the x-coordinate of the line's end point.
     #[must_use]
-    pub fn x2(&self) -> f64 {
+    pub const fn x2(&self) -> f64 {
         self.p2.x()
     }
 
     /// Returns the y-coordinate of the line's start point.
     #[must_use]
-    pub fn y1(&self) -> f64 {
+    pub const fn y1(&self) -> f64 {
         self.p1.y()
     }
 
     /// Returns the y-coordinate of the line's end point.
     #[must_use]
-    pub fn y2(&self) -> f64 {
+    pub const fn y2(&self) -> f64 {
         self.p2.y()
     }
 
@@ -350,7 +352,7 @@ impl LineF {
 
         let denominator = a.y() * b.x() - a.x() * b.y();
         if denominator == 0.0 || denominator.is_infinite() {
-            return IntersectType::NoIntersection;
+            return IntersectType::No;
         }
 
         let reciprocal = 1.0 / denominator;
@@ -358,15 +360,15 @@ impl LineF {
         *intersection_point = self.p1 + a * na;
 
         if !(0.0..=1.0).contains(&na) {
-            return IntersectType::UnboundedIntersection;
+            return IntersectType::Unbounded;
         }
 
         let nb = (a.x() * c.y() - a.y() * c.x()) * reciprocal;
         if !(0.0..=1.0).contains(&nb) {
-            return IntersectType::UnboundedIntersection;
+            return IntersectType::Unbounded;
         }
 
-        IntersectType::BoundedIntersection
+        IntersectType::Bounded
     }
 
     /// Returns true if the line does not have distinct start and end points;
@@ -471,7 +473,7 @@ impl LineF {
 
     /// Translates this line by the given point (`x`, `y`).
     pub fn translate(&mut self, x: f64, y: f64) {
-        self.translate_point(PointF::from(x, y))
+        self.translate_point(PointF::from(x, y));
     }
 
     /// Translates this line by the given `offset`.
