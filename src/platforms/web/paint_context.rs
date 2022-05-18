@@ -14,7 +14,7 @@ pub struct PaintContext {
 
 impl PaintContext {
     #[must_use]
-    pub fn from_dom(dom: HtmlElement) -> Self {
+    pub fn from_dom(dom: &HtmlElement) -> Self {
         let shape_manager = ShapeManager::new();
         let paint_device = PaintDevice::new(dom);
 

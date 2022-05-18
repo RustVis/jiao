@@ -11,6 +11,7 @@ use super::painter::Painter;
 use crate::base::Size;
 use crate::kernel::PainterTrait;
 
+#[allow(clippy::module_name_repetitions)]
 pub trait PaintDeviceDelegate {
     fn on_repaint();
 }
@@ -22,7 +23,8 @@ pub struct PaintDevice {
 
 impl PaintDevice {
     #[must_use]
-    pub fn new(dom: HtmlElement) -> Self {
+    pub fn new(dom: &HtmlElement) -> Self {
+        // TODO(Shaohua): Returns error
         let window: Window = web_sys::window().unwrap();
         let document: Document = window.document().unwrap();
         let element: Element = document.create_element("canvas").unwrap();
@@ -47,7 +49,11 @@ impl PaintDevice {
 
     #[must_use]
     pub fn size(&self) -> Size {
-        Size::from(self.canvas.width() as i32, self.canvas.height() as i32)
+        #[allow(clippy::cast_possible_wrap)]
+        let width = self.canvas.width() as i32;
+        #[allow(clippy::cast_possible_wrap)]
+        let height = self.canvas.height() as i32;
+        Size::from(width, height)
     }
 
     pub fn painter(&mut self) -> &mut dyn PainterTrait {

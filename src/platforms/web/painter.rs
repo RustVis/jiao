@@ -14,7 +14,7 @@ pub struct Painter {
 
 impl Painter {
     #[must_use]
-    pub fn new(canvas: HtmlCanvasElement, ctx: CanvasRenderingContext2d) -> Self {
+    pub const fn new(canvas: HtmlCanvasElement, ctx: CanvasRenderingContext2d) -> Self {
         Self { canvas, ctx }
     }
 }
@@ -58,19 +58,19 @@ impl PainterTrait for Painter {
     #[inline]
     fn rotate(&mut self, angle: f64) {
         // TODO(Shaohua): Returns error
-        let _ = self.ctx.rotate(angle);
+        let _ret = self.ctx.rotate(angle);
     }
 
     #[inline]
     fn scale(&mut self, x: f64, y: f64) {
         // TODO(Shaohua): Returns error
-        let _ = self.ctx.scale(x, y);
+        let _ret = self.ctx.scale(x, y);
     }
 
     #[inline]
     fn translate(&mut self, x: f64, y: f64) {
         // TODO(Shaohua): Returns error
-        let _ = self.ctx.translate(x, y);
+        let _ret = self.ctx.translate(x, y);
     }
 }
 
@@ -79,17 +79,23 @@ pub struct Path {
     path2d: Path2d,
 }
 
-impl Path {
-    #[must_use]
-    pub fn new() -> Self {
+impl Default for Path {
+    fn default() -> Self {
         // TODO(Shaohua): Add error type.
         let path2d = Path2d::new().unwrap();
         Self { path2d }
     }
+}
+
+impl Path {
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
+    }
 
     /// Get inner `Path2D` object.
     #[must_use]
-    pub fn path2d(&self) -> &Path2d {
+    pub const fn path2d(&self) -> &Path2d {
         &self.path2d
     }
 }
@@ -140,14 +146,14 @@ impl PathTrait for Path {
 
     fn arc(&mut self, center: PointF, radius: f64, start_angle: f64, end_angle: f64) {
         // TODO(Shaohua): Returns error
-        let _ = self
+        let _ret = self
             .path2d
             .arc(center.x(), center.y(), radius, start_angle, end_angle);
     }
 
     fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64) {
         // TODO(Shaohua): Returns error
-        let _ = self.path2d.arc_to(p1.x(), p1.y(), p2.x(), p2.y(), radius);
+        let _ret = self.path2d.arc_to(p1.x(), p1.y(), p2.x(), p2.y(), radius);
     }
 
     fn ellipse(
@@ -160,7 +166,7 @@ impl PathTrait for Path {
     ) {
         let rotation = 0.0;
         // TODO(Shaohua): Returns error
-        let _ = self.path2d.ellipse(
+        let _ret = self.path2d.ellipse(
             center.x(),
             center.y(),
             radius_x,
