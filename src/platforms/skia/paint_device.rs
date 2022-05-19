@@ -31,6 +31,7 @@ pub struct ImagePaintDevice {
 
 impl ImagePaintDevice {
     /// Create a new image paint device.
+    #[must_use]
     pub fn new(width: i32, height: i32) -> Self {
         // TODO(Shaohua): Catch errors
         let surface =
@@ -39,6 +40,7 @@ impl ImagePaintDevice {
         Self { surface, painter }
     }
 
+    #[must_use]
     pub fn size(&self) -> Size {
         Size::from(self.surface.width(), self.surface.height())
     }
@@ -62,6 +64,7 @@ pub struct SvgPaintDevice {
 
 impl SvgPaintDevice {
     /// Create a new image paint device.
+    #[must_use]
     pub fn new(rect: &RectF) -> Self {
         // TODO(Shaohua): Catch errors
         let rect: skia_safe::Rect = rect.into();
@@ -71,6 +74,7 @@ impl SvgPaintDevice {
         Self { canvas, painter }
     }
 
+    #[must_use]
     pub fn size(&self) -> Size {
         todo!()
         // Size::from(self.surface.width(), self.surface.height())

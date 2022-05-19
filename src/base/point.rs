@@ -365,13 +365,13 @@ cfg_if::cfg_if! {
     if #[cfg(feature = "skia")] {
         impl From<skia_safe::Point> for PointF {
             fn from(p: skia_safe::Point) -> Self {
-                Self::from(p.x as f64, p.y as f64)
+                Self::from(f64::from(p.x), f64::from(p.y))
             }
         }
 
         impl From<PointF> for skia_safe::Point {
-            fn from(p: PointF) -> skia_safe::Point {
-                skia_safe::Point::new(p.x() as f32, p.y() as f32)
+            fn from(p: PointF) -> Self {
+                Self::new(p.x() as f32, p.y() as f32)
             }
         }
     }

@@ -1814,19 +1814,19 @@ cfg_if::cfg_if! {
     if #[cfg(feature = "skia")] {
         impl From<skia_safe::Rect> for RectF {
             fn from(r: skia_safe::Rect) -> Self {
-                Self::from_corners(r.left() as f64, r.top() as f64, r.right() as f64, r.bottom() as f64)
+                Self::from_corners(f64::from(r.left()), f64::from(r.top()), f64::from(r.right()), f64::from(r.bottom()))
             }
         }
 
         impl From<RectF> for skia_safe::Rect {
-            fn from(r: RectF) -> skia_safe::Rect {
-                skia_safe::Rect::new(r.left() as f32, r.top() as f32, r.right() as f32, r.bottom() as f32)
+            fn from(r: RectF) -> Self {
+                Self::new(r.left() as f32, r.top() as f32, r.right() as f32, r.bottom() as f32)
             }
         }
 
         impl From<&RectF> for skia_safe::Rect {
-            fn from(r: &RectF) -> skia_safe::Rect {
-                skia_safe::Rect::new(r.left() as f32, r.top() as f32, r.right() as f32, r.bottom() as f32)
+            fn from(r: &RectF) -> Self {
+                Self::new(r.left() as f32, r.top() as f32, r.right() as f32, r.bottom() as f32)
             }
         }
     }

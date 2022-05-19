@@ -22,18 +22,19 @@ pub struct Painter {
 }
 
 impl Painter {
+    #[must_use]
     pub fn from_surface(surface: skia_safe::Surface) -> Self {
         let mut paint = skia_safe::Paint::default();
         paint.set_anti_alias(true);
         let canvas = CanvasWrapper::Surface(surface);
-        Self { paint, canvas }
+        Self { canvas, paint }
     }
 
     pub fn from_svg_canvas(canvas: Rc<RefCell<skia_safe::svg::Canvas>>) -> Self {
         let mut paint = skia_safe::Paint::default();
         paint.set_anti_alias(true);
         let canvas = CanvasWrapper::SvgCanvas(canvas);
-        Self { paint, canvas }
+        Self { canvas, paint }
     }
 
     fn canvas(&mut self) -> &mut skia_safe::Canvas {
@@ -109,11 +110,13 @@ pub struct Path {
 }
 
 impl Path {
+    #[must_use]
     pub fn new() -> Self {
         let p = skia_safe::Path::new();
         Self { p }
     }
 
+    #[must_use]
     pub fn path(&self) -> &skia_safe::Path {
         &self.p
     }
