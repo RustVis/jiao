@@ -4,6 +4,7 @@
 
 use super::shape_manager::ShapeManager;
 
+#[allow(clippy::module_name_repetitions)]
 pub trait PaintContextTrait {
     /// Repaint immediately.
     fn repaint(&mut self);

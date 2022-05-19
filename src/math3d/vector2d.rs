@@ -25,13 +25,13 @@ impl Default for Vector2D {
 impl Vector2D {
     /// Constructs a null vector, i.e. with coordinates (0, 0).
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self::from(0.0, 0.0)
     }
 
     /// Constructs a vector with coordinates (`x`, `y`).
     #[must_use]
-    pub fn from(x: f32, y: f32) -> Self {
+    pub const fn from(x: f32, y: f32) -> Self {
         Self { v: [x, y] }
     }
 
@@ -53,13 +53,16 @@ impl Vector2D {
 
     /// Constructs a vector with x and y coordinates from a 2D point.
     #[must_use]
-    pub fn from_point_f(point: &PointF) -> Self {
+    pub const fn from_point_f(point: &PointF) -> Self {
+        #[allow(clippy::cast_possible_truncation)]
         Self::from(point.x() as f32, point.y() as f32)
     }
 
     /// Constructs a vector with x and y coordinates from a 2D point.
     #[must_use]
-    pub fn from_point(point: &Point) -> Self {
+    pub const fn from_point(point: &Point) -> Self {
+        #[allow(clippy::cast_possible_truncation)]
+        #[allow(clippy::cast_precision_loss)]
         Self::from(point.x() as f32, point.y() as f32)
     }
 
@@ -97,13 +100,14 @@ impl Vector2D {
 
     /// Returns the length of the vector from the origin.
     #[must_use]
-    pub fn length(&self) -> f32 {
+    #[allow(clippy::cast_possible_truncation)]
+    pub fn length(self) -> f32 {
         let hypot = self.length_squared_precise();
         hypot.sqrt() as f32
     }
 
     /// Need some extra precision if the length is very small.
-    fn length_squared_precise(&self) -> f64 {
+    fn length_squared_precise(self) -> f64 {
         let x = f64::from(self.v[0]);
         let y = f64::from(self.v[1]);
         x.mul_add(x, y * y)
@@ -120,6 +124,7 @@ impl Vector2D {
     /// Normalizes the currect vector in place.
     ///
     /// Nothing happens if this vector is a null vector or the length of the vector is very close to 1.
+    #[allow(clippy::cast_possible_truncation)]
     pub fn normalize(&mut self) {
         let hypot = self.length_squared_precise();
         if fuzzy_is_zero(hypot - 1.0) || fuzzy_is_zero(hypot) {
@@ -145,6 +150,7 @@ impl Vector2D {
             Self::new()
         } else {
             let sqrt = hypot.sqrt();
+            #[allow(clippy::cast_possible_truncation)]
             Self::from(
                 (f64::from(self.v[0]) / sqrt) as f32,
                 (f64::from(self.v[1]) / sqrt) as f32,
@@ -165,6 +171,7 @@ impl Vector2D {
     /// Returns the Point form of this 2D vector.
     #[must_use]
     pub fn to_point(&self) -> Point {
+        #[allow(clippy::cast_possible_truncation)]
         Point::from(self.x().round() as i32, self.y().round() as i32)
     }
 
@@ -188,13 +195,13 @@ impl Vector2D {
 
     /// Returns the x coordinate of this point.
     #[must_use]
-    pub fn x(&self) -> f32 {
+    pub const fn x(&self) -> f32 {
         self.v[0]
     }
 
     /// Returns the y coordinate of this point.
     #[must_use]
-    pub fn y(&self) -> f32 {
+    pub const fn y(&self) -> f32 {
         self.v[1]
     }
 

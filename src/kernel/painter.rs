@@ -5,6 +5,7 @@
 use crate::base::{PointF, RectF};
 use crate::platforms;
 
+#[allow(clippy::module_name_repetitions)]
 pub trait PainterTrait {
     /// Makes a copy of current state of canvas and saves it on an internal stack.
     fn save(&mut self);

@@ -11,6 +11,12 @@ pub struct ShapeManager {
     shapes: Vec<Box<dyn ShapeTrait>>,
 }
 
+impl Default for ShapeManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ShapeManager {
     #[must_use]
     pub fn new() -> Self {
