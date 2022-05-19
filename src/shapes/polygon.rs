@@ -30,7 +30,7 @@ impl PolygonShape {
     /// Note that corners shall be in range 3..90.
     #[must_use]
     pub fn new(corners: usize) -> Self {
-        assert!((VERTEX_MIN..=VERTEX_MAX).contains(&corners));
+        assert!(corners >= VERTEX_MIN && corners <= VERTEX_MAX);
         let path = Path::new();
         Self {
             corners,
@@ -78,7 +78,7 @@ impl PolygonShape {
     ///
     /// Note that corners shall be in range 3..90.
     pub fn set_corners(&mut self, corners: usize) {
-        assert!((VERTEX_MIN..=VERTEX_MAX).contains(&corners));
+        assert!(corners >= VERTEX_MIN && corners <= VERTEX_MAX);
         if self.corners != corners {
             self.path_is_dirty = true;
             self.corners = corners;

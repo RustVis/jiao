@@ -26,7 +26,7 @@ pub fn exponential(a: f64, b: f64, y: f64) -> ReturnFunc {
 pub fn hue(a: f64, b: f64) -> ReturnFunc {
     let d = b - a;
     if d != 0.0 {
-        let c = if !(-180.0..=180.0).contains(&d) {
+        let c = if d < -180.0 || d > 180.0 {
             d - 360.0 * (d / 360.0).round()
         } else {
             d

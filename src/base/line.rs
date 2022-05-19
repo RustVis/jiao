@@ -359,12 +359,12 @@ impl LineF {
         let na = (b.y() * c.x() - b.x() * c.y()) * reciprocal;
         *intersection_point = self.p1 + a * na;
 
-        if !(0.0..=1.0).contains(&na) {
+        if na < 0.0 || na > 1.0 {
             return IntersectType::Unbounded;
         }
 
         let nb = (a.x() * c.y() - a.y() * c.x()) * reciprocal;
-        if !(0.0..=1.0).contains(&nb) {
+        if nb < 0.0 || nb > 1.0 {
             return IntersectType::Unbounded;
         }
 

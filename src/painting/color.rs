@@ -239,7 +239,7 @@ pub enum NameFormat {
 }
 
 fn check_float_range(value: f64) -> Result<(), ParseColorError> {
-    if !(0.0..=1.0).contains(&value) {
+    if value < 0.0 || value > 1.0 {
         return Err(ParseColorError::OutOfRangeError);
     }
     Ok(())
@@ -273,6 +273,10 @@ impl Color {
     }
 
     /// Constructs a named color in the same way as `set_named_color()` using the given name.
+    ///
+    /// # Errors
+    ///
+    /// Returns error if color `name` is invalid.
     pub fn from_name(name: &str) -> Result<Self, ParseColorError> {
         let mut color = Self::new();
         color.set_named_color(name)?;
@@ -283,7 +287,7 @@ impl Color {
     ///
     /// All the values must be in the range 0-255.
     #[must_use]
-    pub fn from_cmyk(cyan: u8, magenta: u8, yellow: u8, black: u8, alpha: u8) -> Self {
+    pub const fn from_cmyk(cyan: u8, magenta: u8, yellow: u8, black: u8, alpha: u8) -> Self {
         Self {
             inner: ColorInner::cmyk(cyan, magenta, yellow, black, alpha),
         }
@@ -292,6 +296,10 @@ impl Color {
     /// Construct color from the given CMYK color values.
     ///
     /// All the values must be in the range 0.0-1.0.
+    ///
+    /// # Errors
+    ///
+    /// Returns error if some color value is out of range.
     pub fn from_cmyk_f(
         cyan: f64,
         magenta: f64,
@@ -299,7 +307,8 @@ impl Color {
         black: f64,
         alpha: f64,
     ) -> Result<Self, ParseColorError> {
-        if !(0.0..=1.0).contains(&cyan)
+        if cyan < 0.0
+            || cyan > 1.0
             || magenta < 0.0
             || magenta > 1.0
             || yellow < 0.0
@@ -312,6 +321,8 @@ impl Color {
             return Err(ParseColorError::OutOfRangeError);
         }
 
+        #[allow(clippy::cast_possible_truncation)]
+        #[allow(clippy::cast_sign_loss)]
         Ok(Self {
             inner: ColorInner::cmyk(
                 (cyan * MAX_VALUE_F64).round() as u8,
@@ -476,7 +487,8 @@ impl Color {
         blue: f64,
         alpha: f64,
     ) -> Result<Self, ParseColorError> {
-        if !(0.0..=1.0).contains(&red)
+        if red < 0.0
+            || red > 1.0
             || green < 0.0
             || green > 1.0
             || blue < 0.0
@@ -1502,7 +1514,8 @@ impl Color {
         black: f64,
         alpha: f64,
     ) -> Result<(), ParseColorError> {
-        if !(0.0..=1.0).contains(&cyan)
+        if cyan < 0.0
+            || cyan > 1.0
             || magenta < 0.0
             || magenta > 1.0
             || yellow < 0.0
@@ -1579,7 +1592,7 @@ impl Color {
         lightness: f64,
         alpha: f64,
     ) -> Result<(), ParseColorError> {
-        if !(0.0..=1.0).contains(&hue) && hue != -1.0
+        if (hue < 0.0 || hue > 1.0) && hue != -1.0
             || saturation < 0.0
             || saturation > 1.0
             || lightness < 0.0
@@ -1631,6 +1644,12 @@ impl Color {
     /// Sets a HSV color value.
     ///
     /// All the values must be in the range 0.0-1.0.
+    ///
+    /// # Errors
+    ///
+    /// Returns error if some value is out of range.
+    #[allow(clippy::cast_sign_loss)]
+    #[allow(clippy::cast_possible_truncation)]
     pub fn set_hsv_f(
         &mut self,
         hue: f64,
@@ -1638,7 +1657,7 @@ impl Color {
         value: f64,
         alpha: f64,
     ) -> Result<(), ParseColorError> {
-        if !(0.0..=1.0).contains(&hue) && hue != -1.0
+        if (hue < 0.0 || hue > 1.0) && !fuzzy_compare(hue, -1.0)
             || saturation < 0.0
             || saturation > 1.0
             || value < 0.0
@@ -1676,7 +1695,9 @@ impl Color {
     /// These color names work on all platforms.
     /// - transparent: representing the absence of a color.
     ///
-    /// The color is invalid if name cannot be parsed.
+    /// # Errors
+    ///
+    /// The color is invalid if `name` cannot be parsed.
     pub fn set_named_color(&mut self, name: &str) -> Result<(), ParseColorError> {
         let color = Self::from_str(name)?;
         *self = color;
@@ -1769,18 +1790,23 @@ impl Color {
     ///
     /// Integer components are specified in the range 0-255.
     pub fn set_red(&mut self, red: u8) {
-        match &mut self.inner {
-            ColorInner::Rgb(c) => c.red = red,
-            _ => {
-                let c = self.to_rgb();
-                self.set_rgb(red, c.green(), c.blue(), c.alpha());
-            }
+        if let ColorInner::Rgb(c) = &mut self.inner {
+            c.red = red;
+        } else {
+            let c = self.to_rgb();
+            self.set_rgb(red, c.green(), c.blue(), c.alpha());
         }
     }
 
     /// Sets the red color component of this color to red.
+    ///
+    /// # Errors
+    ///
+    /// Returns error if `red` value is out of range.
     pub fn set_red_f(&mut self, red: f64) -> Result<(), ParseColorError> {
         check_float_range(red)?;
+        #[allow(clippy::cast_possible_truncation)]
+        #[allow(clippy::cast_sign_loss)]
         let red_int = (red * MAX_VALUE_F64).round() as u8;
         self.set_red(red_int);
         Ok(())
@@ -1813,6 +1839,12 @@ impl Color {
     /// Sets the color channels of this color to (red, green, blue).
     ///
     /// The alpha value must be in the range 0.0-1.0.
+    ///
+    /// # Errors
+    ///
+    /// Returns error if some value is out of range.
+    #[allow(clippy::cast_possible_truncation)]
+    #[allow(clippy::cast_sign_loss)]
     pub fn set_rgb_f(
         &mut self,
         red: f64,
@@ -1820,12 +1852,12 @@ impl Color {
         blue: f64,
         alpha: f64,
     ) -> Result<(), ParseColorError> {
-        if !(0.0..=1.0).contains(&alpha) {
+        if alpha < 0.0 || alpha > 1.0 {
             return Err(ParseColorError::OutOfRangeError);
         }
 
         // TODO(Shaohua): Support extended RGB.
-        if !(0.0..=1.0).contains(&red) || green < 0.0 || green > 1.0 || blue < 0.0 || blue > 1.0 {
+        if red < 0.0 || red > 1.0 || green < 0.0 || green > 1.0 || blue < 0.0 || blue > 1.0 {
             return Err(ParseColorError::OutOfRangeError);
         }
         self.inner = ColorInner::rgb(
@@ -1839,7 +1871,7 @@ impl Color {
 
     /// Returns how the color was specified.
     #[must_use]
-    pub fn spec(&self) -> Spec {
+    pub const fn spec(&self) -> Spec {
         match &self.inner {
             ColorInner::Rgb(_) => Spec::Rgb,
             ColorInner::Hsv(_) => Spec::Hsv,
