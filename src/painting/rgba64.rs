@@ -13,7 +13,7 @@ use crate::util::div_257;
 /// Rgba64 can be used as a replacement for `Rgb` when higher precision is needed.
 /// In particular a premultiplied Rgba64 can operate on unpremultiplied Rgb
 /// without loss of precision except for alpha 0
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq)]
 pub struct Rgba64 {
     rgba: u64,
 }
@@ -57,12 +57,6 @@ impl ops::Shr<Shifts> for u64 {
     }
 }
 
-impl Default for Rgba64 {
-    fn default() -> Self {
-        Self { rgba: 0 }
-    }
-}
-
 impl Rgba64 {
     /// Returns the Rgba64 with rgba = 0.
     #[must_use]
@@ -84,7 +78,7 @@ impl Rgba64 {
 
     /// Returns rgba as a Rgba64 struct.
     #[must_use]
-    pub fn from_u64(rgba: u64) -> Self {
+    pub const fn from_u64(rgba: u64) -> Self {
         Self { rgba }
     }
 
@@ -127,6 +121,7 @@ impl Rgba64 {
 
     /// Returns the alpha channel as an 16-bit.
     #[must_use]
+    #[allow(clippy::cast_possible_truncation)]
     pub fn alpha(&self) -> u16 {
         (self.rgba >> Shifts::Alpha) as u16
     }
@@ -139,6 +134,7 @@ impl Rgba64 {
 
     /// Returns the 16-bit blue color component.
     #[must_use]
+    #[allow(clippy::cast_possible_truncation)]
     pub fn blue(&self) -> u16 {
         (self.rgba >> Shifts::Blue) as u16
     }
@@ -151,6 +147,7 @@ impl Rgba64 {
 
     /// Returns the 16-bit green color component.
     #[must_use]
+    #[allow(clippy::cast_possible_truncation)]
     pub fn green(&self) -> u16 {
         (self.rgba >> Shifts::Green) as u16
     }
@@ -206,6 +203,7 @@ impl Rgba64 {
 
     /// Returns the 16-bit red color component.
     #[must_use]
+    #[allow(clippy::cast_possible_truncation)]
     pub fn red(&self) -> u16 {
         (self.rgba >> Shifts::Red) as u16
     }
@@ -254,7 +252,7 @@ impl Rgba64 {
 
     /// Returns the color as a 64bit unsigned integer
     #[must_use]
-    pub fn to_u64(&self) -> u64 {
+    pub const fn to_u64(&self) -> u64 {
         self.rgba
     }
 
@@ -269,9 +267,10 @@ impl Rgba64 {
     }
 
     #[allow(dead_code)]
-    fn unpremultiplied_32bit(&self) -> Self {
+    #[allow(clippy::cast_possible_truncation)]
+    fn unpremultiplied_32bit(self) -> Self {
         if self.is_opaque() || self.is_transparent() {
-            return *self;
+            return self;
         }
         let a = u32::from(self.alpha());
         let r = ((u32::from(self.red()) * 0xffff_u32 + a / 2) / a) as u16;
@@ -281,9 +280,10 @@ impl Rgba64 {
     }
 
     #[allow(dead_code)]
-    fn unpremultiplied_64bit(&self) -> Self {
+    #[allow(clippy::cast_possible_truncation)]
+    fn unpremultiplied_64bit(self) -> Self {
         if self.is_opaque() || self.is_transparent() {
-            return *self;
+            return self;
         }
         let a = u64::from(self.alpha());
         let fa = (0xffff_0000_8000_u64 + a / 2) / a;
