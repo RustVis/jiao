@@ -29,6 +29,7 @@ pub struct ImagePaintDevice {
 }
 
 impl ImagePaintDevice {
+    #[must_use]
     pub fn new(format: cairo::Format, width: i32, height: i32) -> Self {
         // TODO(Shaohua): Catch errors
         let surface = cairo::ImageSurface::create(format, width, height).unwrap();
@@ -36,6 +37,7 @@ impl ImagePaintDevice {
         Self { surface, painter }
     }
 
+    #[must_use]
     pub fn size(&self) -> Size {
         Size::from(self.surface.width(), self.surface.height())
     }
@@ -63,6 +65,7 @@ impl PdfPaintDevice {
         Self { surface, painter }
     }
 
+    #[must_use]
     pub fn size(&self) -> Size {
         todo!()
     }
@@ -90,6 +93,7 @@ impl SvgPaintDevice {
         Self { surface, painter }
     }
 
+    #[must_use]
     pub fn size(&self) -> Size {
         todo!()
     }

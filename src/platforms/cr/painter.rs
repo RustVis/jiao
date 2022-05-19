@@ -14,6 +14,7 @@ pub struct Painter {
 }
 
 impl Painter {
+    #[must_use]
     pub fn new(surface: &cairo::Surface) -> Self {
         let context = cairo::Context::new(surface).unwrap();
         Self { context }

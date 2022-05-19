@@ -11,6 +11,7 @@ pub struct PaintContext {
 }
 
 impl PaintContext {
+    #[must_use]
     pub fn new(paint_device: PaintDevice) -> Self {
         let shape_manager = ShapeManager::new();
         Self {
