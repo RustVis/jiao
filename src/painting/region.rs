@@ -15,6 +15,7 @@ use crate::base::Rect;
 ///
 /// This class is not suitable for constructing shapes for rendering, especially as outlines.
 /// Use `PainterPath` to create paths and shapes for use with Painter.
+#[allow(clippy::module_name_repetitions)]
 #[derive(Debug, Clone)]
 pub struct Region {
     num_rects: usize,
@@ -26,11 +27,18 @@ pub struct Region {
 
 /// Specifies the shape of the region to be created.
 #[repr(u8)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum RegionType {
     /// The region covers the entire rectangle.
     Rectangle = 0,
     /// The region is an ellipse inside the rectangle.
     Ellipse = 1,
+}
+
+impl Default for Region {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Region {
@@ -145,7 +153,7 @@ impl Region {
     ///
     /// An empty region is a region that contains no points.
     #[must_use]
-    pub fn is_empty(&self) -> bool {
+    pub const fn is_empty(&self) -> bool {
         self.num_rects == 0
     }
 
@@ -155,13 +163,13 @@ impl Region {
     ///
     /// This function is the same as `is_empty`.
     #[must_use]
-    pub fn is_null(&self) -> bool {
+    pub const fn is_null(&self) -> bool {
         self.num_rects == 0
     }
 
     /// Returns the number of rectangles that this region is composed of.
     #[must_use]
-    pub fn rect_count(&self) -> usize {
+    pub const fn rect_count(&self) -> usize {
         self.num_rects
     }
 
@@ -280,7 +288,7 @@ impl Region {
         unimplemented!()
     }
 
-    fn rect_intersects(r1: &Rect, r2: &Rect) -> bool {
+    const fn rect_intersects(r1: &Rect, r2: &Rect) -> bool {
         r1.right() >= r2.left()
             && r1.left() <= r2.right()
             && r1.bottom() >= r2.top()
