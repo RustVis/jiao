@@ -14,6 +14,12 @@ pub struct Painter {
     painter: CppBox<QPainter>,
 }
 
+impl Default for Painter {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl fmt::Debug for Painter {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("Painter").finish()
@@ -21,6 +27,7 @@ impl fmt::Debug for Painter {
 }
 
 impl Painter {
+    #[must_use]
     pub fn new() -> Self {
         let painter = unsafe { QPainter::new_0a() };
         Self { painter }
@@ -103,7 +110,14 @@ impl fmt::Debug for Path {
     }
 }
 
+impl Default for Path {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Path {
+    #[must_use]
     pub fn new() -> Self {
         let path = unsafe { QPainterPath::new_0a() };
         Self { path }

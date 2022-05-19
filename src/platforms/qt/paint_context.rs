@@ -12,7 +12,14 @@ pub struct PaintContext {
     shape_manager: ShapeManager,
 }
 
+impl Default for PaintContext {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PaintContext {
+    #[must_use]
     pub fn new() -> Self {
         let shape_manager = ShapeManager::new();
         Self { shape_manager }
