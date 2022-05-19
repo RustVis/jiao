@@ -74,18 +74,18 @@ impl Rgb {
 
     /// Convert R,G,B to gray 0..255
     #[must_use]
-    pub fn int_to_gray(red: u8, green: u8, blue: u8) -> u8 {
+    pub const fn int_to_gray(red: u8, green: u8, blue: u8) -> u8 {
         (red * 11 + green * 16 + blue * 5) / 32
     }
 
     /// Convert RGB to gray 0..255
     #[must_use]
-    pub fn to_gray(&self) -> u8 {
+    pub const fn to_gray(&self) -> u8 {
         Self::int_to_gray(self.red(), self.green(), self.blue())
     }
 
     #[must_use]
-    pub fn is_gray(&self) -> bool {
+    pub const fn is_gray(&self) -> bool {
         self.red() == self.green() && self.red() == self.blue()
     }
 
@@ -105,7 +105,7 @@ impl Rgb {
     }
 
     #[must_use]
-    pub fn int(&self) -> u32 {
+    pub const fn int(&self) -> u32 {
         self.rgb
     }
 }
