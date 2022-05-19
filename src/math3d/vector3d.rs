@@ -43,7 +43,7 @@ impl Vector3D {
 
     /// Constructs a 3D vector from the specified 4D vector. The w coordinate is dropped.
     #[must_use]
-    pub fn from_vector4d(vector: &Vector4D) -> Self {
+    pub const fn from_vector4d(vector: &Vector4D) -> Self {
         Self::from(vector.x(), vector.y(), vector.z())
     }
 
@@ -287,7 +287,7 @@ impl Vector3D {
 
     /// Returns the 4D form of this 3D vector, with the w coordinate set to zero.
     #[must_use]
-    pub fn to_vector4d(&self) -> Vector4D {
+    pub const fn to_vector4d(&self) -> Vector4D {
         Vector4D::from(self.v[0], self.v[1], self.v[2], 0.0)
     }
 

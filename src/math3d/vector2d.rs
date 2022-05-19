@@ -39,7 +39,7 @@ impl Vector2D {
     ///
     /// The z and w coordinates of vector are dropped.
     #[must_use]
-    pub fn from_4d(vector: &Vector4D) -> Self {
+    pub const fn from_4d(vector: &Vector4D) -> Self {
         Self::from(vector.x(), vector.y())
     }
 
@@ -189,7 +189,7 @@ impl Vector2D {
 
     /// Returns the 4D form of this 2D vector, with the z and w coordinates set to zero.
     #[must_use]
-    pub fn to_vector4d(&self) -> Vector4D {
+    pub const fn to_vector4d(&self) -> Vector4D {
         Vector4D::from(self.v[0], self.v[1], 0.0, 0.0)
     }
 

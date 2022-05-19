@@ -25,13 +25,13 @@ impl Default for Vector4D {
 impl Vector4D {
     /// Constructs a null vector, i.e. with coordinates (0, 0, 0, 0).
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self::from(0.0, 0.0, 0.0, 0.0)
     }
 
     /// Constructs a vector with coordinates (`x`, `y`, `z`, `w`).
     #[must_use]
-    pub fn from(x: f32, y: f32, z: f32, w: f32) -> Self {
+    pub const fn from(x: f32, y: f32, z: f32, w: f32) -> Self {
         Self { v: [x, y, z, w] }
     }
 
@@ -39,7 +39,7 @@ impl Vector4D {
     ///
     /// The w coordinate is set to `w`.
     #[must_use]
-    pub fn from_vector3d(vector: &Vector3D) -> Self {
+    pub const fn from_vector3d(vector: &Vector3D) -> Self {
         Self::from(vector.x(), vector.y(), vector.z(), 0.0)
     }
 
@@ -47,7 +47,7 @@ impl Vector4D {
     ///
     /// The w coordinate is set to `w`.
     #[must_use]
-    pub fn from_vector3d_and_w(vector: &Vector3D, w: f32) -> Self {
+    pub const fn from_vector3d_and_w(vector: &Vector3D, w: f32) -> Self {
         Self::from(vector.x(), vector.y(), vector.z(), w)
     }
 
@@ -55,26 +55,29 @@ impl Vector4D {
     ///
     /// The z and w coordinates are set to zero.
     #[must_use]
-    pub fn from_vector2d(vector: &Vector2D) -> Self {
+    pub const fn from_vector2d(vector: &Vector2D) -> Self {
         Self::from(vector.x(), vector.y(), 0.0, 0.0)
     }
 
     /// Constructs a 4D vector from the specified 2D vector.
     /// The z and w coordinates are set to `z` and `w` respectively.
     #[must_use]
-    pub fn from_vector2d_and_zw(vector: &Vector2D, z: f32, w: f32) -> Self {
+    pub const fn from_vector2d_and_zw(vector: &Vector2D, z: f32, w: f32) -> Self {
         Self::from(vector.x(), vector.y(), z, w)
     }
 
     /// Constructs a vector with x and y coordinates from a 2D point, and z and w coordinates of 0.
     #[must_use]
-    pub fn from_point(point: &Point) -> Self {
+    pub const fn from_point(point: &Point) -> Self {
+        #[allow(clippy::cast_possible_truncation)]
+        #[allow(clippy::cast_precision_loss)]
         Self::from(point.x() as f32, point.y() as f32, 0.0, 0.0)
     }
 
     /// Constructs a vector with x and y coordinates from a 2D point, and z and w coordinates of 0.
     #[must_use]
-    pub fn from_point_f(point: &PointF) -> Self {
+    pub const fn from_point_f(point: &PointF) -> Self {
+        #[allow(clippy::cast_possible_truncation)]
         Self::from(point.x() as f32, point.y() as f32, 0.0, 0.0)
     }
 
@@ -98,6 +101,7 @@ impl Vector4D {
 
     /// Returns the length of the vector from the origin.
     #[must_use]
+    #[allow(clippy::cast_possible_truncation)]
     pub fn length(&self) -> f32 {
         let hypot = self.length_squared_precise();
         hypot.sqrt() as f32
@@ -128,6 +132,7 @@ impl Vector4D {
     /// Normalizes the currect vector in place.
     ///
     /// Nothing happens if this vector is a null vector or the length of the vector is very close to 1.
+    #[allow(clippy::cast_possible_truncation)]
     pub fn normalize(&mut self) {
         let hypot = self.length_squared_precise();
         if fuzzy_is_zero(hypot - 1.0) || fuzzy_is_zero(hypot) {
@@ -146,6 +151,7 @@ impl Vector4D {
     /// If the length of the vector is very close to 1, then the vector will be returned as-is.
     /// Otherwise the normalized form of the vector of length 1 will be returned.
     #[must_use]
+    #[allow(clippy::cast_possible_truncation)]
     pub fn normalized(&self) -> Self {
         let hypot = self.length_squared_precise();
         if fuzzy_is_zero(hypot - 1.0) {
@@ -188,6 +194,7 @@ impl Vector4D {
     /// The z and w coordinates are dropped.
     #[must_use]
     pub fn to_point(&self) -> Point {
+        #[allow(clippy::cast_possible_truncation)]
         Point::from(self.x().round() as i32, self.y().round() as i32)
     }
 
@@ -201,7 +208,7 @@ impl Vector4D {
 
     /// Returns the 2D vector form of this 4D vector, dropping the z and w coordinates.
     #[must_use]
-    pub fn to_vector2d(&self) -> Vector2D {
+    pub const fn to_vector2d(&self) -> Vector2D {
         Vector2D::from(self.x(), self.y())
     }
 
@@ -219,7 +226,7 @@ impl Vector4D {
 
     /// Returns the 3D vector form of this 4D vector, dropping the w coordinate.
     #[must_use]
-    pub fn to_vector3d(&self) -> Vector3D {
+    pub const fn to_vector3d(&self) -> Vector3D {
         Vector3D::from(self.x(), self.y(), self.z())
     }
 
@@ -241,25 +248,25 @@ impl Vector4D {
 
     /// Returns the w coordinate of this point.
     #[must_use]
-    pub fn w(&self) -> f32 {
+    pub const fn w(&self) -> f32 {
         self.v[3]
     }
 
     /// Returns the x coordinate of this point.
     #[must_use]
-    pub fn x(&self) -> f32 {
+    pub const fn x(&self) -> f32 {
         self.v[0]
     }
 
     /// Returns the y coordinate of this point.
     #[must_use]
-    pub fn y(&self) -> f32 {
+    pub const fn y(&self) -> f32 {
         self.v[1]
     }
 
     /// Returns the z coordinate of this point.
     #[must_use]
-    pub fn z(&self) -> f32 {
+    pub const fn z(&self) -> f32 {
         self.v[2]
     }
 
