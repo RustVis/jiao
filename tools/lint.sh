@@ -7,7 +7,7 @@
 
 set -xe
 
-cargo clippy --all-targets --fix --allow-staged --allow-dirty -- \
+cargo clippy --all-targets -- \
   --deny warnings \
   --deny clippy::all \
   --deny clippy::cargo \

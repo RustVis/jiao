@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+#![allow(clippy::manual_range_contains)]
+
 pub mod animation;
 pub mod base;
 pub mod event;
