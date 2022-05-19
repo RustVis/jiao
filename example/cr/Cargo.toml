@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-cairo-rs = "0.15.10"
+cairo-rs = "0.15.11"
 jiao = { path = "../..", default-features=false, features = ["cairo"] }
