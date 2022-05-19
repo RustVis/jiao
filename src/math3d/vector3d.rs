@@ -31,19 +31,19 @@ impl Default for Vector3D {
 impl Vector3D {
     /// Constructs a null vector, i.e. with coordinates (0, 0, 0).
     #[must_use]
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self::from(0.0, 0.0, 0.0)
     }
 
     /// Constructs a vector with coordinates (`x`, `y`, `z`).
     #[must_use]
-    pub fn from(x: f32, y: f32, z: f32) -> Self {
+    pub const fn from(x: f32, y: f32, z: f32) -> Self {
         Self { v: [x, y, z] }
     }
 
     /// Constructs a 3D vector from the specified 4D vector. The w coordinate is dropped.
     #[must_use]
-    pub fn from_vector4d(vector: Vector4D) -> Self {
+    pub fn from_vector4d(vector: &Vector4D) -> Self {
         Self::from(vector.x(), vector.y(), vector.z())
     }
 
@@ -51,7 +51,7 @@ impl Vector3D {
     ///
     /// The z coordinate is set to `z`.
     #[must_use]
-    pub fn from_vector2d_and_z(vector: Vector2D, z: f32) -> Self {
+    pub const fn from_vector2d_and_z(vector: Vector2D, z: f32) -> Self {
         Self::from(vector.x(), vector.y(), z)
     }
 
@@ -59,19 +59,22 @@ impl Vector3D {
     ///
     /// The z coordinate is set to zero.
     #[must_use]
-    pub fn from_vector2d(vector: Vector2D) -> Self {
+    pub const fn from_vector2d(vector: Vector2D) -> Self {
         Self::from(vector.x(), vector.y(), 0.0)
     }
 
     /// Constructs a vector with x and y coordinates from a 2D point, and a z coordinate of 0.
     #[must_use]
-    pub fn from_point_f(point: &PointF) -> Self {
+    pub const fn from_point_f(point: &PointF) -> Self {
+        #[allow(clippy::cast_possible_truncation)]
         Self::from(point.x() as f32, point.y() as f32, 0.0)
     }
 
     /// Constructs a vector with x and y coordinates from a 2D point, and a z coordinate of 0.
     #[must_use]
-    pub fn from_point(point: &Point) -> Self {
+    pub const fn from_point(point: &Point) -> Self {
+        #[allow(clippy::cast_possible_truncation)]
+        #[allow(clippy::cast_precision_loss)]
         Self::from(point.x() as f32, point.y() as f32, 0.0)
     }
 
@@ -146,6 +149,7 @@ impl Vector3D {
 
     /// Returns the length of the vector from the origin.
     #[must_use]
+    #[allow(clippy::cast_possible_truncation)]
     pub fn length(&self) -> f32 {
         let hypot = self.length_squared_precise();
         hypot.sqrt() as f32
@@ -193,6 +197,7 @@ impl Vector3D {
     /// Normalizes the currect vector in place.
     ///
     /// Nothing happens if this vector is a null vector or the length of the vector is very close to 1.
+    #[allow(clippy::cast_possible_truncation)]
     pub fn normalize(&mut self) {
         let hypot = self.length_squared_precise();
         if fuzzy_is_zero(hypot - 1.0) || fuzzy_is_zero(hypot) {
@@ -211,6 +216,7 @@ impl Vector3D {
     /// will be returned as-is.
     /// Otherwise the normalized form of the vector of length 1 will be returned.
     #[must_use]
+    #[allow(clippy::cast_possible_truncation)]
     pub fn normalized(&self) -> Self {
         let hypot = self.length_squared_precise();
         if fuzzy_is_zero(hypot - 1.0) {
@@ -261,6 +267,7 @@ impl Vector3D {
     /// The z coordinate is dropped.
     #[must_use]
     pub fn to_point(&self) -> Point {
+        #[allow(clippy::cast_possible_truncation)]
         Point::from(self.v[0].round() as i32, self.v[1].round() as i32)
     }
 
@@ -274,7 +281,7 @@ impl Vector3D {
 
     /// Returns the 2D vector form of this 3D vector, dropping the z coordinate.
     #[must_use]
-    pub fn to_vector2d(&self) -> Vector2D {
+    pub const fn to_vector2d(&self) -> Vector2D {
         Vector2D::from(self.v[0], self.v[1])
     }
 
@@ -300,19 +307,19 @@ impl Vector3D {
 
     /// Returns the x coordinate of this point.
     #[must_use]
-    pub fn x(&self) -> f32 {
+    pub const fn x(&self) -> f32 {
         self.v[0]
     }
 
     /// Returns the y coordinate of this point.
     #[must_use]
-    pub fn y(&self) -> f32 {
+    pub const fn y(&self) -> f32 {
         self.v[1]
     }
 
     /// Returns the z coordinate of this point.
     #[must_use]
-    pub fn z(&self) -> f32 {
+    pub const fn z(&self) -> f32 {
         self.v[2]
     }
 

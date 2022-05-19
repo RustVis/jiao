@@ -47,7 +47,7 @@ impl Vector2D {
     ///
     /// The z coordinate of vector is dropped.
     #[must_use]
-    pub fn from_3d(vector: &Vector3D) -> Self {
+    pub const fn from_3d(vector: &Vector3D) -> Self {
         Self::from(vector.x(), vector.y())
     }
 
@@ -183,7 +183,7 @@ impl Vector2D {
 
     /// Returns the 3D form of this 2D vector, with the z coordinate set to zero.
     #[must_use]
-    pub fn to_vector3d(&self) -> Vector3D {
+    pub const fn to_vector3d(&self) -> Vector3D {
         Vector3D::from(self.v[0], self.v[1], 0.0)
     }
 
