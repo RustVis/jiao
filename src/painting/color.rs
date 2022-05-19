@@ -2,6 +2,9 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+#![allow(clippy::cast_sign_loss)]
+#![allow(clippy::cast_possible_truncation)]
+
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 use std::str::FromStr;
@@ -209,7 +212,7 @@ struct ColorRgb {
 }
 
 /// The type of color specified.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum Spec {
     Rgb = 1,
@@ -321,8 +324,6 @@ impl Color {
             return Err(ParseColorError::OutOfRangeError);
         }
 
-        #[allow(clippy::cast_possible_truncation)]
-        #[allow(clippy::cast_sign_loss)]
         Ok(Self {
             inner: ColorInner::cmyk(
                 (cyan * MAX_VALUE_F64).round() as u8,
@@ -338,6 +339,10 @@ impl Color {
     ///
     /// The value of saturation, lightness, and alpha must all be in the range 0-255;
     /// the value of hue must be in the range 0-359.
+    ///
+    /// # Errors
+    ///
+    /// Returns error if some value is out of range.
     #[allow(dead_code)]
     fn from_hsl(
         hue: i32,
@@ -369,7 +374,7 @@ impl Color {
         lightness: f64,
         alpha: f64,
     ) -> Result<Self, ParseColorError> {
-        if (hue < 0.0 && hue != -1.0)
+        if (hue < 0.0 && !fuzzy_compare(hue, -1.0))
             || hue > 1.0
             || saturation < 0.0
             || saturation > 1.0
@@ -380,7 +385,7 @@ impl Color {
         {
             return Err(ParseColorError::OutOfRangeError);
         }
-        let real_hue = if hue == -1.0 {
+        let real_hue = if fuzzy_compare(hue, -1.0) {
             u16::MAX
         } else {
             (hue * 36_000.0).round() as u16
@@ -400,6 +405,10 @@ impl Color {
     ///
     /// The value of saturation, value, and alpha must all be in the range 0-255;
     /// the value of hue must be in the range 0-359.
+    ///
+    /// # Errors
+    ///
+    /// Returns error if some value is out of range.
     #[allow(dead_code)]
     fn from_hsv(hue: i32, saturation: u8, value: u8, alpha: u8) -> Result<Self, ParseColorError> {
         if hue < -1 || hue >= 360 {
@@ -419,6 +428,10 @@ impl Color {
     /// Construct color from the HSV color values.
     ///
     /// All the values must be in range 0.0-1.0.
+    ///
+    /// # Errors
+    ///
+    /// Returns error if some value is out of range.
     #[allow(dead_code)]
     fn from_hsv_f(
         hue: f64,
@@ -426,7 +439,7 @@ impl Color {
         value: f64,
         alpha: f64,
     ) -> Result<Self, ParseColorError> {
-        if (hue < 0.0 && hue != -1.0)
+        if (hue < 0.0 && !fuzzy_compare(hue, -1.0))
             || hue > 1.0
             || saturation < 0.0
             || saturation > 1.0
@@ -437,7 +450,7 @@ impl Color {
         {
             return Err(ParseColorError::OutOfRangeError);
         }
-        let real_hue = if hue == -1.0 {
+        let real_hue = if fuzzy_compare(hue, -1.0) {
             u16::MAX
         } else {
             (hue * 36_000.0).round() as u16
@@ -464,6 +477,10 @@ impl Color {
     /// Construct color from the RGB color values.
     ///
     /// All the values must be in range 0.0-1.0.
+    ///
+    /// # Errors
+    ///
+    /// Returns error if some value if out of range.
     pub fn from_rgb_f(red: f64, green: f64, blue: f64) -> Result<Self, ParseColorError> {
         Self::from_rgba_f(red, green, blue, 1.0)
     }
@@ -481,6 +498,10 @@ impl Color {
     /// Construct color from the RGBA color values.
     ///
     /// All the values must be in range 0.0-1.0.
+    ///
+    /// # Errors
+    ///
+    /// Returns error if some value is out of range.
     pub fn from_rgba_f(
         red: f64,
         green: f64,
@@ -570,6 +591,8 @@ impl Color {
 
     /// Creates and returns an RGB color based on this color.
     #[must_use]
+    #[allow(clippy::too_many_lines)]
+    // TODO(Shaohua): Simplify this method
     pub fn to_rgb(&self) -> Self {
         match &self.inner {
             ColorInner::Cmyk(c) => {
@@ -854,7 +877,7 @@ impl Color {
 
     /// Returns the alpha color component of this color.
     #[must_use]
-    pub fn alpha(&self) -> u8 {
+    pub const fn alpha(&self) -> u8 {
         match &self.inner {
             ColorInner::Rgb(c) => c.alpha,
             ColorInner::Hsv(c) => c.alpha,
@@ -966,11 +989,8 @@ impl Color {
         }
 
         let mut hsv = self.to_hsv();
-        match &mut hsv.inner {
-            ColorInner::Hsv(c) => {
-                c.value = ((i32::from(c.value) * 100) / factor) as u8;
-            }
-            _ => (),
+        if let ColorInner::Hsv(c) = &mut hsv.inner {
+            c.value = ((i32::from(c.value) * 100) / factor) as u8;
         }
 
         // Convert back to same color spec as original color.
@@ -1313,24 +1333,21 @@ impl Color {
         }
 
         let mut hsv = self.to_hsv();
-        match &mut hsv.inner {
-            ColorInner::Hsv(c) => {
-                let mut s = i32::from(c.saturation);
-                let mut v = i32::from(c.value);
-                v = (factor * v) / 100;
-                let max_value = i32::from(MAX_VALUE);
-                if v > max_value {
-                    // overflow... adjust saturation
-                    s -= v - max_value;
-                    if s < 0 {
-                        s = 0;
-                    }
-                    v = max_value;
+        if let ColorInner::Hsv(c) = &mut hsv.inner {
+            let mut s = i32::from(c.saturation);
+            let mut v = i32::from(c.value);
+            v = (factor * v) / 100;
+            let max_value = i32::from(MAX_VALUE);
+            if v > max_value {
+                // overflow... adjust saturation
+                s -= v - max_value;
+                if s < 0 {
+                    s = 0;
                 }
-                c.saturation = s as u8;
-                c.value = v as u8;
+                v = max_value;
             }
-            _ => (),
+            c.saturation = s as u8;
+            c.value = v as u8;
         }
 
         // Convert back to same color spec as original color.
@@ -1462,7 +1479,11 @@ impl Color {
 
     /// Sets the alpha of this color to alpha.
     ///
-    /// qreal alpha is specified in the range 0.0-1.0.
+    /// `alpha` is specified in the range 0.0-1.0.
+    ///
+    /// # Errors
+    ///
+    /// Returns error if `alpha` is out of range.
     pub fn set_alpha_f(&mut self, alpha: f64) -> Result<(), ParseColorError> {
         check_float_range(alpha)?;
         let alpha_int = (alpha * MAX_VALUE_F64).round() as u8;
@@ -1479,16 +1500,19 @@ impl Color {
     ///
     /// Integer components are specified in the range 0-255.
     pub fn set_blue(&mut self, blue: u8) {
-        match &mut self.inner {
-            ColorInner::Rgb(c) => c.blue = blue,
-            _ => {
-                let c = self.to_rgb();
-                self.set_rgb(c.red(), c.green(), blue, c.alpha());
-            }
+        if let ColorInner::Rgb(c) = &mut self.inner {
+            c.blue = blue;
+        } else {
+            let c = self.to_rgb();
+            self.set_rgb(c.red(), c.green(), blue, c.alpha());
         }
     }
 
     /// Sets the blue color component of this color to blue.
+    ///
+    /// # Errors
+    ///
+    /// Returns error if `blue` is out of range.
     pub fn set_blue_f(&mut self, blue: f64) -> Result<(), ParseColorError> {
         check_float_range(blue)?;
         let blue_int = (blue * MAX_VALUE_F64).round() as u8;
@@ -1506,6 +1530,10 @@ impl Color {
     /// Sets the color to CMYK values, cyan, magenta, yellow, black, and alpha-channel.
     ///
     /// All the values must be in the range 0.0-1.0.
+    ///
+    /// # Errors
+    ///
+    /// Returns error if some value is out of range.
     pub fn set_cmyk_f(
         &mut self,
         cyan: f64,
@@ -1541,16 +1569,19 @@ impl Color {
     ///
     /// Integer components are specified in the range 0-255.
     pub fn set_green(&mut self, green: u8) {
-        match &mut self.inner {
-            ColorInner::Rgb(c) => c.green = green,
-            _ => {
-                let c = self.to_rgb();
-                self.set_rgb(c.red(), green, c.blue(), c.alpha());
-            }
+        if let ColorInner::Rgb(c) = &mut self.inner {
+            c.green = green;
+        } else {
+            let c = self.to_rgb();
+            self.set_rgb(c.red(), green, c.blue(), c.alpha());
         }
     }
 
     /// Sets the green color component of this color to green.
+    ///
+    /// # Errors
+    ///
+    /// Returns error if `green` is out of range.
     pub fn set_green_f(&mut self, green: f64) -> Result<(), ParseColorError> {
         check_float_range(green)?;
         let green_int = (green * MAX_VALUE_F64).round() as u8;
@@ -1562,6 +1593,10 @@ impl Color {
     ///
     /// The saturation, value and alpha values must be in the range 0-255,
     /// and the hue value must be greater than -1.
+    ///
+    /// # Errors
+    ///
+    /// Returns error if some value is out of range.
     pub fn set_hsl(
         &mut self,
         hue: i32,
@@ -1585,6 +1620,10 @@ impl Color {
     /// Sets a HSL color lightness.
     ///
     /// All the values must be in the range 0.0-1.0.
+    ///
+    /// # Errors
+    ///
+    /// Returns error if some value is out of range.
     pub fn set_hsl_f(
         &mut self,
         hue: f64,
@@ -1592,7 +1631,8 @@ impl Color {
         lightness: f64,
         alpha: f64,
     ) -> Result<(), ParseColorError> {
-        if (hue < 0.0 || hue > 1.0) && hue != -1.0
+        if (hue < 0.0 && !fuzzy_compare(hue, -1.0))
+            || hue > 1.0
             || saturation < 0.0
             || saturation > 1.0
             || lightness < 0.0
@@ -1603,7 +1643,7 @@ impl Color {
             return Err(ParseColorError::OutOfRangeError);
         }
 
-        let real_hue = if hue == -1.0 {
+        let real_hue = if fuzzy_compare(hue, -1.0) {
             u16::MAX
         } else {
             (hue * 36_000.0).round() as u16
@@ -1621,6 +1661,10 @@ impl Color {
     ///
     /// The saturation, value and alpha-channel values must be in the range 0-255,
     /// and the hue value must be greater than -1.
+    ///
+    /// # Errors
+    ///
+    /// Returns error if some value is out of range.
     pub fn set_hsv(
         &mut self,
         hue: i32,
@@ -1648,8 +1692,6 @@ impl Color {
     /// # Errors
     ///
     /// Returns error if some value is out of range.
-    #[allow(clippy::cast_sign_loss)]
-    #[allow(clippy::cast_possible_truncation)]
     pub fn set_hsv_f(
         &mut self,
         hue: f64,
@@ -1657,7 +1699,8 @@ impl Color {
         value: f64,
         alpha: f64,
     ) -> Result<(), ParseColorError> {
-        if (hue < 0.0 || hue > 1.0) && !fuzzy_compare(hue, -1.0)
+        if (hue < 0.0 && !fuzzy_compare(hue, -1.0))
+            || hue > 1.0
             || saturation < 0.0
             || saturation > 1.0
             || value < 0.0
@@ -1668,7 +1711,7 @@ impl Color {
             return Err(ParseColorError::OutOfRangeError);
         }
 
-        let real_hue = if hue == -1.0 {
+        let real_hue = if fuzzy_compare(hue, -1.0) {
             u16::MAX
         } else {
             (hue * 36_000.0).round() as u16
@@ -1805,8 +1848,6 @@ impl Color {
     /// Returns error if `red` value is out of range.
     pub fn set_red_f(&mut self, red: f64) -> Result<(), ParseColorError> {
         check_float_range(red)?;
-        #[allow(clippy::cast_possible_truncation)]
-        #[allow(clippy::cast_sign_loss)]
         let red_int = (red * MAX_VALUE_F64).round() as u8;
         self.set_red(red_int);
         Ok(())
@@ -1843,8 +1884,6 @@ impl Color {
     /// # Errors
     ///
     /// Returns error if some value is out of range.
-    #[allow(clippy::cast_possible_truncation)]
-    #[allow(clippy::cast_sign_loss)]
     pub fn set_rgb_f(
         &mut self,
         red: f64,
