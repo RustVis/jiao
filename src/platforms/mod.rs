@@ -22,7 +22,11 @@ cfg_if::cfg_if! {
     } else if #[cfg(feature = "skia")] {
         pub mod skia;
         pub use skia::paint_context::PaintContext;
-        pub use skia::paint_device::PaintDevice;
+        pub use skia::paint_device::{
+            ImagePaintDevice,
+            PaintDevice,
+            SvgPaintDevice,
+        };
         pub use skia::painter::Painter;
         pub use skia::painter::Path;
     } else if #[cfg(feature = "web")] {
