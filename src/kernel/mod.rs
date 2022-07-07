@@ -7,7 +7,6 @@ mod event_dispatcher;
 pub mod generic_path;
 pub mod image;
 pub mod paint_context;
-pub mod paint_device;
 mod painter;
 mod shape_manager;
 pub mod theme;
