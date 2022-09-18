@@ -34,7 +34,7 @@ skia = ["skia-safe"]
 web = ["js-sys", "web-sys", "wasm-bindgen"]
 
 [dependencies]
-serde = { version = "1.0.138", features = ["derive"] }
+serde = { version = "1.0.144", features = ["derive"] }
 lazy_static = "1.4.0"
 log = "0.4.17"
 cfg-if = "1.0.0"
@@ -55,7 +55,7 @@ version = "0.6.0"
 optional = true
 
 [dependencies.js-sys]
-version = "0.3.58"
+version = "0.3.60"
 optional = true
 
 [dependencies.qt_gui]
@@ -67,7 +67,7 @@ version = "0.50.0"
 optional = true
 
 [dependencies.web-sys]
-version = "0.3.58"
+version = "0.3.60"
 optional = true
 features = [
     "CanvasRenderingContext2d",
@@ -80,9 +80,9 @@ features = [
 ]
 
 [dependencies.wasm-bindgen]
-version = "0.2.81"
+version = "0.2.83"
 optional = true
 features = ["serde-serialize"]
 
 [dev-dependencies]
-serde_json = "1.0.82"
+serde_json = "1.0.85"
