@@ -34,14 +34,14 @@ skia = ["skia-safe"]
 web = ["js-sys", "web-sys", "wasm-bindgen"]
 
 [dependencies]
-serde = { version = "1.0.144", features = ["derive"] }
+serde = { version = "1.0.152", features = ["derive"] }
 lazy_static = "1.4.0"
 log = "0.4.17"
 cfg-if = "1.0.0"
 float-cmp = "0.9.0"
 
 [dependencies.cairo-rs]
-version = "0.15.12"
+version = "0.16.7"
 optional = true
 features = [
   "glib",
@@ -63,7 +63,7 @@ version = "0.5.0"
 optional = true
 
 [dependencies.skia-safe]
-version = "0.54.0"
+version = "0.58.0"
 optional = true
 
 [dependencies.web-sys]
@@ -85,4 +85,4 @@ optional = true
 features = ["serde-serialize"]
 
 [dev-dependencies]
-serde_json = "1.0.85"
+serde_json = "1.0.91"
