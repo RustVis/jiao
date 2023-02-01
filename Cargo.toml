@@ -3,3 +3,9 @@
 members = [
   "crates/*",
 ]
+
+exclude = [
+  "examples/*",
+]
+
+resolver = "2"
