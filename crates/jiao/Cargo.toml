@@ -1,6 +1,6 @@
 [package]
 name = "jiao"
-version = "0.1.2"
+version = "0.2.1"
 authors = [
   "Xu Shaohua <shaohua@biofan.org>"
 ]
