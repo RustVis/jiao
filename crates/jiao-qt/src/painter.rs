@@ -3,12 +3,10 @@
 // in the LICENSE file.
 
 use cpp_core::CppBox;
+use jiao::base::{PointF, RectF};
+use jiao::kernel::{PainterTrait, PathTrait};
 use qt_gui::{QPainter, QPainterPath};
 use std::fmt;
-
-use crate::base::{PointF, RectF};
-use crate::kernel::PainterTrait;
-use crate::kernel::PathTrait;
 
 pub struct Painter {
     painter: CppBox<QPainter>,

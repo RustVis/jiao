@@ -6,4 +6,5 @@ edition = "2021"
 [dependencies]
 cpp_core = "0.6.0"
 jiao = { path="../jiao" }
+log = "0.4.17"
 qt_gui = "0.5.0"
