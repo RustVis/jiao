@@ -18,5 +18,5 @@ pub mod interpolate;
 pub mod kernel;
 pub mod math3d;
 pub mod painting;
-pub mod shapes;
+//pub mod shapes;
 pub mod util;

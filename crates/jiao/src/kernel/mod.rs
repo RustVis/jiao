@@ -9,8 +9,10 @@ pub mod image;
 pub mod paint_context;
 mod painter;
 mod shape_manager;
+mod shape_trait;
 pub mod theme;
 
-pub use paint_context::PaintContextTrait;
-pub use painter::{PainterTrait, PathTrait};
-pub use shape_manager::ShapeManager;
+pub use self::paint_context::PaintContextTrait;
+pub use self::painter::{PainterTrait, PathTrait};
+pub use self::shape_manager::ShapeManager;
+pub use self::shape_trait::ShapeTrait;

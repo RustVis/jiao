@@ -3,8 +3,8 @@
 // in the LICENSE file.
 
 use super::PainterTrait;
+use super::ShapeTrait;
 use crate::event::{KeyEvent, MouseEvent, ResizeEvent};
-use crate::shapes::ShapeTrait;
 
 #[derive(Debug)]
 pub struct ShapeManager {
