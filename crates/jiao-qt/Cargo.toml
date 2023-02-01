@@ -26,6 +26,6 @@ publish = true
 
 [dependencies]
 cpp_core = "0.6.0"
-jiao = { path="../jiao", version="0.2.1" }
+jiao = { path = "../jiao", version = "0.2.1" }
 log = "0.4.17"
 qt_gui = "0.5.0"
