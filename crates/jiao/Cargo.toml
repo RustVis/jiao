@@ -27,8 +27,6 @@ license = "Apache-2.0"
 publish = true
 
 [features]
-default = ["web"]
-cairo = ["cairo-rs"]
 qt = ["cpp_core","qt_gui"]
 skia = ["skia-safe"]
 web = ["js-sys", "web-sys", "wasm-bindgen"]
@@ -39,16 +37,6 @@ lazy_static = "1.4.0"
 log = "0.4.17"
 cfg-if = "1.0.0"
 float-cmp = "0.9.0"
-
-[dependencies.cairo-rs]
-version = "0.16.7"
-optional = true
-features = [
-  "glib",
-  "png",
-  "svg",
-  "pdf",
-]
 
 [dependencies.cpp_core]
 version = "0.6.0"
