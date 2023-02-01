@@ -6,6 +6,7 @@ use cpp_core::CppBox;
 use jiao::base::{PointF, RectF};
 use jiao::kernel::{PainterTrait, PathTrait};
 use qt_gui::{QPainter, QPainterPath};
+use std::any::Any;
 use std::fmt;
 
 pub struct Painter {
@@ -61,18 +62,20 @@ impl PainterTrait for Painter {
     }
 
     #[inline]
-    fn fill(&mut self, path: &Path) {
+    fn fill<'a>(&mut self, path: &'a dyn PathTrait) {
+        let path_ref = path.as_any().downcast_ref::<Path>().unwrap();
         unsafe {
             let brush = self.painter.brush();
-            self.painter.fill_path(&path.path, brush);
+            self.painter.fill_path(&path_ref.path, brush);
         }
     }
 
     #[inline]
-    fn stroke(&mut self, path: &Path) {
+    fn stroke<'a>(&mut self, path: &'a dyn PathTrait) {
+        let path_ref = path.as_any().downcast_ref::<Path>().unwrap();
         unsafe {
             let pen = self.painter.pen();
-            self.painter.stroke_path(&path.path, pen);
+            self.painter.stroke_path(&path_ref.path, pen);
         }
     }
 
@@ -127,6 +130,10 @@ impl Path {
 }
 
 impl PathTrait for Path {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+
     fn clear(&mut self) {
         unsafe {
             self.path.clear();
@@ -134,7 +141,7 @@ impl PathTrait for Path {
     }
 
     #[inline]
-    fn add_path(&mut self, _other: &Self) {
+    fn add_path(&mut self, _other: &dyn PathTrait) {
         todo!()
         //self.path().add_path(other.path());
     }

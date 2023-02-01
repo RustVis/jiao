@@ -3,7 +3,7 @@
 // in the LICENSE file.
 
 use jiao::kernel::generic_path::{GenericPath, GenericPathToken};
-use jiao::kernel::PainterTrait;
+use jiao::kernel::{PainterTrait, PathTrait};
 
 // Re-export GenericPath as Path
 pub type Path = GenericPath;
@@ -79,15 +79,17 @@ impl PainterTrait for Painter {
     }
 
     #[inline]
-    fn fill(&mut self, path: &Path) {
-        self.draw_path(path);
+    fn fill<'a>(&mut self, path: &'a dyn PathTrait) {
+        let path_ref = path.as_any().downcast_ref::<Path>().unwrap();
+        self.draw_path(path_ref);
         // TODO(Shaohua): Catch errors
         let _ = self.context.fill();
     }
 
     #[inline]
-    fn stroke(&mut self, path: &Path) {
-        self.draw_path(path);
+    fn stroke<'a>(&mut self, path: &'a dyn PathTrait) {
+        let path_ref = path.as_any().downcast_ref::<Path>().unwrap();
+        self.draw_path(path_ref);
         // TODO(Shaohua): catch errors
         let _ = self.context.stroke();
     }

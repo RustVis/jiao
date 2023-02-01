@@ -2,8 +2,9 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use std::any::Any;
+
 use crate::base::{PointF, RectF};
-use crate::kernel::generic_path::GenericPath;
 
 #[allow(clippy::module_name_repetitions)]
 pub trait PainterTrait {
@@ -20,10 +21,10 @@ pub trait PainterTrait {
     fn clip(&mut self);
 
     /// Fills the path with the current fill style.
-    fn fill(&mut self, path: &GenericPath);
+    fn fill<'a>(&mut self, path: &'a dyn PathTrait);
 
     /// Strokes (outlines) the path with the current stoke style.
-    fn stroke(&mut self, path: &GenericPath);
+    fn stroke<'a>(&mut self, path: &'a dyn PathTrait);
 
     /// Add a rotation to the transformation matrix.
     fn rotate(&mut self, angle: f64);
@@ -36,11 +37,13 @@ pub trait PainterTrait {
 }
 
 pub trait PathTrait {
+    fn as_any(&self) -> &dyn Any;
+
     /// Clears the path elements stored.
     fn clear(&mut self);
 
     // Adds the given path to this path as a closed subpath.
-    fn add_path(&mut self, other: &Self);
+    fn add_path<'a>(&mut self, other: &'a dyn PathTrait);
 
     /// Attempts to add a straight line from the current point to the start of current path.
     ///

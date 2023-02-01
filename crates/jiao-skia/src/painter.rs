@@ -5,6 +5,7 @@
 use jiao::base::{PointF, RectF};
 use jiao::kernel::{PainterTrait, PathTrait};
 use skia_safe::PaintStyle;
+use std::any::Any;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -66,22 +67,24 @@ impl PainterTrait for Painter {
     }
 
     #[inline]
-    fn fill(&mut self, path: &Path) {
+    fn fill<'a>(&mut self, path: &'a dyn PathTrait) {
+        let path_ref = path.as_any().downcast_ref::<Path>().unwrap();
         self.paint.set_style(PaintStyle::Fill);
         match &mut self.canvas {
             CanvasWrapper::Surface(surface) => {
-                surface.canvas().draw_path(path.path(), &self.paint);
+                surface.canvas().draw_path(path_ref.path(), &self.paint);
             }
             CanvasWrapper::SvgCanvas(_svg_canvas) => todo!(),
         }
     }
 
     #[inline]
-    fn stroke(&mut self, path: &Path) {
+    fn stroke<'a>(&mut self, path: &'a dyn PathTrait) {
+        let path_ref = path.as_any().downcast_ref::<Path>().unwrap();
         self.paint.set_style(PaintStyle::Stroke);
         match &mut self.canvas {
             CanvasWrapper::Surface(surface) => {
-                surface.canvas().draw_path(path.path(), &self.paint);
+                surface.canvas().draw_path(path_ref.path(), &self.paint);
             }
             CanvasWrapper::SvgCanvas(_svg_canvas) => todo!(),
         }
@@ -122,12 +125,17 @@ impl Path {
 }
 
 impl PathTrait for Path {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+
     fn clear(&mut self) {
         // TODO(Shaohua):
     }
 
-    fn add_path(&mut self, other: &Self) {
-        self.p.add_path(&other.p, (0.0, 0.0), None);
+    fn add_path<'a>(&mut self, other: &'a dyn PathTrait) {
+        let other_ref = other.as_any().downcast_ref::<Path>().unwrap();
+        self.p.add_path(&other_ref.p, (0.0, 0.0), None);
     }
 
     fn close_path(&mut self) {

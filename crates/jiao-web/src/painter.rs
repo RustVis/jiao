@@ -4,6 +4,7 @@
 
 use jiao::base::{PointF, RectF};
 use jiao::kernel::{PainterTrait, PathTrait};
+use std::any::Any;
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement, Path2d};
 
 pub struct Painter {
@@ -45,13 +46,15 @@ impl PainterTrait for Painter {
     }
 
     #[inline]
-    fn fill(&mut self, path: &Path) {
-        self.ctx.fill_with_path_2d(path.path2d());
+    fn fill<'a>(&mut self, path: &'a dyn PathTrait) {
+        let path_ref = path.as_any().downcast_ref::<Path>().unwrap();
+        self.ctx.fill_with_path_2d(path_ref.path2d());
     }
 
     #[inline]
-    fn stroke(&mut self, path: &Path) {
-        self.ctx.stroke_with_path(path.path2d());
+    fn stroke<'a>(&mut self, path: &'a dyn PathTrait) {
+        let path_ref = path.as_any().downcast_ref::<Path>().unwrap();
+        self.ctx.stroke_with_path(path_ref.path2d());
     }
 
     #[inline]
@@ -100,13 +103,18 @@ impl Path {
 }
 
 impl PathTrait for Path {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+
     fn clear(&mut self) {
         self.path2d = Path2d::new().unwrap();
     }
 
     #[inline]
-    fn add_path(&mut self, other: &Self) {
-        self.path2d().add_path(other.path2d());
+    fn add_path<'a>(&mut self, other: &'a dyn PathTrait) {
+        let other_ref = other.as_any().downcast_ref::<Path>().unwrap();
+        self.path2d().add_path(other_ref.path2d());
     }
 
     #[inline]

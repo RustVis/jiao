@@ -4,6 +4,8 @@
 
 #![allow(clippy::module_name_repetitions)]
 
+use std::any::Any;
+
 use super::painter::PathTrait;
 use crate::base::{PointF, RectF};
 
@@ -81,9 +83,10 @@ impl PathTrait for GenericPath {
         self.tokens.clear();
     }
 
-    fn add_path(&mut self, other: &Self) {
+    fn add_path<'a>(&mut self, other: &'a dyn PathTrait) {
         // TODO(Shaohua): Check close-path is the last element or not.
-        self.tokens.extend_from_slice(&other.tokens);
+        let other_ref = other.as_any().downcast_ref::<GenericPath>().unwrap();
+        self.tokens.extend_from_slice(&other_ref.tokens);
     }
 
     fn close_path(&mut self) {
@@ -149,5 +152,9 @@ impl PathTrait for GenericPath {
                 start_angle,
                 end_angle,
             }));
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
     }
 }
