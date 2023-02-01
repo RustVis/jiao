@@ -1,5 +1,5 @@
 [package]
-name = "jiao_gtk"
+name = "jiao-cairo"
 version = "0.1.0"
 edition = "2021"
 
