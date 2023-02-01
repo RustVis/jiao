@@ -6,7 +6,7 @@
 ![Minimum rustc version](https://img.shields.io/badge/rustc-1.56+-yellow.svg)
 ![License](https://img.shields.io/crates/l/jiao-cairo.svg)
 
-Jiao is a cross platform 2D rendering engine.
+Jiao is a cross platform 2D painting engine.
 
 This crate is cairo/gtk binding. Currently test on linux and gtk3.0 only.
 

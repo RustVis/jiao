@@ -6,7 +6,7 @@
 ![Minimum rustc version](https://img.shields.io/badge/rustc-1.56+-yellow.svg)
 ![License](https://img.shields.io/crates/l/jiao.svg)
 
-Jiao is a cross platform 2D rendering engine.
+Jiao is a cross platform 2D painting engine.
 
 - [Documentation](https://docs.rs/jiao)
 - [Release notes](https://github.com/RustVis/jiao/releases)

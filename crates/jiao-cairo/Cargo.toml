@@ -2,7 +2,7 @@
 name = "jiao-cairo"
 version = "0.2.1"
 authors = ["Xu Shaohua <shaohua@biofan.org>"]
-description = "Cross platform 2D rendering engine (cairo/gtk binding part)"
+description = "Cross platform 2D painting engine (cairo/gtk binding part)"
 homepage = "https://github.com/RustVis/jiao"
 repository = "https://github.com/RustVis/jiao"
 documentation = "https://docs.rs/jiao-cairo"

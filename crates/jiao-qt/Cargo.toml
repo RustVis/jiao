@@ -2,7 +2,7 @@
 name = "jiao-qt"
 version = "0.2.1"
 authors = ["Xu Shaohua <shaohua@biofan.org>"]
-description = "Cross platform 2D rendering engine (Qt binding part)"
+description = "Cross platform 2D painting engine (Qt binding part)"
 homepage = "https://github.com/RustVis/jiao"
 repository = "https://github.com/RustVis/jiao"
 documentation = "https://docs.rs/jiao-qt"
