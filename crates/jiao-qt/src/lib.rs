@@ -4,3 +4,7 @@
 
 pub mod paint_context;
 pub mod painter;
+
+pub use self::paint_context::PaintContext;
+pub use self::painter::Painter;
+pub use self::painter::Path;

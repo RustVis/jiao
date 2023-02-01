@@ -5,3 +5,8 @@
 pub mod paint_context;
 pub mod paint_device;
 pub mod painter;
+
+pub use self::paint_context::PaintContext;
+pub use self::paint_device::PaintDevice;
+pub use self::painter::Painter;
+pub use self::painter::Path;
