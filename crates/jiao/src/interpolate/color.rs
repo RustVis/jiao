@@ -2,6 +2,8 @@
 // Use of this source is governed by General Public License that can be found
 // in the LICENSE file.
 
+#![allow(clippy::suboptimal_flops)]
+
 use super::{constant, ReturnFunc};
 use crate::util::{fuzzy_compare, fuzzy_is_zero};
 

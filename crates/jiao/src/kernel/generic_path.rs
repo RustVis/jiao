@@ -83,9 +83,9 @@ impl PathTrait for GenericPath {
         self.tokens.clear();
     }
 
-    fn add_path<'a>(&mut self, other: &'a dyn PathTrait) {
+    fn add_path(&mut self, other: &dyn PathTrait) {
         // TODO(Shaohua): Check close-path is the last element or not.
-        let other_ref = other.as_any().downcast_ref::<GenericPath>().unwrap();
+        let other_ref = other.as_any().downcast_ref::<Self>().unwrap();
         self.tokens.extend_from_slice(&other_ref.tokens);
     }
 

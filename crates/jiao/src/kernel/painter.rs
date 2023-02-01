@@ -21,10 +21,10 @@ pub trait PainterTrait {
     fn clip(&mut self);
 
     /// Fills the path with the current fill style.
-    fn fill<'a>(&mut self, path: &'a dyn PathTrait);
+    fn fill(&mut self, path: &dyn PathTrait);
 
     /// Strokes (outlines) the path with the current stoke style.
-    fn stroke<'a>(&mut self, path: &'a dyn PathTrait);
+    fn stroke(&mut self, path: &dyn PathTrait);
 
     /// Add a rotation to the transformation matrix.
     fn rotate(&mut self, angle: f64);
@@ -43,7 +43,7 @@ pub trait PathTrait {
     fn clear(&mut self);
 
     // Adds the given path to this path as a closed subpath.
-    fn add_path<'a>(&mut self, other: &'a dyn PathTrait);
+    fn add_path(&mut self, other: &dyn PathTrait);
 
     /// Attempts to add a straight line from the current point to the start of current path.
     ///
