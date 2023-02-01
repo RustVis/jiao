@@ -3,7 +3,6 @@
 // in the LICENSE file.
 
 use crate::base::{PointF, RectF};
-use crate::platforms;
 
 #[allow(clippy::module_name_repetitions)]
 pub trait PainterTrait {
@@ -20,10 +19,10 @@ pub trait PainterTrait {
     fn clip(&mut self);
 
     /// Fills the path with the current fill style.
-    fn fill(&mut self, path: &platforms::Path);
+    fn fill(&mut self, path: &dyn PathTrait);
 
     /// Strokes (outlines) the path with the current stoke style.
-    fn stroke(&mut self, path: &platforms::Path);
+    fn stroke(&mut self, path: &dyn PathTrait);
 
     /// Add a rotation to the transformation matrix.
     fn rotate(&mut self, angle: f64);
@@ -39,8 +38,8 @@ pub trait PathTrait {
     /// Clears the path elements stored.
     fn clear(&mut self);
 
-    /// Adds the given path to this path as a closed subpath.
-    fn add_path(&mut self, other: &Self);
+    // Adds the given path to this path as a closed subpath.
+    //fn add_path(&mut self, other: &Self);
 
     /// Attempts to add a straight line from the current point to the start of current path.
     ///
