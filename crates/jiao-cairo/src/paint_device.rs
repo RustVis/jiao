@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+#![allow(clippy::module_name_repetitions)]
+
 use jiao::base::Size;
 
 use super::painter::Painter;
@@ -30,6 +32,10 @@ pub struct ImagePaintDevice {
 }
 
 impl ImagePaintDevice {
+    /// Create a new image painting device.
+    ///
+    /// # Panics
+    /// Got panic if failedto create image painting device with specific format.
     #[must_use]
     pub fn new(format: cairo::Format, width: i32, height: i32) -> Self {
         // TODO(Shaohua): Catch errors
@@ -59,6 +65,10 @@ pub struct PdfPaintDevice {
 }
 
 impl PdfPaintDevice {
+    /// Create a new pdf paint device with specific size.
+    ///
+    /// # Panics
+    /// Got panic if failed to create new pdf paint device.
     pub fn new<P: AsRef<std::path::Path>>(width: f64, height: f64, path: P) -> Self {
         // TODO(Shaohua): Catch errors
         let surface = cairo::PdfSurface::new(width, height, path).unwrap();
@@ -68,7 +78,7 @@ impl PdfPaintDevice {
 
     #[must_use]
     pub fn size(&self) -> Size {
-        todo!()
+        unimplemented!()
     }
 
     pub fn painter(&mut self) -> &mut Painter {
@@ -87,6 +97,10 @@ pub struct SvgPaintDevice {
 }
 
 impl SvgPaintDevice {
+    /// Create a new svg painting device with specific size.
+    ///
+    /// # Panics
+    /// Got panic if failed to create svg surface.
     pub fn new<P: AsRef<std::path::Path>>(width: f64, height: f64, path: P) -> Self {
         // TODO(Shaohua): Catch errors
         let surface = cairo::SvgSurface::new(width, height, Some(path)).unwrap();
@@ -96,7 +110,7 @@ impl SvgPaintDevice {
 
     #[must_use]
     pub fn size(&self) -> Size {
-        todo!()
+        unimplemented!()
     }
 
     pub fn painter(&mut self) -> &mut Painter {

@@ -14,6 +14,8 @@ pub struct Painter {
 }
 
 impl Painter {
+    /// # Panics
+    /// Got panic if failed to create a new cairo context with specific `surface`.
     #[must_use]
     pub fn new(surface: &cairo::Surface) -> Self {
         let context = cairo::Context::new(surface).unwrap();
@@ -79,7 +81,7 @@ impl PainterTrait for Painter {
     }
 
     #[inline]
-    fn fill<'a>(&mut self, path: &'a dyn PathTrait) {
+    fn fill(&mut self, path: &dyn PathTrait) {
         let path_ref = path.as_any().downcast_ref::<Path>().unwrap();
         self.draw_path(path_ref);
         // TODO(Shaohua): Catch errors
@@ -87,7 +89,7 @@ impl PainterTrait for Painter {
     }
 
     #[inline]
-    fn stroke<'a>(&mut self, path: &'a dyn PathTrait) {
+    fn stroke(&mut self, path: &dyn PathTrait) {
         let path_ref = path.as_any().downcast_ref::<Path>().unwrap();
         self.draw_path(path_ref);
         // TODO(Shaohua): catch errors
