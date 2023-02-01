@@ -4,7 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+jiao = { path="../jiao" }
 js-sys = "0.3.60"
+log = "0.4.17"
+wasm-bindgen = { version = "0.2.83", features = ["serde-serialize"] }
 
 [dependencies.web-sys]
 version = "0.3.60"
@@ -17,7 +20,3 @@ features = [
     "SvgElement",
     "Window",
 ]
-
-[dependencies.wasm-bindgen]
-version = "0.2.83"
-features = ["serde-serialize"]

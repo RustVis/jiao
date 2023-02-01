@@ -2,10 +2,10 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use jiao::kernel::{PaintContextTrait, ShapeManager};
 use web_sys::HtmlElement;
 
 use super::paint_device::PaintDevice;
-use crate::kernel::{PaintContextTrait, ShapeManager};
 
 pub struct PaintContext {
     shape_manager: ShapeManager,
