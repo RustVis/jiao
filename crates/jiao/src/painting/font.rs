@@ -194,7 +194,7 @@ impl Font {
 }
 
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FontPatternError {
     InvalidFormat,
 }
@@ -221,7 +221,7 @@ impl ToString for Font {
 
 /// Predefined font stretch keywords.
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FontStretch {
     AnyStretch = 0,
     /// 50%
@@ -245,7 +245,7 @@ pub enum FontStretch {
 }
 
 #[repr(u16)]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FontWeight {
     Thin = 100,
     ExtraLight = 200,
@@ -276,7 +276,7 @@ impl From<FontWeight> for u16 {
 
 /// Rendering option for text this font applies to.
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Capitalization {
     /// This is the normal text rendering option where no capitalization change is applied.
     MixedCase = 0,
@@ -292,7 +292,7 @@ pub enum Capitalization {
 
 /// This enum describes the different styles of glyphs that are used to display text.
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum FontStyle {
     /// Normal glyphs used in unstyled text.
     Normal = 0,
@@ -304,7 +304,7 @@ pub enum FontStyle {
 }
 
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum LineStyle {
     Normal = 0,
     UnderLine = 1,

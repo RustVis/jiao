@@ -27,7 +27,7 @@ pub struct Region {
 
 /// Specifies the shape of the region to be created.
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RegionType {
     /// The region covers the entire rectangle.
     Rectangle = 0,
@@ -182,6 +182,7 @@ impl Region {
     }
 
     fn update_inner_rect(&mut self, _rect: &Rect) {
+        self.inner_area = 0;
         unimplemented!()
     }
 

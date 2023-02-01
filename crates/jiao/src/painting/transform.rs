@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+#![allow(clippy::suboptimal_flops)]
+
 use core::cmp;
 use core::f64::consts::PI;
 use core::ops;
@@ -253,11 +255,9 @@ impl Transform {
     /// Returns the matrix's determinant.
     #[must_use]
     pub fn determinant(&self) -> f64 {
-        self.m31.mul_add(
-            self.m23 * self.m12 - self.m22 * self.m13,
-            self.m11 * (self.m33 * self.m22 - self.m32 * self.m23)
-                - self.m21 * (self.m33 * self.m12 - self.m32 * self.m13),
-        )
+        self.m31 * (self.m23 * self.m12 - self.m22 * self.m13)
+            + self.m11 * (self.m33 * self.m22 - self.m32 * self.m23)
+            - self.m21 * (self.m33 * self.m12 - self.m32 * self.m13)
     }
 
     /// Returns the horizontal translation factor.
@@ -300,6 +300,7 @@ impl Transform {
                 }
             }
             TransformationType::Rotate | TransformationType::Shear => {
+                unimplemented!();
                 // TODO(Shaohua): implements inverted()
                 //invert.affine = affine.inverted(&inv);
             }
