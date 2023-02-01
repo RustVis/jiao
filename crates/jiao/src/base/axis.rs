@@ -3,7 +3,7 @@
 // in the LICENSE file.
 
 /// This enum type defines three values to represent the three axes in the cartesian coordinate system.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum Axis {
     /// The X axis.

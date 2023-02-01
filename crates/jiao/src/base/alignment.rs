@@ -2,13 +2,14 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+#![allow(clippy::module_name_repetitions)]
+
 /// Specify the text alignment when drawing text.
-#[allow(clippy::module_name_repetitions)]
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u8)]
 pub enum TextAlignment {
     /// The text is left-aligned.
-    Left,
+    Left = 0,
 
     /// The text is centered.
     Center,

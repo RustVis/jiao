@@ -3,10 +3,11 @@
 // in the LICENSE file.
 
 /// This enum type defines what happens to the aspect ratio when scaling an rectangle.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
 pub enum AspectRatioMode {
     /// The size is scaled freely. The aspect ratio is not preserved.
-    IgnoreAspectRatio,
+    IgnoreAspectRatio = 0,
 
     /// The size is scaled to a rectangle as large as possible inside a given rectangle,
     /// preserving the aspect ratio.

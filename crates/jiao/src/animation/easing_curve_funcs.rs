@@ -4,6 +4,8 @@
 
 //! These easing functions are based on Robert Penner's Easing Equations.
 
+#![allow(clippy::suboptimal_flops)]
+
 use core::f64::consts::{FRAC_PI_2, PI};
 
 use crate::util::{fuzzy_compare, fuzzy_is_zero};

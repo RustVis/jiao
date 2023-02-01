@@ -148,7 +148,7 @@ impl Size {
             return size;
         }
 
-        let rw = (size.height * self.width / self.height) as i32;
+        let rw = size.height * self.width / self.height;
         let use_height = if mode == AspectRatioMode::KeepAspectRatio {
             rw <= size.width
         } else {
