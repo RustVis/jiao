@@ -67,7 +67,7 @@ impl Font {
     ///
     /// A font's capitalization makes the text appear in the selected capitalization mode.
     pub fn set_capitalization(&mut self, _caps: Capitalization) {
-        todo!()
+        unimplemented!()
     }
 
     /// Sets the list of family names for the font.
@@ -81,7 +81,7 @@ impl Font {
     /// an arbitrary foundry is chosen. If the family isn't available a family will be set
     /// using the font matching algorithm.
     pub fn set_families(&mut self, _families: &[&str]) {
-        todo!()
+        unimplemented!()
     }
 
     /// Sets the family name of the font.
@@ -134,7 +134,7 @@ impl Font {
     /// The stretch factor is ignored for bitmap fonts.
     //pub fn set_stretch(&mut self, factor: i32) {
     pub fn set_stretch_f64(&mut self, stretch: f64) {
-        assert!(stretch > 0.0);
+        debug_assert!(stretch > 0.0);
         self.stretch = stretch;
     }
 
@@ -170,19 +170,19 @@ impl Font {
 
     /// Sets the weight of the font to `weight`.
     pub fn set_weight(&mut self, weight: u16) {
-        assert!(weight <= WEIGHT_MAX);
+        debug_assert!(weight <= WEIGHT_MAX);
         self.weight = weight;
     }
 
     /// Returns the stretch factor for the font.
     #[must_use]
-    pub fn stretch(&self) -> f64 {
+    pub const fn stretch(&self) -> f64 {
         self.stretch
     }
 
     /// Returns the style of the font.
     #[must_use]
-    pub fn style(&self) -> FontStyle {
+    pub const fn style(&self) -> FontStyle {
         self.style
     }
 

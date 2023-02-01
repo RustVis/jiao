@@ -2,8 +2,11 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-#![allow(clippy::cast_sign_loss)]
-#![allow(clippy::cast_possible_truncation)]
+#![allow(
+    clippy::suboptimal_flops,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss
+)]
 
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
@@ -224,7 +227,7 @@ pub enum Spec {
 pub const MAX_VALUE: u8 = u8::MAX;
 pub const MAX_VALUE_F64: f64 = MAX_VALUE as f64;
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ParseColorError {
     InvalidFormatError,
     OutOfRangeError,
@@ -254,7 +257,7 @@ impl fmt::Display for ParseColorError {
             Self::InvalidFormatError => "Invalid format",
             Self::OutOfRangeError => "Out of range",
         };
-        write!(f, "{}", s)
+        write!(f, "{s}")
     }
 }
 
@@ -344,7 +347,7 @@ impl Color {
     ///
     /// Returns error if some value is out of range.
     #[allow(dead_code)]
-    fn from_hsl(
+    const fn from_hsl(
         hue: i32,
         saturation: u8,
         lightness: u8,
@@ -410,7 +413,12 @@ impl Color {
     ///
     /// Returns error if some value is out of range.
     #[allow(dead_code)]
-    fn from_hsv(hue: i32, saturation: u8, value: u8, alpha: u8) -> Result<Self, ParseColorError> {
+    const fn from_hsv(
+        hue: i32,
+        saturation: u8,
+        value: u8,
+        alpha: u8,
+    ) -> Result<Self, ParseColorError> {
         if hue < -1 || hue >= 360 {
             return Err(ParseColorError::OutOfRangeError);
         }
@@ -552,8 +560,7 @@ impl Color {
     pub fn to_cmyk(&self) -> Self {
         match &self.inner {
             ColorInner::Cmyk(_) => self.clone(),
-            ColorInner::Hsl(_) => self.to_rgb().to_cmyk(),
-            ColorInner::Hsv(_) => self.to_rgb().to_cmyk(),
+            ColorInner::Hsl(_) | ColorInner::Hsv(_) => self.to_rgb().to_cmyk(),
             ColorInner::Rgb(c) => {
                 if c.red == 0 || c.green == 0 || c.blue == 0 {
                     // Special case, div-by-zero.
@@ -763,9 +770,8 @@ impl Color {
     #[must_use]
     pub fn to_hsl(&self) -> Self {
         match &self.inner {
-            ColorInner::Cmyk(_) => self.to_rgb().to_hsl(),
             ColorInner::Hsl(_) => self.clone(),
-            ColorInner::Hsv(_) => self.to_rgb().to_hsl(),
+            ColorInner::Cmyk(_) | ColorInner::Hsv(_) => self.to_rgb().to_hsl(),
             ColorInner::Rgb(c) => {
                 let red = f64::from(c.red) / MAX_VALUE_F64;
                 let green = f64::from(c.green) / MAX_VALUE_F64;
