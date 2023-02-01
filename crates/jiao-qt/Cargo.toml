@@ -1,10 +1,31 @@
 [package]
 name = "jiao-qt"
-version = "0.1.0"
+version = "0.2.1"
+authors = ["Xu Shaohua <shaohua@biofan.org>"]
+description = "Cross platform 2D rendering engine (Qt binding part)"
+homepage = "https://github.com/RustVis/jiao"
+repository = "https://github.com/RustVis/jiao"
+documentation = "https://docs.rs/jiao-qt"
+readme = "README.md"
+categories = [
+  "computer-vision",
+  "graphics",
+  "rendering",
+  "visualization",
+]
+keywords = [
+  "2d",
+  "canvas",
+  "painting",
+  "rendering",
+  "qt",
+]
 edition = "2021"
+license = "Apache-2.0"
+publish = true
 
 [dependencies]
 cpp_core = "0.6.0"
-jiao = { path="../jiao" }
+jiao = { path="../jiao", version="0.2.1" }
 log = "0.4.17"
 qt_gui = "0.5.0"

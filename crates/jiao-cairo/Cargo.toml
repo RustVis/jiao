@@ -17,8 +17,8 @@ keywords = [
   "2d",
   "canvas",
   "painting",
-  "rendering",
   "cairo",
+  "gtk",
 ]
 edition = "2021"
 license = "Apache-2.0"
