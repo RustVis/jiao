@@ -2,11 +2,12 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use super::painter::Painter;
-use crate::base::{RectF, Size};
+use jiao::base::{RectF, Size};
 use skia_safe::svg::Canvas;
 use std::cell::{RefCell, RefMut};
 use std::rc::Rc;
+
+use super::painter::Painter;
 
 #[derive(Debug)]
 pub enum PaintDevice {

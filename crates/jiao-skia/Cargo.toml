@@ -5,4 +5,5 @@ edition = "2021"
 
 [dependencies]
 jiao = { path="../jiao" }
+log = "0.4.17"
 skia-safe = "0.58.0"

@@ -2,12 +2,11 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use jiao::base::{PointF, RectF};
+use jiao::kernel::{PainterTrait, PathTrait};
 use skia_safe::PaintStyle;
 use std::cell::RefCell;
 use std::rc::Rc;
-
-use crate::base::{PointF, RectF};
-use crate::kernel::{PainterTrait, PathTrait};
 
 #[derive(Debug)]
 enum CanvasWrapper {
