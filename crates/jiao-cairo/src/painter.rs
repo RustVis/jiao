@@ -2,8 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use crate::kernel::generic_path::{GenericPath, GenericPathToken};
-use crate::kernel::PainterTrait;
+use jiao::kernel::generic_path::{GenericPath, GenericPathToken};
+use jiao::kernel::PainterTrait;
 
 // Re-export GenericPath as Path
 pub type Path = GenericPath;

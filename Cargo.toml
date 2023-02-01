@@ -1,7 +1,10 @@
 
 [workspace]
 members = [
-  "crates/*",
+  "crates/jiao",
+  "crates/jiao-cairo",
+  "crates/jiao-skia",
+  "crates/jiao-web",
 ]
 
 exclude = [
