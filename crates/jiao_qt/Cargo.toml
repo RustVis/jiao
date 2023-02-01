@@ -1,0 +1,9 @@
+[package]
+name = "jiao_qt"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+cpp_core = "0.6.0"
+jiao = { path="../jiao" }
+qt_gui = "0.5.0"
