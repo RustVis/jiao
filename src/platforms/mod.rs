@@ -6,26 +6,28 @@ cfg_if::cfg_if! {
     if #[cfg(feature = "cairo")] {
         pub mod cairo;
         pub use self::cairo::paint_context::PaintContext;
-        pub use self::cairo::paint_device::{
+        pub use self::cairo::{
+            PaintContext,
             PaintDevice,
             ImagePaintDevice,
             SvgPaintDevice,
-            PdfPaintDevice
+            PdfPaintDevice,
+            Painter,
+            Path,
         };
-        pub use self::cairo::painter::{Painter, Path};
     } else if #[cfg(feature = "qt")] {
         pub mod qt;
-        pub use self::qt::paint_context::PaintContext;
-        pub use self::qt::painter::{Painter, Path};
+        pub use self::qt::{PaintContext, Painter, Path};
     } else if #[cfg(feature = "skia")] {
         pub mod skia;
-        pub use self::skia::paint_context::PaintContext;
         pub use self::skia::paint_device::{
+            PaintContext,
             ImagePaintDevice,
             PaintDevice,
             SvgPaintDevice,
+            Painter,
+            Path,
         };
-        pub use self::skia::painter::{Painter, Path};
     } else if #[cfg(feature = "web")] {
         pub mod web;
         pub use self::web::{PaintContext, PaintDevice, Painter, Path};
