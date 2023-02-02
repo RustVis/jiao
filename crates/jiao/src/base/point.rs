@@ -107,6 +107,18 @@ impl Point {
     }
 }
 
+impl Into<Point> for &(i32, i32) {
+    fn into(self) -> Point {
+        Point::from(self.0, self.1)
+    }
+}
+
+impl Into<(i32, i32)> for &Point {
+    fn into(self) -> (i32, i32) {
+        (self.x, self.y)
+    }
+}
+
 impl ops::Add for Point {
     type Output = Self;
 
@@ -290,6 +302,24 @@ impl PointF {
     }
 }
 
+impl Into<PointF> for &(f64, f64) {
+    fn into(self) -> PointF {
+        PointF::from(self.0, self.1)
+    }
+}
+
+impl Into<PointF> for &(f32, f32) {
+    fn into(self) -> PointF {
+        PointF::from(self.0 as f64, self.1 as f64)
+    }
+}
+
+impl Into<(f32, f32)> for &PointF {
+    fn into(self) -> (f32, f32) {
+        (self.x as f32, self.y as f32)
+    }
+}
+
 impl ops::Add for PointF {
     type Output = Self;
 
@@ -358,21 +388,5 @@ impl ops::Div<f64> for PointF {
     fn div(self, factor: f64) -> Self {
         assert!(!fuzzy_is_zero(factor));
         Self::from(self.x / factor, self.y / factor)
-    }
-}
-
-cfg_if::cfg_if! {
-    if #[cfg(feature = "skia")] {
-        impl From<skia_safe::Point> for PointF {
-            fn from(p: skia_safe::Point) -> Self {
-                Self::from(f64::from(p.x), f64::from(p.y))
-            }
-        }
-
-        impl From<PointF> for skia_safe::Point {
-            fn from(p: PointF) -> Self {
-                Self::new(p.x() as f32, p.y() as f32)
-            }
-        }
     }
 }
