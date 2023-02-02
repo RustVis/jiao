@@ -26,7 +26,7 @@ impl RectShape {
 
     /// Create a general rect.
     #[must_use]
-    pub fn from_rect(rect: RectF) -> Self {
+    pub const fn from_rect(rect: RectF) -> Self {
         let path = Path2D::new();
         Self {
             rect,
