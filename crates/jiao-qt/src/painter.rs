@@ -1,5 +1,5 @@
 // Copyright (c) 2022 Xu Shaohua <shaohua@biofan.org>. All rights reserved.
-// Use of this source is governed by General Public License that can be found
+// Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
 use cpp_core::CppBox;
@@ -62,7 +62,7 @@ impl PainterTrait for Painter {
     }
 
     #[inline]
-    fn fill<'a>(&mut self, path: &'a dyn PathTrait) {
+    fn fill(&mut self, path: &dyn PathTrait) {
         let path_ref = path.as_any().downcast_ref::<Path>().unwrap();
         unsafe {
             let brush = self.painter.brush();
@@ -71,7 +71,7 @@ impl PainterTrait for Painter {
     }
 
     #[inline]
-    fn stroke<'a>(&mut self, path: &'a dyn PathTrait) {
+    fn stroke(&mut self, path: &dyn PathTrait) {
         let path_ref = path.as_any().downcast_ref::<Path>().unwrap();
         unsafe {
             let pen = self.painter.pen();
