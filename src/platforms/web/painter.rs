@@ -82,18 +82,13 @@ pub struct Path {
     path2d: Path2d,
 }
 
-impl Default for Path {
-    fn default() -> Self {
-        // TODO(Shaohua): Add error type.
-        let path2d = Path2d::new().unwrap();
-        Self { path2d }
-    }
-}
-
 impl Path {
+    /// # Panics
+    /// Got panic if failed to create path2d object.
     #[must_use]
     pub fn new() -> Self {
-        Self::default()
+        let path2d = Path2d::new().unwrap();
+        Self { path2d }
     }
 
     /// Get inner `Path2D` object.

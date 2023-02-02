@@ -2,45 +2,25 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use std::error;
 use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ErrorKind {
-    // For status == 400.
-    BadRequest,
-
-    // For status == 401.
-    Unauthorized,
-
-    // For status == 403.
-    Forbidden,
-
-    // For status == 404.
-    NotFound,
-
-    // For status == 500.
-    InternalServerError,
-
     JsError,
-    DeserializeError,
-    RequestError,
-    ResponseError,
-    UrlParamError,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct FetchError {
+pub struct Error {
     kind: ErrorKind,
     message: String,
 }
 
-impl FetchError {
+impl Error {
     #[must_use]
-    pub const fn new(kind: ErrorKind) -> Self {
+    pub fn new(kind: ErrorKind, s: &str) -> Self {
         Self {
             kind,
-            message: String::new(),
+            message: s.to_string(),
         }
     }
 
@@ -60,10 +40,32 @@ impl FetchError {
     }
 }
 
-impl fmt::Display for FetchError {
+impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{:?}: {}", self.kind, self.message)
     }
 }
 
-impl error::Error for FetchError {}
+impl std::error::Error for Error {}
+
+cfg_if::cfg_if! {
+    if #[cfg(feature = "web")] {
+        impl From<wasm_bindgen::JsValue> for Error {
+            fn from(value: wasm_bindgen::JsValue) -> Self {
+                Self::from_string(ErrorKind::JsError, format!("{value:?}"))
+            }
+        }
+
+        impl From<web_sys::Element> for Error {
+            fn from(value: web_sys::Element) -> Self {
+                Self::from_string(ErrorKind::JsError, format!("{value:?}"))
+            }
+        }
+
+        impl From<js_sys::Object> for Error {
+            fn from(value: js_sys::Object) -> Self {
+                Self::from_string(ErrorKind::JsError, format!("{value:?}"))
+            }
+        }
+    }
+}

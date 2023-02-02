@@ -9,6 +9,7 @@ use web_sys::{
 
 use super::painter::Painter;
 use crate::base::Size;
+use crate::error::{Error, ErrorKind};
 use crate::kernel::PainterTrait;
 
 #[allow(clippy::module_name_repetitions)]
@@ -24,24 +25,24 @@ pub struct PaintDevice {
 impl PaintDevice {
     /// Create a new canvas dom as child of `parent_dom`.
     ///
-    /// # Panics
-    /// Got panic if got web-sys type conversion errors.
+    /// # Errors
+    /// Returns error if got web-sys type conversion errors.
     #[must_use]
-    pub fn new(parent_dom: &HtmlElement) -> Self {
-        // TODO(Shaohua): Returns error
-        let window: Window = web_sys::window().unwrap();
-        let document: Document = window.document().unwrap();
-        let element: Element = document.create_element("canvas").unwrap();
-        let canvas: HtmlCanvasElement = element.dyn_into::<HtmlCanvasElement>().unwrap();
+    pub fn new(parent_dom: &HtmlElement) -> Result<Self, Error> {
+        let window: Window =
+            web_sys::window().ok_or(Error::new(ErrorKind::JsError, "No window object found"))?;
+        let document: Document = window
+            .document()
+            .ok_or(Error::new(ErrorKind::JsError, "No document object found"))?;
+        let element: Element = document.create_element("canvas")?;
+        let canvas: HtmlCanvasElement = element.dyn_into::<HtmlCanvasElement>()?;
         let canvas_ctx = canvas
-            .get_context("2d")
-            .unwrap()
-            .unwrap()
-            .dyn_into::<CanvasRenderingContext2d>()
-            .unwrap();
+            .get_context("2d")?
+            .ok_or(Error::new(ErrorKind::JsError, "No 2d context found"))?
+            .dyn_into::<CanvasRenderingContext2d>()?;
         let painter = Painter::new(canvas.clone(), canvas_ctx);
-        parent_dom.append_child(&canvas).unwrap();
-        Self { canvas, painter }
+        parent_dom.append_child(&canvas)?;
+        Ok(Self { canvas, painter })
     }
 
     pub fn bind_event(&mut self) {}

@@ -5,6 +5,7 @@
 use web_sys::HtmlElement;
 
 use super::paint_device::PaintDevice;
+use crate::error::Error;
 use crate::kernel::{PaintContextTrait, ShapeManager};
 
 pub struct PaintContext {
@@ -13,15 +14,17 @@ pub struct PaintContext {
 }
 
 impl PaintContext {
+    /// # Errors
+    /// Returns error if failed to create paitn device.
     #[must_use]
-    pub fn from_dom(dom: &HtmlElement) -> Self {
+    pub fn from_dom(dom: &HtmlElement) -> Result<Self, Error> {
         let shape_manager = ShapeManager::new();
-        let paint_device = PaintDevice::new(dom);
+        let paint_device = PaintDevice::new(dom)?;
 
-        Self {
+        Ok(Self {
             shape_manager,
             paint_device,
-        }
+        })
     }
 
     pub fn start(&mut self) {
