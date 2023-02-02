@@ -53,13 +53,9 @@ impl ImagePaintDevice {
     }
 
     /// Encode current surface state to specific image format data.
-    ///
-    /// # Panics
-    /// Got panic if image encoding failed.
-    pub fn encode(&mut self, format: skia_safe::EncodedImageFormat) -> skia_safe::Data {
+    pub fn encode(&mut self, format: skia_safe::EncodedImageFormat) -> Option<skia_safe::Data> {
         let image = self.surface.image_snapshot();
-        // TODO(Shaohua): Returns Result<>
-        image.encode_to_data(format).unwrap()
+        image.encode_to_data(format)
     }
 }
 

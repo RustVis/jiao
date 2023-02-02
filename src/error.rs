@@ -7,6 +7,7 @@ use std::fmt;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ErrorKind {
     JsError,
+    SkiaError,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
