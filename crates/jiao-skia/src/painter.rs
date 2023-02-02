@@ -67,7 +67,7 @@ impl PainterTrait for Painter {
     }
 
     #[inline]
-    fn fill<'a>(&mut self, path: &'a dyn PathTrait) {
+    fn fill(&mut self, path: &dyn PathTrait) {
         let path_ref = path.as_any().downcast_ref::<Path>().unwrap();
         self.paint.set_style(PaintStyle::Fill);
         match &mut self.canvas {
@@ -79,7 +79,7 @@ impl PainterTrait for Painter {
     }
 
     #[inline]
-    fn stroke<'a>(&mut self, path: &'a dyn PathTrait) {
+    fn stroke(&mut self, path: &dyn PathTrait) {
         let path_ref = path.as_any().downcast_ref::<Path>().unwrap();
         self.paint.set_style(PaintStyle::Stroke);
         match &mut self.canvas {
@@ -133,8 +133,8 @@ impl PathTrait for Path {
         // TODO(Shaohua):
     }
 
-    fn add_path<'a>(&mut self, other: &'a dyn PathTrait) {
-        let other_ref = other.as_any().downcast_ref::<Path>().unwrap();
+    fn add_path(&mut self, other: &dyn PathTrait) {
+        let other_ref = other.as_any().downcast_ref::<Self>().unwrap();
         self.p.add_path(&other_ref.p, (0.0, 0.0), None);
     }
 
