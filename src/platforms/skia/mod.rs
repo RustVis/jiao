@@ -5,7 +5,6 @@
 pub mod paint_context;
 pub mod paint_device;
 pub mod painter;
-pub mod util;
 
 pub use self::paint_context::PaintContext;
 pub use self::paint_device::{ImagePaintDevice, PaintDevice, SvgPaintDevice};

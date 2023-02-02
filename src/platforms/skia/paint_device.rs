@@ -8,9 +8,8 @@ use skia_safe::svg::Canvas;
 use std::cell::{RefCell, RefMut};
 use std::rc::Rc;
 
-use super::util::to_sk_rect;
+use super::painter::Painter;
 use crate::base::{RectF, Size};
-use crate::painter::Painter;
 
 #[derive(Debug)]
 pub enum PaintDevice {
@@ -76,7 +75,7 @@ impl SvgPaintDevice {
     #[must_use]
     pub fn new(rect: &RectF) -> Self {
         // TODO(Shaohua): Catch errors
-        let sk_rect = to_sk_rect(rect);
+        let sk_rect: skia_safe::Rect = rect.into();
         let canvas = skia_safe::svg::Canvas::new(sk_rect, None);
         let canvas = Rc::new(RefCell::new(canvas));
         let painter = Painter::from_svg_canvas(canvas.clone());

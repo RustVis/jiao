@@ -1809,3 +1809,25 @@ impl ops::BitOrAssign<&Self> for RectF {
         *self = new_rect;
     }
 }
+
+cfg_if::cfg_if! {
+    if #[cfg(feature = "skia")] {
+        impl From<skia_safe::Rect> for RectF {
+            fn from(r: skia_safe::Rect) -> Self {
+                Self::from_corners(f64::from(r.left()), f64::from(r.top()), f64::from(r.right()), f64::from(r.bottom()))
+            }
+        }
+
+        impl From<RectF> for skia_safe::Rect {
+            fn from(r: RectF) -> Self {
+                Self::new(r.left() as f32, r.top() as f32, r.right() as f32, r.bottom() as f32)
+            }
+        }
+
+        impl From<&RectF> for skia_safe::Rect {
+            fn from(r: &RectF) -> Self {
+                Self::new(r.left() as f32, r.top() as f32, r.right() as f32, r.bottom() as f32)
+            }
+        }
+    }
+}

@@ -4,17 +4,9 @@
 
 #![allow(clippy::cast_possible_truncation)]
 
-use skia_safe::Point as SkPoint;
 use skia_safe::Rect as SkRect;
 
-use crate::base::{PointF, RectF};
-
-/// Convert jiao point into skia point manually.
-#[inline]
-#[must_use]
-pub const fn to_sk_point(p: PointF) -> SkPoint {
-    SkPoint::new(p.x() as f32, p.y() as f32)
-}
+use crate::base::RectF;
 
 /// Convert jiao rect into skia rect manually.
 #[inline]
