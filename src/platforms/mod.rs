@@ -5,7 +5,6 @@
 cfg_if::cfg_if! {
     if #[cfg(feature = "cairo")] {
         pub mod cairo;
-        pub use self::cairo::paint_context::PaintContext;
         pub use self::cairo::{
             PaintContext,
             PaintDevice,
@@ -20,7 +19,7 @@ cfg_if::cfg_if! {
         pub use self::qt::{PaintContext, Painter, Path};
     } else if #[cfg(feature = "skia")] {
         pub mod skia;
-        pub use self::skia::paint_device::{
+        pub use self::skia::{
             PaintContext,
             ImagePaintDevice,
             PaintDevice,

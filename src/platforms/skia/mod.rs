@@ -5,8 +5,9 @@
 pub mod paint_context;
 pub mod paint_device;
 pub mod painter;
+pub mod path;
 
 pub use self::paint_context::PaintContext;
 pub use self::paint_device::{ImagePaintDevice, PaintDevice, SvgPaintDevice};
 pub use self::painter::Painter;
-pub use self::painter::Path;
+pub use self::path::Path;
