@@ -28,9 +28,7 @@ cfg_if::cfg_if! {
         pub use self::skia::painter::{Painter, Path};
     } else if #[cfg(feature = "web")] {
         pub mod web;
-        pub use self::web::paint_context::PaintContext;
-        pub use self::web::paint_device::PaintDevice;
-        pub use self::web::painter::{Painter, Path};
+        pub use self::web::{PaintContext, PaintDevice, Painter, Path};
     } else {
         pub type Path = crate::kernel::generic_path::GenericPath;
     }
