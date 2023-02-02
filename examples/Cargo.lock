@@ -216,8 +216,6 @@ version = "0.1.0"
 dependencies = [
  "cairo-rs",
  "jiao",
- "jiao-cairo",
- "jiao-shapes",
 ]
 
 [[package]]
@@ -259,8 +257,6 @@ name = "example"
 version = "0.1.0"
 dependencies = [
  "jiao",
- "jiao-shapes",
- "jiao-web",
  "log",
  "wasm-bindgen",
  "wasm-logger",
@@ -753,59 +749,16 @@ checksum = "fad582f4b9e86b6caa621cabeb0963332d92eea04729ab12892c2533951e6440"
 name = "jiao"
 version = "0.2.1"
 dependencies = [
+ "cairo-rs",
+ "cfg-if",
+ "cpp_core",
  "float-cmp",
+ "js-sys",
  "lazy_static",
  "log",
- "serde",
-]
-
-[[package]]
-name = "jiao-cairo"
-version = "0.2.1"
-dependencies = [
- "cairo-rs",
- "jiao",
- "log",
-]
-
-[[package]]
-name = "jiao-qt"
-version = "0.2.1"
-dependencies = [
- "cpp_core",
- "jiao",
- "log",
  "qt_gui",
-]
-
-[[package]]
-name = "jiao-shapes"
-version = "0.2.1"
-dependencies = [
- "cfg-if",
- "jiao",
- "jiao-cairo",
- "jiao-qt",
- "jiao-skia",
- "jiao-web",
-]
-
-[[package]]
-name = "jiao-skia"
-version = "0.2.1"
-dependencies = [
- "jiao",
- "log",
+ "serde",
  "skia-safe",
-]
-
-[[package]]
-name = "jiao-web"
-version = "0.2.1"
-dependencies = [
- "jiao",
- "js-sys",
- "log",
  "wasm-bindgen",
  "web-sys",
 ]
@@ -1089,8 +1042,6 @@ version = "0.1.0"
 dependencies = [
  "cpp_core",
  "jiao",
- "jiao-qt",
- "jiao-shapes",
  "qt_core",
  "qt_gui",
 ]
@@ -1376,8 +1327,6 @@ name = "skia"
 version = "0.1.0"
 dependencies = [
  "jiao",
- "jiao-shapes",
- "jiao-skia",
  "skia-safe",
 ]
 

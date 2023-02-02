@@ -1,6 +1,6 @@
 [workspace]
 members = [
-  "cr",
+  "cairo",
   "qt",
   "skia",
   "web",

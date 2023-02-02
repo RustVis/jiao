@@ -1,0 +1,8 @@
+[package]
+name = "cr-example"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+cairo-rs = { version = "0.16.7", features = ["glib", "png", "svg", "pdf"] }
+jiao = { path = "../..", features = ["cairo"] }

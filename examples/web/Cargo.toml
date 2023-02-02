@@ -4,9 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-jiao = { path = "../../crates/jiao" }
-jiao-web = { path = "../../crates/jiao-web" }
-jiao-shapes = { path = "../../crates/jiao-shapes", features = ["web"] }
+jiao = { path = "../..", features = ["web"] }
 log = "0.4.17"
 wasm-bindgen = "0.2.84"
 wasm-logger = "0.2.0"

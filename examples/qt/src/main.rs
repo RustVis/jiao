@@ -3,8 +3,8 @@
 // in the LICENSE file.
 
 use jiao::kernel::{PaintContextTrait, ShapeManager};
-use jiao_qt::PaintContext;
-use jiao_shapes::LineShape;
+use jiao::platforms::qt::PaintContext;
+use jiao::shapes::LineShape;
 use qt_core::QString;
 use qt_gui::q_image::Format;
 use qt_gui::{QGuiApplication, QImage};

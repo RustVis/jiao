@@ -4,8 +4,8 @@
 
 use jiao::base::RectF;
 use jiao::kernel::PaintContextTrait;
-use jiao_shapes::{LineShape, RectShape};
-use jiao_web::PaintContext;
+use jiao::platforms::web::PaintContext;
+use jiao::shapes::{LineShape, RectShape};
 use web_sys::HtmlElement;
 use yew::prelude::*;
 
