@@ -32,6 +32,7 @@ skia = ["jiao-skia"]
 web = ["jiao-web"]
 
 [dependencies]
+cfg-if = "1.0.0"
 jiao = { path = "../jiao", version = "0.2.1" }
 jiao-cairo = { path = "../jiao-cairo", version = "0.2.1", optional = true }
 jiao-qt= { path = "../jiao-qt", version = "0.2.1", optional = true }
