@@ -6,6 +6,7 @@ use std::fmt;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ErrorKind {
+    CairoError,
     JsError,
     SkiaError,
 }
@@ -50,7 +51,13 @@ impl fmt::Display for Error {
 impl std::error::Error for Error {}
 
 cfg_if::cfg_if! {
-    if #[cfg(feature = "web")] {
+    if #[cfg(feature = "cairo")] {
+        impl From<cairo::Error> for Error {
+            fn from(err: cairo::Error) -> Self {
+                Self::from_string(ErrorKind::CairoError, format!("{err:?}"))
+            }
+        }
+    } else if #[cfg(feature = "web")] {
         impl From<wasm_bindgen::JsValue> for Error {
             fn from(value: wasm_bindgen::JsValue) -> Self {
                 Self::from_string(ErrorKind::JsError, format!("{value:?}"))

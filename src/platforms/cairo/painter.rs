@@ -2,6 +2,7 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use crate::error::Error;
 use crate::kernel::generic_path::{GenericPath, GenericPathToken};
 use crate::kernel::{PainterTrait, PathTrait};
 
@@ -14,12 +15,12 @@ pub struct Painter {
 }
 
 impl Painter {
-    /// # Panics
-    /// Got panic if failed to create a new cairo context with specific `surface`.
+    /// # Errors
+    /// Returns error if failed to create a new cairo context with specific `surface`.
     #[must_use]
-    pub fn new(surface: &cairo::Surface) -> Self {
-        let context = cairo::Context::new(surface).unwrap();
-        Self { context }
+    pub fn new(surface: &cairo::Surface) -> Result<Self, Error> {
+        let context = cairo::Context::new(surface)?;
+        Ok(Self { context })
     }
 
     fn draw_path(&mut self, path: &Path) {

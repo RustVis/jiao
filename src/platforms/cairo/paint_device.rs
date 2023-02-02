@@ -6,6 +6,7 @@
 
 use super::painter::Painter;
 use crate::base::Size;
+use crate::error::Error;
 
 #[derive(Debug, Clone)]
 pub enum PaintDevice {
@@ -33,14 +34,13 @@ pub struct ImagePaintDevice {
 impl ImagePaintDevice {
     /// Create a new image painting device.
     ///
-    /// # Panics
-    /// Got panic if failedto create image painting device with specific format.
+    /// # Errors
+    /// Returns error if failed to create image painting device with specific format.
     #[must_use]
-    pub fn new(format: cairo::Format, width: i32, height: i32) -> Self {
-        // TODO(Shaohua): Catch errors
-        let surface = cairo::ImageSurface::create(format, width, height).unwrap();
-        let painter = Painter::new(&surface);
-        Self { surface, painter }
+    pub fn new(format: cairo::Format, width: i32, height: i32) -> Result<Self, Error> {
+        let surface = cairo::ImageSurface::create(format, width, height)?;
+        let painter = Painter::new(&surface)?;
+        Ok(Self { surface, painter })
     }
 
     #[must_use]
@@ -66,13 +66,12 @@ pub struct PdfPaintDevice {
 impl PdfPaintDevice {
     /// Create a new pdf paint device with specific size.
     ///
-    /// # Panics
-    /// Got panic if failed to create new pdf paint device.
-    pub fn new<P: AsRef<std::path::Path>>(width: f64, height: f64, path: P) -> Self {
-        // TODO(Shaohua): Catch errors
-        let surface = cairo::PdfSurface::new(width, height, path).unwrap();
-        let painter = Painter::new(&surface);
-        Self { surface, painter }
+    /// # Errors
+    /// Returns error if failed to create new pdf paint device.
+    pub fn new<P: AsRef<std::path::Path>>(width: f64, height: f64, path: P) -> Result<Self, Error> {
+        let surface = cairo::PdfSurface::new(width, height, path)?;
+        let painter = Painter::new(&surface)?;
+        Ok(Self { surface, painter })
     }
 
     #[must_use]
@@ -98,13 +97,12 @@ pub struct SvgPaintDevice {
 impl SvgPaintDevice {
     /// Create a new svg painting device with specific size.
     ///
-    /// # Panics
-    /// Got panic if failed to create svg surface.
-    pub fn new<P: AsRef<std::path::Path>>(width: f64, height: f64, path: P) -> Self {
-        // TODO(Shaohua): Catch errors
-        let surface = cairo::SvgSurface::new(width, height, Some(path)).unwrap();
-        let painter = Painter::new(&surface);
-        Self { surface, painter }
+    /// # Errors
+    /// Returns error if failed to create svg surface.
+    pub fn new<P: AsRef<std::path::Path>>(width: f64, height: f64, path: P) -> Result<Self, Error> {
+        let surface = cairo::SvgSurface::new(width, height, Some(path))?;
+        let painter = Painter::new(&surface)?;
+        Ok(Self { surface, painter })
     }
 
     #[must_use]
