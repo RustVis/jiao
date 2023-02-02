@@ -1,8 +1,10 @@
 [package]
-name = "cr"
+name = "cr-example"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-cairo-rs = "0.15.11"
-jiao = { path = "../..", default-features=false, features = ["cairo"] }
+cairo-rs = { version = "0.16.7", features = ["glib", "png", "svg", "pdf"] }
+jiao = { path = "../../crates/jiao" }
+jiao-cairo = { path = "../../crates/jiao-cairo" }
+jiao-shapes = { path = "../../crates/jiao-shapes", features = ["cairo"] }
