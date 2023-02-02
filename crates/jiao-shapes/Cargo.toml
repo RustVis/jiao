@@ -1,0 +1,18 @@
+[package]
+name = "jiao-shapes"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = ["web"]
+cairo = ["jiao-cairo"]
+qt = ["jiao-qt"]
+skia = ["jiao-skia"]
+web = ["jiao-web"]
+
+[dependencies]
+jiao = { path = "../jiao", version = "0.2.1" }
+jiao-cairo = { path = "../jiao-cairo", version = "0.2.1", optional = true }
+jiao-qt= { path = "../jiao-qt", version = "0.2.1", optional = true }
+jiao-skia = { path = "../jiao-skia", version = "0.2.1", optional = true }
+jiao-web = { path = "../jiao-web", version = "0.2.1", optional = true }

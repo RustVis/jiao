@@ -2,11 +2,9 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use crate::base::RectF;
-use crate::kernel::PainterTrait;
-use crate::shapes::ShapeTrait;
+use jiao::base::RectF;
+use jiao::kernel::{PainterTrait, ShapeTrait};
 
-#[allow(clippy::module_name_repetitions)]
 #[derive(Debug)]
 pub struct TextShape {
     text: String,

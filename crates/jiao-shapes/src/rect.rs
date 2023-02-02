@@ -2,12 +2,9 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use super::ShapeTrait;
 use crate::base::{PointF, RectF};
-use crate::kernel::{PainterTrait, PathTrait};
-use crate::platforms::Path;
+use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
 
-#[allow(clippy::module_name_repetitions)]
 #[derive(Debug)]
 pub struct RectShape {
     rect: RectF,

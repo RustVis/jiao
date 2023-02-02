@@ -3,12 +3,9 @@
 // in the LICENSE file.
 
 use crate::base::{PointF, RectF};
-use crate::kernel::{PainterTrait, PathTrait};
-use crate::platforms::Path;
-use crate::shapes::ShapeTrait;
+use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
 use crate::util::fuzzy_compare;
 
-#[allow(clippy::module_name_repetitions)]
 #[derive(Debug)]
 pub struct GridShape {
     horizontal_step: f64,

@@ -2,93 +2,110 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use super::ShapeTrait;
 use crate::base::{PointF, RectF};
-use crate::kernel::{PainterTrait, PathTrait};
-use crate::platforms::Path;
+use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
 
 const DEFAULT_END_ANGLE: f64 = std::f64::consts::TAU;
 
-#[allow(clippy::module_name_repetitions)]
 #[derive(Debug)]
-pub struct CircularShape {
+pub struct EllipseShape {
     center: PointF,
-    radius: f64,
+    radius_x: f64,
+    radius_y: f64,
     start_angle: f64,
     end_angle: f64,
 
-    path: Path,
     path_is_dirty: bool,
+    path: Path,
 }
 
-impl CircularShape {
-    /// Create a new circular shape object.
+impl EllipseShape {
+    /// Create a new ellipse shape.
     ///
     /// # Panics
     ///
-    /// `radius` shall be non-negative.
+    /// Both `radius_x` and `radius_y` shall be >= 0.0.
     #[must_use]
-    pub fn new(center: PointF, radius: f64) -> Self {
-        assert!(radius >= 0.0);
+    pub fn new(center: PointF, radius_x: f64, radius_y: f64) -> Self {
+        assert!(radius_x >= 0.0);
+        assert!(radius_y >= 0.0);
         let path = Path::new();
         Self {
             center,
-            radius,
+            radius_x,
+            radius_y,
             start_angle: 0.0,
             end_angle: DEFAULT_END_ANGLE,
-            path,
             path_is_dirty: true,
+            path,
         }
     }
 
-    /// Get center point of the circular shape.
+    /// Get center point of the ellipse shape.
     #[must_use]
     pub const fn center(&self) -> PointF {
         self.center
     }
 
-    /// Update center point of the circular shape.
+    /// Set center point of the ellipse shape.
     pub fn set_center(&mut self, center: PointF) {
         self.center = center;
         self.path_is_dirty = true;
     }
 
-    /// Get radius of the circular shape.
+    /// Get x-axis radius of the ellipse shape.
     #[must_use]
-    pub const fn radius(&self) -> f64 {
-        self.radius
+    pub const fn radius_x(&self) -> f64 {
+        self.radius_x
     }
 
-    /// Set radius of the circular shape.
+    /// Set x-axis radius of the ellipse shape.
     ///
     /// # Panics
     ///
-    /// `radius` shall be non-negative.
-    pub fn set_radius(&mut self, radius: f64) {
-        assert!(radius >= 0.0);
-        self.radius = radius;
+    /// `radius_x` shall be non-negative.
+    pub fn set_radius_x(&mut self, radius_x: f64) {
+        assert!(radius_x >= 0.0);
+        self.radius_x = radius_x;
         self.path_is_dirty = true;
     }
 
-    /// Get start angle of the circular shape.
+    /// Get y-axis radius of the ellipse shape.
+    #[must_use]
+    pub const fn radius_y(&self) -> f64 {
+        self.radius_y
+    }
+
+    /// Set y-axis radius of the ellipse shape.
+    ///
+    /// # Panics
+    ///
+    /// `radius_y` shall be >= 0.0.
+    pub fn set_radius_y(&mut self, radius_y: f64) {
+        assert!(radius_y >= 0.0);
+        self.radius_y = radius_y;
+        self.path_is_dirty = true;
+    }
+
+    /// Get start angle of the ellipse shape.
     #[must_use]
     pub const fn start_angle(&self) -> f64 {
         self.start_angle
     }
 
-    /// Set start angle of the circular shape.
+    /// Set start angle of the ellipse shape.
     pub fn set_start_angle(&mut self, start_angle: f64) {
         self.start_angle = start_angle;
         self.path_is_dirty = true;
     }
 
-    /// Get end angle of the circular shape.
+    /// Get end angle of the ellipse shape.
     #[must_use]
     pub const fn end_angle(&self) -> f64 {
         self.end_angle
     }
 
-    /// Set end angle of the circular shape.
+    /// Set end angle of the ellipse shape.
     pub fn set_end_angle(&mut self, end_angle: f64) {
         self.end_angle = end_angle;
         self.path_is_dirty = true;
@@ -99,13 +116,18 @@ impl CircularShape {
             return;
         }
         self.path.clear();
-        self.path
-            .arc(self.center, self.radius, self.start_angle, self.end_angle);
+        self.path.ellipse(
+            self.center,
+            self.radius_x,
+            self.radius_y,
+            self.start_angle,
+            self.end_angle,
+        );
         self.path_is_dirty = false;
     }
 }
 
-impl ShapeTrait for CircularShape {
+impl ShapeTrait for EllipseShape {
     fn bounding_rect(&self) -> RectF {
         todo!()
     }

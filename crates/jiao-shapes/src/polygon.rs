@@ -3,15 +3,12 @@
 // in the LICENSE file.
 
 use crate::base::RectF;
-use crate::kernel::{PainterTrait, PathTrait};
-use crate::platforms::Path;
-use crate::shapes::ShapeTrait;
+use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
 use crate::util::fuzzy_compare;
 
 const VERTEX_MIN: usize = 3;
 const VERTEX_MAX: usize = 99;
 
-#[allow(clippy::module_name_repetitions)]
 #[derive(Debug)]
 pub struct PolygonShape {
     corners: usize,

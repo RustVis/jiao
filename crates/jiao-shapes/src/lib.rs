@@ -2,15 +2,17 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-mod bracket;
-mod circular;
-mod ellipse;
-mod grid;
-mod line;
-mod polygon;
-mod rect;
-mod star;
-mod text;
+#![allow(clippy::module_name_repetitions)]
+
+pub mod bracket;
+pub mod circular;
+pub mod ellipse;
+pub mod grid;
+pub mod line;
+pub mod polygon;
+pub mod rect;
+pub mod star;
+pub mod text;
 
 pub use bracket::BracketShape;
 pub use circular::CircularShape;

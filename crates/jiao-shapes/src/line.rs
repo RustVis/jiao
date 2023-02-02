@@ -2,17 +2,14 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use super::ShapeTrait;
 use crate::base::PointF;
 use crate::base::{LineF, RectF};
-use crate::kernel::{PainterTrait, PathTrait};
-use crate::platforms::Path;
+use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
 
-#[allow(clippy::module_name_repetitions)]
 #[derive(Debug)]
 pub struct LineShape {
     line: LineF,
-    path: Path,
+    path: Box<dyn PathTrait>,
     path_is_dirty: bool,
 }
 
@@ -35,7 +32,7 @@ impl LineShape {
 
     #[must_use]
     pub fn from_points(p1: PointF, p2: PointF) -> Self {
-        let path = Path::new();
+        let path = PathTrait::new();
         Self {
             line: LineF::from_points(p1, p2),
             path,

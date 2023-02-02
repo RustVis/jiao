@@ -2,16 +2,15 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use crate::base::RectF;
-use crate::kernel::{PainterTrait, PathTrait};
-use crate::platforms::Path;
-use crate::shapes::ShapeTrait;
-use crate::util::fuzzy_compare;
+use jiao::base::RectF;
+use jiao::kernel::{PainterTrait, PathTrait, ShapeTrait};
+use jiao::util::fuzzy_compare;
+
+use crate::Path;
 
 const VERTEX_MIN: usize = 3;
 const VERTEX_MAX: usize = 99;
 
-#[allow(clippy::module_name_repetitions)]
 #[derive(Debug)]
 pub struct StarShape {
     corners: usize,
