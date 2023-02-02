@@ -3,10 +3,8 @@
 // in the LICENSE file.
 
 use jiao::kernel::PaintContextTrait;
-use jiao::platforms::ImagePaintDevice;
-use jiao::platforms::PaintContext;
-use jiao::platforms::PaintDevice;
-use jiao::shapes::LineShape;
+use jiao_shapes::LineShape;
+use jiao_skia::{ImagePaintDevice, PaintContext, PaintDevice};
 use skia_safe::EncodedImageFormat;
 use std::fs::File;
 use std::io::Write;

@@ -4,5 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-jiao = { path = "../..", default-features=false, features = ["skia"] }
-skia-safe = "0.50.0"
+jiao = { path = "../../crates/jiao" }
+jiao-skia = { path = "../../crates/jiao-skia" }
+jiao-shapes = { path = "../../crates/jiao-shapes", features = ["skia"] }
+skia-safe = "0.58.0"
