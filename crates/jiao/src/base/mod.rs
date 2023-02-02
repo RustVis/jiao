@@ -3,13 +3,13 @@
 // in the LICENSE file.
 
 pub mod alignment;
-mod aspect_ratio_mode;
-mod axis;
-mod line;
-mod margins;
-mod point;
-mod rect;
-mod size;
+pub mod aspect_ratio_mode;
+pub mod axis;
+pub mod line;
+pub mod margins;
+pub mod point;
+pub mod rect;
+pub mod size;
 pub mod sysinfo;
 pub mod timer;
 
