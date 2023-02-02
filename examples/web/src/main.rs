@@ -4,20 +4,20 @@
 
 use jiao::base::RectF;
 use jiao::kernel::PaintContextTrait;
-use jiao::platforms::PaintContext;
-use jiao::shapes::{LineShape, RectShape};
+use jiao_shapes::{LineShape, RectShape};
+use jiao_web::PaintContext;
 use web_sys::HtmlElement;
-use yew::{html, Component, Context, Html, NodeRef};
+use yew::prelude::*;
 
 #[derive(Debug)]
 enum Msg {}
 
-struct Model {
+struct AppComponent {
     container_node: NodeRef,
     paint_ctx: Option<PaintContext>,
 }
 
-impl Component for Model {
+impl Component for AppComponent {
     type Message = Msg;
     type Properties = ();
 
@@ -56,5 +56,5 @@ impl Component for Model {
 
 fn main() {
     wasm_logger::init(wasm_logger::Config::default());
-    yew::start_app::<Model>();
+    yew::Renderer::<AppComponent>::new().render();
 }

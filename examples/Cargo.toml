@@ -3,5 +3,5 @@ members = [
   "cr",
   "qt",
   #"skia",
-  #"web",
+  "web",
 ]
