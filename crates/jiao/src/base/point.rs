@@ -107,15 +107,15 @@ impl Point {
     }
 }
 
-impl Into<Point> for &(i32, i32) {
-    fn into(self) -> Point {
-        Point::from(self.0, self.1)
+impl From<(i32, i32)> for Point {
+    fn from((x, y): (i32, i32)) -> Self {
+        Self::from(x, y)
     }
 }
 
-impl Into<(i32, i32)> for &Point {
-    fn into(self) -> (i32, i32) {
-        (self.x, self.y)
+impl From<&Point> for (i32, i32) {
+    fn from(p: &Point) -> Self {
+        (p.x, p.y)
     }
 }
 
@@ -302,21 +302,15 @@ impl PointF {
     }
 }
 
-impl Into<PointF> for &(f64, f64) {
-    fn into(self) -> PointF {
-        PointF::from(self.0, self.1)
+impl From<(f64, f64)> for PointF {
+    fn from((x, y): (f64, f64)) -> Self {
+        Self::from(x, y)
     }
 }
 
-impl Into<PointF> for &(f32, f32) {
-    fn into(self) -> PointF {
-        PointF::from(self.0 as f64, self.1 as f64)
-    }
-}
-
-impl Into<(f32, f32)> for &PointF {
-    fn into(self) -> (f32, f32) {
-        (self.x as f32, self.y as f32)
+impl From<&PointF> for (f64, f64) {
+    fn from(p: &PointF) -> Self {
+        (p.x, p.y)
     }
 }
 
