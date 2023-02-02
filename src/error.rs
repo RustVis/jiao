@@ -3,9 +3,12 @@
 // in the LICENSE file.
 
 use std::fmt;
+use std::io;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ErrorKind {
+    IoError,
+
     CairoError,
     JsError,
     SkiaError,
@@ -50,11 +53,23 @@ impl fmt::Display for Error {
 
 impl std::error::Error for Error {}
 
+impl From<io::Error> for Error {
+    fn from(err: io::Error) -> Self {
+        Self::from_string(ErrorKind::IoError, format!("{err:?}"))
+    }
+}
+
 cfg_if::cfg_if! {
     if #[cfg(feature = "cairo")] {
         impl From<cairo::Error> for Error {
             fn from(err: cairo::Error) -> Self {
                 Self::from_string(ErrorKind::CairoError, format!("{err:?}"))
+            }
+        }
+
+        impl From<cairo::IoError> for Error {
+            fn from(err: cairo::IoError) -> Self {
+                Self::from_string(ErrorKind::IoError, format!("{err:?}"))
             }
         }
     } else if #[cfg(feature = "web")] {
