@@ -2,9 +2,11 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use crate::base::RectF;
-use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
-use crate::util::fuzzy_compare;
+use jiao::base::RectF;
+use jiao::kernel::{PainterTrait, PathTrait, ShapeTrait};
+use jiao::util::fuzzy_compare;
+
+use crate::Path2D;
 
 const VERTEX_MIN: usize = 3;
 const VERTEX_MAX: usize = 99;
@@ -13,7 +15,7 @@ const VERTEX_MAX: usize = 99;
 pub struct PolygonShape {
     corners: usize,
     corner_radius: f64,
-    path: Path,
+    path: Path2D,
     path_is_dirty: bool,
 }
 
@@ -28,7 +30,7 @@ impl PolygonShape {
     #[must_use]
     pub fn new(corners: usize) -> Self {
         assert!(corners >= VERTEX_MIN && corners <= VERTEX_MAX);
-        let path = Path::new();
+        let path = Path2D::new();
         Self {
             corners,
             corner_radius: 0.0,

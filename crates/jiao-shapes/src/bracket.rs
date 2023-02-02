@@ -2,9 +2,11 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use crate::base::{PointF, RectF, SizeF};
-use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
-use crate::util::fuzzy_compare;
+use jiao::base::{PointF, RectF, SizeF};
+use jiao::kernel::{PainterTrait, PathTrait, ShapeTrait};
+use jiao::util::fuzzy_compare;
+
+use crate::Path2D;
 
 #[derive(Debug)]
 pub struct BracketShape {
@@ -14,7 +16,7 @@ pub struct BracketShape {
     corner_radius: f64,
 
     path_is_dirty: bool,
-    path: Path,
+    path: Path2D,
 }
 
 impl BracketShape {
@@ -32,7 +34,7 @@ impl BracketShape {
     ) -> Self {
         assert!(handle_width >= 0.0);
         assert!(corner_radius >= 0.0);
-        let path = Path::new();
+        let path = Path2D::new();
         Self {
             size,
             handle_base,

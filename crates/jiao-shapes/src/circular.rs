@@ -2,8 +2,10 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use crate::base::{PointF, RectF};
-use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
+use jiao::base::{PointF, RectF};
+use jiao::kernel::{PainterTrait, PathTrait, ShapeTrait};
+
+use crate::Path2D;
 
 const DEFAULT_END_ANGLE: f64 = std::f64::consts::TAU;
 
@@ -14,7 +16,7 @@ pub struct CircularShape {
     start_angle: f64,
     end_angle: f64,
 
-    path: Path,
+    path: Path2D,
     path_is_dirty: bool,
 }
 
@@ -27,7 +29,7 @@ impl CircularShape {
     #[must_use]
     pub fn new(center: PointF, radius: f64) -> Self {
         assert!(radius >= 0.0);
-        let path = Path::new();
+        let path = Path2D::new();
         Self {
             center,
             radius,

@@ -2,13 +2,15 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use crate::base::{PointF, RectF};
-use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
+use jiao::base::{PointF, RectF};
+use jiao::kernel::{PainterTrait, PathTrait, ShapeTrait};
+
+use crate::Path2D;
 
 #[derive(Debug)]
 pub struct RectShape {
     rect: RectF,
-    path: Path,
+    path: Path2D,
     path_is_dirty: bool,
 }
 
@@ -26,7 +28,7 @@ impl RectShape {
     /// Create a general rect.
     #[must_use]
     pub fn from_rect(rect: RectF) -> Self {
-        let path = Path::new();
+        let path = Path2D::new();
         Self {
             rect,
             path,
