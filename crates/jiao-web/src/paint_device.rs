@@ -22,8 +22,12 @@ pub struct PaintDevice {
 }
 
 impl PaintDevice {
+    /// Create a new canvas dom as child of `parent_dom`.
+    ///
+    /// # Panics
+    /// Got panic if got web-sys type conversion errors.
     #[must_use]
-    pub fn new(dom: &HtmlElement) -> Self {
+    pub fn new(parent_dom: &HtmlElement) -> Self {
         // TODO(Shaohua): Returns error
         let window: Window = web_sys::window().unwrap();
         let document: Document = window.document().unwrap();
@@ -36,14 +40,14 @@ impl PaintDevice {
             .dyn_into::<CanvasRenderingContext2d>()
             .unwrap();
         let painter = Painter::new(canvas.clone(), canvas_ctx);
-        dom.append_child(&canvas).unwrap();
+        parent_dom.append_child(&canvas).unwrap();
         Self { canvas, painter }
     }
 
     pub fn bind_event(&mut self) {}
 
     #[allow(dead_code)]
-    fn on_repaint(&mut self) {
+    fn on_repaint() {
         unimplemented!()
     }
 

@@ -46,13 +46,13 @@ impl PainterTrait for Painter {
     }
 
     #[inline]
-    fn fill<'a>(&mut self, path: &'a dyn PathTrait) {
+    fn fill(&mut self, path: &dyn PathTrait) {
         let path_ref = path.as_any().downcast_ref::<Path>().unwrap();
         self.ctx.fill_with_path_2d(path_ref.path2d());
     }
 
     #[inline]
-    fn stroke<'a>(&mut self, path: &'a dyn PathTrait) {
+    fn stroke(&mut self, path: &dyn PathTrait) {
         let path_ref = path.as_any().downcast_ref::<Path>().unwrap();
         self.ctx.stroke_with_path(path_ref.path2d());
     }
@@ -112,8 +112,8 @@ impl PathTrait for Path {
     }
 
     #[inline]
-    fn add_path<'a>(&mut self, other: &'a dyn PathTrait) {
-        let other_ref = other.as_any().downcast_ref::<Path>().unwrap();
+    fn add_path(&mut self, other: &dyn PathTrait) {
+        let other_ref = other.as_any().downcast_ref::<Self>().unwrap();
         self.path2d().add_path(other_ref.path2d());
     }
 
