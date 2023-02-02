@@ -9,6 +9,8 @@ use std::any::Any;
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use crate::util::{to_sk_point, to_sk_rect};
+
 #[derive(Debug)]
 enum CanvasWrapper {
     Surface(skia_safe::Surface),
@@ -144,36 +146,39 @@ impl PathTrait for Path {
 
     #[inline]
     fn move_to(&mut self, point: PointF) {
-        self.p.move_to(point);
+        self.p.move_to(to_sk_point(point));
     }
 
     #[inline]
     fn line_to(&mut self, point: PointF) {
-        self.p.line_to(point);
+        self.p.line_to(to_sk_point(point));
     }
 
     fn rect(&mut self, rect: &RectF) {
-        let rect: skia_safe::Rect = rect.into();
+        let rect: skia_safe::Rect = to_sk_rect(rect);
         self.p.add_rect(&rect, None);
     }
 
     fn cubic_to(&mut self, p1: PointF, p2: PointF, end_point: PointF) {
-        self.p.cubic_to(p1, p2, end_point);
+        self.p
+            .cubic_to(to_sk_point(p1), to_sk_point(p2), to_sk_point(end_point));
     }
 
     fn quad_to(&mut self, control_point: PointF, end_point: PointF) {
-        self.p.quad_to(control_point, end_point);
+        self.p
+            .quad_to(to_sk_point(control_point), to_sk_point(end_point));
     }
 
     fn arc(&mut self, center: PointF, radius: f64, start_angle: f64, end_angle: f64) {
         let rect = RectF::from_circular(center, radius);
-        let rect: skia_safe::Rect = rect.into();
+        let rect: skia_safe::Rect = to_sk_rect(&rect);
         self.p
             .arc_to(&rect, start_angle as f32, end_angle as f32, true);
     }
 
     fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64) {
-        self.p.arc_to_tangent(p1, p2, radius as f32);
+        self.p
+            .arc_to_tangent(to_sk_point(p1), to_sk_point(p2), radius as f32);
     }
 
     fn ellipse(
