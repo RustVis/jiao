@@ -2,6 +2,7 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use jiao::error::{Error, ErrorKind};
 use jiao::kernel::{PaintContextTrait, ShapeManager};
 use jiao::platforms::skia::{ImagePaintDevice, PaintContext, PaintDevice};
 use jiao::shapes::LineShape;
@@ -25,7 +26,7 @@ fn do_paint(shape_manager: &mut ShapeManager) {
     }
 }
 
-fn main() {
+fn draw_png() -> Result<(), Error> {
     let paint_device = PaintDevice::Image(ImagePaintDevice::new(300, 150));
     let mut paint_ctx = PaintContext::new(paint_device);
     let mut shape_manager = paint_ctx.shape_manager();
@@ -34,20 +35,46 @@ fn main() {
 
     let paint_device = paint_ctx.paint_device();
     if let PaintDevice::Image(img_paint_device) = paint_device {
-        // Save to png file
-        {
-            let data = img_paint_device.encode(EncodedImageFormat::PNG);
-            let mut file = File::create("out.png").unwrap();
-            let bytes = data.as_bytes();
-            file.write_all(bytes).unwrap();
-        }
-
-        // Save to jpg file
-        {
-            let data = img_paint_device.encode(EncodedImageFormat::JPEG);
-            let mut file = File::create("out.jpg").unwrap();
-            let bytes = data.as_bytes();
-            file.write_all(bytes).unwrap();
-        }
+        let data = img_paint_device
+            .encode(EncodedImageFormat::PNG)
+            .ok_or(Error::new(ErrorKind::SkiaError, "No data in image surface"))?;
+        let mut file = File::create("out.png")?;
+        let bytes = data.as_bytes();
+        file.write_all(bytes).map(drop).map_err(Into::into)
+    } else {
+        Err(Error::new(
+            ErrorKind::SkiaError,
+            "Invalid image paint device",
+        ))
     }
+}
+
+fn draw_jpg() -> Result<(), Error> {
+    let paint_device = PaintDevice::Image(ImagePaintDevice::new(300, 150));
+    let mut paint_ctx = PaintContext::new(paint_device);
+    let mut shape_manager = paint_ctx.shape_manager();
+    do_paint(&mut shape_manager);
+    paint_ctx.update();
+
+    let paint_device = paint_ctx.paint_device();
+    if let PaintDevice::Image(img_paint_device) = paint_device {
+        let data = img_paint_device
+            .encode(EncodedImageFormat::JPEG)
+            .ok_or(Error::new(ErrorKind::SkiaError, "No data in image surface"))?;
+        let mut file = File::create("out.jpg")?;
+        let bytes = data.as_bytes();
+        file.write_all(bytes)?;
+        Ok(())
+    } else {
+        Err(Error::new(
+            ErrorKind::SkiaError,
+            "Invalid image paint device",
+        ))
+    }
+}
+
+fn main() -> Result<(), Error> {
+    draw_png()?;
+    draw_jpg()?;
+    Ok(())
 }
