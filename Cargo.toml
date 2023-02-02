@@ -4,7 +4,7 @@ members = [
   "crates/jiao",
   "crates/jiao-cairo",
   "crates/jiao-qt",
-  #"crates/jiao-skia",
+  "crates/jiao-skia",
   "crates/jiao-web",
 ]
 
