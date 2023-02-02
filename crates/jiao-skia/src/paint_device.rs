@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+#![allow(clippy::module_name_repetitions)]
+
 use jiao::base::{RectF, Size};
 use skia_safe::svg::Canvas;
 use std::cell::{RefCell, RefMut};
@@ -52,8 +54,12 @@ impl ImagePaintDevice {
     }
 
     /// Encode current surface state to specific image format data.
+    ///
+    /// # Panics
+    /// Got panic if image encoding failed.
     pub fn encode(&mut self, format: skia_safe::EncodedImageFormat) -> skia_safe::Data {
         let image = self.surface.image_snapshot();
+        // TODO(Shaohua): Returns Result<>
         image.encode_to_data(format).unwrap()
     }
 }
@@ -62,6 +68,7 @@ impl ImagePaintDevice {
 pub struct SvgPaintDevice {
     canvas: Rc<RefCell<skia_safe::svg::Canvas>>,
     painter: Painter,
+    rect: RectF,
 }
 
 impl SvgPaintDevice {
@@ -69,17 +76,22 @@ impl SvgPaintDevice {
     #[must_use]
     pub fn new(rect: &RectF) -> Self {
         // TODO(Shaohua): Catch errors
-        let rect: skia_safe::Rect = to_sk_rect(rect);
-        let canvas = skia_safe::svg::Canvas::new(&rect, None);
+        let sk_rect = to_sk_rect(rect);
+        let canvas = skia_safe::svg::Canvas::new(sk_rect, None);
         let canvas = Rc::new(RefCell::new(canvas));
         let painter = Painter::from_svg_canvas(canvas.clone());
-        Self { canvas, painter }
+        Self {
+            canvas,
+            painter,
+            rect: rect.clone(),
+        }
     }
 
     #[must_use]
     pub fn size(&self) -> Size {
-        todo!()
-        // Size::from(self.surface.width(), self.surface.height())
+        // TODO(Shaohua): Get size from canvas surface
+        //Size::from(self.canvas.width(), self.canvas.height())
+        self.rect.size().to_size()
     }
 
     pub fn painter(&mut self) -> &mut Painter {

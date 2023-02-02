@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+#![allow(clippy::cast_possible_truncation)]
+
 use jiao::base::{PointF, RectF};
 use jiao::kernel::{PainterTrait, PathTrait};
 use skia_safe::PaintStyle;
@@ -121,8 +123,14 @@ impl Path {
     }
 
     #[must_use]
-    pub fn path(&self) -> &skia_safe::Path {
+    pub const fn path(&self) -> &skia_safe::Path {
         &self.p
+    }
+}
+
+impl Default for Path {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -156,7 +164,7 @@ impl PathTrait for Path {
 
     fn rect(&mut self, rect: &RectF) {
         let rect: skia_safe::Rect = to_sk_rect(rect);
-        self.p.add_rect(&rect, None);
+        self.p.add_rect(rect, None);
     }
 
     fn cubic_to(&mut self, p1: PointF, p2: PointF, end_point: PointF) {
@@ -173,7 +181,7 @@ impl PathTrait for Path {
         let rect = RectF::from_circular(center, radius);
         let rect: skia_safe::Rect = to_sk_rect(&rect);
         self.p
-            .arc_to(&rect, start_angle as f32, end_angle as f32, true);
+            .arc_to(rect, start_angle as f32, end_angle as f32, true);
     }
 
     fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64) {
