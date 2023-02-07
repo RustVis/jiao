@@ -70,11 +70,58 @@ impl PathTrait for Path {
         }
     }
 
-    fn rect(&mut self, rect: &RectF) {
+    fn add_rect(&mut self, rect: &RectF) {
         unsafe {
             self.path
                 .add_rect_4a(rect.x(), rect.y(), rect.width(), rect.height());
         }
+    }
+
+    fn add_rounded_rect(&mut self, rect: &RectF, radius: f64) {
+        unsafe {
+            self.path.add_rounded_rect_6a(
+                rect.x(),
+                rect.y(),
+                rect.width(),
+                rect.height(),
+                radius,
+                radius,
+            );
+        }
+    }
+    fn add_circle(&mut self, center: PointF, radius: f64) {
+        unsafe {
+            let diameter = radius * 2.0;
+            self.path
+                .add_ellipse_4a(center.x() - radius, center.y() - radius, diameter, diameter);
+        }
+    }
+
+    fn add_ellipse(&mut self, rect: &RectF) {
+        unsafe {
+            self.path
+                .add_ellipse_4a(rect.x(), rect.y(), rect.width(), rect.height());
+        }
+    }
+
+    fn arc(&mut self, rect: &RectF, start_angle: f64, end_angle: f64) {
+        // FIXME(Shaohua): Calc sweep_length.
+        let sweep_length = end_angle;
+        unsafe {
+            self.path.arc_to_6a(
+                rect.x(),
+                rect.y(),
+                rect.width(),
+                rect.height(),
+                start_angle,
+                sweep_length,
+            );
+        }
+    }
+
+    fn arc_to(&mut self, _p1: PointF, _p2: PointF, _radius: f64) {
+        // TODO(Shaohua):
+        todo!()
     }
 
     fn cubic_to(&mut self, p1: PointF, p2: PointF, end_point: PointF) {
@@ -91,49 +138,6 @@ impl PathTrait for Path {
                 control_point.y(),
                 end_point.x(),
                 end_point.y(),
-            );
-        }
-    }
-
-    fn arc(&mut self, center: PointF, radius: f64, start_angle: f64, end_angle: f64) {
-        let rect = RectF::from_circular(center, radius);
-        // FIXME(Shaohua): Calc sweep_length.
-        let sweep_length = end_angle;
-        unsafe {
-            self.path.arc_to_6a(
-                rect.x(),
-                rect.y(),
-                rect.width(),
-                rect.height(),
-                start_angle,
-                sweep_length,
-            );
-        }
-    }
-
-    fn arc_to(&mut self, _p1: PointF, _p2: PointF, _radius: f64) {
-        todo!()
-    }
-
-    fn ellipse(
-        &mut self,
-        center: PointF,
-        radius_x: f64,
-        radius_y: f64,
-        start_angle: f64,
-        end_angle: f64,
-    ) {
-        let rect = RectF::from_ellipse(center, radius_x, radius_y);
-        // FIXME(Shaohua): Calc sweep_length.
-        let sweep_length = end_angle;
-        unsafe {
-            self.path.arc_to_6a(
-                rect.x(),
-                rect.y(),
-                rect.width(),
-                rect.height(),
-                start_angle,
-                sweep_length,
             );
         }
     }
