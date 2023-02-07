@@ -3,6 +3,7 @@
 // in the LICENSE file.
 
 use std::any::Any;
+use std::f64::consts::PI;
 use web_sys::Path2d;
 
 use crate::base::{PointF, RectF};
@@ -59,9 +60,70 @@ impl PathTrait for Path {
         self.path2d.line_to(point.x(), point.y());
     }
 
-    fn rect(&mut self, rect: &RectF) {
+    fn add_rect(&mut self, rect: &RectF) {
+        let center = rect.center();
         self.path2d
-            .rect(rect.x(), rect.y(), rect.width(), rect.height());
+            .rect(center.x(), center.y(), rect.width(), rect.height());
+    }
+
+    fn add_rounded_rect(&mut self, rect: &RectF, radius: f64) {
+        let center = rect.center();
+        self.path2d
+            .round_rect(center.x(), center.y(), rect.width(), rect.height(), radius);
+    }
+
+    fn add_circle(&mut self, center: PointF, radius: f64) {
+        let start_angle = 0.0;
+        let end_angle = 2.0 * PI;
+        let _ret = self
+            .path2d
+            .arc(center.x(), center.y(), radius, start_angle, end_angle);
+    }
+
+    fn add_ellipse(&mut self, rect: &RectF) {
+        let center = rect.center();
+        let radius_x = rect.width() / 2.0;
+        let radius_y = rect.height() / 2.0;
+        let rotation = 0.0;
+        let start_angle = 0.0;
+        let end_angle = 2.0 * PI;
+        let _ret = self.path2d.ellipse(
+            center.x(),
+            center.y(),
+            radius_x,
+            radius_y,
+            rotation,
+            start_angle,
+            end_angle,
+        );
+    }
+
+    fn arc(&mut self, rect: &RectF, start_angle: f64, end_angle: f64) {
+        // TODO(Shaohua): Returns error.
+        let center = rect.center();
+        if rect.width() == rect.height() {
+            let radius = rect.height() / 2.0;
+            let _ret = self
+                .path2d
+                .arc(center.x(), center.y(), radius, start_angle, end_angle);
+        } else {
+            let radius_x = rect.width() / 2.0;
+            let radius_y = rect.height() / 2.0;
+            let rotation = 0.0;
+            let _ret = self.path2d.ellipse(
+                center.x(),
+                center.y(),
+                radius_x,
+                radius_y,
+                rotation,
+                start_angle,
+                end_angle,
+            );
+        }
+    }
+
+    fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64) {
+        let _ret = self.path2d.arc_to(p1.x(), p1.y(), p2.x(), p2.y(), radius);
     }
 
     fn cubic_to(&mut self, p1: PointF, p2: PointF, end_point: PointF) {
@@ -75,39 +137,6 @@ impl PathTrait for Path {
             control_point.y(),
             end_point.x(),
             end_point.y(),
-        );
-    }
-
-    fn arc(&mut self, center: PointF, radius: f64, start_angle: f64, end_angle: f64) {
-        // TODO(Shaohua): Returns error
-        let _ret = self
-            .path2d
-            .arc(center.x(), center.y(), radius, start_angle, end_angle);
-    }
-
-    fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64) {
-        // TODO(Shaohua): Returns error
-        let _ret = self.path2d.arc_to(p1.x(), p1.y(), p2.x(), p2.y(), radius);
-    }
-
-    fn ellipse(
-        &mut self,
-        center: PointF,
-        radius_x: f64,
-        radius_y: f64,
-        start_angle: f64,
-        end_angle: f64,
-    ) {
-        let rotation = 0.0;
-        // TODO(Shaohua): Returns error
-        let _ret = self.path2d.ellipse(
-            center.x(),
-            center.y(),
-            radius_x,
-            radius_y,
-            rotation,
-            start_angle,
-            end_angle,
         );
     }
 }
