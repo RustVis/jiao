@@ -57,7 +57,26 @@ pub trait PathTrait {
     fn line_to(&mut self, point: PointF);
 
     /// Creates a path for a rectangle.
-    fn rect(&mut self, rect: &RectF);
+    fn add_rect(&mut self, rect: &RectF);
+
+    /// Adds the given rectangle rect with rounded corners to the path.
+    fn add_rounded_rect(&mut self, rect: &RectF, radius: f64);
+
+    /// Adds a circle to the path.
+    fn add_circle(&mut self, center: PointF, radius: f64);
+
+    /// Adds an ellipse to the path.
+    fn add_ellipse(&mut self, rect: &RectF);
+
+    /// Creates an arc curve that occupies the given rectangle to the path
+    /// in clockwise direction.
+    fn arc(&mut self, rect: &RectF, start_angle: f64, end_angle: f64);
+
+    /// Adds a circular arc to the path with the given control points and radius,
+    /// connected to the previous point by a straight line.
+    ///
+    /// Note that `radius` must be non-negative.
+    fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64);
 
     /// Adds a cubic Bézier curve to the path.
     ///
@@ -69,25 +88,4 @@ pub trait PathTrait {
     /// Adds a quadratic Bézier curve between the current position and the given `end_point`
     /// with the `control_point`.
     fn quad_to(&mut self, control_point: PointF, end_point: PointF);
-
-    /// Adds an arc to the path in clockwise direction.
-    ///
-    /// Note that `radius` must be non-negative.
-    fn arc(&mut self, center: PointF, radius: f64, start_angle: f64, end_angle: f64);
-
-    /// Adds a circular arc to the path with the given control points and radius,
-    /// connected to the previous point by a straight line.
-    ///
-    /// Note that `radius` must be non-negative.
-    fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64);
-
-    /// Adds an elliptical arc to the path, in clockwise direction.
-    fn ellipse(
-        &mut self,
-        center: PointF,
-        radius_x: f64,
-        radius_y: f64,
-        start_angle: f64,
-        end_angle: f64,
-    );
 }
