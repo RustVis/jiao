@@ -37,11 +37,25 @@ impl Painter {
                     self.context
                         .rectangle(rect.x(), rect.y(), rect.width(), rect.height());
                 }
-                GenericPathToken::CubicTo(_cubic_to) => {
-                    todo!()
+                GenericPathToken::CubicTo(cubic) => {
+                    self.context.curve_to(
+                        cubic.p1.x(),
+                        cubic.p1.y(),
+                        cubic.p2.x(),
+                        cubic.p2.y(),
+                        cubic.end_point.x(),
+                        cubic.end_point.y(),
+                    );
                 }
-                GenericPathToken::QuadTo(_quad_to) => {
-                    todo!()
+                GenericPathToken::QuadTo(quad) => {
+                    self.context.curve_to(
+                        quad.control_point.x(),
+                        quad.control_point.y(),
+                        quad.control_point.x(),
+                        quad.control_point.y(),
+                        quad.end_point.x(),
+                        quad.end_point.y(),
+                    );
                 }
                 GenericPathToken::Arc(_arc) => {
                     todo!()
@@ -49,8 +63,11 @@ impl Painter {
                 GenericPathToken::ArcTo(_arc_to) => {
                     todo!()
                 }
-                GenericPathToken::Ellipse(_ellipse) => {
-                    todo!()
+                GenericPathToken::Ellipse(ellipse) => {
+                    debug_assert!(ellipse.radius_y > 0.0);
+                    let scale = ellipse.radius_x / ellipse.radius_y;
+                    self.context.scale(1.0, scale);
+                    self.context.arc()
                 }
             }
         }

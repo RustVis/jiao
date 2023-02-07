@@ -17,5 +17,9 @@ Currently these bindings are supported:
 - Qt
 - web canvas (wasm)
 
+## Related Projects
+- [piet](https://github.com/linebender/piet), An abstraction for 2D graphics.
+- [raquote](https://github.com/jrmuizel/raqote), Rust 2D graphics library
+
 ## License
 This crate is released under [Apache-2.0](LICENSE) license.
