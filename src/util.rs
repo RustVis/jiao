@@ -47,26 +47,26 @@ pub fn div_257(x: u16) -> u8 {
 
 #[inline]
 #[must_use]
-pub const fn degrees_to_radians32(degrees: f32) -> f32 {
+pub fn degrees_to_radians32(degrees: f32) -> f32 {
     degrees * std::f32::consts::PI / 180.0
 }
 
 #[inline]
 #[must_use]
-pub const fn radians_to_degrees32(radians: f32) -> f32 {
+pub fn radians_to_degrees32(radians: f32) -> f32 {
     radians * (180.0 / std::f32::consts::PI)
 }
 
 /// This function converts the degrees in float to radians.
 #[inline]
 #[must_use]
-pub const fn degrees_to_radians(degrees: f64) -> f64 {
+pub fn degrees_to_radians(degrees: f64) -> f64 {
     degrees * std::f64::consts::PI / 180.0
 }
 
 /// This function converts the radians in float to degrees.
 #[inline]
 #[must_use]
-pub const fn radians_to_degrees(radians: f64) -> f64 {
+pub fn radians_to_degrees(radians: f64) -> f64 {
     radians * (180.0 / std::f64::consts::PI)
 }
