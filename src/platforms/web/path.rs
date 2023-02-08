@@ -67,7 +67,7 @@ impl PathTrait for Path {
     }
 
     fn add_rounded_rect(&mut self, _rect: &RectF, _radius: f64) {
-        todo!()
+        // TODO(Shaohua):
         //let center = rect.center();
         //self.path2d
         //   .round_rect(center.x(), center.y(), rect.width(), rect.height(), radius);
