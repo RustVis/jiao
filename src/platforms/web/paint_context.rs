@@ -15,8 +15,7 @@ pub struct PaintContext {
 
 impl PaintContext {
     /// # Errors
-    /// Returns error if failed to create paitn device.
-    #[must_use]
+    /// Returns error if failed to create paint device.
     pub fn from_dom(dom: &HtmlElement) -> Result<Self, Error> {
         let shape_manager = ShapeManager::new();
         let paint_device = PaintDevice::new(dom)?;
