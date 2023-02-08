@@ -894,6 +894,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6f61fba1741ea2b3d6a1e3178721804bb716a68a6aeba1149b5d52e3d464ea66"
 
 [[package]]
+name = "paint_shapes"
+version = "0.1.0"
+dependencies = [
+ "jiao",
+]
+
+[[package]]
 name = "pathdiff"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1042,6 +1049,7 @@ version = "0.1.0"
 dependencies = [
  "cpp_core",
  "jiao",
+ "paint_shapes",
  "qt_core",
  "qt_gui",
 ]

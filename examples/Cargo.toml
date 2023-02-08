@@ -4,6 +4,7 @@ members = [
   "qt",
   "skia",
   "web",
+  "paint_shapes",
 ]
 
 resolver = "2"
