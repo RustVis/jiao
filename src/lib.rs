@@ -38,5 +38,5 @@ pub mod kernel;
 pub mod math3d;
 pub mod painting;
 pub mod platforms;
-//pub mod shapes;
+pub mod shapes;
 pub mod util;

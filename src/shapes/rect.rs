@@ -26,7 +26,6 @@ impl RectShape {
 
     /// Create a general rect.
     #[must_use]
-    #[allow(clippy::missing_const_for_fn)]
     pub fn from_rect(rect: RectF) -> Self {
         let path = Path2D::new();
         Self {
@@ -39,7 +38,7 @@ impl RectShape {
     fn update_path(&mut self) {
         if self.path_is_dirty {
             self.path.clear();
-            self.path.rect(&self.rect);
+            self.path.add_rect(&self.rect);
         }
     }
 }

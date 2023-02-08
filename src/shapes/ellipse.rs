@@ -6,15 +6,11 @@ use super::Path2D;
 use crate::base::{PointF, RectF};
 use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
 
-const DEFAULT_END_ANGLE: f64 = std::f64::consts::TAU;
-
 #[derive(Debug)]
 pub struct EllipseShape {
     center: PointF,
     radius_x: f64,
     radius_y: f64,
-    start_angle: f64,
-    end_angle: f64,
 
     path_is_dirty: bool,
     path: Path2D,
@@ -22,21 +18,15 @@ pub struct EllipseShape {
 
 impl EllipseShape {
     /// Create a new ellipse shape.
-    ///
-    /// # Panics
-    ///
-    /// Both `radius_x` and `radius_y` shall be >= 0.0.
     #[must_use]
     pub fn new(center: PointF, radius_x: f64, radius_y: f64) -> Self {
-        assert!(radius_x >= 0.0);
-        assert!(radius_y >= 0.0);
+        debug_assert!(radius_x > 0.0);
+        debug_assert!(radius_y > 0.0);
         let path = Path2D::new();
         Self {
             center,
             radius_x,
             radius_y,
-            start_angle: 0.0,
-            end_angle: DEFAULT_END_ANGLE,
             path_is_dirty: true,
             path,
         }
@@ -61,12 +51,8 @@ impl EllipseShape {
     }
 
     /// Set x-axis radius of the ellipse shape.
-    ///
-    /// # Panics
-    ///
-    /// `radius_x` shall be non-negative.
     pub fn set_radius_x(&mut self, radius_x: f64) {
-        assert!(radius_x >= 0.0);
+        debug_assert!(radius_x > 0.0);
         self.radius_x = radius_x;
         self.path_is_dirty = true;
     }
@@ -78,37 +64,9 @@ impl EllipseShape {
     }
 
     /// Set y-axis radius of the ellipse shape.
-    ///
-    /// # Panics
-    ///
-    /// `radius_y` shall be >= 0.0.
     pub fn set_radius_y(&mut self, radius_y: f64) {
-        assert!(radius_y >= 0.0);
+        debug_assert!(radius_y > 0.0);
         self.radius_y = radius_y;
-        self.path_is_dirty = true;
-    }
-
-    /// Get start angle of the ellipse shape.
-    #[must_use]
-    pub const fn start_angle(&self) -> f64 {
-        self.start_angle
-    }
-
-    /// Set start angle of the ellipse shape.
-    pub fn set_start_angle(&mut self, start_angle: f64) {
-        self.start_angle = start_angle;
-        self.path_is_dirty = true;
-    }
-
-    /// Get end angle of the ellipse shape.
-    #[must_use]
-    pub const fn end_angle(&self) -> f64 {
-        self.end_angle
-    }
-
-    /// Set end angle of the ellipse shape.
-    pub fn set_end_angle(&mut self, end_angle: f64) {
-        self.end_angle = end_angle;
         self.path_is_dirty = true;
     }
 
@@ -117,20 +75,15 @@ impl EllipseShape {
             return;
         }
         self.path.clear();
-        self.path.ellipse(
-            self.center,
-            self.radius_x,
-            self.radius_y,
-            self.start_angle,
-            self.end_angle,
-        );
+        let rect = RectF::from_ellipse(self.center, self.radius_x, self.radius_y);
+        self.path.add_ellipse(&rect);
         self.path_is_dirty = false;
     }
 }
 
 impl ShapeTrait for EllipseShape {
     fn bounding_rect(&self) -> RectF {
-        todo!()
+        return RectF::from_ellipse(self.center, self.radius_x, self.radius_y);
     }
 
     fn repaint(&mut self, painter: &mut dyn PainterTrait) {
