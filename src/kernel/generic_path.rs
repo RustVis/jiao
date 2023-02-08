@@ -80,7 +80,8 @@ pub struct GenericPath {
 impl GenericPath {
     /// Create an empty generic path object.
     #[must_use]
-    pub const fn new() -> Self {
+    #[allow(clippy::missing_const_for_fn)]
+    pub fn new() -> Self {
         Self { tokens: Vec::new() }
     }
 
