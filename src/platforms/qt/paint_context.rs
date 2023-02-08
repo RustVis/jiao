@@ -30,6 +30,7 @@ impl PaintContext {
         let mut painter = Painter::new();
         unsafe {
             painter.painter().begin(paint_device);
+            painter.set_default_hints();
         }
         self.shape_manager.update(&mut painter);
         unsafe {

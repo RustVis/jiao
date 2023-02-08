@@ -3,6 +3,7 @@
 // in the LICENSE file.
 
 use cpp_core::CppBox;
+use qt_gui::q_painter::RenderHint;
 use qt_gui::QPainter;
 use std::fmt;
 
@@ -29,11 +30,23 @@ impl Painter {
     #[must_use]
     pub fn new() -> Self {
         let painter = unsafe { QPainter::new_0a() };
+
         Self { painter }
     }
 
     pub fn painter(&mut self) -> &CppBox<QPainter> {
         &self.painter
+    }
+
+    pub fn set_default_hints(&mut self) {
+        unsafe {
+            self.painter
+                .set_render_hint_2a(RenderHint::Antialiasing, true);
+            self.painter
+                .set_render_hint_2a(RenderHint::TextAntialiasing, true);
+            self.painter
+                .set_render_hint_2a(RenderHint::LosslessImageRendering, true);
+        }
     }
 }
 
