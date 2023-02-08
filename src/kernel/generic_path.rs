@@ -92,6 +92,10 @@ impl GenericPath {
 }
 
 impl PathTrait for GenericPath {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+
     fn clear(&mut self) {
         self.tokens.clear();
     }
@@ -166,9 +170,5 @@ impl PathTrait for GenericPath {
                 control_point,
                 end_point,
             }));
-    }
-
-    fn as_any(&self) -> &dyn Any {
-        self
     }
 }

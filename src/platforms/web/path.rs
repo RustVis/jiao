@@ -66,10 +66,11 @@ impl PathTrait for Path {
             .rect(center.x(), center.y(), rect.width(), rect.height());
     }
 
-    fn add_rounded_rect(&mut self, rect: &RectF, radius: f64) {
-        let center = rect.center();
-        self.path2d
-            .round_rect(center.x(), center.y(), rect.width(), rect.height(), radius);
+    fn add_rounded_rect(&mut self, _rect: &RectF, _radius: f64) {
+        todo!()
+        //let center = rect.center();
+        //self.path2d
+        //   .round_rect(center.x(), center.y(), rect.width(), rect.height(), radius);
     }
 
     fn add_circle(&mut self, center: PointF, radius: f64) {

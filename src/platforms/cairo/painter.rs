@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use std::f64::consts::PI;
+
 use crate::error::Error;
 use crate::kernel::generic_path::{GenericPath, GenericPathToken};
 use crate::kernel::{PainterTrait, PathTrait};
@@ -17,7 +19,6 @@ pub struct Painter {
 impl Painter {
     /// # Errors
     /// Returns error if failed to create a new cairo context with specific `surface`.
-    #[must_use]
     pub fn new(surface: &cairo::Surface) -> Result<Self, Error> {
         let context = cairo::Context::new(surface)?;
         Ok(Self { context })
@@ -26,16 +27,55 @@ impl Painter {
     fn draw_path(&mut self, path: &Path) {
         for token in path.tokens() {
             match token {
-                GenericPathToken::ClosePath => break,
+                GenericPathToken::ClosePath => {
+                    self.context.close_path();
+                }
                 GenericPathToken::MoveTo(point) => {
                     self.context.move_to(point.x(), point.y());
                 }
                 GenericPathToken::LineTo(point) => {
                     self.context.line_to(point.x(), point.y());
                 }
-                GenericPathToken::Rect(rect) => {
+                GenericPathToken::AddRect(rect) => {
                     self.context
                         .rectangle(rect.x(), rect.y(), rect.width(), rect.height());
+                }
+                GenericPathToken::AddRoundedRect(_rect_r) => {
+                    todo!()
+                }
+                GenericPathToken::AddCircle(circle) => {
+                    self.context.arc(
+                        circle.center.x(),
+                        circle.center.y(),
+                        circle.radius,
+                        0.0,
+                        2.0 * PI,
+                    );
+                }
+                GenericPathToken::AddEllipse(rect) => {
+                    debug_assert!(rect.height() > 0.0);
+                    let center = rect.center();
+                    let scale = rect.width() / rect.height();
+                    let radius = rect.width();
+                    self.context.scale(1.0, scale);
+                    self.context
+                        .arc(center.x(), center.y(), radius, 0.0, 2.0 * PI);
+                }
+                GenericPathToken::Arc(arc) => {
+                    let center = arc.rect.center();
+                    let scale = arc.rect.width() / arc.rect.height();
+                    let radius = arc.rect.width();
+                    self.context.scale(1.0, scale);
+                    self.context.arc(
+                        center.x(),
+                        center.y(),
+                        radius,
+                        arc.start_angle,
+                        arc.end_angle,
+                    );
+                }
+                GenericPathToken::ArcTo(_arc_to) => {
+                    todo!()
                 }
                 GenericPathToken::CubicTo(cubic) => {
                     self.context.curve_to(
@@ -56,18 +96,6 @@ impl Painter {
                         quad.end_point.x(),
                         quad.end_point.y(),
                     );
-                }
-                GenericPathToken::Arc(_arc) => {
-                    todo!()
-                }
-                GenericPathToken::ArcTo(_arc_to) => {
-                    todo!()
-                }
-                GenericPathToken::Ellipse(ellipse) => {
-                    debug_assert!(ellipse.radius_y > 0.0);
-                    let scale = ellipse.radius_x / ellipse.radius_y;
-                    self.context.scale(1.0, scale);
-                    self.context.arc()
                 }
             }
         }
