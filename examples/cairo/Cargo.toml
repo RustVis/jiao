@@ -6,3 +6,4 @@ edition = "2021"
 [dependencies]
 cairo-rs = { version = "0.16.7", features = ["glib", "png", "svg", "pdf"] }
 jiao = { path = "../..", features = ["cairo"] }
+paint_shapes = { path = "../paint_shapes", features = ["cairo"] }

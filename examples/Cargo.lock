@@ -216,6 +216,7 @@ version = "0.1.0"
 dependencies = [
  "cairo-rs",
  "jiao",
+ "paint_shapes",
 ]
 
 [[package]]
@@ -258,6 +259,7 @@ version = "0.1.0"
 dependencies = [
  "jiao",
  "log",
+ "paint_shapes",
  "wasm-bindgen",
  "wasm-logger",
  "web-sys",
