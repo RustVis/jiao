@@ -41,7 +41,6 @@ impl Painter {
                         .rectangle(rect.x(), rect.y(), rect.width(), rect.height());
                 }
                 GenericPathToken::AddRoundedRect(rrect) => {
-                    let degrees = PI / 180.0;
                     let x = rrect.rect.x();
                     let y = rrect.rect.y();
                     let width = rrect.rect.width();
@@ -53,29 +52,29 @@ impl Painter {
                         x + width - radius,
                         y + radius,
                         radius,
-                        -90.0 * degrees,
-                        0.0 * degrees,
+                        -90.0_f64.to_radians(),
+                        0.0_f64.to_radians(),
                     );
                     self.context.arc(
                         x + width - radius,
                         y + height - radius,
                         radius,
-                        0.0 * degrees,
-                        90.0 * degrees,
+                        0.0_f64.to_radians(),
+                        90.0_f64.to_radians(),
                     );
                     self.context.arc(
                         x + radius,
                         y + height - radius,
                         radius,
-                        90.0 * degrees,
-                        180.0 * degrees,
+                        90.0_f64.to_radians(),
+                        180.0_f64.to_radians(),
                     );
                     self.context.arc(
                         x + radius,
                         y + radius,
                         radius,
-                        180.0 * degrees,
-                        270.0 * degrees,
+                        180.0_f64.to_radians(),
+                        270.0_f64.to_radians(),
                     );
                     self.context.close_path();
                 }
