@@ -747,7 +747,7 @@ checksum = "fad582f4b9e86b6caa621cabeb0963332d92eea04729ab12892c2533951e6440"
 
 [[package]]
 name = "jiao"
-version = "0.3.1"
+version = "0.3.2"
 dependencies = [
  "cairo-rs",
  "cfg-if",

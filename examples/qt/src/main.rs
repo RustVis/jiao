@@ -2,9 +2,10 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use jiao::base::{PointF, RectF};
 use jiao::kernel::{PaintContextTrait, ShapeManager};
 use jiao::platforms::qt::PaintContext;
-use jiao::shapes::LineShape;
+use jiao::shapes::{CircleShape, LineShape, RoundedRectShape};
 use qt_core::QString;
 use qt_gui::q_image::Format;
 use qt_gui::{QGuiApplication, QImage};
@@ -23,6 +24,12 @@ fn do_paint(shape_manager: &mut ShapeManager) {
         let line = LineShape::from_f64(p.0, p.1, p.2, p.3);
         shape_manager.add(Box::new(line));
     }
+
+    let circle = CircleShape::new(PointF::from(75.0, 50.0), 15.0);
+    shape_manager.add(Box::new(circle));
+
+    let rect = RoundedRectShape::new(RectF::from(110.0, 60.0, 50.0, 20.0), 5.0);
+    shape_manager.add(Box::new(rect));
 }
 
 fn draw_png() {

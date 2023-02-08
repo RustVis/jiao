@@ -5,3 +5,5 @@ members = [
   "skia",
   "web",
 ]
+
+resolver = "2"
