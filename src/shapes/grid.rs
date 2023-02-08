@@ -21,13 +21,9 @@ pub struct GridShape {
 
 impl GridShape {
     /// Create a new grid shape.
-    ///
-    /// # Panics
-    ///
-    /// Both `horizontal_step` and `vertical_step` shall be >= 0.0.
     #[must_use]
     pub fn new(horizontal_step: f64, vertical_step: f64) -> Self {
-        assert!(horizontal_step >= 0.0 && vertical_step >= 0.0);
+        debug_assert!(horizontal_step > 0.0 && vertical_step > 0.0);
         let start_point = PointF::new();
         let viewport = RectF::from(0.0, 0.0, 100.0, 100.0);
         let path = Path2D::new();
@@ -138,6 +134,26 @@ impl GridShape {
             return;
         }
         self.path.clear();
+
+        if self.horizontal_visible {
+            let real_start_x = self.viewport.x() + self.start_point.x();
+            let mut x = real_start_x;
+            while x <= self.viewport.right() {
+                self.path.move_to(PointF::from(x, self.viewport.top()));
+                self.path.line_to(PointF::from(x, self.viewport.bottom()));
+                x += self.horizontal_step;
+            }
+        }
+
+        if self.vertical_visible {
+            let real_start_y = self.viewport.y() + self.start_point.y();
+            let mut y = real_start_y;
+            while y <= self.viewport.bottom() {
+                self.path.move_to(PointF::from(self.viewport.left(), y));
+                self.path.line_to(PointF::from(self.viewport.right(), y));
+                y += self.horizontal_step;
+            }
+        }
 
         self.path_is_dirty = false;
     }
