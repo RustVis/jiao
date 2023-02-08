@@ -40,8 +40,44 @@ impl Painter {
                     self.context
                         .rectangle(rect.x(), rect.y(), rect.width(), rect.height());
                 }
-                GenericPathToken::AddRoundedRect(_rect_r) => {
-                    todo!()
+                GenericPathToken::AddRoundedRect(rrect) => {
+                    let degrees = PI / 180.0;
+                    let x = rrect.rect.x();
+                    let y = rrect.rect.y();
+                    let width = rrect.rect.width();
+                    let height = rrect.rect.height();
+                    let radius = rrect.radius;
+
+                    self.context.new_sub_path();
+                    self.context.arc(
+                        x + width - radius,
+                        y + radius,
+                        radius,
+                        -90.0 * degrees,
+                        0.0 * degrees,
+                    );
+                    self.context.arc(
+                        x + width - radius,
+                        y + height - radius,
+                        radius,
+                        0.0 * degrees,
+                        90.0 * degrees,
+                    );
+                    self.context.arc(
+                        x + radius,
+                        y + height - radius,
+                        radius,
+                        90.0 * degrees,
+                        180.0 * degrees,
+                    );
+                    self.context.arc(
+                        x + radius,
+                        y + radius,
+                        radius,
+                        180.0 * degrees,
+                        270.0 * degrees,
+                    );
+                    self.context.close_path();
                 }
                 GenericPathToken::AddCircle(circle) => {
                     self.context.arc(
