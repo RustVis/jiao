@@ -5,6 +5,7 @@ edition = "2021"
 
 [features]
 qt = ["jiao/qt"]
+skia = ["jiao/skia"]
 
 [dependencies]
-jiao = { path = "../.." }
+jiao = { path = "../..", default-features = false }
