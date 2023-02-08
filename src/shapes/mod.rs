@@ -5,7 +5,7 @@
 #![allow(clippy::module_name_repetitions)]
 
 pub mod bracket;
-pub mod circular;
+pub mod circle;
 pub mod ellipse;
 pub mod grid;
 pub mod line;
@@ -17,7 +17,7 @@ pub mod star;
 pub mod text;
 
 pub use bracket::BracketShape;
-pub use circular::CircularShape;
+pub use circle::CircleShape;
 pub use ellipse::EllipseShape;
 pub use grid::GridShape;
 pub use line::LineShape;

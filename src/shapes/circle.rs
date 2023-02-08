@@ -7,7 +7,7 @@ use crate::base::{PointF, RectF};
 use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
 
 #[derive(Debug)]
-pub struct CircularShape {
+pub struct CircleShape {
     center: PointF,
     radius: f64,
 
@@ -15,7 +15,7 @@ pub struct CircularShape {
     path_is_dirty: bool,
 }
 
-impl CircularShape {
+impl CircleShape {
     /// Create a new circular shape object.
     #[must_use]
     pub fn new(center: PointF, radius: f64) -> Self {
@@ -64,7 +64,7 @@ impl CircularShape {
     }
 }
 
-impl ShapeTrait for CircularShape {
+impl ShapeTrait for CircleShape {
     fn bounding_rect(&self) -> RectF {
         RectF::from_circular(self.center, self.radius)
     }
