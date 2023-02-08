@@ -61,9 +61,37 @@ impl PathTrait for Path {
         self.p.line_to(point);
     }
 
-    fn rect(&mut self, rect: &RectF) {
+    fn add_rect(&mut self, rect: &RectF) {
         let sk_rect: skia_safe::Rect = rect.into();
         self.p.add_rect(sk_rect, None);
+    }
+
+    fn add_rounded_rect(&mut self, rect: &RectF, radius: f64) {
+        let sk_rect: skia_safe::Rect = rect.into();
+        let radius = radius as f32;
+        self.p.add_round_rect(sk_rect, (radius, radius), None);
+    }
+
+    fn add_circle(&mut self, center: PointF, radius: f64) {
+        let radius = radius as f32;
+        self.p.add_circle(center, radius, None);
+    }
+
+    fn add_ellipse(&mut self, rect: &RectF) {
+        let sk_rect: skia_safe::Rect = rect.into();
+        self.p.add_oval(sk_rect, None);
+    }
+
+    fn arc(&mut self, rect: &RectF, start_angle: f64, end_angle: f64) {
+        let sk_rect: skia_safe::Rect = rect.into();
+        let start_angle = start_angle as f32;
+        let end_angle = end_angle as f32;
+        self.p.arc_to(sk_rect, start_angle, end_angle, true);
+    }
+
+    fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64) {
+        let radius = radius as f32;
+        self.p.arc_to_tangent(p1, p2, radius);
     }
 
     fn cubic_to(&mut self, p1: PointF, p2: PointF, end_point: PointF) {
@@ -72,27 +100,5 @@ impl PathTrait for Path {
 
     fn quad_to(&mut self, control_point: PointF, end_point: PointF) {
         self.p.quad_to(control_point, end_point);
-    }
-
-    fn arc(&mut self, center: PointF, radius: f64, start_angle: f64, end_angle: f64) {
-        let rect = RectF::from_circular(center, radius);
-        let rect: skia_safe::Rect = rect.into();
-        self.p
-            .arc_to(rect, start_angle as f32, end_angle as f32, true);
-    }
-
-    fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64) {
-        self.p.arc_to_tangent(p1, p2, radius as f32);
-    }
-
-    fn ellipse(
-        &mut self,
-        _center: PointF,
-        _radius_x: f64,
-        _radius_y: f64,
-        _start_angle: f64,
-        _end_angle: f64,
-    ) {
-        todo!()
     }
 }
