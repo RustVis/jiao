@@ -2,15 +2,11 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-pub mod cursor;
-mod event_dispatcher;
 pub mod generic_path;
-pub mod image;
 pub mod paint_context;
 mod painter;
 mod shape_manager;
 mod shape_trait;
-pub mod theme;
 
 pub use self::paint_context::PaintContextTrait;
 pub use self::painter::{PainterTrait, PathTrait};
