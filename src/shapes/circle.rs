@@ -16,7 +16,7 @@ pub struct CircleShape {
 }
 
 impl CircleShape {
-    /// Create a new circular shape object.
+    /// Create a new circle shape object.
     #[must_use]
     pub fn new(center: PointF, radius: f64) -> Self {
         debug_assert!(radius > 0.0);
@@ -29,25 +29,25 @@ impl CircleShape {
         }
     }
 
-    /// Get center point of the circular shape.
+    /// Get center point of the circle shape.
     #[must_use]
     pub const fn center(&self) -> PointF {
         self.center
     }
 
-    /// Update center point of the circular shape.
+    /// Update center point of the circle shape.
     pub fn set_center(&mut self, center: PointF) {
         self.center = center;
         self.path_is_dirty = true;
     }
 
-    /// Get radius of the circular shape.
+    /// Get radius of the circle shape.
     #[must_use]
     pub const fn radius(&self) -> f64 {
         self.radius
     }
 
-    /// Set radius of the circular shape.
+    /// Set radius of the circle shape.
     pub fn set_radius(&mut self, radius: f64) {
         debug_assert!(radius > 0.0);
         self.radius = radius;
@@ -66,7 +66,7 @@ impl CircleShape {
 
 impl ShapeTrait for CircleShape {
     fn bounding_rect(&self) -> RectF {
-        RectF::from_circular(self.center, self.radius)
+        RectF::from_circle(self.center, self.radius)
     }
 
     fn repaint(&mut self, painter: &mut dyn PainterTrait) {

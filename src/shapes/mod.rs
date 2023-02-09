@@ -6,6 +6,7 @@
 
 pub mod bracket;
 pub mod circle;
+pub mod droplet;
 pub mod ellipse;
 pub mod grid;
 pub mod line;
@@ -18,6 +19,7 @@ pub mod text;
 
 pub use bracket::BracketShape;
 pub use circle::CircleShape;
+pub use droplet::DropletShape;
 pub use ellipse::EllipseShape;
 pub use grid::GridShape;
 pub use line::LineShape;
