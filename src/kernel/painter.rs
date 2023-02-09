@@ -72,7 +72,7 @@ pub trait PathTrait {
     /// in clockwise direction.
     fn arc(&mut self, rect: &RectF, start_angle: f64, end_angle: f64);
 
-    /// Adds a circular arc to the path with the given control points and radius,
+    /// Adds a circle arc to the path with the given control points and radius,
     /// connected to the previous point by a straight line.
     ///
     /// Note that `radius` must be non-negative.

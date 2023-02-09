@@ -964,9 +964,9 @@ impl RectF {
         }
     }
 
-    /// Get outer square of a circular.
+    /// Get outer square of a circle.
     #[must_use]
-    pub fn from_circular(center: PointF, radius: f64) -> Self {
+    pub fn from_circle(center: PointF, radius: f64) -> Self {
         let x1 = center.x() - radius;
         let y1 = center.y() - radius;
         let x2 = center.x() + radius;
@@ -974,9 +974,9 @@ impl RectF {
         Self { x1, y1, x2, y2 }
     }
 
-    /// Get inner square of a circular.
+    /// Get inner square of a circle.
     #[must_use]
-    pub fn from_outer_circular(center: PointF, radius: f64) -> Self {
+    pub fn from_outer_circle(center: PointF, radius: f64) -> Self {
         let offset = radius * std::f64::consts::FRAC_1_SQRT_2;
         let x1 = center.x() - offset;
         let y1 = center.y() - offset;
