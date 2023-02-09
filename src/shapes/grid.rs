@@ -23,9 +23,14 @@ impl GridShape {
     /// Create a new grid shape.
     #[must_use]
     pub fn new(horizontal_step: f64, vertical_step: f64) -> Self {
+        let viewport = RectF::from(0.0, 0.0, 100.0, 100.0);
+        Self::with_viewport(viewport, horizontal_step, vertical_step)
+    }
+
+    #[must_use]
+    pub fn with_viewport(viewport: RectF, horizontal_step: f64, vertical_step: f64) -> Self {
         debug_assert!(horizontal_step > 0.0 && vertical_step > 0.0);
         let start_point = PointF::new();
-        let viewport = RectF::from(0.0, 0.0, 100.0, 100.0);
         let path = Path2D::new();
         Self {
             horizontal_step,

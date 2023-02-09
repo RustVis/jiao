@@ -24,12 +24,12 @@ pub fn paint_shapes(shape_manager: &mut ShapeManager) {
         shape_manager.add(Box::new(line));
     }
 
-    let circle = CircleShape::new(PointF::from(75.0, 50.0), 15.0);
+    let circle = CircleShape::new(PointF::from(100.0, 30.0), 20.0);
     shape_manager.add(Box::new(circle));
 
-    let rect = RoundedRectShape::new(RectF::from(110.0, 60.0, 50.0, 20.0), 5.0);
+    let rect = RoundedRectShape::new(RectF::from(150.0, 30.0, 50.0, 20.0), 5.0);
     shape_manager.add(Box::new(rect));
 
-    let grid = GridShape::new(5.0, 5.0);
+    let grid = GridShape::with_viewport(RectF::from(0.0, 80.0, 50.0, 50.0), 5.0, 5.0);
     shape_manager.add(Box::new(grid));
 }

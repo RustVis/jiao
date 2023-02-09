@@ -10,6 +10,7 @@ use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
 pub struct DropletShape {
     center: PointF,
     size: SizeF,
+    is_inverted: bool,
 
     path: Path2D,
     path_is_dirty: bool,
@@ -22,6 +23,7 @@ impl DropletShape {
         Self {
             center,
             size,
+            is_inverted: false,
             path,
             path_is_dirty: true,
         }
@@ -76,6 +78,13 @@ impl DropletShape {
             PointF::from(x, y + w),
         );
         self.path.close_path();
+
+        if self.is_inverted {
+            // TODO(Shaohua): reflect
+        }
+
+        self.path
+            .add_rect(&RectF::from_size(self.center, self.size));
 
         self.path_is_dirty = false;
     }
