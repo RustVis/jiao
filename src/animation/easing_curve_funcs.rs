@@ -250,20 +250,20 @@ pub fn ease_out_in_expo(t: f64) -> f64 {
     }
 }
 
-/// Easing equation function for a circular (sqrt(1-t^2)) easing in: accelerating from zero velocity.
+/// Easing equation function for a circle (sqrt(1-t^2)) easing in: accelerating from zero velocity.
 #[must_use]
 pub fn ease_in_circ(t: f64) -> f64 {
     -((1.0 - t * t).sqrt() - 1.0)
 }
 
-/// Easing equation function for a circular (sqrt(1-t^2)) easing out: decelerating to zero velocity.
+/// Easing equation function for a circle (sqrt(1-t^2)) easing out: decelerating to zero velocity.
 #[must_use]
 pub fn ease_out_circ(mut t: f64) -> f64 {
     t -= 1.0;
     (1.0 - t * t).sqrt()
 }
 
-/// Easing equation function for a circular (sqrt(1-t^2)) easing in/out: acceleration until halfway,
+/// Easing equation function for a circle (sqrt(1-t^2)) easing in/out: acceleration until halfway,
 /// then deceleration.
 #[must_use]
 pub fn ease_in_out_circ(mut t: f64) -> f64 {
@@ -276,7 +276,7 @@ pub fn ease_in_out_circ(mut t: f64) -> f64 {
     }
 }
 
-/// Easing equation function for a circular (sqrt(1-t^2)) easing out/in: deceleration until halfway,
+/// Easing equation function for a circle (sqrt(1-t^2)) easing out/in: deceleration until halfway,
 /// then acceleration.
 #[must_use]
 pub fn ease_out_in_circ(t: f64) -> f64 {

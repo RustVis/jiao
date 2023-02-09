@@ -103,19 +103,19 @@ pub enum EasingCurveType {
     /// then acceleration.
     OutInExpo,
 
-    /// Easing equation function for a circular (sqrt(1-t^2)) easing in: accelerating from zero velocity.
-    InCirc,
+    /// Easing equation function for a circle (sqrt(1-t^2)) easing in: accelerating from zero velocity.
+    InCircle,
 
-    /// Easing equation function for a circular (sqrt(1-t^2)) easing out: decelerating to zero velocity.
-    OutCirc,
+    /// Easing equation function for a circle (sqrt(1-t^2)) easing out: decelerating to zero velocity.
+    OutCircle,
 
-    /// Easing equation function for a circular (sqrt(1-t^2)) easing in/out: acceleration until halfway,
+    /// Easing equation function for a circle (sqrt(1-t^2)) easing in/out: acceleration until halfway,
     /// then deceleration.
-    InOutCirc,
+    InOutCircle,
 
-    /// Easing equation function for a circular (sqrt(1-t^2)) easing out/in: deceleration until halfway,
+    /// Easing equation function for a circle (sqrt(1-t^2)) easing out/in: deceleration until halfway,
     /// then acceleration.
-    OutInCirc,
+    OutInCircle,
 
     /// Easing equation function for an elastic (exponentially decaying sine wave) easing in:
     /// accelerating from zero velocity.
@@ -407,10 +407,10 @@ impl EasingCurve {
             EasingCurveType::OutExpo => inner::ease_out_expo(progress),
             EasingCurveType::InOutExpo => inner::ease_in_out_expo(progress),
             EasingCurveType::OutInExpo => inner::ease_out_in_expo(progress),
-            EasingCurveType::InCirc => inner::ease_in_circ(progress),
-            EasingCurveType::OutCirc => inner::ease_out_circ(progress),
-            EasingCurveType::InOutCirc => inner::ease_in_out_circ(progress),
-            EasingCurveType::OutInCirc => inner::ease_out_in_circ(progress),
+            EasingCurveType::InCircle => inner::ease_in_circ(progress),
+            EasingCurveType::OutCircle => inner::ease_out_circ(progress),
+            EasingCurveType::InOutCircle => inner::ease_in_out_circ(progress),
+            EasingCurveType::OutInCircle => inner::ease_out_in_circ(progress),
             EasingCurveType::InCurve => inner::ease_in_curve(progress),
             EasingCurveType::OutCurve => inner::ease_out_curve(progress),
             EasingCurveType::SineCurve => inner::ease_sine_curve(progress),
