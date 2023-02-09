@@ -11,7 +11,11 @@ use paint_shapes::paint_shapes;
 use std::fs::File;
 
 fn draw_png() -> Result<(), Error> {
-    let mut paint_device = ImagePaintDevice::new(cairo::Format::ARgb32, 300, 150)?;
+    let mut paint_device = ImagePaintDevice::new(
+        cairo::Format::ARgb32,
+        paint_shapes::CANVAS_WIDTH,
+        paint_shapes::CANVAS_HEIGHT,
+    )?;
     let mut paint_ctx = PaintContext::new(PaintDevice::Image(paint_device.clone()));
     let mut shape_manager = paint_ctx.shape_manager();
     paint_shapes(&mut shape_manager);
@@ -22,7 +26,11 @@ fn draw_png() -> Result<(), Error> {
 }
 
 fn draw_pdf() -> Result<(), Error> {
-    let mut paint_device = PdfPaintDevice::new(300.0, 150.0, "out.pdf")?;
+    let mut paint_device = PdfPaintDevice::new(
+        paint_shapes::CANVAS_WIDTH as f64,
+        paint_shapes::CANVAS_HEIGHT as f64,
+        "out.pdf",
+    )?;
     let mut paint_ctx = PaintContext::new(PaintDevice::Pdf(paint_device.clone()));
     let mut shape_manager = paint_ctx.shape_manager();
     paint_shapes(&mut shape_manager);
@@ -32,7 +40,11 @@ fn draw_pdf() -> Result<(), Error> {
 }
 
 fn draw_svg() -> Result<(), Error> {
-    let mut paint_device = SvgPaintDevice::new(300.0, 150.0, "out.svg")?;
+    let mut paint_device = SvgPaintDevice::new(
+        paint_shapes::CANVAS_WIDTH as f64,
+        paint_shapes::CANVAS_HEIGHT as f64,
+        "out.svg",
+    )?;
     let mut paint_ctx = PaintContext::new(PaintDevice::Svg(paint_device.clone()));
     let mut shape_manager = paint_ctx.shape_manager();
     paint_shapes(&mut shape_manager);

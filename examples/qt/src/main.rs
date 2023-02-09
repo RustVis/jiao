@@ -10,7 +10,13 @@ use qt_gui::q_image::Format;
 use qt_gui::{QGuiApplication, QImage};
 
 fn draw_png() {
-    let image = unsafe { QImage::from_2_int_format(300, 150, Format::FormatRGBA8888) };
+    let image = unsafe {
+        QImage::from_2_int_format(
+            paint_shapes::CANVAS_WIDTH,
+            paint_shapes::CANVAS_HEIGHT,
+            Format::FormatRGBA8888,
+        )
+    };
     let mut paint_ctx = PaintContext::new();
     let mut shape_manager = paint_ctx.shape_manager();
     paint_shapes(&mut shape_manager);

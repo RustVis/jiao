@@ -6,6 +6,9 @@ use jiao::base::{PointF, RectF};
 use jiao::kernel::ShapeManager;
 use jiao::shapes::{CircleShape, GridShape, LineShape, RoundedRectShape};
 
+pub const CANVAS_WIDTH: i32 = 800;
+pub const CANVAS_HEIGHT: i32 = 600;
+
 pub fn paint_shapes(shape_manager: &mut ShapeManager) {
     for p in [
         (10.0, 10.0, 50.0, 10.0),

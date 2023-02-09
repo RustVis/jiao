@@ -11,7 +11,10 @@ use std::fs::File;
 use std::io::Write;
 
 fn draw_png() -> Result<(), Error> {
-    let paint_device = PaintDevice::Image(ImagePaintDevice::new(300, 150));
+    let paint_device = PaintDevice::Image(ImagePaintDevice::new(
+        paint_shapes::CANVAS_WIDTH,
+        paint_shapes::CANVAS_HEIGHT,
+    ));
     let mut paint_ctx = PaintContext::new(paint_device);
     let mut shape_manager = paint_ctx.shape_manager();
     paint_shapes(&mut shape_manager);
