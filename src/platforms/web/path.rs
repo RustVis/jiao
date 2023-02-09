@@ -66,11 +66,47 @@ impl PathTrait for Path {
             .rect(center.x(), center.y(), rect.width(), rect.height());
     }
 
-    fn add_round_rect(&mut self, _rect: &RectF, _radius: f64) {
+    fn add_round_rect(&mut self, rect: &RectF, radius: f64) {
         // TODO(Shaohua):
         //let center = rect.center();
         //self.path2d
         //   .round_rect(center.x(), center.y(), rect.width(), rect.height(), radius);
+
+        let x = rect.x();
+        let y = rect.y();
+        let width = rect.width();
+        let height = rect.height();
+
+        // TODO(Shaohua): Returns error.
+        let _ret = self.path2d.arc(
+            x + width - radius,
+            y + radius,
+            radius,
+            -90.0_f64.to_radians(),
+            0.0_f64.to_radians(),
+        );
+        let _ret = self.path2d.arc(
+            x + width - radius,
+            y + height - radius,
+            radius,
+            0.0_f64.to_radians(),
+            90.0_f64.to_radians(),
+        );
+        let _ret = self.path2d.arc(
+            x + radius,
+            y + height - radius,
+            radius,
+            90.0_f64.to_radians(),
+            180.0_f64.to_radians(),
+        );
+        let _ret = self.path2d.arc(
+            x + radius,
+            y + radius,
+            radius,
+            180.0_f64.to_radians(),
+            270.0_f64.to_radians(),
+        );
+        self.path2d.close_path();
     }
 
     fn add_circle(&mut self, center: PointF, radius: f64) {
