@@ -3,11 +3,8 @@
 // that can be found in the LICENSE file.
 
 use gtk::prelude::*;
-use jiao::error::Error;
 use jiao::kernel::PaintContextTrait;
-use jiao::platforms::cairo::{
-    ImagePaintDevice, PaintContext, PaintDevice, PdfPaintDevice, SvgPaintDevice,
-};
+use jiao::platforms::cairo::DirectPaintContext;
 use paint_shapes::paint_shapes;
 
 fn main() {
@@ -44,9 +41,17 @@ fn set_visual(window: &gtk::ApplicationWindow, _screen: Option<&gdk::Screen>) {
 }
 
 fn do_draw(_window: &gtk::ApplicationWindow, ctx: &cairo::Context) -> gtk::Inhibit {
-    ctx.set_source_rgba(1.0, 0.0, 0.0, 0.4);
-    ctx.set_operator(cairo::Operator::Screen);
-    ctx.paint().expect("Invalid cairo surface state");
+    // ctx.set_source_rgba(1.0, 1.0, 1.0, 0.7);
+    // ctx.set_operator(cairo::Operator::Screen);
+    // ctx.paint().expect("Invalid cairo surface state");
+
+    ctx.set_source_rgba(0.0, 0.0, 0.0, 1.0);
+
+    let mut paint_ctx = DirectPaintContext::new();
+    let mut shape_manager = paint_ctx.shape_manager();
+    paint_shapes(&mut shape_manager);
+    paint_ctx.set_cairo_context(ctx);
+    paint_ctx.update();
 
     gtk::Inhibit(false)
 }
