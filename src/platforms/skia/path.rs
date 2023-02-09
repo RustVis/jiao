@@ -66,7 +66,7 @@ impl PathTrait for Path {
         self.p.add_rect(sk_rect, None);
     }
 
-    fn add_rounded_rect(&mut self, rect: &RectF, radius: f64) {
+    fn add_round_rect(&mut self, rect: &RectF, radius: f64) {
         let sk_rect: skia_safe::Rect = rect.into();
         let radius = radius as f32;
         self.p.add_round_rect(sk_rect, (radius, radius), None);

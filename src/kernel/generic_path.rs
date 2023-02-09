@@ -10,7 +10,7 @@ use super::painter::PathTrait;
 use crate::base::{PointF, RectF};
 
 #[derive(Debug, Clone)]
-pub struct GenericPathRoundedRect {
+pub struct GenericPathRoundRect {
     pub rect: RectF,
     pub radius: f64,
 }
@@ -62,7 +62,7 @@ pub enum GenericPathToken {
     MoveTo(PointF),
     LineTo(PointF),
     AddRect(RectF),
-    AddRoundedRect(GenericPathRoundedRect),
+    AddRoundRect(GenericPathRoundRect),
     AddCircle(GenericPathCircle),
     AddEllipse(RectF),
     Arc(GenericPathArc),
@@ -123,9 +123,9 @@ impl PathTrait for GenericPath {
         self.tokens.push(GenericPathToken::AddRect(rect.clone()));
     }
 
-    fn add_rounded_rect(&mut self, rect: &RectF, radius: f64) {
+    fn add_round_rect(&mut self, rect: &RectF, radius: f64) {
         self.tokens
-            .push(GenericPathToken::AddRoundedRect(GenericPathRoundedRect {
+            .push(GenericPathToken::AddRoundRect(GenericPathRoundRect {
                 rect: rect.clone(),
                 radius,
             }));

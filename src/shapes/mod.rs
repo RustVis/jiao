@@ -13,7 +13,7 @@ pub mod line;
 mod path2d;
 pub mod polygon;
 pub mod rect;
-pub mod rounded_rect;
+pub mod round_rect;
 pub mod star;
 pub mod text;
 
@@ -26,6 +26,6 @@ pub use line::LineShape;
 use path2d::Path2D;
 pub use polygon::PolygonShape;
 pub use rect::RectShape;
-pub use rounded_rect::RoundedRectShape;
+pub use round_rect::RoundRectShape;
 pub use star::StarShape;
 pub use text::TextShape;

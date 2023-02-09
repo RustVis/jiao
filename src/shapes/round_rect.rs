@@ -7,14 +7,14 @@ use crate::base::RectF;
 use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
 
 #[derive(Debug)]
-pub struct RoundedRectShape {
+pub struct RoundRectShape {
     rect: RectF,
     radius: f64,
     path: Path2D,
     path_is_dirty: bool,
 }
 
-impl RoundedRectShape {
+impl RoundRectShape {
     /// Create a general rounded rect.
     #[must_use]
     pub fn new(rect: RectF, radius: f64) -> Self {
@@ -30,12 +30,12 @@ impl RoundedRectShape {
     fn update_path(&mut self) {
         if self.path_is_dirty {
             self.path.clear();
-            self.path.add_rounded_rect(&self.rect, self.radius);
+            self.path.add_round_rect(&self.rect, self.radius);
         }
     }
 }
 
-impl ShapeTrait for RoundedRectShape {
+impl ShapeTrait for RoundRectShape {
     fn bounding_rect(&self) -> RectF {
         self.rect.clone()
     }

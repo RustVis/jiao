@@ -77,7 +77,7 @@ impl PathTrait for Path {
         }
     }
 
-    fn add_rounded_rect(&mut self, rect: &RectF, radius: f64) {
+    fn add_round_rect(&mut self, rect: &RectF, radius: f64) {
         unsafe {
             self.path.add_rounded_rect_6a(
                 rect.x(),

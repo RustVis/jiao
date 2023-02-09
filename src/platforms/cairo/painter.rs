@@ -40,7 +40,7 @@ impl Painter {
                     self.context
                         .rectangle(rect.x(), rect.y(), rect.width(), rect.height());
                 }
-                GenericPathToken::AddRoundedRect(rrect) => {
+                GenericPathToken::AddRoundRect(rrect) => {
                     let x = rrect.rect.x();
                     let y = rrect.rect.y();
                     let width = rrect.rect.width();

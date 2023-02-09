@@ -60,7 +60,7 @@ pub trait PathTrait {
     fn add_rect(&mut self, rect: &RectF);
 
     /// Adds the given rectangle rect with rounded corners to the path.
-    fn add_rounded_rect(&mut self, rect: &RectF, radius: f64);
+    fn add_round_rect(&mut self, rect: &RectF, radius: f64);
 
     /// Adds a circle to the path.
     fn add_circle(&mut self, center: PointF, radius: f64);
