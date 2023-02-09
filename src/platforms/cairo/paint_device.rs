@@ -36,7 +36,6 @@ impl ImagePaintDevice {
     ///
     /// # Errors
     /// Returns error if failed to create image painting device with specific format.
-    #[must_use]
     pub fn new(format: cairo::Format, width: i32, height: i32) -> Result<Self, Error> {
         let surface = cairo::ImageSurface::create(format, width, height)?;
         let painter = Painter::new(&surface)?;
