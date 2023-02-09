@@ -28,7 +28,7 @@ impl PaintDevice {
     /// # Errors
     /// Returns error if got web-sys type conversion errors.
     #[must_use]
-    pub fn new(parent_dom: &HtmlElement) -> Result<Self, Error> {
+    pub fn new(parent_dom: &HtmlElement, size: &Size) -> Result<Self, Error> {
         let window: Window =
             web_sys::window().ok_or(Error::new(ErrorKind::JsError, "No window object found"))?;
         let document: Document = window
@@ -36,6 +36,8 @@ impl PaintDevice {
             .ok_or(Error::new(ErrorKind::JsError, "No document object found"))?;
         let element: Element = document.create_element("canvas")?;
         let canvas: HtmlCanvasElement = element.dyn_into::<HtmlCanvasElement>()?;
+        canvas.set_width(size.width() as u32);
+        canvas.set_height(size.height() as u32);
         let canvas_ctx = canvas
             .get_context("2d")?
             .ok_or(Error::new(ErrorKind::JsError, "No 2d context found"))?
@@ -59,6 +61,11 @@ impl PaintDevice {
         #[allow(clippy::cast_possible_wrap)]
         let height = self.canvas.height() as i32;
         Size::from(width, height)
+    }
+
+    #[must_use]
+    pub fn canvas(&self) -> &HtmlCanvasElement {
+        &self.canvas
     }
 
     pub fn painter(&mut self) -> &mut dyn PainterTrait {

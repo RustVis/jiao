@@ -2,6 +2,7 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use jiao::base::Size;
 use jiao::kernel::PaintContextTrait;
 use jiao::platforms::web::PaintContext;
 use paint_shapes::paint_shapes;
@@ -33,7 +34,8 @@ impl Component for AppComponent {
 
     fn rendered(&mut self, _ctx: &Context<Self>, _first_render: bool) {
         if let Some(node) = self.container_node.cast::<HtmlElement>() {
-            let mut paint_ctx = PaintContext::from_dom(&node).unwrap();
+            let size = Size::from(paint_shapes::CANVAS_WIDTH, paint_shapes::CANVAS_HEIGHT);
+            let mut paint_ctx = PaintContext::from_dom(&node, &size).unwrap();
             let mut shape_manager = paint_ctx.shape_manager();
             paint_shapes(&mut shape_manager);
             paint_ctx.update();

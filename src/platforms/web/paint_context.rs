@@ -5,6 +5,7 @@
 use web_sys::HtmlElement;
 
 use super::paint_device::PaintDevice;
+use crate::base::Size;
 use crate::error::Error;
 use crate::kernel::{PaintContextTrait, ShapeManager};
 
@@ -14,16 +15,22 @@ pub struct PaintContext {
 }
 
 impl PaintContext {
+    /// Create an html canvas element from parent `dom` with specific `size`.
+    ///
     /// # Errors
     /// Returns error if failed to create paint device.
-    pub fn from_dom(dom: &HtmlElement) -> Result<Self, Error> {
+    pub fn from_dom(dom: &HtmlElement, size: &Size) -> Result<Self, Error> {
         let shape_manager = ShapeManager::new();
-        let paint_device = PaintDevice::new(dom)?;
+        let paint_device = PaintDevice::new(dom, size)?;
 
         Ok(Self {
             shape_manager,
             paint_device,
         })
+    }
+
+    pub fn paint_device(&self) -> &PaintDevice {
+        &self.paint_device
     }
 
     pub fn start(&mut self) {
