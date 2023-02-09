@@ -37,7 +37,7 @@ fn draw_jpg() -> Result<(), Error> {
     let paint_device = PaintDevice::Image(ImagePaintDevice::new(300, 150));
     let mut paint_ctx = PaintContext::new(paint_device);
     let mut shape_manager = paint_ctx.shape_manager();
-    do_paint(&mut shape_manager);
+    paint_shapes(&mut shape_manager);
     paint_ctx.update();
 
     let paint_device = paint_ctx.paint_device();
