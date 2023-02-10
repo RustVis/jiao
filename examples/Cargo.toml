@@ -1,0 +1,12 @@
+
+[workspace]
+
+members = [
+  "cairo",
+  "paint_shapes",
+  "qt",
+  "skia",
+  "web",
+]
+
+resolver = "2"
