@@ -22,7 +22,7 @@ fn draw_png() {
     paint_shapes(&mut shape_manager);
     paint_ctx.start(&image);
 
-    let ok = unsafe { image.save_q_string(&QString::from_std_str("out.png")) };
+    let ok = unsafe { image.save_q_string(&QString::from_std_str("out-qt.png")) };
     assert!(ok);
 }
 

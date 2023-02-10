@@ -25,7 +25,7 @@ fn draw_png() -> Result<(), Error> {
         let data = img_paint_device
             .encode(EncodedImageFormat::PNG)
             .ok_or(Error::new(ErrorKind::SkiaError, "No data in image surface"))?;
-        let mut file = File::create("out.png")?;
+        let mut file = File::create("out-skia.png")?;
         let bytes = data.as_bytes();
         file.write_all(bytes).map(drop).map_err(Into::into)
     } else {
@@ -48,7 +48,7 @@ fn draw_jpg() -> Result<(), Error> {
         let data = img_paint_device
             .encode(EncodedImageFormat::JPEG)
             .ok_or(Error::new(ErrorKind::SkiaError, "No data in image surface"))?;
-        let mut file = File::create("out.jpg")?;
+        let mut file = File::create("out-skia.jpg")?;
         let bytes = data.as_bytes();
         file.write_all(bytes)?;
         Ok(())
