@@ -34,9 +34,15 @@ impl LineShape {
     #[must_use]
     #[allow(clippy::missing_const_for_fn)]
     pub fn from_points(p1: PointF, p2: PointF) -> Self {
+        let line = LineF::from_points(p1, p2);
+        Self::from_line(line)
+    }
+
+    #[must_use]
+    pub fn from_line(line: LineF) -> Self {
         let path = Path2D::new();
         Self {
-            line: LineF::from_points(p1, p2),
+            line,
             path,
             path_is_dirty: true,
         }

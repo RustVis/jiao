@@ -83,9 +83,6 @@ impl DropletShape {
             // TODO(Shaohua): reflect
         }
 
-        self.path
-            .add_rect(&RectF::from_size(self.center, self.size));
-
         self.path_is_dirty = false;
     }
 }
