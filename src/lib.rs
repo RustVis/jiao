@@ -35,7 +35,6 @@ pub mod error;
 pub mod event;
 pub mod interpolate;
 pub mod kernel;
-pub mod math3d;
 pub mod painting;
 pub mod platforms;
 pub mod shapes;
