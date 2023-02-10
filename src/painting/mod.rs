@@ -16,7 +16,6 @@ pub mod matrix;
 pub mod palette;
 pub mod path_clipper;
 pub mod path_simplifier;
-pub mod polygon;
 pub mod radial_gradient;
 pub mod region;
 mod rgb;
