@@ -1,5 +1,5 @@
 [package]
-name = "qt-example"
+name = "qt_image"
 version = "0.1.0"
 edition = "2021"
 

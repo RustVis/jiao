@@ -1354,17 +1354,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "qt-example"
-version = "0.1.0"
-dependencies = [
- "cpp_core",
- "jiao",
- "paint_shapes",
- "qt_core",
- "qt_gui",
-]
-
-[[package]]
 name = "qt_core"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1385,6 +1374,17 @@ dependencies = [
  "cpp_core",
  "qt_core",
  "qt_ritual_build",
+]
+
+[[package]]
+name = "qt_image"
+version = "0.1.0"
+dependencies = [
+ "cpp_core",
+ "jiao",
+ "paint_shapes",
+ "qt_core",
+ "qt_gui",
 ]
 
 [[package]]
@@ -1668,15 +1668,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "43b2853a4d09f215c24cc5489c992ce46052d359b5109343cbafbf26bc62f8a3"
 
 [[package]]
-name = "skia"
-version = "0.1.0"
-dependencies = [
- "jiao",
- "paint_shapes",
- "skia-safe",
-]
-
-[[package]]
 name = "skia-bindings"
 version = "0.58.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1703,6 +1694,15 @@ dependencies = [
  "bitflags",
  "lazy_static",
  "skia-bindings",
+]
+
+[[package]]
+name = "skia_images"
+version = "0.1.0"
+dependencies = [
+ "jiao",
+ "paint_shapes",
+ "skia-safe",
 ]
 
 [[package]]

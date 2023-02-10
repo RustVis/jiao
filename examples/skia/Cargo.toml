@@ -1,5 +1,5 @@
 [package]
-name = "skia"
+name = "skia_images"
 version = "0.1.0"
 edition = "2021"
 
