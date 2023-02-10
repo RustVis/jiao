@@ -2,14 +2,15 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use jiao::base::{PointF, RectF};
+use jiao::base::{PointF, RectF, SizeF};
 use jiao::kernel::ShapeManager;
-use jiao::shapes::{CircleShape, GridShape, LineShape, RoundRectShape};
+use jiao::shapes::{CircleShape, DropletShape, GridShape, LineShape, RoundRectShape};
 
 pub const CANVAS_WIDTH: i32 = 800;
 pub const CANVAS_HEIGHT: i32 = 600;
 
 pub fn paint_shapes(shape_manager: &mut ShapeManager) {
+    // Line 1
     for p in [
         (10.0, 10.0, 50.0, 10.0),
         (10.0, 10.0, 10.0, 50.0),
@@ -30,6 +31,13 @@ pub fn paint_shapes(shape_manager: &mut ShapeManager) {
     let rect = RoundRectShape::new(RectF::from(150.0, 30.0, 50.0, 20.0), 5.0);
     shape_manager.add(Box::new(rect));
 
+    // Line 2
     let grid = GridShape::with_viewport(RectF::from(0.0, 80.0, 50.0, 50.0), 5.0, 5.0);
     shape_manager.add(Box::new(grid));
+
+    let droplet = DropletShape::new(PointF::from(100.0, 100.0), SizeF::from(20.0, 20.0));
+    shape_manager.add(Box::new(droplet));
+
+    let line = LineShape::from_f64(150.0, 100.0, 200.0, 100.0);
+    shape_manager.add(Box::new(line));
 }
