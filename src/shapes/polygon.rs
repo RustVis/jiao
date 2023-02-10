@@ -1,105 +1,61 @@
-// Copyright (c) 2022 Xu Shaohua <shaohua@biofan.org>. All rights reserved.
+// Copyright (c) 2023 Xu Shaohua <shaohua@biofan.org>. All rights reserved.
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
 use super::Path2D;
-use crate::base::RectF;
+use crate::base::{PointF, RectF};
 use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
-use crate::util::fuzzy_compare;
 
-const VERTEX_MIN: usize = 3;
-const VERTEX_MAX: usize = 99;
-
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct PolygonShape {
-    corners: usize,
-    corner_radius: f64,
+    points: Vec<PointF>,
+    is_closed: bool,
     path: Path2D,
     path_is_dirty: bool,
 }
 
 impl PolygonShape {
-    /// Create a new polygon shape object with specified `corners`.
-    ///
-    /// Corner radius is set to 0.0.
-    ///
-    /// # Panics
-    ///
-    /// Note that corners shall be in range 3..90.
     #[must_use]
-    pub fn new(corners: usize) -> Self {
-        assert!((VERTEX_MIN..=VERTEX_MAX).contains(&corners));
+    pub fn new() -> Self {
+        Self::from_points(&[], true)
+    }
+
+    #[must_use]
+    pub fn from_points(points: &[PointF], is_closed: bool) -> Self {
+        let points = points.to_vec();
         let path = Path2D::new();
         Self {
-            corners,
-            corner_radius: 0.0,
+            points,
             path,
+            is_closed,
             path_is_dirty: true,
         }
     }
 
-    /// Create a new triangle shape.
     #[must_use]
-    pub fn new_triangle() -> Self {
-        Self::new(3)
+    pub fn points(&self) -> &[PointF] {
+        &self.points
     }
 
-    /// Create a new diamond shape.
     #[must_use]
-    pub fn new_diamond() -> Self {
-        // TODO(Shaohua): Rotate
-        Self::new(4)
+    pub fn points_mut(&mut self) -> &mut Vec<PointF> {
+        self.path_is_dirty = true;
+        &mut self.points
     }
 
-    /// Create a new parallelogram shape.
+    pub fn add_point(&mut self, point: PointF) {
+        self.points.push(point);
+        self.path_is_dirty = true;
+    }
+
     #[must_use]
-    pub fn new_parallelogram() -> Self {
-        // TODO(Shaohua): Rotate
-        Self::new(4)
+    pub const fn is_closed(&self) -> bool {
+        self.is_closed
     }
 
-    /// Create a new hexagon shape.
-    #[must_use]
-    pub fn new_hexagon() -> Self {
-        Self::new(6)
-    }
-
-    /// Get current number of corners.
-    #[must_use]
-    pub const fn corners(&self) -> usize {
-        self.corners
-    }
-
-    /// Set number of corners.
-    ///
-    /// # Panics
-    ///
-    /// Note that corners shall be in range 3..90.
-    pub fn set_corners(&mut self, corners: usize) {
-        assert!((VERTEX_MIN..=VERTEX_MAX).contains(&corners));
-        if self.corners != corners {
-            self.path_is_dirty = true;
-            self.corners = corners;
-        }
-    }
-
-    /// Get current corner radius.
-    #[must_use]
-    pub const fn corner_radius(&self) -> f64 {
-        self.corner_radius
-    }
-
-    /// Set corner radius.
-    ///
-    /// # Panics
-    ///
-    /// `radius` shall be a non-negative number.
-    pub fn set_corner_radius(&mut self, radius: f64) {
-        assert!(radius >= 0.0);
-        if !fuzzy_compare(self.corner_radius, radius) {
-            self.path_is_dirty = true;
-            self.corner_radius = radius;
-        }
+    pub fn set_closed(&mut self, is_closed: bool) {
+        self.is_closed = is_closed;
+        self.path_is_dirty = true;
     }
 
     fn update_path(&mut self) {
@@ -107,8 +63,20 @@ impl PolygonShape {
             return;
         }
         self.path.clear();
-        // TODO(Shaohua): draw star shape.
-        self.path_is_dirty = false;
+
+        if self.points.len() > 1 {
+            let first_point = self.points[0];
+            self.path.move_to(first_point);
+            for point in &self.points[1..] {
+                self.path.line_to(*point);
+            }
+
+            if self.is_closed {
+                self.path.close_path();
+            }
+        }
+
+        self.path_is_dirty = true;
     }
 }
 

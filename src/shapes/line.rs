@@ -3,11 +3,10 @@
 // in the LICENSE file.
 
 use super::Path2D;
-use crate::base::PointF;
-use crate::base::{LineF, RectF};
+use crate::base::{LineF, PointF, RectF};
 use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct LineShape {
     line: LineF,
     path: Path2D,
