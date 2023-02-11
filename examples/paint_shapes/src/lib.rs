@@ -4,7 +4,9 @@
 
 use jiao::base::{PointF, RectF, SizeF};
 use jiao::kernel::ShapeManager;
-use jiao::shapes::{CircleShape, DropletShape, GridShape, LineShape, PolygonShape, RoundRectShape};
+use jiao::shapes::{
+    CircleShape, DonutShape, DropletShape, GridShape, LineShape, PolygonShape, RoundRectShape,
+};
 
 pub const CANVAS_WIDTH: i32 = 800;
 pub const CANVAS_HEIGHT: i32 = 600;
@@ -53,4 +55,8 @@ pub fn paint_shapes(shape_manager: &mut ShapeManager) {
     let points: Vec<PointF> = points.iter().map(|(x, y)| PointF::from(*x, *y)).collect();
     let polyline = PolygonShape::from_points(&points, false);
     shape_manager.add(Box::new(polyline));
+
+    // Line 3
+    let donut = DonutShape::new(PointF::from(160.0, 260.0), 120.0);
+    shape_manager.add(Box::new(donut));
 }
