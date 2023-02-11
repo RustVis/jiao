@@ -12,7 +12,7 @@ pub type Path = GenericPath;
 
 #[derive(Debug, Clone)]
 pub struct DirectPainter<'a> {
-    context: &'a cairo::Context,
+    pub context: &'a cairo::Context,
 }
 
 impl<'a> DirectPainter<'a> {

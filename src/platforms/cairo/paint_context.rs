@@ -32,9 +32,12 @@ impl PaintContext {
 impl PaintContextTrait for PaintContext {
     fn repaint(&mut self) {
         let painter = self.paint_device.painter();
-        // TODO(Shaohua): Reset color.
-        // painter.clear_all();
+        let _ret = painter.context.save();
+        painter.context.set_antialias(cairo::Antialias::Best);
+
         self.shape_manager.update(painter);
+
+        let _ret = painter.context.restore();
     }
 
     fn update(&mut self) {

@@ -13,7 +13,7 @@ pub type Path = GenericPath;
 
 #[derive(Debug, Clone)]
 pub struct Painter {
-    context: cairo::Context,
+    pub context: cairo::Context,
 }
 
 impl Painter {

@@ -28,7 +28,12 @@ impl<'a> PaintContextTrait for DirectPaintContext<'a> {
     fn repaint(&mut self) {
         if let Some(ctx) = self.ctx {
             let mut painter = DirectPainter::new(ctx);
+            let _ret = ctx.save();
+            ctx.set_antialias(cairo::Antialias::Best);
+
             self.shape_manager.update(&mut painter);
+
+            let _ret = ctx.restore();
         } else {
             // TODO(Shaohua): Returns error
         }
