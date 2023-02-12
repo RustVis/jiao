@@ -30,9 +30,10 @@ impl ShapeManager {
 
 impl ShapeManager {
     pub fn update(&mut self, painter: &mut dyn PainterTrait) {
-        log::info!("ShapeManager::update()");
         for shape in &mut self.shapes {
+            painter.save();
             shape.repaint(painter);
+            painter.restore();
         }
     }
 
