@@ -32,20 +32,20 @@ skia = ["skia-safe"]
 web = ["web-sys", "js-sys", "wasm-bindgen"]
 
 [dependencies]
-cairo-rs = { version = "0.16.7", features = ["glib", "png", "svg", "pdf"], optional = true }
+cairo-rs = { version = "0.17.0", features = ["glib", "png", "svg", "pdf"], optional = true }
 cfg-if = "1.0.0"
 cpp_core = { version = "0.6.0", optional = true }
 float-cmp = "0.9.0"
-js-sys = { version = "0.3.60", optional = true }
+js-sys = { version = "0.3.61", optional = true }
 lazy_static = "1.4.0"
 log = "0.4.17"
 qt_gui = { version = "0.5.0", optional = true }
 serde = { version = "1.0.152", features = ["derive"] }
 skia-safe = { version = "0.58.0", optional = true }
-wasm-bindgen = { version = "0.2.83", features = ["serde-serialize"], optional = true }
+wasm-bindgen = { version = "0.2.84", features = ["serde-serialize"], optional = true }
 
 [dependencies.web-sys]
-version = "0.3.60"
+version = "0.3.61"
 optional = true
 features = [
     "CanvasRenderingContext2d",
@@ -58,4 +58,4 @@ features = [
 ]
 
 [dev-dependencies]
-serde_json = "1.0.91"
+serde_json = "1.0.93"
