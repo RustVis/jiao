@@ -188,4 +188,13 @@ impl<'a> PainterTrait for DirectPainter<'a> {
     fn translate(&mut self, point: PointF) {
         self.context.translate(point.x(), point.y());
     }
+
+    #[inline]
+    fn draw_text(&mut self, text: &str, position: PointF) {
+        // TODO(Shaohua): Replace with more detailed function.
+        let _ret = self.context.save();
+        self.context.move_to(position.x(), position.y());
+        let _ret = self.context.show_text(text);
+        let _ret = self.context.restore();
+    }
 }

@@ -34,6 +34,9 @@ pub trait PainterTrait {
 
     /// Add a translation transformation to the current matrix.
     fn translate(&mut self, point: PointF);
+
+    /// Draw text at specific position.
+    fn draw_text(&mut self, text: &str, position: PointF);
 }
 
 pub trait PathTrait {
