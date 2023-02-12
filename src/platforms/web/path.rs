@@ -61,16 +61,14 @@ impl PathTrait for Path {
     }
 
     fn add_rect(&mut self, rect: &RectF) {
-        let center = rect.center();
         self.path2d
-            .rect(center.x(), center.y(), rect.width(), rect.height());
+            .rect(rect.x(), rect.y(), rect.width(), rect.height());
     }
 
     fn add_round_rect(&mut self, rect: &RectF, radius: f64) {
         // TODO(Shaohua):
-        //let center = rect.center();
         //self.path2d
-        //   .round_rect(center.x(), center.y(), rect.width(), rect.height(), radius);
+        //   .round_rect(rect.x(), rect.y(), rect.width(), rect.height(), radius);
 
         let x = rect.x();
         let y = rect.y();
