@@ -39,7 +39,7 @@ impl DonutShape {
         }
 
         self.path.clear();
-        painter.translate(self.center.x(), self.center.y());
+        painter.translate(self.center);
         self.path.add_circle(PointF::new(), self.radius);
         painter.stroke(&self.path);
 

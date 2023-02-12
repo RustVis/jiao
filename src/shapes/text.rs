@@ -5,7 +5,7 @@
 use crate::base::RectF;
 use crate::kernel::{PainterTrait, ShapeTrait};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct TextShape {
     text: String,
     container_rect: RectF,

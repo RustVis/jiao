@@ -7,7 +7,7 @@ use crate::base::{PointF, RectF, SizeF};
 use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
 use crate::util::fuzzy_compare;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BracketShape {
     size: SizeF,
     handle_base: Option<PointF>,

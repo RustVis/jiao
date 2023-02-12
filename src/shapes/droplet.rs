@@ -6,7 +6,7 @@ use super::Path2D;
 use crate::base::{PointF, RectF, SizeF};
 use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DropletShape {
     center: PointF,
     size: SizeF,

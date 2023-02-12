@@ -7,7 +7,7 @@ use crate::base::{PointF, RectF};
 use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
 use crate::util::fuzzy_compare;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct GridShape {
     horizontal_step: f64,
     vertical_step: f64,

@@ -10,7 +10,7 @@ use crate::util::fuzzy_compare;
 const VERTEX_MIN: usize = 3;
 const VERTEX_MAX: usize = 99;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct StarShape {
     corners: usize,
     corner_radius: f64,

@@ -6,7 +6,7 @@ use super::Path2D;
 use crate::base::RectF;
 use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct RoundRectShape {
     rect: RectF,
     radius: f64,
