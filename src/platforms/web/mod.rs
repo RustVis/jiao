@@ -11,3 +11,11 @@ pub use self::paint_context::PaintContext;
 pub use self::paint_device::PaintDevice;
 pub use self::painter::Painter;
 pub use self::path::Path;
+
+use super::features::Features;
+
+pub const FEATURES: &Features = &Features {
+    filter: true,
+    ssr: false,
+    input_event: true,
+};

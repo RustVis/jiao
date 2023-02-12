@@ -14,3 +14,11 @@ pub use self::paint_context::PaintContext;
 pub use self::paint_device::{ImagePaintDevice, PaintDevice, PdfPaintDevice, SvgPaintDevice};
 pub use self::painter::Painter;
 pub use self::painter::Path;
+
+use super::features::Features;
+
+pub const FEATURES: &Features = &Features {
+    filter: false,
+    ssr: true,
+    input_event: true,
+};
