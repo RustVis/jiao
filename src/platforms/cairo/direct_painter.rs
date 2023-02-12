@@ -179,12 +179,12 @@ impl<'a> PainterTrait for DirectPainter<'a> {
     }
 
     #[inline]
-    fn scale(&mut self, x: f64, y: f64) {
-        self.context.scale(x, y);
+    fn scale(&mut self, sx: f64, sy: f64) {
+        self.context.scale(sx, sy);
     }
 
     #[inline]
-    fn translate(&mut self, x: f64, y: f64) {
-        self.context.translate(x, y);
+    fn translate(&mut self, point: PointF) {
+        self.context.translate(point.x(), point.y());
     }
 }

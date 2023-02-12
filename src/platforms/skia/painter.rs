@@ -98,12 +98,13 @@ impl PainterTrait for Painter {
     }
 
     #[inline]
-    fn scale(&mut self, x: f64, y: f64) {
-        self.canvas().scale((x as f32, y as f32));
+    fn scale(&mut self, sx: f64, sy: f64) {
+        self.canvas().scale((sx as f32, sy as f32));
     }
 
     #[inline]
-    fn translate(&mut self, x: f64, y: f64) {
-        self.canvas().translate((x as f32, y as f32));
+    fn translate(&mut self, point: PointF) {
+        self.canvas()
+            .translate((point.x() as f32, point.y() as f32));
     }
 }

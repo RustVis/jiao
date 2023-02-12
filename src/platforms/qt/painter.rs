@@ -100,16 +100,16 @@ impl PainterTrait for Painter {
     }
 
     #[inline]
-    fn scale(&mut self, x: f64, y: f64) {
+    fn scale(&mut self, sx: f64, sy: f64) {
         unsafe {
-            self.painter.scale(x, y);
+            self.painter.scale(sx, sy);
         }
     }
 
     #[inline]
-    fn translate(&mut self, x: f64, y: f64) {
+    fn translate(&mut self, point: PointF) {
         unsafe {
-            self.painter.translate_2_double(x, y);
+            self.painter.translate_2_double(point.x(), point.y());
         }
     }
 }

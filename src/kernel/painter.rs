@@ -30,10 +30,10 @@ pub trait PainterTrait {
     fn rotate(&mut self, angle: f64);
 
     /// Add a scaling transformation to the canvas units horizontally and/or vertically.
-    fn scale(&mut self, x: f64, y: f64);
+    fn scale(&mut self, sx: f64, sy: f64);
 
     /// Add a translation transformation to the current matrix.
-    fn translate(&mut self, x: f64, y: f64);
+    fn translate(&mut self, point: PointF);
 }
 
 pub trait PathTrait {

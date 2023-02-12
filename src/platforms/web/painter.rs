@@ -64,14 +64,14 @@ impl PainterTrait for Painter {
     }
 
     #[inline]
-    fn scale(&mut self, x: f64, y: f64) {
+    fn scale(&mut self, sx: f64, sy: f64) {
         // TODO(Shaohua): Returns error
-        let _ret = self.ctx.scale(x, y);
+        let _ret = self.ctx.scale(sx, sy);
     }
 
     #[inline]
-    fn translate(&mut self, x: f64, y: f64) {
+    fn translate(&mut self, point: PointF) {
         // TODO(Shaohua): Returns error
-        let _ret = self.ctx.translate(x, y);
+        let _ret = self.ctx.translate(point.x(), point.y());
     }
 }
