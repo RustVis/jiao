@@ -9,6 +9,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use super::Path;
+use crate::base::PointF;
 use crate::kernel::{PainterTrait, PathTrait};
 
 #[derive(Debug)]

@@ -4,6 +4,7 @@
 
 use std::f64::consts::PI;
 
+use crate::base::PointF;
 use crate::kernel::generic_path::{GenericPath, GenericPathToken};
 use crate::kernel::{PainterTrait, PathTrait};
 

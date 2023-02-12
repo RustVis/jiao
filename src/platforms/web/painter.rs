@@ -5,6 +5,7 @@
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
 
 use super::path::Path;
+use crate::base::PointF;
 use crate::kernel::{PainterTrait, PathTrait};
 
 pub struct Painter {

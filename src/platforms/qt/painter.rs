@@ -8,6 +8,7 @@ use qt_gui::QPainter;
 use std::fmt;
 
 use super::Path;
+use crate::base::PointF;
 use crate::kernel::{PainterTrait, PathTrait};
 
 pub struct Painter {
