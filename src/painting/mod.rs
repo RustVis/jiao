@@ -21,6 +21,7 @@ pub mod radial_gradient;
 pub mod region;
 mod rgb;
 mod rgba64;
+pub mod text;
 pub mod transform;
 
 pub use self::color::Color;
@@ -28,3 +29,4 @@ pub use self::line::{LineCap, LineJoin};
 pub use self::palette::ColorPalette;
 pub use self::rgb::{Rgb, RGB_MASK};
 pub use self::rgba64::Rgba64;
+pub use self::text::TextAlign;
