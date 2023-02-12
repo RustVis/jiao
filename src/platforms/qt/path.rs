@@ -5,18 +5,19 @@
 use cpp_core::CppBox;
 use qt_gui::QPainterPath;
 use std::any::Any;
-use std::fmt;
 
 use crate::base::{PointF, RectF};
 use crate::kernel::PathTrait;
 
+#[derive(Debug)]
 pub struct Path {
-    pub(crate) path: CppBox<QPainterPath>,
+    pub path: CppBox<QPainterPath>,
 }
 
-impl fmt::Debug for Path {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("Path").finish()
+impl Clone for Path {
+    fn clone(&self) -> Self {
+        let path = unsafe { QPainterPath::new_copy(&self.path) };
+        Self { path }
     }
 }
 
