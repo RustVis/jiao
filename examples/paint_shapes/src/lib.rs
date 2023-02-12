@@ -5,8 +5,8 @@
 use jiao::base::{PointF, RectF, SizeF};
 use jiao::kernel::ShapeManager;
 use jiao::shapes::{
-    CircleShape, DonutShape, DropletShape, GridShape, LineShape, PolygonShape, RectShape,
-    RoundRectShape,
+    CircleShape, DonutShape, DropletShape, EllipseShape, GridShape, LineShape, PolygonShape,
+    RectShape, RoundRectShape,
 };
 
 pub const CANVAS_WIDTH: i32 = 800;
@@ -35,6 +35,11 @@ pub fn paint_shapes(shape_manager: &mut ShapeManager) {
     let rect = RectF::from(150.0, 15.0, 50.0, 30.0);
     let round_rect = RoundRectShape::new(rect.clone(), 15.0);
     shape_manager.add(Box::new(round_rect));
+    shape_manager.add(Box::new(RectShape::from_rect(rect)));
+
+    let rect = RectF::from_ellipse(PointF::from(250.0, 30.0), 25.0, 15.0);
+    let ellipse = EllipseShape::from_rect(&rect);
+    shape_manager.add(Box::new(ellipse));
     shape_manager.add(Box::new(RectShape::from_rect(rect)));
 
     // Line 2

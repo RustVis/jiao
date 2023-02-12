@@ -32,6 +32,14 @@ impl EllipseShape {
         }
     }
 
+    #[must_use]
+    pub fn from_rect(rect: &RectF) -> Self {
+        let center = rect.center();
+        let radius_x = center.x() - rect.left();
+        let radius_y = center.y() - rect.top();
+        Self::new(center, radius_x, radius_y)
+    }
+
     /// Get center point of the ellipse shape.
     #[must_use]
     pub const fn center(&self) -> PointF {
