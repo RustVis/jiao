@@ -1,6 +1,6 @@
 [package]
 name = "jiao"
-version = "0.3.3"
+version = "0.3.4"
 authors = ["Xu Shaohua <shaohua@biofan.org>"]
 description = "Cross platform 2D rendering engine"
 homepage = "https://github.com/RustVis/jiao"

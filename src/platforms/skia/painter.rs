@@ -108,4 +108,9 @@ impl PainterTrait for Painter {
         self.canvas()
             .translate((point.x() as f32, point.y() as f32));
     }
+
+    #[inline]
+    fn draw_text(&mut self, _text: &str, _position: PointF) {
+        todo!()
+    }
 }
