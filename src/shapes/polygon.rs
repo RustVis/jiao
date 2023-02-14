@@ -14,6 +14,12 @@ pub struct PolygonShape {
     path_is_dirty: bool,
 }
 
+impl Default for PolygonShape {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl PolygonShape {
     #[must_use]
     pub fn new() -> Self {

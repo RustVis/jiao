@@ -17,6 +17,7 @@ pub struct DropletShape {
 }
 
 impl DropletShape {
+    #[must_use]
     pub fn new(center: PointF, size: SizeF) -> Self {
         let path = Path2D::new();
 
@@ -29,6 +30,7 @@ impl DropletShape {
         }
     }
 
+    #[must_use]
     pub fn from_rect(rect: &RectF) -> Self {
         Self::new(rect.center(), rect.size())
     }

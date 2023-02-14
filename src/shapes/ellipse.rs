@@ -91,7 +91,7 @@ impl EllipseShape {
 
 impl ShapeTrait for EllipseShape {
     fn bounding_rect(&self) -> RectF {
-        return RectF::from_ellipse(self.center, self.radius_x, self.radius_y);
+        RectF::from_ellipse(self.center, self.radius_x, self.radius_y)
     }
 
     fn repaint(&mut self, painter: &mut dyn PainterTrait) {

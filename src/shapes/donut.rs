@@ -44,7 +44,7 @@ impl DonutShape {
         painter.stroke(&self.path);
 
         for i in 0..self.round {
-            let angle = (i as f64 * PI) / self.round as f64;
+            let angle = (f64::from(i) * PI) / f64::from(self.round);
             painter.save();
             painter.rotate(angle);
             painter.scale(0.3, 1.0);
