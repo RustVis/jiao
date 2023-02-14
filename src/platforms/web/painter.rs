@@ -75,4 +75,10 @@ impl PainterTrait for Painter {
         // TODO(Shaohua): Returns error
         let _ret = self.ctx.translate(point.x(), point.y());
     }
+
+    #[inline]
+    fn draw_text(&mut self, text: &str, position: PointF) {
+        // TODO(Shaohua): Returns error
+        let _ret = self.ctx.fill_text(text, position.x(), position.y());
+    }
 }
