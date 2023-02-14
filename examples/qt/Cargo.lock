@@ -201,6 +201,7 @@ dependencies = [
  "float-cmp",
  "lazy_static",
  "log",
+ "qt_core",
  "qt_gui",
  "serde",
 ]

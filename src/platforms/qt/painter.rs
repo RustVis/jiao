@@ -3,6 +3,7 @@
 // in the LICENSE file.
 
 use cpp_core::CppBox;
+use qt_core::{QPointF, QString};
 use qt_gui::q_painter::RenderHint;
 use qt_gui::QPainter;
 use std::fmt;
@@ -111,6 +112,14 @@ impl PainterTrait for Painter {
     fn translate(&mut self, point: PointF) {
         unsafe {
             self.painter.translate_2_double(point.x(), point.y());
+        }
+    }
+
+    fn draw_text(&mut self, text: &str, position: PointF) {
+        unsafe {
+            let q_point = QPointF::new_2a(position.x(), position.y());
+            let q_str = QString::from_std_str(&text);
+            self.painter.draw_text_q_point_f_q_string(&q_point, &q_str);
         }
     }
 }

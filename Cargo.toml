@@ -27,7 +27,7 @@ publish = true
 [features]
 default = []
 cairo = ["cairo-rs"]
-qt = ["cpp_core", "qt_gui"]
+qt = ["cpp_core", "qt_core", "qt_gui"]
 skia = ["skia-safe"]
 web = ["web-sys", "js-sys", "wasm-bindgen"]
 
@@ -39,6 +39,7 @@ float-cmp = "0.9.0"
 js-sys = { version = "0.3.61", optional = true }
 lazy_static = "1.4.0"
 log = "0.4.17"
+qt_core = { version = "0.5.0", optional = true }
 qt_gui = { version = "0.5.0", optional = true }
 serde = { version = "1.0.152", features = ["derive"] }
 skia-safe = { version = "0.58.0", optional = true }
