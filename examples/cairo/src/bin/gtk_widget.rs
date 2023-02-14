@@ -3,14 +3,22 @@
 // that can be found in the LICENSE file.
 
 use gtk::prelude::*;
-use jiao::kernel::PaintContextTrait;
-use jiao::platforms::cairo::DirectPaintContext;
+use jiao::kernel::ShapeManager;
+use jiao::platforms::cairo::DirectPainter;
 use paint_shapes::paint_shapes;
+use std::cell::RefCell;
+
+thread_local! {
+    static SHAPE_MANAGER: RefCell<ShapeManager> = RefCell::new(ShapeManager::new());
+}
 
 fn main() {
     let application =
         gtk::Application::new(Some("org.biofan.jiao.cairo-example"), Default::default());
 
+    SHAPE_MANAGER.with(move |shape_manager| {
+        paint_shapes(&mut shape_manager.borrow_mut());
+    });
     application.connect_activate(build_ui);
 
     application.run();
@@ -41,17 +49,12 @@ fn set_visual(window: &gtk::ApplicationWindow, _screen: Option<&gdk::Screen>) {
 }
 
 fn do_draw(_window: &gtk::ApplicationWindow, ctx: &cairo::Context) -> gtk::Inhibit {
-    // ctx.set_source_rgba(1.0, 1.0, 1.0, 0.7);
-    // ctx.set_operator(cairo::Operator::Screen);
-    // ctx.paint().expect("Invalid cairo surface state");
-
     ctx.set_source_rgba(0.0, 0.0, 0.0, 1.0);
 
-    let mut paint_ctx = DirectPaintContext::new();
-    let mut shape_manager = paint_ctx.shape_manager();
-    paint_shapes(&mut shape_manager);
-    paint_ctx.set_cairo_context(ctx);
-    paint_ctx.update();
+    SHAPE_MANAGER.with(move |shape_manager| {
+        let mut painter = DirectPainter::new(ctx);
+        shape_manager.borrow_mut().update(&mut painter);
+    });
 
     gtk::Inhibit(false)
 }
