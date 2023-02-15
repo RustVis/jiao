@@ -3,8 +3,8 @@
 // in the LICENSE file.
 
 use jiao::base::Size;
-use jiao::kernel::PaintContextTrait;
-use jiao::platforms::web::PaintContext;
+use jiao_shapes::platforms::PaintContext;
+use jiao_shapes::PaintContextTrait;
 use paint_shapes::paint_shapes;
 use web_sys::HtmlElement;
 use yew::prelude::*;

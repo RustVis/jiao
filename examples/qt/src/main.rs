@@ -3,6 +3,7 @@
 // in the LICENSE file.
 
 use jiao_shapes::platforms::PaintContext;
+use jiao_shapes::PaintContextTrait;
 use paint_shapes::paint_shapes;
 use qt_core::QString;
 use qt_gui::q_image::Format;
