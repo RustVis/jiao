@@ -2,6 +2,7 @@
 name = "paint-shapes"
 version = "0.2.1"
 edition = "2021"
+publish = false
 
 [features]
 cairo = ["jiao-shapes/cairo"]

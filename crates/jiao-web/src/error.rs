@@ -6,6 +6,7 @@
 pub struct Error(String);
 
 impl Error {
+    #[must_use]
     pub fn new(err: &str) -> Self {
         Self(err.to_string())
     }

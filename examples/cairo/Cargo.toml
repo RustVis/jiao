@@ -2,6 +2,7 @@
 name = "cr-example"
 version = "0.1.0"
 edition = "2021"
+publish = false
 
 [dependencies]
 cairo-rs = { version = "0.17.0", features = ["glib", "png", "svg", "pdf"] }

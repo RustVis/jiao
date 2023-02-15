@@ -4,6 +4,7 @@
 
 use jiao::base::{PointF, RectF};
 use jiao::kernel::PathTrait;
+use jiao::util::fuzzy_compare;
 use std::any::Any;
 use std::f64::consts::PI;
 use web_sys::Path2d;
@@ -11,6 +12,12 @@ use web_sys::Path2d;
 #[derive(Debug, Clone)]
 pub struct Path {
     path2d: Path2d,
+}
+
+impl Default for Path {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl Path {
@@ -135,7 +142,7 @@ impl PathTrait for Path {
     fn arc(&mut self, rect: &RectF, start_angle: f64, end_angle: f64) {
         // TODO(Shaohua): Returns error.
         let center = rect.center();
-        if rect.width() == rect.height() {
+        if fuzzy_compare(rect.width(), rect.height()) {
             let radius = rect.height() / 2.0;
             let _ret = self
                 .path2d

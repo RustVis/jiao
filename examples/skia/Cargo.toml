@@ -2,6 +2,7 @@
 name = "skia_images"
 version = "0.1.0"
 edition = "2021"
+publish = false
 
 [dependencies]
 jiao-shapes = { path = "../../crates/jiao-shapes", features = ["skia"] }

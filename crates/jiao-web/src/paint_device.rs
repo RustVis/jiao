@@ -27,19 +27,20 @@ impl PaintDevice {
     ///
     /// # Errors
     /// Returns error if got web-sys type conversion errors.
-    #[must_use]
+    #[allow(clippy::cast_sign_loss)]
     pub fn new(parent_dom: &HtmlElement, size: &Size) -> Result<Self, Error> {
-        let window: Window = web_sys::window().ok_or(Error::new("No window object found"))?;
+        let window: Window =
+            web_sys::window().ok_or_else(|| Error::new("No window object found"))?;
         let document: Document = window
             .document()
-            .ok_or(Error::new("No document object found"))?;
+            .ok_or_else(|| Error::new("No document object found"))?;
         let element: Element = document.create_element("canvas")?;
         let canvas: HtmlCanvasElement = element.dyn_into::<HtmlCanvasElement>()?;
         canvas.set_width(size.width() as u32);
         canvas.set_height(size.height() as u32);
         let canvas_ctx = canvas
             .get_context("2d")?
-            .ok_or(Error::new("No 2d context found"))?
+            .ok_or_else(|| Error::new("No 2d context found"))?
             .dyn_into::<CanvasRenderingContext2d>()?;
         let painter = Painter::new(canvas.clone(), canvas_ctx);
         parent_dom.append_child(&canvas)?;
@@ -63,7 +64,7 @@ impl PaintDevice {
     }
 
     #[must_use]
-    pub fn canvas(&self) -> &HtmlCanvasElement {
+    pub const fn canvas(&self) -> &HtmlCanvasElement {
         &self.canvas
     }
 
