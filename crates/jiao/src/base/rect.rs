@@ -1810,6 +1810,7 @@ impl ops::BitOrAssign<&Self> for RectF {
     }
 }
 
+/*
 cfg_if::cfg_if! {
     if #[cfg(feature = "skia")] {
         impl From<skia_safe::Rect> for RectF {
@@ -1831,3 +1832,4 @@ cfg_if::cfg_if! {
         }
     }
 }
+*/

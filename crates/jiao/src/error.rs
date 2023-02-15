@@ -61,6 +61,7 @@ impl From<io::Error> for Error {
     }
 }
 
+/*
 cfg_if::cfg_if! {
     if #[cfg(feature = "cairo")] {
         impl From<cairo::Error> for Error {
@@ -94,3 +95,4 @@ cfg_if::cfg_if! {
         }
     }
 }
+*/

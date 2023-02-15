@@ -385,6 +385,7 @@ impl ops::Div<f64> for PointF {
     }
 }
 
+/*
 cfg_if::cfg_if! {
     if #[cfg(feature = "skia")] {
         impl From<skia_safe::Point> for PointF {
@@ -400,3 +401,4 @@ cfg_if::cfg_if! {
         }
     }
 }
+*/
