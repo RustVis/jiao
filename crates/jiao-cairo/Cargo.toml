@@ -1,6 +1,6 @@
 [package]
 name = "jiao-cairo"
-version = "0.2.1"
+version = "0.3.4"
 authors = ["Xu Shaohua <shaohua@biofan.org>"]
 description = "Cross platform 2D painting engine (cairo/gtk binding part)"
 homepage = "https://github.com/RustVis/jiao"
@@ -25,6 +25,6 @@ license = "Apache-2.0"
 publish = true
 
 [dependencies]
-cairo-rs = { version = "0.16.7", features = ["glib", "png", "svg", "pdf"] }
-jiao = { path = "../jiao", version = "0.2.1" }
+cairo-rs = { version = "0.17.0", features = ["glib", "png", "svg", "pdf"] }
+jiao = { path = "../jiao", version = "0.3.4" }
 log = "0.4.17"

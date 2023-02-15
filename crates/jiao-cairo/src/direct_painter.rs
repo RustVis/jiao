@@ -2,11 +2,10 @@
 // Use of this source is governed by Apache-2.0 License
 // that can be found in the LICENSE file.
 
+use jiao::base::PointF;
+use jiao::kernel::generic_path::{GenericPath, GenericPathToken};
+use jiao::kernel::{PainterTrait, PathTrait};
 use std::f64::consts::PI;
-
-use crate::base::PointF;
-use crate::kernel::generic_path::{GenericPath, GenericPathToken};
-use crate::kernel::{PainterTrait, PathTrait};
 
 // Re-export GenericPath as Path
 pub type Path = GenericPath;

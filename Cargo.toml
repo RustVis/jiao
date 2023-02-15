@@ -3,10 +3,10 @@
 members = [
   "crates/jiao",
   "crates/jiao-cairo",
-  "crates/jiao-qt",
-  "crates/jiao-shapes",
-  "crates/jiao-skia",
-  "crates/jiao-web",
+  #"crates/jiao-qt",
+  #"crates/jiao-shapes",
+  #"crates/jiao-skia",
+  #"crates/jiao-web",
 ]
 
 exclude = [
