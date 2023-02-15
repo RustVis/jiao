@@ -3,10 +3,11 @@
 // in the LICENSE file.
 
 use jiao::base::{PointF, RectF, SizeF};
-use jiao::kernel::{PainterTrait, PathTrait, ShapeTrait};
+use jiao::kernel::{PainterTrait, PathTrait};
 use jiao::util::fuzzy_compare;
 
 use crate::platforms::Path;
+use crate::ShapeTrait;
 
 #[derive(Debug, Clone)]
 pub struct BracketShape {

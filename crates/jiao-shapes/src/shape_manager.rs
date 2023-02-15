@@ -2,9 +2,9 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use super::PainterTrait;
-use super::ShapeTrait;
-use crate::event::{KeyEvent, MouseEvent, ResizeEvent};
+use jiao::kernel::PainterTrait;
+
+use crate::ShapeTrait;
 
 #[derive(Debug)]
 pub struct ShapeManager {
@@ -36,16 +36,4 @@ impl ShapeManager {
             painter.restore();
         }
     }
-
-    pub fn mouse_press_event(&mut self, _mouse_event: &MouseEvent) {}
-
-    pub fn mouse_release_event(&mut self, _mouse_event: &MouseEvent) {}
-
-    pub fn mouse_move_event(&mut self, _mouse_event: &MouseEvent) {}
-
-    pub fn mouse_double_click_event(&mut self, _mouse_event: &MouseEvent) {}
-
-    pub fn resize_event(&mut self, _resize_event: &ResizeEvent) {}
-
-    pub fn key_press_event(&mut self, _key_event: &KeyEvent) {}
 }

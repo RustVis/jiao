@@ -3,10 +3,11 @@
 // in the LICENSE file.
 
 use jiao::base::{PointF, RectF};
-use jiao::kernel::{PainterTrait, PathTrait, ShapeTrait};
+use jiao::kernel::{PainterTrait, PathTrait};
 use std::f64::consts::PI;
 
 use crate::platforms::Path;
+use crate::ShapeTrait;
 
 const DEFAULT_ROUND: u32 = 36;
 

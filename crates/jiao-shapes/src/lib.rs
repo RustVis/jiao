@@ -4,29 +4,33 @@
 
 #![allow(clippy::module_name_repetitions)]
 
-pub mod bracket;
-pub mod circle;
-pub mod donut;
-pub mod droplet;
-pub mod ellipse;
-pub mod grid;
-pub mod line;
-pub mod platforms;
-pub mod polygon;
-pub mod rect;
-pub mod round_rect;
-pub mod star;
-pub mod text;
+mod bracket;
+mod circle;
+mod donut;
+mod droplet;
+mod ellipse;
+mod grid;
+mod line;
+mod platforms;
+mod polygon;
+mod rect;
+mod round_rect;
+mod shape_manager;
+mod shape_trait;
+mod star;
+mod text;
 
-pub use bracket::BracketShape;
-pub use circle::CircleShape;
-pub use donut::DonutShape;
-pub use droplet::DropletShape;
-pub use ellipse::EllipseShape;
-pub use grid::GridShape;
-pub use line::LineShape;
-pub use polygon::PolygonShape;
-pub use rect::RectShape;
-pub use round_rect::RoundRectShape;
-pub use star::StarShape;
-pub use text::TextShape;
+pub use self::bracket::BracketShape;
+pub use self::circle::CircleShape;
+pub use self::donut::DonutShape;
+pub use self::droplet::DropletShape;
+pub use self::ellipse::EllipseShape;
+pub use self::grid::GridShape;
+pub use self::line::LineShape;
+pub use self::polygon::PolygonShape;
+pub use self::rect::RectShape;
+pub use self::round_rect::RoundRectShape;
+pub use self::shape_manager::ShapeManager;
+pub use self::shape_trait::ShapeTrait;
+pub use self::star::StarShape;
+pub use self::text::TextShape;

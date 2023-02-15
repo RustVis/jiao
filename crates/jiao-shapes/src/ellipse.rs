@@ -3,9 +3,10 @@
 // in the LICENSE file.
 
 use jiao::base::{PointF, RectF};
-use jiao::kernel::{PainterTrait, PathTrait, ShapeTrait};
+use jiao::kernel::{PainterTrait, PathTrait};
 
 use crate::platforms::Path;
+use crate::ShapeTrait;
 
 #[derive(Debug, Clone)]
 pub struct EllipseShape {

@@ -3,7 +3,9 @@
 // in the LICENSE file.
 
 use jiao::base::RectF;
-use jiao::kernel::{PainterTrait, ShapeTrait};
+use jiao::kernel::PainterTrait;
+
+use crate::ShapeTrait;
 
 #[derive(Debug, Clone)]
 pub struct TextShape {

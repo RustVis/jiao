@@ -2,8 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use crate::base::RectF;
-use crate::kernel::PainterTrait;
+use jiao::base::RectF;
+use jiao::kernel::PainterTrait;
 
 pub trait ShapeTrait: std::fmt::Debug {
     /// Returns the bounding rectangle of this shape object as a rectangle with floating point precision.

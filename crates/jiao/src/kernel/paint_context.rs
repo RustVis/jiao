@@ -2,8 +2,6 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use super::shape_manager::ShapeManager;
-
 #[allow(clippy::module_name_repetitions)]
 pub trait PaintContextTrait {
     /// Repaint immediately.
@@ -11,7 +9,4 @@ pub trait PaintContextTrait {
 
     /// Schedule a repaint operation.
     fn update(&mut self);
-
-    /// Get a mutable reference to internal `shape_manager` object.
-    fn shape_manager(&mut self) -> &mut ShapeManager;
 }

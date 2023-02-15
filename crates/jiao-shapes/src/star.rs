@@ -3,10 +3,11 @@
 // in the LICENSE file.
 
 use jiao::base::RectF;
-use jiao::kernel::{PainterTrait, PathTrait, ShapeTrait};
+use jiao::kernel::{PainterTrait, PathTrait};
 use jiao::util::fuzzy_compare;
 
 use crate::platforms::Path;
+use crate::ShapeTrait;
 
 const VERTEX_MIN: usize = 3;
 const VERTEX_MAX: usize = 99;
