@@ -3,8 +3,6 @@
 // in the LICENSE file.
 
 pub mod generic_path;
-mod paint_context;
 mod painter;
 
-pub use self::paint_context::PaintContextTrait;
 pub use self::painter::{PainterTrait, PathTrait};

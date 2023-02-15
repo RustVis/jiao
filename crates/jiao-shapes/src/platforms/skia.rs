@@ -39,4 +39,8 @@ impl PaintContextTrait for PaintContext {
         log::info!("PaintContext::update()");
         self.repaint();
     }
+
+    pub fn shape_manager(&mut self) -> &mut ShapeManager {
+        &mut self.shape_manager;
+    }
 }

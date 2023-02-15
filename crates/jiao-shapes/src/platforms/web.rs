@@ -3,11 +3,11 @@
 // in the LICENSE file.
 
 use jiao::base::Size;
-use jiao::kernel::PaintContextTrait;
 use web_sys::HtmlElement;
 
 use super::PaintDevice;
 use crate::error::Error;
+use crate::PaintContextTrait;
 use crate::ShapeManager;
 
 pub struct PaintContext {
@@ -45,5 +45,9 @@ impl PaintContextTrait for PaintContext {
     fn update(&mut self) {
         log::info!("PaintContext::update()");
         self.repaint();
+    }
+
+    pub fn shape_manager(&mut self) -> &mut ShapeManager {
+        &mut self.shape_manager;
     }
 }
