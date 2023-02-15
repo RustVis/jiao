@@ -9,7 +9,9 @@ mod paint_context;
 pub mod platforms;
 mod shape_manager;
 mod shape_trait;
+mod shapes;
 
 pub use self::paint_context::PaintContextTrait;
 pub use self::shape_manager::ShapeManager;
 pub use self::shape_trait::ShapeTrait;
+pub use self::shapes::*;

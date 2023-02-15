@@ -12,8 +12,6 @@ mod line;
 mod polygon;
 mod rect;
 mod round_rect;
-mod shape_manager;
-mod shape_trait;
 mod star;
 mod text;
 
