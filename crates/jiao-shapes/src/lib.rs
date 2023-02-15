@@ -9,6 +9,7 @@ mod circle;
 mod donut;
 mod droplet;
 mod ellipse;
+pub mod error;
 mod grid;
 mod line;
 mod platforms;

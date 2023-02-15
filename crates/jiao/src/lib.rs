@@ -31,7 +31,6 @@
 
 pub mod animation;
 pub mod base;
-pub mod error;
 pub mod event;
 pub mod interpolate;
 pub mod kernel;
