@@ -1,0 +1,14 @@
+[package]
+name = "paint-shapes"
+version = "0.2.1"
+edition = "2021"
+
+[features]
+cairo = ["jiao-shapes/cairo"]
+qt = ["jiao-shapes/qt"]
+skia = ["jiao-shapes/skia"]
+web = ["jiao-shapes/web"]
+
+[dependencies]
+jiao = { path = "../../crates/jiao" }
+jiao-shapes = { path = "../../crates/jiao-shapes", optional = true }

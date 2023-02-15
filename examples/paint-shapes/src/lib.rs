@@ -3,10 +3,9 @@
 // in the LICENSE file.
 
 use jiao::base::{PointF, RectF, SizeF};
-use jiao::kernel::ShapeManager;
-use jiao::shapes::{
+use jiao_shapes::{
     CircleShape, DonutShape, DropletShape, EllipseShape, GridShape, LineShape, PolygonShape,
-    RectShape, RoundRectShape,
+    RectShape, RoundRectShape, ShapeManager,
 };
 
 pub const CANVAS_WIDTH: i32 = 800;
