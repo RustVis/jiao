@@ -16,6 +16,8 @@ members = [
 
 default-members = [
   "crates/jiao",
+  #"crates/jiao-cairo",
+  "crates/jiao-qt",
   "crates/jiao-shapes",
   "crates/jiao-web",
 ]

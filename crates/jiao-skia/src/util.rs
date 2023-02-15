@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+#![allow(clippy::cast_possible_truncation)]
+
 use jiao::base::{PointF, RectF};
 
 #[must_use]

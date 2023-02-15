@@ -118,7 +118,7 @@ impl PainterTrait for Painter {
     fn draw_text(&mut self, text: &str, position: PointF) {
         unsafe {
             let q_point = QPointF::new_2a(position.x(), position.y());
-            let q_str = QString::from_std_str(&text);
+            let q_str = QString::from_std_str(text);
             self.painter.draw_text_q_point_f_q_string(&q_point, &q_str);
         }
     }

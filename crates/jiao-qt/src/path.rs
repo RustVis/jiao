@@ -20,6 +20,12 @@ impl Clone for Path {
     }
 }
 
+impl Default for Path {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Path {
     #[must_use]
     pub fn new() -> Self {
