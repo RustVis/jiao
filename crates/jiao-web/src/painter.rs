@@ -2,11 +2,11 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use jiao::base::PointF;
+use jiao::kernel::{PainterTrait, PathTrait};
 use web_sys::{CanvasRenderingContext2d, HtmlCanvasElement};
 
-use super::path::Path;
-use crate::base::PointF;
-use crate::kernel::{PainterTrait, PathTrait};
+use crate::path::Path;
 
 pub struct Painter {
     canvas: HtmlCanvasElement,

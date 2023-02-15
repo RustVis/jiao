@@ -6,7 +6,7 @@ members = [
   "crates/jiao-qt",
   #"crates/jiao-shapes",
   "crates/jiao-skia",
-  #"crates/jiao-web",
+  "crates/jiao-web",
 ]
 
 exclude = [

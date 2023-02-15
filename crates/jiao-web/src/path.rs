@@ -2,12 +2,11 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use jiao::base::{PointF, RectF};
+use jiao::kernel::PathTrait;
 use std::any::Any;
 use std::f64::consts::PI;
 use web_sys::Path2d;
-
-use crate::base::{PointF, RectF};
-use crate::kernel::PathTrait;
 
 #[derive(Debug, Clone)]
 pub struct Path {

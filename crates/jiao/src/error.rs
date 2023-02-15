@@ -10,8 +10,10 @@ use std::io;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ErrorKind {
     IoError,
+    OtherErrors,
 
     CairoError,
+    QtError,
     JsError,
     SkiaError,
 }
@@ -60,39 +62,3 @@ impl From<io::Error> for Error {
         Self::from_string(ErrorKind::IoError, format!("{err:?}"))
     }
 }
-
-/*
-cfg_if::cfg_if! {
-    if #[cfg(feature = "cairo")] {
-        impl From<cairo::Error> for Error {
-            fn from(err: cairo::Error) -> Self {
-                Self::from_string(ErrorKind::CairoError, format!("{err:?}"))
-            }
-        }
-
-        impl From<cairo::IoError> for Error {
-            fn from(err: cairo::IoError) -> Self {
-                Self::from_string(ErrorKind::IoError, format!("{err:?}"))
-            }
-        }
-    } else if #[cfg(feature = "web")] {
-        impl From<wasm_bindgen::JsValue> for Error {
-            fn from(value: wasm_bindgen::JsValue) -> Self {
-                Self::from_string(ErrorKind::JsError, format!("{value:?}"))
-            }
-        }
-
-        impl From<web_sys::Element> for Error {
-            fn from(value: web_sys::Element) -> Self {
-                Self::from_string(ErrorKind::JsError, format!("{value:?}"))
-            }
-        }
-
-        impl From<js_sys::Object> for Error {
-            fn from(value: js_sys::Object) -> Self {
-                Self::from_string(ErrorKind::JsError, format!("{value:?}"))
-            }
-        }
-    }
-}
-*/
