@@ -1,28 +1,23 @@
-// Copyright (c) 2022 Xu Shaohua <shaohua@biofan.org>. All rights reserved.
-// Use of this source is governed by Apache-2.0 License that can be found
-// in the LICENSE file.
+// Copyright (c) 2023 Xu Shaohua <shaohua@biofan.org>. All rights reserved.
+// Use of this source is governed by Apache-2.0 License
+// that can be found in the LICENSE file.
 
 use jiao::base::PointF;
 use jiao::kernel::generic_path::{GenericPath, GenericPathToken};
 use jiao::kernel::{PainterTrait, PathTrait};
 use std::f64::consts::PI;
 
-use crate::error::Error;
-
 // Re-export GenericPath as Path
 pub type Path = GenericPath;
 
 #[derive(Debug, Clone)]
-pub struct Painter {
-    pub context: cairo::Context,
+pub struct Painter<'a> {
+    pub context: &'a cairo::Context,
 }
 
-impl Painter {
-    /// # Errors
-    /// Returns error if failed to create a new cairo context with specific `surface`.
-    pub fn new(surface: &cairo::Surface) -> Result<Self, Error> {
-        let context = cairo::Context::new(surface)?;
-        Ok(Self { context })
+impl<'a> Painter<'a> {
+    pub fn new(context: &'a cairo::Context) -> Self {
+        Self { context }
     }
 
     fn draw_path(&mut self, path: &Path) {
@@ -138,7 +133,7 @@ impl Painter {
     }
 }
 
-impl PainterTrait for Painter {
+impl<'a> PainterTrait for Painter<'a> {
     #[inline]
     fn save(&mut self) {
         // TODO(Shaohua): Catch errors
