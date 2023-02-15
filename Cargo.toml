@@ -10,6 +10,7 @@ members = [
 
   "examples/paint-shapes",
   "examples/qt",
+  "examples/skia",
 ]
 
 exclude = [

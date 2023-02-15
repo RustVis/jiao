@@ -2,10 +2,10 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use jiao::kernel::{PaintContextTrait, PainterTrait};
+use jiao::kernel::PainterTrait;
 
 use super::PaintDevice;
-use crate::ShapeManager;
+use crate::{PaintContextTrait, ShapeManager};
 
 #[derive(Debug)]
 pub struct PaintContext {
@@ -40,7 +40,7 @@ impl PaintContextTrait for PaintContext {
         self.repaint();
     }
 
-    pub fn shape_manager(&mut self) -> &mut ShapeManager {
-        &mut self.shape_manager;
+    fn shape_manager(&mut self) -> &mut ShapeManager {
+        &mut self.shape_manager
     }
 }

@@ -2,9 +2,10 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use jiao::error::{Error, ErrorKind};
-use jiao::kernel::PaintContextTrait;
-use jiao::platforms::skia::{ImagePaintDevice, PaintContext, PaintDevice};
+use jiao::kernel::paint_context::PaintContextTrait;
+use jiao_shapes::error::{Error, ErrorKind};
+use jiao_shapes::platforms::PaintContext;
+use jiao_skia::{ImagePaintDevice, PaintDevice};
 use paint_shapes::paint_shapes;
 use skia_safe::EncodedImageFormat;
 use std::fs::File;

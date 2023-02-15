@@ -47,7 +47,7 @@ impl PaintContextTrait for PaintContext {
         self.repaint();
     }
 
-    pub fn shape_manager(&mut self) -> &mut ShapeManager {
-        &mut self.shape_manager;
+    fn shape_manager(&mut self) -> &mut ShapeManager {
+        &mut self.shape_manager
     }
 }

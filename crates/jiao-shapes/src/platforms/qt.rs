@@ -3,11 +3,10 @@
 // in the LICENSE file.
 
 use cpp_core::{CastInto, Ptr};
-use jiao::kernel::PaintContextTrait;
 use qt_gui::QPaintDevice;
 
 use super::Painter;
-use crate::ShapeManager;
+use crate::{PaintContextTrait, ShapeManager};
 
 pub struct PaintContext {
     shape_manager: ShapeManager,
@@ -38,10 +37,6 @@ impl PaintContext {
             painter.painter().end();
         }
     }
-
-    pub fn shape_manager(&mut self) -> &mut ShapeManager {
-        &mut self.shape_manager
-    }
 }
 
 impl PaintContextTrait for PaintContext {
@@ -52,5 +47,9 @@ impl PaintContextTrait for PaintContext {
     fn update(&mut self) {
         log::info!("PaintContext::update()");
         self.repaint();
+    }
+
+    fn shape_manager(&mut self) -> &mut ShapeManager {
+        &mut self.shape_manager
     }
 }

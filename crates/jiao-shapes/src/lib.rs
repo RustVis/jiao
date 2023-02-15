@@ -5,9 +5,11 @@
 #![allow(clippy::module_name_repetitions)]
 
 pub mod error;
+mod paint_context;
 pub mod platforms;
 mod shape_manager;
 mod shape_trait;
 
+pub use self::paint_context::PaintContextTrait;
 pub use self::shape_manager::ShapeManager;
 pub use self::shape_trait::ShapeTrait;
