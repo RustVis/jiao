@@ -6,6 +6,7 @@ pub mod paint_context;
 pub mod paint_device;
 pub mod painter;
 pub mod path;
+mod util;
 
 use jiao::platforms::Features;
 

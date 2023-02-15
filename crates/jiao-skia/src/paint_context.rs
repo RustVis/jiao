@@ -4,7 +4,7 @@
 
 use jiao::kernel::{PaintContextTrait, PainterTrait, ShapeManager};
 
-use super::paint_device::PaintDevice;
+use crate::paint_device::PaintDevice;
 
 #[derive(Debug)]
 pub struct PaintContext {
