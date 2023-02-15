@@ -3,14 +3,14 @@
 // in the LICENSE file.
 
 use cpp_core::CppBox;
+use jiao::base::PointF;
+use jiao::kernel::{PainterTrait, PathTrait};
 use qt_core::{QPointF, QString};
 use qt_gui::q_painter::RenderHint;
 use qt_gui::QPainter;
 use std::fmt;
 
 use super::Path;
-use crate::base::PointF;
-use crate::kernel::{PainterTrait, PathTrait};
 
 pub struct Painter {
     painter: CppBox<QPainter>,

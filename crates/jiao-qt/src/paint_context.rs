@@ -3,10 +3,10 @@
 // in the LICENSE file.
 
 use cpp_core::{CastInto, Ptr};
+use jiao::kernel::{PaintContextTrait, ShapeManager};
 use qt_gui::QPaintDevice;
 
 use super::painter::Painter;
-use crate::kernel::{PaintContextTrait, ShapeManager};
 
 pub struct PaintContext {
     shape_manager: ShapeManager,

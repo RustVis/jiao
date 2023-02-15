@@ -3,11 +3,10 @@
 // in the LICENSE file.
 
 use cpp_core::CppBox;
+use jiao::base::{PointF, RectF};
+use jiao::kernel::PathTrait;
 use qt_gui::QPainterPath;
 use std::any::Any;
-
-use crate::base::{PointF, RectF};
-use crate::kernel::PathTrait;
 
 #[derive(Debug)]
 pub struct Path {
