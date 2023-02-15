@@ -1,0 +1,40 @@
+[package]
+name = "jiao-shapes"
+version = "0.2.1"
+authors = ["Xu Shaohua <shaohua@biofan.org>"]
+description = "Cross platform 2D painting engine (2d vector shapes part)"
+homepage = "https://github.com/RustVis/jiao"
+repository = "https://github.com/RustVis/jiao"
+documentation = "https://docs.rs/jiao-shapes"
+readme = "README.md"
+categories = [
+  "computer-vision",
+  "graphics",
+  "rendering",
+  "visualization",
+]
+keywords = [
+  "2d",
+  "canvas",
+  "painting",
+  "shapes",
+  "objects",
+]
+edition = "2021"
+license = "Apache-2.0"
+publish = true
+
+[features]
+default = []
+cairo = ["jiao-cairo"]
+qt = ["jiao-qt"]
+skia = ["jiao-skia"]
+web = ["jiao-web"]
+
+[dependencies]
+cfg-if = "1.0.0"
+jiao = { path = "../jiao", version = "0.2.1" }
+jiao-cairo = { path = "../jiao-cairo", version = "0.2.1", optional = true }
+jiao-qt= { path = "../jiao-qt", version = "0.2.1", optional = true }
+jiao-skia = { path = "../jiao-skia", version = "0.2.1", optional = true }
+jiao-web = { path = "../jiao-web", version = "0.2.1", optional = true }

@@ -36,6 +36,4 @@ pub mod event;
 pub mod interpolate;
 pub mod kernel;
 pub mod painting;
-pub mod platforms;
-pub mod shapes;
 pub mod util;

@@ -1,0 +1,30 @@
+[package]
+name = "jiao-cairo"
+version = "0.2.1"
+authors = ["Xu Shaohua <shaohua@biofan.org>"]
+description = "Cross platform 2D painting engine (cairo/gtk binding part)"
+homepage = "https://github.com/RustVis/jiao"
+repository = "https://github.com/RustVis/jiao"
+documentation = "https://docs.rs/jiao-cairo"
+readme = "README.md"
+categories = [
+  "computer-vision",
+  "graphics",
+  "rendering",
+  "visualization",
+]
+keywords = [
+  "2d",
+  "canvas",
+  "painting",
+  "cairo",
+  "gtk",
+]
+edition = "2021"
+license = "Apache-2.0"
+publish = true
+
+[dependencies]
+cairo-rs = { version = "0.16.7", features = ["glib", "png", "svg", "pdf"] }
+jiao = { path = "../jiao", version = "0.2.1" }
+log = "0.4.17"
