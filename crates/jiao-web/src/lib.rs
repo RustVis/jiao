@@ -12,6 +12,7 @@ use jiao::platforms::Features;
 pub use self::paint_device::PaintDevice;
 pub use self::painter::Painter;
 pub use self::path::Path;
+pub use error::Error;
 
 pub const FEATURES: &Features = &Features {
     filter: true,

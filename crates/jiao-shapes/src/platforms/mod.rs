@@ -5,7 +5,7 @@
 cfg_if::cfg_if! {
     if #[cfg(feature = "cairo")] {
         mod cairo;
-        pub use cairo::CairoPaintContext;
+        pub use cairo::PaintContext;
 
         pub use jiao_cairo::{
             PaintDevice,
@@ -17,12 +17,12 @@ cfg_if::cfg_if! {
         };
     } else if #[cfg(feature = "qt")] {
         mod qt;
-        pub use qt::QtPaintContext;
+        pub use qt::PaintContext;
 
         pub use jiao_qt::{Painter, Path,};
     } else if #[cfg(feature = "skia")] {
         mod skia;
-        pub use skia::SkiaPaintContext;
+        pub use skia::PaintContext;
 
         pub use jiao_skia::{
             ImagePaintDevice,
@@ -33,7 +33,7 @@ cfg_if::cfg_if! {
         };
     } else if #[cfg(feature = "web")] {
         mod web;
-        pub use web::WebPaintContext;
+        pub use web::PaintContext;
 
         pub use jiao_web::{PaintDevice, Painter, Path};
     } else {
