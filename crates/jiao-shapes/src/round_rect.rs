@@ -2,15 +2,17 @@
 // Use of this source is governed by GNU General Public License
 // that can be found in the LICENSE file.
 
-use super::Path2D;
-use crate::base::RectF;
-use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
+use jiao::base::RectF;
+use jiao::kernel::{PainterTrait, PathTrait, ShapeTrait};
+
+use crate::platforms::Path;
 
 #[derive(Debug, Clone)]
 pub struct RoundRectShape {
     rect: RectF,
     radius: f64,
-    path: Path2D,
+
+    path: Path,
     path_is_dirty: bool,
 }
 
@@ -18,7 +20,7 @@ impl RoundRectShape {
     /// Create a general rounded rect.
     #[must_use]
     pub fn new(rect: RectF, radius: f64) -> Self {
-        let path = Path2D::new();
+        let path = Path::new();
         Self {
             rect,
             radius,

@@ -2,14 +2,16 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use super::Path2D;
-use crate::base::{LineF, PointF, RectF};
-use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
+use jiao::base::{LineF, PointF, RectF};
+use jiao::kernel::{PainterTrait, PathTrait, ShapeTrait};
+
+use crate::platforms::Path;
 
 #[derive(Debug, Clone)]
 pub struct LineShape {
     line: LineF,
-    path: Path2D,
+
+    path: Path,
     path_is_dirty: bool,
 }
 
@@ -39,7 +41,7 @@ impl LineShape {
 
     #[must_use]
     pub fn from_line(line: LineF) -> Self {
-        let path = Path2D::new();
+        let path = Path::new();
         Self {
             line,
             path,

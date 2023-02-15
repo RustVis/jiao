@@ -2,9 +2,10 @@
 // Use of this source is governed by Apache-2.0 License
 // that can be found in the LICENSE file.
 
-use super::Path2D;
-use crate::base::{PointF, RectF, SizeF};
-use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
+use jiao::base::{PointF, RectF, SizeF};
+use jiao::kernel::{PainterTrait, PathTrait, ShapeTrait};
+
+use crate::platforms::Path;
 
 #[derive(Debug, Clone)]
 pub struct DropletShape {
@@ -12,14 +13,14 @@ pub struct DropletShape {
     size: SizeF,
     is_inverted: bool,
 
-    path: Path2D,
+    path: Path,
     path_is_dirty: bool,
 }
 
 impl DropletShape {
     #[must_use]
     pub fn new(center: PointF, size: SizeF) -> Self {
-        let path = Path2D::new();
+        let path = Path::new();
 
         Self {
             center,

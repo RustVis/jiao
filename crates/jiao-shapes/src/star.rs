@@ -2,10 +2,11 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use super::Path2D;
-use crate::base::RectF;
-use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
-use crate::util::fuzzy_compare;
+use jiao::base::RectF;
+use jiao::kernel::{PainterTrait, PathTrait, ShapeTrait};
+use jiao::util::fuzzy_compare;
+
+use crate::platforms::Path;
 
 const VERTEX_MIN: usize = 3;
 const VERTEX_MAX: usize = 99;
@@ -14,7 +15,8 @@ const VERTEX_MAX: usize = 99;
 pub struct StarShape {
     corners: usize,
     corner_radius: f64,
-    path: Path2D,
+
+    path: Path,
     path_is_dirty: bool,
 }
 
@@ -29,7 +31,7 @@ impl StarShape {
     #[must_use]
     pub fn new(corners: usize) -> Self {
         assert!((VERTEX_MIN..=VERTEX_MAX).contains(&corners));
-        let path = Path2D::new();
+        let path = Path::new();
         Self {
             corners,
             corner_radius: 0.0,

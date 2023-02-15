@@ -2,9 +2,10 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use super::Path2D;
-use crate::base::{PointF, RectF};
-use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
+use jiao::base::{PointF, RectF};
+use jiao::kernel::{PainterTrait, PathTrait, ShapeTrait};
+
+use crate::platforms::Path;
 
 #[derive(Debug, Clone)]
 pub struct EllipseShape {
@@ -13,7 +14,7 @@ pub struct EllipseShape {
     radius_y: f64,
 
     path_is_dirty: bool,
-    path: Path2D,
+    path: Path,
 }
 
 impl EllipseShape {
@@ -22,7 +23,7 @@ impl EllipseShape {
     pub fn new(center: PointF, radius_x: f64, radius_y: f64) -> Self {
         debug_assert!(radius_x > 0.0);
         debug_assert!(radius_y > 0.0);
-        let path = Path2D::new();
+        let path = Path::new();
         Self {
             center,
             radius_x,

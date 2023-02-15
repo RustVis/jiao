@@ -2,11 +2,11 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use jiao::base::{PointF, RectF};
+use jiao::kernel::{PainterTrait, PathTrait, ShapeTrait};
 use std::f64::consts::PI;
 
-use super::Path2D;
-use crate::base::{PointF, RectF};
-use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
+use crate::platforms::Path;
 
 const DEFAULT_ROUND: u32 = 36;
 
@@ -16,14 +16,14 @@ pub struct DonutShape {
     radius: f64,
     round: u32,
 
-    path: Path2D,
+    path: Path,
     path_is_dirty: bool,
 }
 
 impl DonutShape {
     #[must_use]
     pub fn new(center: PointF, radius: f64) -> Self {
-        let path = Path2D::new();
+        let path = Path::new();
         Self {
             center,
             radius,

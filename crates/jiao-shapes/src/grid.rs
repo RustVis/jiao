@@ -2,10 +2,11 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use super::Path2D;
-use crate::base::{PointF, RectF};
-use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
-use crate::util::fuzzy_compare;
+use jiao::base::{PointF, RectF};
+use jiao::kernel::{PainterTrait, PathTrait, ShapeTrait};
+use jiao::util::fuzzy_compare;
+
+use crate::platforms::Path;
 
 #[derive(Debug, Clone)]
 pub struct GridShape {
@@ -15,8 +16,9 @@ pub struct GridShape {
     viewport: RectF,
     horizontal_visible: bool,
     vertical_visible: bool,
+
     path_is_dirty: bool,
-    path: Path2D,
+    path: Path,
 }
 
 impl GridShape {
@@ -31,7 +33,7 @@ impl GridShape {
     pub fn with_viewport(viewport: RectF, horizontal_step: f64, vertical_step: f64) -> Self {
         debug_assert!(horizontal_step > 0.0 && vertical_step > 0.0);
         let start_point = PointF::new();
-        let path = Path2D::new();
+        let path = Path::new();
         Self {
             horizontal_step,
             vertical_step,

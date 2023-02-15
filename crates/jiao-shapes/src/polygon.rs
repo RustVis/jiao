@@ -2,15 +2,17 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use super::Path2D;
-use crate::base::{PointF, RectF};
-use crate::kernel::{PainterTrait, PathTrait, ShapeTrait};
+use jiao::base::{PointF, RectF};
+use jiao::kernel::{PainterTrait, PathTrait, ShapeTrait};
+
+use crate::platforms::Path;
 
 #[derive(Debug, Clone)]
 pub struct PolygonShape {
     points: Vec<PointF>,
     is_closed: bool,
-    path: Path2D,
+
+    path: Path,
     path_is_dirty: bool,
 }
 
@@ -29,7 +31,7 @@ impl PolygonShape {
     #[must_use]
     pub fn from_points(points: &[PointF], is_closed: bool) -> Self {
         let points = points.to_vec();
-        let path = Path2D::new();
+        let path = Path::new();
         Self {
             points,
             path,
