@@ -3,14 +3,12 @@
 // in the LICENSE file.
 
 mod error;
-pub mod paint_context;
 pub mod paint_device;
 pub mod painter;
 pub mod path;
 
 use jiao::platforms::Features;
 
-pub use self::paint_context::PaintContext;
 pub use self::paint_device::PaintDevice;
 pub use self::painter::Painter;
 pub use self::path::Path;

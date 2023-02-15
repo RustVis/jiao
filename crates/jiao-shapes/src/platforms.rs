@@ -5,7 +5,6 @@
 cfg_if::cfg_if! {
     if #[cfg(feature = "cairo")] {
         pub use jiao_cairo::{
-            PaintContext,
             PaintDevice,
             ImagePaintDevice,
             SvgPaintDevice,
@@ -14,10 +13,9 @@ cfg_if::cfg_if! {
             Path,
         };
     } else if #[cfg(feature = "qt")] {
-        pub use jiao_qt::{PaintContext, Painter, Path,};
+        pub use jiao_qt::{Painter, Path,};
     } else if #[cfg(feature = "skia")] {
         pub use jiao_skia::{
-            PaintContext,
             ImagePaintDevice,
             PaintDevice,
             SvgPaintDevice,
@@ -25,7 +23,7 @@ cfg_if::cfg_if! {
             Path,
         };
     } else if #[cfg(feature = "web")] {
-        pub use jiao_web::{PaintContext, PaintDevice, Painter, Path};
+        pub use jiao_web::{PaintDevice, Painter, Path};
     } else {
         pub type Path = jiao::kernel::generic_path::GenericPath;
         use jiao::platforms::Features;
