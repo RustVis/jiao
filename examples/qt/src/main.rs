@@ -2,8 +2,7 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use jiao::kernel::PaintContextTrait;
-use jiao::platforms::qt::PaintContext;
+use jiao_shapes::platforms::PaintContext;
 use paint_shapes::paint_shapes;
 use qt_core::QString;
 use qt_gui::q_image::Format;

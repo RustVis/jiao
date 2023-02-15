@@ -38,6 +38,10 @@ impl PaintContext {
             painter.painter().end();
         }
     }
+
+    pub fn shape_manager(&mut self) -> &mut ShapeManager {
+        &mut self.shape_manager
+    }
 }
 
 impl PaintContextTrait for PaintContext {

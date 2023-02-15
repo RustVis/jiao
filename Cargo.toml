@@ -9,6 +9,7 @@ members = [
   "crates/jiao-web",
 
   "examples/paint-shapes",
+  "examples/qt",
 ]
 
 exclude = [

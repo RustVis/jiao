@@ -12,7 +12,7 @@ mod ellipse;
 pub mod error;
 mod grid;
 mod line;
-mod platforms;
+pub mod platforms;
 mod polygon;
 mod rect;
 mod round_rect;
