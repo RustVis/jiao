@@ -4,13 +4,13 @@
 
 #![allow(clippy::cast_possible_truncation)]
 
+use jiao::base::PointF;
+use jiao::kernel::{PainterTrait, PathTrait};
 use skia_safe::PaintStyle;
 use std::cell::RefCell;
 use std::rc::Rc;
 
 use super::Path;
-use crate::base::PointF;
-use crate::kernel::{PainterTrait, PathTrait};
 
 #[derive(Debug)]
 enum CanvasWrapper {

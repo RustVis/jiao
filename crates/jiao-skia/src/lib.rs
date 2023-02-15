@@ -7,12 +7,12 @@ pub mod paint_device;
 pub mod painter;
 pub mod path;
 
+use jiao::platforms::Features;
+
 pub use self::paint_context::PaintContext;
 pub use self::paint_device::{ImagePaintDevice, PaintDevice, SvgPaintDevice};
 pub use self::painter::Painter;
 pub use self::path::Path;
-
-use super::features::Features;
 
 pub const FEATURES: &Features = &Features {
     filter: false,

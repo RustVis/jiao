@@ -4,10 +4,9 @@
 
 #![allow(clippy::cast_possible_truncation)]
 
+use jiao::base::{PointF, RectF};
+use jiao::kernel::PathTrait;
 use std::any::Any;
-
-use crate::base::{PointF, RectF};
-use crate::kernel::PathTrait;
 
 #[derive(Debug, Clone)]
 pub struct Path {

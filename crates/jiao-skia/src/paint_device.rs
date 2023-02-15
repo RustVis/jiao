@@ -4,12 +4,12 @@
 
 #![allow(clippy::module_name_repetitions)]
 
+use jiao::base::{RectF, Size};
 use skia_safe::svg::Canvas;
 use std::cell::{RefCell, RefMut};
 use std::rc::Rc;
 
 use super::painter::Painter;
-use crate::base::{RectF, Size};
 
 #[derive(Debug)]
 pub enum PaintDevice {
