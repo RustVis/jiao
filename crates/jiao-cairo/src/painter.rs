@@ -2,12 +2,12 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use std::f64::consts::PI;
-
 use jiao::base::PointF;
-use jiao::error::Error;
 use jiao::kernel::generic_path::{GenericPath, GenericPathToken};
 use jiao::kernel::{PainterTrait, PathTrait};
+use std::f64::consts::PI;
+
+use crate::error::Error;
 
 // Re-export GenericPath as Path
 pub type Path = GenericPath;
@@ -21,7 +21,7 @@ impl Painter {
     /// # Errors
     /// Returns error if failed to create a new cairo context with specific `surface`.
     pub fn new(surface: &cairo::Surface) -> Result<Self, Error> {
-        let context = cairo::Context::new(surface).map_err(Into::<crate::CairoError>::into)?;
+        let context = cairo::Context::new(surface)?;
         Ok(Self { context })
     }
 

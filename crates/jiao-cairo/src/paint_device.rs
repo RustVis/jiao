@@ -5,9 +5,9 @@
 #![allow(clippy::module_name_repetitions)]
 
 use jiao::base::Size;
-use jiao::error::Error;
 
-use super::painter::Painter;
+use crate::error::Error;
+use crate::painter::Painter;
 
 #[derive(Debug, Clone)]
 pub enum PaintDevice {
@@ -38,8 +38,7 @@ impl ImagePaintDevice {
     /// # Errors
     /// Returns error if failed to create image painting device with specific format.
     pub fn new(format: cairo::Format, width: i32, height: i32) -> Result<Self, Error> {
-        let surface = cairo::ImageSurface::create(format, width, height)
-            .map_err(Into::<crate::CairoError>::into)?;
+        let surface = cairo::ImageSurface::create(format, width, height)?;
         let painter = Painter::new(&surface)?;
         Ok(Self { surface, painter })
     }
@@ -70,8 +69,7 @@ impl PdfPaintDevice {
     /// # Errors
     /// Returns error if failed to create new pdf paint device.
     pub fn new<P: AsRef<std::path::Path>>(width: f64, height: f64, path: P) -> Result<Self, Error> {
-        let surface =
-            cairo::PdfSurface::new(width, height, path).map_err(Into::<crate::CairoError>::into)?;
+        let surface = cairo::PdfSurface::new(width, height, path)?;
         let painter = Painter::new(&surface)?;
         Ok(Self { surface, painter })
     }
@@ -102,8 +100,7 @@ impl SvgPaintDevice {
     /// # Errors
     /// Returns error if failed to create svg surface.
     pub fn new<P: AsRef<std::path::Path>>(width: f64, height: f64, path: P) -> Result<Self, Error> {
-        let surface = cairo::SvgSurface::new(width, height, Some(path))
-            .map_err(Into::<crate::CairoError>::into)?;
+        let surface = cairo::SvgSurface::new(width, height, Some(path))?;
         let painter = Painter::new(&surface)?;
         Ok(Self { surface, painter })
     }
