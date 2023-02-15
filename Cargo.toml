@@ -14,6 +14,12 @@ members = [
   "examples/web",
 ]
 
+default-members = [
+  "crates/jiao",
+  "crates/jiao-shapes",
+  "crates/jiao-web",
+]
+
 exclude = [
   "tools/*",
 ]
