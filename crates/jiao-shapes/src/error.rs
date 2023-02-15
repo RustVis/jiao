@@ -63,6 +63,7 @@ impl From<io::Error> for Error {
     }
 }
 
+#[cfg(feature = "web")]
 impl From<jiao_web::Error> for Error {
     fn from(err: jiao_web::Error) -> Self {
         Self::from_string(ErrorKind::WebError, format!("{err:?}"))
