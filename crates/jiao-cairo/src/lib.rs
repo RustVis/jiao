@@ -13,6 +13,7 @@
 mod error;
 pub mod paint_device;
 pub mod painter;
+pub mod painter_ref;
 
 use jiao::platforms::Features;
 
@@ -20,6 +21,7 @@ pub use self::error::Error;
 pub use self::paint_device::{ImagePaintDevice, PaintDevice, PdfPaintDevice, SvgPaintDevice};
 pub use self::painter::Painter;
 pub use self::painter::Path;
+pub use self::painter_ref::PainterRef;
 
 pub const FEATURES: &Features = &Features {
     filter: false,

@@ -17,11 +17,15 @@ pub enum PaintDevice {
 }
 
 impl PaintDevice {
-    pub fn context_mut(&mut self) -> &mut cairo::Context {
+    pub fn context(&mut self) -> &cairo::Context {
+        self.painter().context()
+    }
+
+    pub fn painter(&self) -> &Painter {
         match self {
-            Self::Image(image_device) => image_device.context_mut(),
-            Self::Pdf(pdf_device) => pdf_device.context_mut(),
-            Self::Svg(svg_device) => svg_device.context_mut(),
+            Self::Image(image_device) => image_device.painter(),
+            Self::Pdf(pdf_device) => pdf_device.painter(),
+            Self::Svg(svg_device) => svg_device.painter(),
         }
     }
 
@@ -37,7 +41,6 @@ impl PaintDevice {
 #[derive(Debug, Clone)]
 pub struct ImagePaintDevice {
     surface: cairo::ImageSurface,
-    context: cairo::Context,
     painter: Painter,
 }
 
@@ -48,13 +51,9 @@ impl ImagePaintDevice {
     /// Returns error if failed to create image painting device with specific format.
     pub fn new(format: cairo::Format, width: i32, height: i32) -> Result<Self, Error> {
         let surface = cairo::ImageSurface::create(format, width, height)?;
-        let context = cairo::Context::new(surface)?;
-        let painter = Painter::new(&context);
-        Ok(Self {
-            surface,
-            context,
-            painter,
-        })
+        let context = cairo::Context::new(&surface)?;
+        let painter = Painter::new(context);
+        Ok(Self { surface, painter })
     }
 
     #[must_use]
@@ -66,8 +65,8 @@ impl ImagePaintDevice {
         &mut self.surface
     }
 
-    pub fn context_mut(&mut self) -> &mut cairo::Context {
-        &mut self.context
+    pub fn painter(&self) -> &Painter {
+        &self.painter
     }
 
     pub fn painter_mut(&mut self) -> &mut Painter {
@@ -78,7 +77,6 @@ impl ImagePaintDevice {
 #[derive(Debug, Clone)]
 pub struct PdfPaintDevice {
     surface: cairo::PdfSurface,
-    context: cairo::Context,
     painter: Painter,
 }
 
@@ -89,13 +87,9 @@ impl PdfPaintDevice {
     /// Returns error if failed to create new pdf paint device.
     pub fn new<P: AsRef<std::path::Path>>(width: f64, height: f64, path: P) -> Result<Self, Error> {
         let surface = cairo::PdfSurface::new(width, height, path)?;
-        let context = cairo::Context::new(surface)?;
-        let painter = Painter::new(&context);
-        Ok(Self {
-            surface,
-            context,
-            painter,
-        })
+        let context = cairo::Context::new(&surface)?;
+        let painter = Painter::new(context);
+        Ok(Self { surface, painter })
     }
 
     #[must_use]
@@ -107,8 +101,8 @@ impl PdfPaintDevice {
         &mut self.surface
     }
 
-    pub fn context_mut(&mut self) -> &mut cairo::Context {
-        &mut self.context
+    pub fn painter(&self) -> &Painter {
+        &self.painter
     }
 
     pub fn painter_mut(&mut self) -> &mut Painter {
@@ -119,7 +113,6 @@ impl PdfPaintDevice {
 #[derive(Debug, Clone)]
 pub struct SvgPaintDevice {
     surface: cairo::SvgSurface,
-    context: cairo::Context,
     painter: Painter,
 }
 
@@ -130,13 +123,9 @@ impl SvgPaintDevice {
     /// Returns error if failed to create svg surface.
     pub fn new<P: AsRef<std::path::Path>>(width: f64, height: f64, path: P) -> Result<Self, Error> {
         let surface = cairo::SvgSurface::new(width, height, Some(path))?;
-        let context = cairo::Context::new(surface)?;
-        let painter = Painter::new(&context);
-        Ok(Self {
-            surface,
-            context,
-            painter,
-        })
+        let context = cairo::Context::new(&surface)?;
+        let painter = Painter::new(context);
+        Ok(Self { surface, painter })
     }
 
     #[must_use]
@@ -148,8 +137,8 @@ impl SvgPaintDevice {
         &mut self.surface
     }
 
-    pub fn context_mut(&mut self) -> &mut cairo::Context {
-        &mut self.context
+    pub fn painter(&self) -> &Painter {
+        &self.painter
     }
 
     pub fn painter_mut(&mut self) -> &mut Painter {

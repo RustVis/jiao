@@ -3,23 +3,22 @@
 // that can be found in the LICENSE file.
 
 use jiao::base::PointF;
-use jiao::kernel::generic_path::{GenericPath, GenericPathRoundRect, GenericPathToken};
+use jiao::kernel::generic_path::{GenericPathRoundRect, GenericPathToken};
 use jiao::kernel::{PainterTrait, PathTrait};
 
-// Re-export GenericPath as Path
-pub type Path = GenericPath;
+use crate::Path;
 
 #[derive(Debug, Clone)]
-pub struct Painter {
-    context: cairo::Context,
+pub struct PainterRef<'a> {
+    context: &'a cairo::Context,
 }
 
-impl Painter {
-    pub fn new(context: cairo::Context) -> Self {
+impl<'a> PainterRef<'a> {
+    pub fn new(context: &'a cairo::Context) -> Self {
         Self { context }
     }
 
-    pub fn context(&self) -> &cairo::Context {
+    pub fn context(&self) -> &'a cairo::Context {
         &self.context
     }
 
@@ -129,7 +128,7 @@ impl Painter {
     }
 }
 
-impl PainterTrait for Painter {
+impl<'a> PainterTrait for PainterRef<'a> {
     #[inline]
     fn save(&mut self) {
         // TODO(Shaohua): Catch errors
