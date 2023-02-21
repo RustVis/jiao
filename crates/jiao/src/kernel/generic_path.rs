@@ -16,14 +16,9 @@ pub struct GenericPathRoundRect {
 }
 
 #[derive(Debug, Clone)]
-pub struct GenericPathCircle {
+pub struct GenericPathArc {
     pub center: PointF,
     pub radius: f64,
-}
-
-#[derive(Debug, Clone)]
-pub struct GenericPathArc {
-    pub rect: RectF,
     pub start_angle: f64,
     pub end_angle: f64,
 }
@@ -33,6 +28,15 @@ pub struct GenericPathArcTo {
     pub p1: PointF,
     pub p2: PointF,
     pub radius: f64,
+}
+
+#[derive(Debug, Clone)]
+pub struct GenericPathEllipse {
+    pub center: PointF,
+    pub radius_x: f64,
+    pub radius_y: f64,
+    pub start_angle: f64,
+    pub end_angle: f64,
 }
 
 #[derive(Debug, Clone)]
@@ -49,24 +53,14 @@ pub struct GenericPathQuadTo {
 }
 
 #[derive(Debug, Clone)]
-pub struct GenericPathEllipse {
-    pub center: PointF,
-    pub radius_x: f64,
-    pub radius_y: f64,
-    pub start_angle: f64,
-    pub end_angle: f64,
-}
-
-#[derive(Debug, Clone)]
 pub enum GenericPathToken {
     MoveTo(PointF),
     LineTo(PointF),
     AddRect(RectF),
     AddRoundRect(GenericPathRoundRect),
-    AddCircle(GenericPathCircle),
-    AddEllipse(RectF),
     Arc(GenericPathArc),
     ArcTo(GenericPathArcTo),
+    Ellipse(GenericPathEllipse),
     CubicTo(GenericPathCubicTo),
     QuadTo(GenericPathQuadTo),
     ClosePath,
@@ -131,21 +125,10 @@ impl PathTrait for GenericPath {
             }));
     }
 
-    fn add_circle(&mut self, center: PointF, radius: f64) {
-        self.tokens
-            .push(GenericPathToken::AddCircle(GenericPathCircle {
-                center,
-                radius,
-            }));
-    }
-
-    fn add_ellipse(&mut self, rect: &RectF) {
-        self.tokens.push(GenericPathToken::AddEllipse(rect.clone()));
-    }
-
-    fn arc(&mut self, rect: &RectF, start_angle: f64, end_angle: f64) {
+    fn arc(&mut self, center: PointF, radius: f64, start_angle: f64, end_angle: f64) {
         self.tokens.push(GenericPathToken::Arc(GenericPathArc {
-            rect: rect.clone(),
+            center,
+            radius,
             start_angle,
             end_angle,
         }));
@@ -154,6 +137,24 @@ impl PathTrait for GenericPath {
     fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64) {
         self.tokens
             .push(GenericPathToken::ArcTo(GenericPathArcTo { p1, p2, radius }));
+    }
+
+    fn ellipse(
+        &mut self,
+        center: PointF,
+        radius_x: f64,
+        radius_y: f64,
+        start_angle: f64,
+        end_angle: f64,
+    ) {
+        self.tokens
+            .push(GenericPathToken::Ellipse(GenericPathEllipse {
+                center,
+                radius_x,
+                radius_y,
+                start_angle,
+                end_angle,
+            }));
     }
 
     fn cubic_to(&mut self, p1: PointF, p2: PointF, end_point: PointF) {
