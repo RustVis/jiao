@@ -1,6 +1,6 @@
 [package]
 name = "jiao-skia"
-version = "0.3.4"
+version = "0.3.5"
 authors = ["Xu Shaohua <shaohua@biofan.org>"]
 description = "Cross platform 2D painting engine (skia binding part)"
 homepage = "https://github.com/RustVis/jiao"
@@ -25,6 +25,6 @@ license = "Apache-2.0"
 publish = true
 
 [dependencies]
-jiao = { path = "../jiao", version = "0.3.4" }
+jiao = { path = "../jiao", version = "0.3.5" }
 log = "0.4.17"
 skia-safe = "0.58.0"

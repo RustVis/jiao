@@ -1,6 +1,6 @@
 [package]
 name = "jiao-qt"
-version = "0.3.4"
+version = "0.3.5"
 authors = ["Xu Shaohua <shaohua@biofan.org>"]
 description = "Cross platform 2D painting engine (Qt binding part)"
 homepage = "https://github.com/RustVis/jiao"
@@ -26,7 +26,7 @@ publish = true
 
 [dependencies]
 cpp_core = "0.6.0"
-jiao = { path = "../jiao", version = "0.3.4" }
+jiao = { path = "../jiao", version = "0.3.5" }
 log = "0.4.17"
 qt_core = "0.5.0"
 qt_gui = "0.5.0"
