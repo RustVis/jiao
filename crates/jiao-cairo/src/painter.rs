@@ -3,9 +3,8 @@
 // that can be found in the LICENSE file.
 
 use jiao::base::PointF;
-use jiao::kernel::generic_path::{GenericPath, GenericPathToken};
+use jiao::kernel::generic_path::{GenericPath, GenericPathRoundRect, GenericPathToken};
 use jiao::kernel::{PainterTrait, PathTrait};
-use std::f64::consts::PI;
 
 // Re-export GenericPath as Path
 pub type Path = GenericPath;
@@ -18,6 +17,45 @@ pub struct Painter<'a> {
 impl<'a> Painter<'a> {
     pub fn new(context: &'a cairo::Context) -> Self {
         Self { context }
+    }
+
+    fn add_round_rect(&mut self, rrect: &GenericPathRoundRect) {
+        let x = rrect.rect.x();
+        let y = rrect.rect.y();
+        let width = rrect.rect.width();
+        let height = rrect.rect.height();
+        let radius = rrect.radius;
+
+        self.context.new_sub_path();
+        self.context.arc(
+            x + width - radius,
+            y + radius,
+            radius,
+            -90.0_f64.to_radians(),
+            0.0_f64.to_radians(),
+        );
+        self.context.arc(
+            x + width - radius,
+            y + height - radius,
+            radius,
+            0.0_f64.to_radians(),
+            90.0_f64.to_radians(),
+        );
+        self.context.arc(
+            x + radius,
+            y + height - radius,
+            radius,
+            90.0_f64.to_radians(),
+            180.0_f64.to_radians(),
+        );
+        self.context.arc(
+            x + radius,
+            y + radius,
+            radius,
+            180.0_f64.to_radians(),
+            270.0_f64.to_radians(),
+        );
+        self.context.close_path();
     }
 
     fn draw_path(&mut self, path: &Path) {
@@ -37,76 +75,30 @@ impl<'a> Painter<'a> {
                         .rectangle(rect.x(), rect.y(), rect.width(), rect.height());
                 }
                 GenericPathToken::AddRoundRect(rrect) => {
-                    let x = rrect.rect.x();
-                    let y = rrect.rect.y();
-                    let width = rrect.rect.width();
-                    let height = rrect.rect.height();
-                    let radius = rrect.radius;
-
-                    self.context.new_sub_path();
-                    self.context.arc(
-                        x + width - radius,
-                        y + radius,
-                        radius,
-                        -90.0_f64.to_radians(),
-                        0.0_f64.to_radians(),
-                    );
-                    self.context.arc(
-                        x + width - radius,
-                        y + height - radius,
-                        radius,
-                        0.0_f64.to_radians(),
-                        90.0_f64.to_radians(),
-                    );
-                    self.context.arc(
-                        x + radius,
-                        y + height - radius,
-                        radius,
-                        90.0_f64.to_radians(),
-                        180.0_f64.to_radians(),
-                    );
-                    self.context.arc(
-                        x + radius,
-                        y + radius,
-                        radius,
-                        180.0_f64.to_radians(),
-                        270.0_f64.to_radians(),
-                    );
-                    self.context.close_path();
-                }
-                GenericPathToken::AddCircle(circle) => {
-                    self.context.arc(
-                        circle.center.x(),
-                        circle.center.y(),
-                        circle.radius,
-                        0.0,
-                        2.0 * PI,
-                    );
-                }
-                GenericPathToken::AddEllipse(rect) => {
-                    debug_assert!(rect.height() > 0.0);
-                    let center = rect.center();
-                    let scale = rect.width() / rect.height();
-                    let radius = rect.width();
-                    self.context.scale(1.0, scale);
-                    self.context
-                        .arc(center.x(), center.y(), radius, 0.0, 2.0 * PI);
+                    self.add_round_rect(rrect);
                 }
                 GenericPathToken::Arc(arc) => {
-                    let center = arc.rect.center();
-                    let scale = arc.rect.width() / arc.rect.height();
-                    let radius = arc.rect.width();
-                    self.context.scale(1.0, scale);
                     self.context.arc(
-                        center.x(),
-                        center.y(),
-                        radius,
+                        arc.center.x(),
+                        arc.center.y(),
+                        arc.radius,
                         arc.start_angle,
                         arc.end_angle,
                     );
                 }
                 GenericPathToken::ArcTo(_arc_to) => {
                     todo!()
+                }
+                GenericPathToken::Ellipse(ellipse) => {
+                    let scale = ellipse.radius_x / ellipse.radius_y;
+                    self.context.scale(1.0, scale);
+                    self.context.arc(
+                        ellipse.center.x(),
+                        ellipse.center.y(),
+                        ellipse.radius_x,
+                        ellipse.start_angle,
+                        ellipse.end_angle,
+                    );
                 }
                 GenericPathToken::CubicTo(cubic) => {
                     self.context.curve_to(
