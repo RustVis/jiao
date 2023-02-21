@@ -6,8 +6,8 @@
 
 mod keyboard_event;
 mod mouse_event;
-mod resize_event;
+mod wheel_event;
 
 pub use keyboard_event::KeyboardEvent;
 pub use mouse_event::MouseEvent;
-pub use resize_event::ResizeEvent;
+pub use wheel_event::WheelEvent;
