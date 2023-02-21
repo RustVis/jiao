@@ -24,4 +24,5 @@ pub const FEATURES: &Features = &Features {
     /// Currently user input is not supported, as it's not so easy to override
     /// methods in QWidget in rust.
     input_event: false,
+    cursor: false,
 };
