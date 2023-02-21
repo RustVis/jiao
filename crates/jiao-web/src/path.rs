@@ -4,7 +4,6 @@
 
 use jiao::base::{PointF, RectF};
 use jiao::kernel::PathTrait;
-use jiao::util::fuzzy_compare;
 use std::any::Any;
 use std::f64::consts::PI;
 use web_sys::Path2d;
@@ -139,32 +138,34 @@ impl PathTrait for Path {
         );
     }
 
-    fn arc(&mut self, rect: &RectF, start_angle: f64, end_angle: f64) {
-        // TODO(Shaohua): Returns error.
-        let center = rect.center();
-        if fuzzy_compare(rect.width(), rect.height()) {
-            let radius = rect.height() / 2.0;
-            let _ret = self
-                .path2d
-                .arc(center.x(), center.y(), radius, start_angle, end_angle);
-        } else {
-            let radius_x = rect.width() / 2.0;
-            let radius_y = rect.height() / 2.0;
-            let rotation = 0.0;
-            let _ret = self.path2d.ellipse(
-                center.x(),
-                center.y(),
-                radius_x,
-                radius_y,
-                rotation,
-                start_angle,
-                end_angle,
-            );
-        }
+    fn arc(&mut self, center: PointF, radius: f64, start_angle: f64, end_angle: f64) {
+        let _ret = self
+            .path2d
+            .arc(center.x(), center.y(), radius, start_angle, end_angle);
     }
 
     fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64) {
         let _ret = self.path2d.arc_to(p1.x(), p1.y(), p2.x(), p2.y(), radius);
+    }
+
+    fn ellipse(
+        &mut self,
+        center: PointF,
+        radius_x: f64,
+        radius_y: f64,
+        start_angle: f64,
+        end_angle: f64,
+    ) {
+        let rotation = 0.0;
+        let _ret = self.path2d.ellipse(
+            center.x(),
+            center.y(),
+            radius_x,
+            radius_y,
+            rotation,
+            start_angle,
+            end_angle,
+        );
     }
 
     fn cubic_to(&mut self, p1: PointF, p2: PointF, end_point: PointF) {

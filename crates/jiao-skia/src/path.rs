@@ -73,27 +73,37 @@ impl PathTrait for Path {
         self.p.add_round_rect(sk_rect, (radius, radius), None);
     }
 
-    fn add_circle(&mut self, center: PointF, radius: f64) {
-        let radius = radius as f32;
-        self.p.add_circle(to_sk_point(center), radius, None);
-    }
-
-    fn add_ellipse(&mut self, rect: &RectF) {
-        let sk_rect = to_sk_rect(rect);
-        self.p.add_oval(sk_rect, None);
-    }
-
-    fn arc(&mut self, rect: &RectF, start_angle: f64, end_angle: f64) {
-        let sk_rect = to_sk_rect(rect);
+    fn arc(&mut self, center: PointF, radius: f64, start_angle: f64, end_angle: f64) {
+        let rect = RectF::from_circle(center, radius);
+        let sk_rect = to_sk_rect(&rect);
         let start_angle = start_angle as f32;
         let end_angle = end_angle as f32;
-        self.p.arc_to(sk_rect, start_angle, end_angle, true);
+        let force_move_to = true;
+        self.p
+            .arc_to(sk_rect, start_angle, end_angle, force_move_to);
     }
 
     fn arc_to(&mut self, p1: PointF, p2: PointF, radius: f64) {
         let radius = radius as f32;
         self.p
             .arc_to_tangent(to_sk_point(p1), to_sk_point(p2), radius);
+    }
+
+    fn ellipse(
+        &mut self,
+        center: PointF,
+        radius_x: f64,
+        radius_y: f64,
+        start_angle: f64,
+        end_angle: f64,
+    ) {
+        let rect = RectF::from_ellipse(center, radius_x, radius_y);
+        let sk_rect = to_sk_rect(&rect);
+        let start_angle = start_angle as f32;
+        let end_angle = end_angle as f32;
+        let force_move_to = true;
+        self.p
+            .arc_to(sk_rect, start_angle, end_angle, force_move_to);
     }
 
     fn cubic_to(&mut self, p1: PointF, p2: PointF, end_point: PointF) {
