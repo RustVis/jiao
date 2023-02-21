@@ -39,10 +39,6 @@ cfg_if::cfg_if! {
     } else {
         pub type Path = jiao::kernel::generic_path::GenericPath;
         use jiao::platforms::Features;
-        pub const FEATURES: &Features = &Features {
-            filter: false,
-            ssr: false,
-            input_event: false,
-        };
+        pub const FEATURES: &Features = &Features::new();
     }
 }

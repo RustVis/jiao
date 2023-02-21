@@ -26,4 +26,5 @@ pub const FEATURES: &Features = &Features {
     filter: true,
     ssr: false,
     input_event: true,
+    cursor: true,
 };

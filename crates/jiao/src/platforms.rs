@@ -3,7 +3,8 @@
 // in the LICENSE file.
 
 /// Platform specific features
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Default, Clone, PartialEq, Eq)]
+#[allow(clippy::struct_excessive_bools)]
 pub struct Features {
     /// Support instant image filters, like blur or grayscale.
     pub filter: bool,
@@ -16,4 +17,19 @@ pub struct Features {
     /// Support user interactive input events, like mouse event, keyboard event,
     /// wheel event and touch event.
     pub input_event: bool,
+
+    /// Cursor icon is supported or not.
+    pub cursor: bool,
+}
+
+impl Features {
+    #[must_use]
+    pub const fn new() -> Self {
+        Self {
+            filter: false,
+            ssr: false,
+            input_event: false,
+            cursor: false,
+        }
+    }
 }

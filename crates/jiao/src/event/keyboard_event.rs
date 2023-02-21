@@ -3,6 +3,6 @@
 // in the LICENSE file.
 
 #[derive(Debug, Clone)]
-pub struct KeyEvent {}
+pub struct KeyboardEvent {}
 
-impl KeyEvent {}
+impl KeyboardEvent {}
