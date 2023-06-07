@@ -32,7 +32,7 @@ skia = ["jiao-skia"]
 web = ["jiao-web", "web-sys"]
 
 [dependencies]
-cairo-rs = { version = "0.17.0", features = ["glib", "png", "svg", "pdf"], optional = true }
+cairo-rs = { version = "0.17.10", features = ["glib", "png", "svg", "pdf"], optional = true }
 cfg-if = "1.0.0"
 cpp_core = { version = "0.6.0", optional = true }
 jiao = { path = "../jiao", version = "0.3.5" }
@@ -40,7 +40,7 @@ jiao-cairo = { path = "../jiao-cairo", version = "0.3.5", optional = true }
 jiao-qt= { path = "../jiao-qt", version = "0.3.5", optional = true }
 jiao-skia = { path = "../jiao-skia", version = "0.3.5", optional = true }
 jiao-web = { path = "../jiao-web", version = "0.3.5", optional = true }
-log = "0.4.17"
+log = "0.4.18"
 qt_gui = { version = "0.5.0", optional = true }
-web-sys = { version = "0.3.61", features = ["HtmlElement"], optional = true }
+web-sys = { version = "0.3.63", features = ["HtmlElement"], optional = true }
 

@@ -26,5 +26,5 @@ publish = true
 
 [dependencies]
 jiao = { path = "../jiao", version = "0.3.5" }
-log = "0.4.17"
-skia-safe = "0.58.0"
+log = "0.4.18"
+skia-safe = "0.63.0"

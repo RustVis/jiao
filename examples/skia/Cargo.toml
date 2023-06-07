@@ -8,4 +8,4 @@ publish = false
 jiao-shapes = { path = "../../crates/jiao-shapes", features = ["skia"] }
 jiao-skia = { path = "../../crates/jiao-skia" }
 paint-shapes = { path = "../paint-shapes", features = ["skia"] }
-skia-safe = "0.58.0"
+skia-safe = "0.63.0"

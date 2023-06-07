@@ -25,6 +25,6 @@ license = "Apache-2.0"
 publish = true
 
 [dependencies]
-cairo-rs = { version = "0.17.0", features = ["glib", "png", "svg", "pdf"] }
+cairo-rs = { version = "0.17.10", features = ["glib", "png", "svg", "pdf"] }
 jiao = { path = "../jiao", version = "0.3.5" }
-log = "0.4.17"
+log = "0.4.18"
