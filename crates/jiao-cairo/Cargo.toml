@@ -27,4 +27,4 @@ publish = true
 [dependencies]
 cairo-rs = { version = "0.17.10", features = ["glib", "png", "svg", "pdf"] }
 jiao = { path = "../jiao", version = "0.3.5" }
-log = "0.4.18"
+log = "0.4.19"

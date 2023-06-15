@@ -40,7 +40,7 @@ jiao-cairo = { path = "../jiao-cairo", version = "0.3.5", optional = true }
 jiao-qt= { path = "../jiao-qt", version = "0.3.5", optional = true }
 jiao-skia = { path = "../jiao-skia", version = "0.3.5", optional = true }
 jiao-web = { path = "../jiao-web", version = "0.3.5", optional = true }
-log = "0.4.18"
+log = "0.4.19"
 qt_gui = { version = "0.5.0", optional = true }
-web-sys = { version = "0.3.63", features = ["HtmlElement"], optional = true }
+web-sys = { version = "0.3.64", features = ["HtmlElement"], optional = true }
 
