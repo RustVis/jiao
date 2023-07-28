@@ -2,22 +2,10 @@
 [workspace]
 members = [
   "crates/jiao",
-  "crates/jiao-cairo",
-  "crates/jiao-qt",
-  "crates/jiao-shapes",
-  "crates/jiao-skia",
-  "crates/jiao-web",
-
-  "examples/paint-shapes",
-  "examples/qt",
-  "examples/skia",
-  "examples/web",
 ]
 
 default-members = [
   "crates/jiao",
-  "crates/jiao-shapes",
-  "crates/jiao-web",
 ]
 
 exclude = [
