@@ -11,8 +11,11 @@
 )]
 
 pub mod color;
+pub mod filter;
 pub mod image;
 pub mod line;
+pub mod op;
 pub mod point;
+pub mod repeat;
 pub mod transform;
 pub mod vector;
