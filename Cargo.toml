@@ -1,11 +1,13 @@
 
 [workspace]
 members = [
-  "crates/jiao",
+  #"crates/jiao",
+  "crates/jiao-pix",
 ]
 
 default-members = [
-  "crates/jiao",
+  #"crates/jiao",
+  "crates/jiao-pix",
 ]
 
 exclude = [
