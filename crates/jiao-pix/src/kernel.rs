@@ -2,14 +2,15 @@
 // Use of this source is governed by BSD-style License that can be found
 // in the LICENSE file.
 
-#![allow(dead_code)]
-
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
-pub(crate) enum ImageType {
-    Bits,
+pub enum Kernel {
+    Impulse,
+    Box,
     Linear,
-    Conical,
-    Radial,
-    Solid,
+    Cubic,
+    Gaussian,
+    Lanczos2,
+    Lanczos3,
+    Lanczos3Stretched,
 }

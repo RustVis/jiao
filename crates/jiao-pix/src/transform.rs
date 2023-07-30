@@ -2,15 +2,22 @@
 // Use of this source is governed by BSD-style License that can be found
 // in the LICENSE file.
 
+#![allow(clippy::module_name_repetitions)]
+
 pub struct Transform {
     pub m: [[i32; 3]; 3],
 }
 
 impl Transform {
     pub fn init_indentity(&mut self) {
-        todo!()
+        for i in 0..3 {
+            for j in 0..3 {
+                self.m[i][j] = 1;
+            }
+        }
     }
 
+    /*
     pub fn init_scale(&mut self, sx: i32, sy: i32) {
         todo!()
     }
@@ -37,6 +44,7 @@ impl Transform {
     pub const fn is_inverse(&self, other: &Self) -> bool {
         todo!()
     }
+    */
 }
 
 pub struct TransformF {
