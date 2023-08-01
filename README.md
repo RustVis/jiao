@@ -6,18 +6,14 @@
 ![Minimum rustc version](https://img.shields.io/badge/rustc-1.56+-yellow.svg)
 ![License](https://img.shields.io/crates/l/jiao.svg)
 
-Jiao is a cross platform 2D painting engine.
+Jiao is a cross platform 2D graphics library.
 
 - [Documentation](https://docs.rs/jiao)
 - [Release notes](https://github.com/RustVis/jiao/releases)
 
-Currently these bindings are supported:
-- cairo (and gtk)
-- skia (via rust-skia crate)
-- Qt
-- web canvas (wasm)
-
 ## Related Projects
+- [skia](https://github.com/google/skia)
+- [tiny-skia](https://github.com/RazrFalcon/tiny-skia)
 - [piet](https://github.com/linebender/piet), An abstraction for 2D graphics.
 - [raquote](https://github.com/jrmuizel/raqote), Rust 2D graphics library
 
