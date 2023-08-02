@@ -5,6 +5,7 @@
 //pub mod canvas;
 pub mod color;
 pub mod color_space;
+pub mod color_type;
 //pub mod path;
 pub mod paint;
 pub mod path_types;
