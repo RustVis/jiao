@@ -10,3 +10,5 @@ pub mod color_type;
 pub mod alpha_type;
 pub mod paint;
 pub mod path_types;
+pub mod scalar;
+pub mod size;
