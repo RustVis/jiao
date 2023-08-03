@@ -134,7 +134,7 @@ impl Size {
 
     #[must_use]
     pub fn equals(&self, width: Scalar, height: Scalar) -> bool {
-        self.width == width && self.height == height
+        self.width.fuzzy_equal(width) && self.height.fuzzy_equal(height)
     }
 
     #[must_use]
