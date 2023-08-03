@@ -14,3 +14,4 @@ pub mod path_builder;
 pub mod path_types;
 pub mod scalar;
 pub mod size;
+pub mod tile_mode;
