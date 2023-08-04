@@ -13,6 +13,7 @@ pub mod paint;
 pub mod path;
 pub mod path_builder;
 pub mod path_types;
+pub mod rect;
 pub mod scalar;
 pub mod size;
 pub mod surface_props;
