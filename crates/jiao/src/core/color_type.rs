@@ -179,7 +179,42 @@ impl ColorType {
     ///
     /// If false is returned, canonical is ignored.
     #[must_use]
-    pub fn validate_alpha_type(self, _alpha_type: AlphaType, _canonical: &mut AlphaType) -> bool {
-        unimplemented!()
+    pub fn validate_alpha_type(self, alpha_type: AlphaType, canonical: &mut AlphaType) -> bool {
+        match self {
+            Self::Unknown => *canonical = AlphaType::Unknown,
+            Self::Alpha8 | Self::A16Unorm | Self::A16Float => {
+                if alpha_type == AlphaType::Unknown {
+                    return false;
+                }
+                if alpha_type == AlphaType::Unpremul {
+                    *canonical = AlphaType::Premul;
+                }
+            }
+            Self::Argb4444
+            | Self::Rgba8888
+            | Self::Srgba8888
+            | Self::Bgra8888
+            | Self::Rgba1010102
+            | Self::Bgra1010102
+            | Self::RgbaF16Norm
+            | Self::RgbaF16
+            | Self::RgbaF32
+            | Self::R16G16B16A16Unorm => {
+                if alpha_type == AlphaType::Unknown {
+                    return false;
+                }
+            }
+            Self::Gray8
+            | Self::R8G8Unorm
+            | Self::R16G16Unorm
+            | Self::R16G16Float
+            | Self::Rgb565
+            | Self::Rgb888x
+            | Self::Rgb101010x
+            | Self::Bgr101010x
+            | Self::Bgr101010xXr
+            | Self::R8Unorm => *canonical = AlphaType::Opaque,
+        }
+        true
     }
 }

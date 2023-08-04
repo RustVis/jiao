@@ -44,3 +44,5 @@ pub enum YUVColorSpace {
     /// maps Y->R, U->G, V->B
     Identity,
 }
+
+pub struct ImageInfo {}
