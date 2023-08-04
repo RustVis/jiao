@@ -4,8 +4,15 @@
 
 #![allow(dead_code)]
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone, Eq, PartialEq)]
 pub struct ColorSpace {
     transfer_fn_hash: u32,
     to_xyzd_50_hash: u32,
+}
+
+impl ColorSpace {
+    #[must_use]
+    pub const fn gamma_close_to_srgb(&self) -> bool {
+        unimplemented!()
+    }
 }

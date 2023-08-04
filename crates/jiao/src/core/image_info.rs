@@ -2,6 +2,10 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use crate::core::alpha_type::AlphaType;
+use crate::core::color_space::ColorSpace;
+use crate::core::color_type::ColorType;
+
 /// `YUVColorSpace` describes color range of YUV pixels.
 ///
 /// The color mapping from YUV to RGB varies depending on the source.
@@ -45,4 +49,128 @@ pub enum YUVColorSpace {
     Identity,
 }
 
-pub struct ImageInfo {}
+/// `ColorInfo` describes pixel and encoding.
+///
+/// `ImageInfo` can be created from `ColorInfo` by providing dimensions.
+///
+/// It encodes how pixel bits describe alpha, transparency; color components red, blue,
+/// and green; and `ColorSpace`, the range and linearity of colors.
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct ColorInfo {
+    color_space: Option<ColorSpace>,
+    color_type: ColorType,
+    alpha_type: AlphaType,
+}
+
+impl Default for ColorInfo {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl ColorInfo {
+    #[must_use]
+    pub const fn new() -> Self {
+        Self {
+            color_space: None,
+            color_type: ColorType::Unknown,
+            alpha_type: AlphaType::Unknown,
+        }
+    }
+
+    /// Creates `ColorInfo` from `ColorType`, `AlphaType` and `ColorSpace`.
+    /// `ColorSpace` defaults to `sRGB`.
+    #[must_use]
+    pub const fn with_color_space(
+        color_type: ColorType,
+        alpha_type: AlphaType,
+        color_space: Option<ColorSpace>,
+    ) -> Self {
+        Self {
+            color_space,
+            color_type,
+            alpha_type,
+        }
+    }
+
+    /// Creates `ColorInfo` with same `ColorType`, `ColorSpace` as self, with `AlphaType` changed.
+    ///
+    /// Created `ColorInfo` contains `new_alpha_type` even if it is incompatible with
+    /// `ColorType`, in which case `AlphaType` in `ColorInfo` is ignored.
+    #[must_use]
+    pub fn make_alpha_type(&self, new_alpha_type: AlphaType) -> Self {
+        Self {
+            color_space: self.color_space.clone(),
+            color_type: self.color_type,
+            alpha_type: new_alpha_type,
+        }
+    }
+
+    /// Creates new `ColorInfo` with same `AlphaType`, `ColorSpace` as self, with `ColorType`
+    /// changed.
+    #[must_use]
+    pub fn make_color_type(&self, new_color_type: ColorType) -> Self {
+        Self {
+            color_space: self.color_space.clone(),
+            color_type: new_color_type,
+            alpha_type: self.alpha_type,
+        }
+    }
+
+    /// Creates `ColorInfo` with same `AlphaType`, `ColorType` as self, with `ColorSpace` changed.
+    #[must_use]
+    pub const fn make_color_space(&self, new_color_space: Option<ColorSpace>) -> Self {
+        Self {
+            color_space: new_color_space,
+            color_type: self.color_type,
+            alpha_type: self.alpha_type,
+        }
+    }
+
+    #[must_use]
+    pub const fn color_space(&self) -> &Option<ColorSpace> {
+        &self.color_space
+    }
+
+    #[must_use]
+    pub const fn color_type(&self) -> ColorType {
+        self.color_type
+    }
+
+    #[must_use]
+    pub const fn alpha_type(&self) -> AlphaType {
+        self.alpha_type
+    }
+
+    #[must_use]
+    pub fn is_opaque(&self) -> bool {
+        self.alpha_type.is_opaque() || self.color_type.is_always_opaque()
+    }
+
+    #[must_use]
+    pub const fn gamma_close_to_srgb(&self) -> bool {
+        if let Some(color_space) = &self.color_space {
+            color_space.gamma_close_to_srgb()
+        } else {
+            false
+        }
+    }
+
+    /// Returns number of bytes per pixel required by `ColorType`.
+    ///
+    /// Returns zero if `color_type()` is `ColorType::Unknown`.
+    #[must_use]
+    pub const fn bytes_per_pixel(&self) -> i32 {
+        self.color_type.bytes_per_pixel()
+    }
+
+    /// Returns bit shift converting row bytes to row pixels.
+    ///
+    /// Returns zero for `ColorType::Unknown`.
+    ///
+    /// One of: 0, 1, 2, 3, 4; left shift to convert pixels to bytes
+    #[must_use]
+    pub const fn shift_per_pixel(&self) -> i32 {
+        self.color_type.shift_per_pixel()
+    }
+}

@@ -121,6 +121,37 @@ impl ColorType {
         }
     }
 
+    #[must_use]
+    #[allow(clippy::match_same_arms)]
+    pub const fn shift_per_pixel(self) -> i32 {
+        match self {
+            Self::Unknown => 0,
+            Self::Alpha8 => 0,
+            Self::Rgb565 => 1,
+            Self::Argb4444 => 1,
+            Self::Rgba8888 => 2,
+            Self::Rgb888x => 2,
+            Self::Bgra8888 => 2,
+            Self::Rgba1010102 => 2,
+            Self::Rgb101010x => 2,
+            Self::Bgra1010102 => 2,
+            Self::Bgr101010x => 2,
+            Self::Bgr101010xXr => 2,
+            Self::Gray8 => 0,
+            Self::RgbaF16Norm => 3,
+            Self::RgbaF16 => 3,
+            Self::RgbaF32 => 4,
+            Self::R8G8Unorm => 1,
+            Self::A16Unorm => 1,
+            Self::R16G16Unorm => 2,
+            Self::A16Float => 1,
+            Self::R16G16Float => 2,
+            Self::R16G16B16A16Unorm => 3,
+            Self::Srgba8888 => 2,
+            Self::R8Unorm => 0,
+        }
+    }
+
     /// Returns true if `ColorType` always decodes alpha to 1.0, making the pixel
     /// fully opaque.
     ///

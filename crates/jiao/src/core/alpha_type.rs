@@ -44,3 +44,16 @@ impl Default for AlphaType {
         Self::Unknown
     }
 }
+
+impl AlphaType {
+    /// Returns true if self equals `AlphaType::Opaque`.
+    ///
+    /// `AlphaType::Opaque` is a hint that the `ColorType` is opaque, or that all
+    /// alpha values are set to their 1.0 equivalent.
+    /// If `AlphaType` is `AlphaType::Opaque`, and `ColorType` is not opaque,
+    /// then the result of drawing any pixel with a alpha value less than 1.0 is undefined.
+    #[must_use]
+    pub fn is_opaque(self) -> bool {
+        self == Self::Opaque
+    }
+}
