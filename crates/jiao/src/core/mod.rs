@@ -8,6 +8,7 @@ pub mod canvas;
 pub mod color;
 pub mod color_space;
 pub mod color_type;
+pub mod image_info;
 pub mod paint;
 pub mod path;
 pub mod path_builder;

@@ -2,10 +2,11 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-//! `ColorType` describes how pixel bits encode color.
-//!
-//! A pixel may be an alpha mask, a grayscale, RGB, or ARGB.
+use crate::core::alpha_type::AlphaType;
 
+/// `ColorType` describes how pixel bits encode color.
+///
+/// A pixel may be an alpha mask, a grayscale, RGB, or ARGB.
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 pub enum ColorType {
@@ -80,3 +81,38 @@ pub enum ColorType {
 // TODO(Shaohua):
 //N32          = kBGRA_8888,// native 32-bit BGRA encoding
 //N32          = kRGBA_8888,// native 32-bit RGBA encoding
+
+impl ColorType {
+    /// Returns the number of bytes required to store a pixel, including unused padding.
+    /// Returns zero if type is Unknown or invalid.
+    #[must_use]
+    pub const fn bytes_per_pixel(self) -> i32 {
+        unimplemented!()
+    }
+
+    /// Returns true if `ColorType` always decodes alpha to 1.0, making the pixel
+    /// fully opaque.
+    ///
+    /// If true, `ColorType` does not reserve bits to encode alpha.
+    /// True if alpha is always set to 1.0
+    #[must_use]
+    pub const fn is_always_opaque(self) -> bool {
+        unimplemented!()
+    }
+
+    /// Returns true if canonical can be set to a valid `AlphaType` for `color_type`.
+    ///
+    /// If there is more than one valid canonical `AlphaType`, set to `alpha_type`, if valid.
+    /// If true is returned and canonical is not nullptr, store valid `AlphaType`.
+    ///
+    /// Returns true if valid `AlphaType` can be associated with `color_type`.
+    ///
+    /// Returns false only if `alpha_type` is `Unknown`, color type is not Unknown,
+    /// and `ColorType` is not always opaque.
+    ///
+    /// If false is returned, canonical is ignored.
+    #[must_use]
+    pub fn validate_alpha_type(self, _alpha_type: AlphaType, _canonical: &mut AlphaType) -> bool {
+        unimplemented!()
+    }
+}
