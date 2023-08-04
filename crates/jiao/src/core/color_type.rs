@@ -79,9 +79,13 @@ pub enum ColorType {
     R8Unorm,
 }
 
-// TODO(Shaohua):
-//N32          = kBGRA_8888,// native 32-bit BGRA encoding
-//N32          = kRGBA_8888,// native 32-bit RGBA encoding
+// TODO(Shaohua): Check endian type
+/// native 32-bit BGRA encoding
+#[cfg(target_endian = "big")]
+pub const N32: ColorType = ColorType::Bgra8888;
+#[cfg(target_endian = "little")]
+/// native 32-bit RGBA encoding
+pub const N32: ColorType = ColorType::Rgba8888;
 
 impl ColorType {
     /// Returns the number of bytes required to store a pixel, including unused padding.
@@ -124,12 +128,43 @@ impl ColorType {
     /// True if alpha is always set to 1.0
     #[must_use]
     pub const fn is_always_opaque(self) -> bool {
-        self.channel_flag().contains(ColorChannelFlag::Alpha)
+        !self.channel_flag().contains(ColorChannelFlag::Alpha)
     }
 
     #[must_use]
+    pub fn is_alpha_only(self) -> bool {
+        self.channel_flag() == ColorChannelFlag::Alpha
+    }
+
+    #[must_use]
+    #[allow(clippy::match_same_arms)]
     pub const fn channel_flag(&self) -> ColorChannelFlag {
-        unimplemented!()
+        match self {
+            Self::Unknown => ColorChannelFlag::empty(),
+            Self::Alpha8 => ColorChannelFlag::Alpha,
+            Self::Rgb565 => ColorChannelFlag::RGB,
+            Self::Argb4444 => ColorChannelFlag::RGBA,
+            Self::Rgba8888 => ColorChannelFlag::RGBA,
+            Self::Rgb888x => ColorChannelFlag::RGB,
+            Self::Bgra8888 => ColorChannelFlag::RGBA,
+            Self::Rgba1010102 => ColorChannelFlag::RGBA,
+            Self::Rgb101010x => ColorChannelFlag::RGB,
+            Self::Bgra1010102 => ColorChannelFlag::RGBA,
+            Self::Bgr101010x => ColorChannelFlag::RGB,
+            Self::Bgr101010xXr => ColorChannelFlag::RGB,
+            Self::Gray8 => ColorChannelFlag::Gray,
+            Self::RgbaF16Norm => ColorChannelFlag::RGBA,
+            Self::RgbaF16 => ColorChannelFlag::RGBA,
+            Self::RgbaF32 => ColorChannelFlag::RGBA,
+            Self::R8G8Unorm => ColorChannelFlag::RG,
+            Self::A16Unorm => ColorChannelFlag::Alpha,
+            Self::R16G16Unorm => ColorChannelFlag::RG,
+            Self::A16Float => ColorChannelFlag::Alpha,
+            Self::R16G16Float => ColorChannelFlag::RG,
+            Self::R16G16B16A16Unorm => ColorChannelFlag::RGBA,
+            Self::Srgba8888 => ColorChannelFlag::RGBA,
+            Self::R8Unorm => ColorChannelFlag::Red,
+        }
     }
 
     /// Returns true if canonical can be set to a valid `AlphaType` for `color_type`.

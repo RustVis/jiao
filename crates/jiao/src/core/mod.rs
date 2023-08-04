@@ -17,3 +17,4 @@ pub mod scalar;
 pub mod size;
 pub mod surface_props;
 pub mod tile_mode;
+pub mod types;
