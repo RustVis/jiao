@@ -6,7 +6,7 @@
 
 use crate::core::scalar::{scalar_from_int, Scalar, ScalarExt};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ISize {
     width: i32,
     height: i32,

@@ -373,4 +373,65 @@ impl ImageInfo {
     pub const fn make_unknown_empty() -> Self {
         Self::make_unknown(0, 0)
     }
+
+    /// Returns pixel count in each row.
+    #[must_use]
+    pub const fn width(&self) -> i32 {
+        self.dimensions.width()
+    }
+
+    /// Returns pixel row count.
+    #[must_use]
+    pub const fn height(&self) -> i32 {
+        self.dimensions.height()
+    }
+
+    #[must_use]
+    pub const fn color_type(&self) -> ColorType {
+        self.color_info.color_type()
+    }
+
+    #[must_use]
+    pub const fn alpha_type(&self) -> AlphaType {
+        self.color_info.alpha_type()
+    }
+
+    /// Returns `ColorSpace`, the range of colors.
+    #[must_use]
+    pub const fn color_space(&self) -> &Option<ColorSpace> {
+        self.color_info.color_space()
+    }
+
+    /// Returns if `ImageInfo` describes an empty area of pixels by checking if either
+    /// width or height is zero or smaller.
+    #[must_use]
+    pub const fn is_empty(&self) -> bool {
+        self.dimensions.is_empty()
+    }
+
+    /// Returns the dimensionless `ColorInfo` that represents the same color type,
+    /// alpha type, and color space as this `ImageInfo`.
+    #[must_use]
+    pub const fn color_info(&self) -> &ColorInfo {
+        &self.color_info
+    }
+
+    /// Returns true if `AlphaType` is set to hint that all pixels are opaque; their
+    /// alpha value is implicitly or explicitly 1.0.
+    ///
+    /// Return true if `AlphaType` is `AlphaType::Opaque`.
+    /// If true, and all pixels are not opaque, may draw incorrectly.
+    ///
+    /// Does not check if `ColorType` allows alpha, or if any pixel value has
+    /// transparency.
+    #[must_use]
+    pub fn is_opaque(&self) -> bool {
+        self.color_info.is_opaque()
+    }
+
+    /// Returns `ISize { width(), height() }`.
+    #[must_use]
+    pub const fn dimensions(&self) -> ISize {
+        self.dimensions
+    }
 }
