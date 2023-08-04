@@ -21,5 +21,6 @@
     clippy::nursery,
     clippy::pedantic
 )]
+#![allow(dead_code)]
 
 pub mod core;
