@@ -3,6 +3,7 @@
 // in the LICENSE file.
 
 use crate::core::alpha_type::AlphaType;
+use crate::core::color::ColorChannelFlag;
 
 /// `ColorType` describes how pixel bits encode color.
 ///
@@ -59,20 +60,20 @@ pub enum ColorType {
 
     // The following 6 colortypes are just for reading from - not for rendering to
     /// pixel with a uint8_t for red and green
-    R8g8Unorm,
+    R8G8Unorm,
 
     /// pixel with a half float for alpha
     A16Float,
 
     /// pixel with a half float for red and green
-    R16g16Float,
+    R16G16Float,
 
     /// pixel with a little endian uint16_t for alpha
     A16Unorm,
     /// pixel with a little endian uint16_t for red and green
-    R16g16Unorm,
+    R16G16Unorm,
     /// pixel with a little endian uint16_t for red, green, blue and alpha
-    R16g16b16a16Unorm,
+    R16G16B16A16Unorm,
 
     Srgba8888,
     R8Unorm,
@@ -86,8 +87,34 @@ impl ColorType {
     /// Returns the number of bytes required to store a pixel, including unused padding.
     /// Returns zero if type is Unknown or invalid.
     #[must_use]
+    #[allow(clippy::match_same_arms)]
     pub const fn bytes_per_pixel(self) -> i32 {
-        unimplemented!()
+        match self {
+            Self::Unknown => 0,
+            Self::Alpha8 => 1,
+            Self::Rgb565 => 2,
+            Self::Argb4444 => 2,
+            Self::Rgba8888 => 4,
+            Self::Bgra8888 => 4,
+            Self::Rgb888x => 4,
+            Self::Rgba1010102 => 4,
+            Self::Rgb101010x => 4,
+            Self::Bgra1010102 => 4,
+            Self::Bgr101010x => 4,
+            Self::Bgr101010xXr => 4,
+            Self::Gray8 => 1,
+            Self::RgbaF16Norm => 8,
+            Self::RgbaF16 => 8,
+            Self::RgbaF32 => 16,
+            Self::R8G8Unorm => 2,
+            Self::A16Unorm => 2,
+            Self::R16G16Unorm => 4,
+            Self::A16Float => 2,
+            Self::R16G16Float => 4,
+            Self::R16G16B16A16Unorm => 8,
+            Self::Srgba8888 => 4,
+            Self::R8Unorm => 1,
+        }
     }
 
     /// Returns true if `ColorType` always decodes alpha to 1.0, making the pixel
@@ -97,6 +124,11 @@ impl ColorType {
     /// True if alpha is always set to 1.0
     #[must_use]
     pub const fn is_always_opaque(self) -> bool {
+        self.channel_flag().contains(ColorChannelFlag::Alpha)
+    }
+
+    #[must_use]
+    pub const fn channel_flag(&self) -> ColorChannelFlag {
         unimplemented!()
     }
 

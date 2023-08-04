@@ -38,3 +38,9 @@ pub enum AlphaType {
     /// pixel components are independent of alpha
     Unpremul,
 }
+
+impl Default for AlphaType {
+    fn default() -> Self {
+        Self::Unknown
+    }
+}
