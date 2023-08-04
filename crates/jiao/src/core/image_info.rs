@@ -2,6 +2,7 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use crate::base::math::MAX_S32;
 use crate::core::alpha_type::AlphaType;
 use crate::core::color_space::ColorSpace;
 use crate::core::color_type::{self, ColorType};
@@ -433,5 +434,27 @@ impl ImageInfo {
     #[must_use]
     pub const fn dimensions(&self) -> ISize {
         self.dimensions
+    }
+
+    /// Returns true if contains a valid combination of width, height and `color_info`.
+    #[must_use]
+    pub(crate) fn is_valid(&self) -> bool {
+        if self.width() <= 0 || self.height() <= 0 {
+            return false;
+        }
+
+        const MAX_DIMENSION: i32 = MAX_S32 >> 2;
+        if self.width() > MAX_DIMENSION || self.height() > MAX_DIMENSION {
+            return false;
+        }
+
+        self.color_info.is_valid()
+    }
+
+    /// Returns true if Skia has defined a pixel conversion from the `src` to the `self`.
+    /// Returns false otherwise.
+    #[must_use]
+    pub fn valid_conversion(&self, src: &Self) -> bool {
+        self.is_valid() && src.is_valid()
     }
 }
