@@ -6,6 +6,7 @@ use crate::base::math::MAX_S32;
 use crate::core::alpha_type::AlphaType;
 use crate::core::color_space::ColorSpace;
 use crate::core::color_type::{self, ColorType};
+use crate::core::rect::IRect;
 use crate::core::size::ISize;
 
 /// `YUVColorSpace` describes color range of YUV pixels.
@@ -245,7 +246,7 @@ impl ImageInfo {
     }
 
     #[must_use]
-    pub const fn make_dimensions(
+    pub const fn new_dimensions(
         dimensions: ISize,
         ct: ColorType,
         at: AlphaType,
@@ -375,6 +376,57 @@ impl ImageInfo {
         Self::make_unknown(0, 0)
     }
 
+    /// Creates `ImageInfo` with the same `ColorType`, `ColorSpace`, and `AlphaType`,
+    /// with dimensions set to width and height.
+    ///
+    /// # Parameters
+    /// - `new_width` - pixel column count; must be zero or greater
+    /// - `new_height` - pixel row count; must be zero or greater
+    #[must_use]
+    pub fn make_wh(&self, new_width: i32, new_height: i32) -> Self {
+        Self::make_color_info(ISize::make(new_width, new_height), self.color_info.clone())
+    }
+
+    /// Creates `ImageInfo` with the same `ColorType`, `ColorSpace`, and `AlphaType`,
+    /// with dimensions set to `new_dimensions`.
+    #[must_use]
+    pub fn make_dimensions(&self, new_size: ISize) -> Self {
+        Self::make_color_info(new_size, self.color_info.clone())
+    }
+
+    /// Creates `ImageInfo` with same `ColorType`, `ColorSpace`, width, and height,
+    /// with `AlphaType` set to `new_alpha_type`.
+    ///
+    /// Created `ImageInfo` contains `new_alpha_type` even if it is incompatible with
+    /// `ColorType`, in which case `AlphaType` in `ImageInfo` is ignored.
+    #[must_use]
+    pub fn make_alpha_type(&self, new_alpha_type: AlphaType) -> Self {
+        Self::make_color_info(
+            self.dimensions,
+            self.color_info.make_alpha_type(new_alpha_type),
+        )
+    }
+
+    /// Creates `ImageInfo` with same `AlphaType`, `ColorSpace`, width, and height,
+    /// with `ColorType` set to `new_color_type`.
+    #[must_use]
+    pub fn make_color_type(&self, new_color_type: ColorType) -> Self {
+        Self::make_color_info(
+            self.dimensions,
+            self.color_info.make_color_type(new_color_type),
+        )
+    }
+
+    /// Creates `ImageInfo` with same `AlphaType`, `ColorType`, width, and height,
+    /// with `ColorSpace` set to `new_color_space`.
+    #[must_use]
+    pub const fn make_color_space(&self, new_color_space: Option<ColorSpace>) -> Self {
+        Self::make_color_info(
+            self.dimensions,
+            self.color_info.make_color_space(new_color_space),
+        )
+    }
+
     /// Returns pixel count in each row.
     #[must_use]
     pub const fn width(&self) -> i32 {
@@ -439,11 +491,12 @@ impl ImageInfo {
     /// Returns true if contains a valid combination of width, height and `color_info`.
     #[must_use]
     pub(crate) fn is_valid(&self) -> bool {
+        const MAX_DIMENSION: i32 = MAX_S32 >> 2;
+
         if self.width() <= 0 || self.height() <= 0 {
             return false;
         }
 
-        const MAX_DIMENSION: i32 = MAX_S32 >> 2;
         if self.width() > MAX_DIMENSION || self.height() > MAX_DIMENSION {
             return false;
         }
@@ -457,4 +510,144 @@ impl ImageInfo {
     pub fn valid_conversion(&self, src: &Self) -> bool {
         self.is_valid() && src.is_valid()
     }
+
+    /// Returns bounding rect.
+    ///
+    /// Returns integral rectangle from origin to width() and height()
+    #[must_use]
+    pub const fn bounds(&self) -> IRect {
+        IRect::make_size(self.dimensions)
+    }
+
+    /// Returns true if associated `ColorSpace` is not None, and `ColorSpace` gamma
+    /// is approximately the same as `sRGB`.
+    #[must_use]
+    pub const fn gamma_close_to_srgb(&self) -> bool {
+        self.color_info.gamma_close_to_srgb()
+    }
+
+    /// Returns number of bytes per pixel required by `ColorType`.
+    ///
+    /// Returns zero if `color_type` is `ColorType::Unknown`.
+    #[must_use]
+    pub const fn bytes_per_pixel(&self) -> i32 {
+        self.color_info.bytes_per_pixel()
+    }
+
+    /// Returns bit shift converting row bytes to row pixels.
+    ///
+    /// Returns zero for `ColorType::Unknown`.
+    /// Returns one of: 0, 1, 2, 3; left shift to convert pixels to bytes
+    #[must_use]
+    pub const fn shift_per_pixel(&self) -> i32 {
+        self.color_info.shift_per_pixel()
+    }
+
+    /// Returns minimum bytes per row, computed from pixel width() and `ColorType`,
+    /// which specifies `bytes_per_pixel()`.
+    ///
+    /// `Bitmap` maximum value for row bytes must fit in 31 bits.
+    ///
+    /// Return width() times `bytes_per_pixel()` as unsigned 64-bit integer
+    #[must_use]
+    #[allow(clippy::cast_sign_loss)]
+    pub const fn min_row_bytes64(&self) -> u64 {
+        (self.width() as u64) * (self.bytes_per_pixel() as u64)
+    }
+
+    /// Returns minimum bytes per row, computed from pixel width() and `ColorType`,
+    /// which specifies `bytes_per_pixel()`.
+    ///
+    /// `Bitmap` maximum value for row bytes must fit in 31 bits.
+    #[must_use]
+    #[allow(clippy::cast_possible_truncation)]
+    pub const fn min_row_bytes(&self) -> usize {
+        let min_row_bytes = self.min_row_bytes64();
+        // TODO(Shaohua): Check range
+        //if (!SkTFitsIn<int32_t>(minRowBytes)) {
+        //    return 0;
+        //}
+        min_row_bytes as usize
+    }
+
+    /// Returns byte offset of pixel from pixel base address.
+    ///
+    /// Asserts in debug build if x or y is outside of bounds.
+    /// Does not assert if `row_bytes` is smaller than `min_row_bytes()`,
+    /// even though result may be incorrect.
+    ///
+    /// # Parameters
+    /// - `x` - column index, zero or greater, and less than width()
+    /// - `y` - row index, zero or greater, and less than height()
+    /// - `row_bytes` - size of pixel row or larger
+    #[must_use]
+    pub const fn compute_offset(&self, _x: i32, _y: i32, _row_bytes: usize) -> usize {
+        unimplemented!()
+    }
+
+    /// Returns storage required by pixel array, given `ImageInfo` dimensions,
+    /// `ColorType`, and `row_bytes`.
+    ///
+    /// `row_bytes` is assumed to be at least as large as `min_row_bytes()`.
+    ///
+    /// Returns zero if height is zero.
+    /// Returns `usize::MAX` if answer exceeds the range of usize.
+    #[must_use]
+    pub const fn compute_byte_size(&self, _row_bytes: usize) -> usize {
+        unimplemented!()
+    }
+
+    /// Returns storage required by pixel array, given `ImageInfo` dimensions,
+    /// and `ColorType`.
+    ///
+    /// Uses `min_row_bytes()` to compute bytes for pixel row.
+    ///
+    /// Returns zero if height is zero.
+    ///
+    /// Returns `usize::MAX` if answer exceeds the range of usize.
+    ///
+    /// Returns least memory required by pixel buffer
+    #[must_use]
+    pub const fn compute_min_byte_size(&self) -> usize {
+        self.compute_byte_size(self.min_row_bytes())
+    }
+
+    /// Returns true if `byte_size` equals `usize::MAX`.
+    ///
+    /// `compute_byte_size()` and `compute_min_byte_size()` return `usize::MAX`
+    /// if usize can not hold buffer size.
+    ///
+    /// # Parameters
+    /// `byte_size` - result of `compute_byte_size()` or `compute_min_byte_size()`
+    #[must_use]
+    pub(crate) const fn byte_size_overflowed(byte_size: usize) -> bool {
+        byte_size == usize::MAX
+    }
+
+    /// Returns true if `row_bytes` is valid for this `ImageInfo`.
+    ///
+    /// Returns true if `row_bytes` is large enough to contain pixel row
+    /// and is properly aligned.
+    ///
+    /// # Parameters
+    /// - `row_bytes` - size of pixel row including padding
+    #[must_use]
+    pub const fn valid_row_bytes(&self, row_bytes: usize) -> bool {
+        if (row_bytes as u64) < self.min_row_bytes64() {
+            return false;
+        }
+
+        let shift = self.shift_per_pixel();
+        let aligned_row_bytes = row_bytes >> shift << shift;
+        aligned_row_bytes == row_bytes
+    }
+
+    /// Creates an empty `ImageInfo` with `ColorType::Unknown`, `AlphaType::Unknown`,
+    /// a width and height of zero, and no `ColorSpace`.
+    pub fn reset(&mut self) {
+        *self = Self::new();
+    }
+
+    // Asserts if internal values are illegal or inconsistent. Only available in debug mode at compile time.
+    //validate() const;
 }
