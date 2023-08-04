@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+#![allow(dead_code)]
+
 use crate::core::alpha_type::AlphaType;
 use crate::core::color::ColorChannelFlag;
 
@@ -210,7 +212,11 @@ impl ColorType {
     ///
     /// If false is returned, canonical is ignored.
     #[must_use]
-    pub fn validate_alpha_type(self, alpha_type: AlphaType, canonical: &mut AlphaType) -> bool {
+    pub(crate) fn validate_alpha_type(
+        self,
+        alpha_type: AlphaType,
+        canonical: &mut AlphaType,
+    ) -> bool {
         match self {
             Self::Unknown => *canonical = AlphaType::Unknown,
             Self::Alpha8 | Self::A16Unorm | Self::A16Float => {
@@ -247,5 +253,82 @@ impl ColorType {
             | Self::R8Unorm => *canonical = AlphaType::Opaque,
         }
         true
+    }
+
+    #[must_use]
+    pub(crate) const fn is_normalized(self) -> bool {
+        match self {
+            Self::Unknown
+            | Self::Alpha8
+            | Self::Rgb565
+            | Self::Argb4444
+            | Self::Rgba8888
+            | Self::Rgb888x
+            | Self::Bgra8888
+            | Self::Rgba1010102
+            | Self::Rgb101010x
+            | Self::Bgra1010102
+            | Self::Bgr101010x
+            | Self::Gray8
+            | Self::RgbaF16Norm
+            | Self::R8G8Unorm
+            | Self::A16Unorm
+            | Self::A16Float
+            | Self::R16G16Unorm
+            | Self::R16G16B16A16Unorm
+            | Self::Srgba8888
+            | Self::R8Unorm => true,
+            Self::Bgr101010xXr | Self::RgbaF16 | Self::RgbaF32 | Self::R16G16Float => false,
+        }
+    }
+
+    #[must_use]
+    #[allow(clippy::cast_sign_loss)]
+    pub(crate) const fn min_row_bytes(self, width: i32) -> usize {
+        (width * self.bytes_per_pixel()) as usize
+    }
+
+    #[must_use]
+    #[allow(clippy::cast_sign_loss)]
+    pub(crate) fn compute_offset(self, x: i32, y: i32, row_bytes: usize) -> usize {
+        if self == Self::Unknown {
+            return 0;
+        }
+        y as usize * row_bytes + (x << self.shift_per_pixel()) as usize
+    }
+
+    #[must_use]
+    pub(crate) const fn max_bits_per_channel(self) -> i32 {
+        match self {
+            Self::Unknown => 0,
+            Self::Argb4444 => 4,
+
+            Self::Rgb565 => 6,
+
+            Self::Alpha8
+            | Self::Rgba8888
+            | Self::Rgb888x
+            | Self::Bgra8888
+            | Self::Gray8
+            | Self::R8G8Unorm
+            | Self::Srgba8888
+            | Self::R8Unorm => 8,
+
+            Self::Rgba1010102
+            | Self::Rgb101010x
+            | Self::Bgra1010102
+            | Self::Bgr101010x
+            | Self::Bgr101010xXr => 10,
+
+            Self::RgbaF16Norm
+            | Self::A16Unorm
+            | Self::A16Float
+            | Self::R16G16Unorm
+            | Self::R16G16B16A16Unorm
+            | Self::RgbaF16
+            | Self::R16G16Float => 16,
+
+            Self::RgbaF32 => 32,
+        }
     }
 }
