@@ -13,6 +13,18 @@ pub const SIN_COS_NEARLY_ZERO: Scalar = 1.0 / (1 << 16) as Scalar;
 
 pub trait ScalarExt {
     #[must_use]
+    fn invert(self) -> Self;
+
+    #[must_use]
+    fn average(self, b: Self) -> Self;
+
+    #[must_use]
+    fn half(self) -> Self;
+
+    #[must_use]
+    fn square(self) -> Self;
+
+    #[must_use]
     fn ceil_to_int(self) -> i32;
 
     #[must_use]
@@ -31,6 +43,7 @@ pub trait ScalarExt {
     #[must_use]
     fn sign_as_int(self) -> i32;
 
+    /// Scalar result version of above
     #[must_use]
     fn sign_as_scalar(self) -> Self;
 
@@ -66,6 +79,23 @@ pub trait ScalarExt {
 }
 
 impl ScalarExt for Scalar {
+    fn invert(self) -> Self {
+        debug_assert!(self != 0.0);
+        1.0 / self
+    }
+
+    fn average(self, b: Self) -> Self {
+        (self + b) / 2.0
+    }
+
+    fn half(self) -> Self {
+        self / 2.0
+    }
+
+    fn square(self) -> Self {
+        self * self
+    }
+
     fn ceil_to_int(self) -> i32 {
         self.ceil() as i32
     }
@@ -161,4 +191,9 @@ pub fn scalars_equal(a: &[Scalar], b: &[Scalar], n: usize) -> bool {
         }
     }
     true
+}
+
+#[must_use]
+pub fn are_finite(array: &[Scalar]) -> bool {
+    array.iter().all(|scalar| scalar.is_finite())
 }
