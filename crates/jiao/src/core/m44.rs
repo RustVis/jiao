@@ -2,7 +2,9 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Sub, SubAssign};
+use std::ops::{
+    Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub, SubAssign,
+};
 
 use crate::core::scalar::Scalar;
 
@@ -309,5 +311,147 @@ impl MulAssign<Scalar> for V3 {
         self.x *= scale;
         self.y *= scale;
         self.z *= scale;
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct V4 {
+    x: f32,
+    y: f32,
+    z: f32,
+    w: f32,
+}
+
+impl V4 {
+    #[must_use]
+    pub fn dot(&self, other: &Self) -> Scalar {
+        self.x.mul_add(
+            other.x,
+            self.y
+                .mul_add(other.y, self.z.mul_add(other.z, self.w * other.w)),
+        )
+    }
+
+    #[must_use]
+    pub fn normalize(&self) -> Self {
+        self * (1.0 / self.length())
+    }
+
+    #[must_use]
+    pub fn length_squared(&self) -> Scalar {
+        self.dot(self)
+    }
+
+    #[must_use]
+    pub fn length(&self) -> Scalar {
+        self.dot(self).sqrt()
+    }
+}
+
+impl Neg for &V4 {
+    type Output = V4;
+
+    fn neg(self) -> Self::Output {
+        Self::Output {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
+            w: -self.w,
+        }
+    }
+}
+
+impl Add<Self> for &V4 {
+    type Output = V4;
+
+    fn add(self, other: Self) -> Self::Output {
+        Self::Output {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+            w: self.w + other.w,
+        }
+    }
+}
+
+impl Sub<Self> for &V4 {
+    type Output = V4;
+
+    fn sub(self, other: Self) -> Self::Output {
+        Self::Output {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+            w: self.w - other.w,
+        }
+    }
+}
+
+impl Mul<Self> for &V4 {
+    type Output = V4;
+
+    fn mul(self, other: Self) -> Self::Output {
+        Self::Output {
+            x: self.x * other.x,
+            y: self.y * other.y,
+            z: self.z * other.z,
+            w: self.w * other.w,
+        }
+    }
+}
+
+impl Mul<Scalar> for &V4 {
+    type Output = V4;
+
+    fn mul(self, scale: Scalar) -> Self::Output {
+        Self::Output {
+            x: self.x * scale,
+            y: self.y * scale,
+            z: self.z * scale,
+            w: self.w * scale,
+        }
+    }
+}
+
+impl Mul<&V4> for Scalar {
+    type Output = V4;
+
+    fn mul(self, v: &V4) -> Self::Output {
+        Self::Output {
+            x: self * v.x,
+            y: self * v.y,
+            z: self * v.z,
+            w: self * v.w,
+        }
+    }
+}
+
+impl Index<usize> for V4 {
+    type Output = f32;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        debug_assert!(index < 4);
+
+        match index {
+            0 => &self.x,
+            1 => &self.y,
+            2 => &self.z,
+            3 => &self.w,
+            _ => panic!("Index out of range"),
+        }
+    }
+}
+
+impl IndexMut<usize> for V4 {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        debug_assert!(index < 4);
+
+        match index {
+            0 => &mut self.x,
+            1 => &mut self.y,
+            2 => &mut self.z,
+            3 => &mut self.w,
+            _ => panic!("Index out of range"),
+        }
     }
 }
