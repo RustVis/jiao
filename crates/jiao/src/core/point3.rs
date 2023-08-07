@@ -2,8 +2,6 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-#![allow(clippy::suboptimal_flops)]
-
 use std::ops::{Add, AddAssign, Mul, Neg, Sub, SubAssign};
 
 use crate::core::scalar::Scalar;
@@ -91,16 +89,17 @@ impl Point3 {
     /// Returns the dot product of self and other, treating them as 3D vectors
     #[must_use]
     pub fn dot(self, other: &Self) -> Scalar {
-        self.x * other.x + self.y * other.y + self.z * other.z
+        self.x
+            .mul_add(other.x, self.y.mul_add(other.y, self.z * other.z))
     }
 
     /// Returns the cross product of self and other point, treating them as 3D vectors
     #[must_use]
     pub fn cross(&self, other: &Self) -> Self {
         Self {
-            x: self.y * other.z - self.z * other.y,
-            y: self.z * other.x - self.x * other.z,
-            z: self.x * other.y - self.y * other.x,
+            x: self.y.mul_add(other.z, -self.z * other.y),
+            y: self.z.mul_add(other.x, -self.x * other.z),
+            z: self.x.mul_add(other.y, -self.y * other.x),
         }
     }
 }
