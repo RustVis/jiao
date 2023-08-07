@@ -13,6 +13,7 @@ pub mod font_style;
 pub mod image_info;
 pub mod irect;
 pub mod m44;
+pub mod matrix;
 pub mod paint;
 pub mod path;
 pub mod path_builder;

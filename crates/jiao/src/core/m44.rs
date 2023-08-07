@@ -6,6 +6,8 @@ use std::ops::{
     Add, AddAssign, Div, DivAssign, Index, IndexMut, Mul, MulAssign, Neg, Sub, SubAssign,
 };
 
+use crate::core::matrix::Matrix;
+use crate::core::rect::Rect;
 use crate::core::scalar::Scalar;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -179,6 +181,10 @@ pub struct V3 {
 }
 
 impl V3 {
+    pub const fn make(x: f32, y: f32, z: f32) -> Self {
+        Self { x, y, z }
+    }
+
     #[must_use]
     pub fn dot(&self, other: &Self) -> Scalar {
         self.x
@@ -323,6 +329,10 @@ pub struct V4 {
 }
 
 impl V4 {
+    pub const fn make(x: f32, y: f32, z: f32, w: f32) -> Self {
+        Self { x, y, z, w }
+    }
+
     #[must_use]
     pub fn dot(&self, other: &Self) -> Scalar {
         self.x.mul_add(
@@ -475,14 +485,7 @@ pub struct M44 {
 
 impl Default for M44 {
     fn default() -> Self {
-        Self {
-            mat: [
-               1.0, 0.0, 0.0, 0,
-               0.0, 1.0, 0.0, 0,
-               0.0, 0.0, 1.0, 0,
-               0.0, 0.0, 0.0, 1,
-            ],
-        }
+        Self::make_identity()
     }
 }
 
@@ -491,10 +494,7 @@ impl M44 {
     pub const fn make_uninitialized() -> Self {
         Self {
             mat: [
-               0, 0, 0, 0,
-               0, 0, 0, 0,
-               0, 0, 0, 0,
-               0, 0, 0, 0,
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
             ],
         }
     }
@@ -503,284 +503,335 @@ impl M44 {
     pub const fn make_nan() -> Self {
         Self {
             mat: [
-               0, 0, 0, 0,
-               0, 0, 0, 0,
-               0, 0, 0, 0,
-               0, 0, 0, 0,
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
             ],
         }
     }
 
     #[must_use]
-    pub const fn make() -> Self {
-        Self::default()
+    pub fn make_identity() -> Self {
+        Self {
+            mat: [
+                1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+            ],
+        }
     }
 
+    //SkM44(const SkM44& a, const SkM44& b) { this->setConcat(a, b); }
 
-    SkM44(const SkM44& a, const SkM44& b) {
-        this->setConcat(a, b);
+    /// The constructor parameters are in row-major order.
+    #[must_use]
+    pub const fn make(
+        m0: Scalar,
+        m4: Scalar,
+        m8: Scalar,
+        m12: Scalar,
+        m1: Scalar,
+        m5: Scalar,
+        m9: Scalar,
+        m13: Scalar,
+        m2: Scalar,
+        m6: Scalar,
+        m10: Scalar,
+        m14: Scalar,
+        m3: Scalar,
+        m7: Scalar,
+        m11: Scalar,
+        m15: Scalar,
+    ) -> Self {
+        // mat is column-major order in memory.
+        Self {
+            mat: [
+                m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15,
+            ],
+        }
     }
 
-    enum NaN_Constructor {
-        kNaN_Constructor
-    };
-    constexpr SkM44(NaN_Constructor)
-        : fMat{SK_ScalarNaN, SK_ScalarNaN, SK_ScalarNaN, SK_ScalarNaN,
-               SK_ScalarNaN, SK_ScalarNaN, SK_ScalarNaN, SK_ScalarNaN,
-               SK_ScalarNaN, SK_ScalarNaN, SK_ScalarNaN, SK_ScalarNaN,
-               SK_ScalarNaN, SK_ScalarNaN, SK_ScalarNaN, SK_ScalarNaN}
-    {}
-
-    /**
-     *  The constructor parameters are in row-major order.
-     */
-    constexpr SkM44(SkScalar m0, SkScalar m4, SkScalar m8,  SkScalar m12,
-                    SkScalar m1, SkScalar m5, SkScalar m9,  SkScalar m13,
-                    SkScalar m2, SkScalar m6, SkScalar m10, SkScalar m14,
-                    SkScalar m3, SkScalar m7, SkScalar m11, SkScalar m15)
-        // fMat is column-major order in memory.
-        : fMat{m0,  m1,  m2,  m3,
-               m4,  m5,  m6,  m7,
-               m8,  m9,  m10, m11,
-               m12, m13, m14, m15}
-    {}
-
-    static SkM44 Rows(const SkV4& r0, const SkV4& r1, const SkV4& r2, const SkV4& r3) {
-        SkM44 m(kUninitialized_Constructor);
-        m.setRow(0, r0);
-        m.setRow(1, r1);
-        m.setRow(2, r2);
-        m.setRow(3, r3);
-        return m;
-    }
-    static SkM44 Cols(const SkV4& c0, const SkV4& c1, const SkV4& c2, const SkV4& c3) {
-        SkM44 m(kUninitialized_Constructor);
-        m.setCol(0, c0);
-        m.setCol(1, c1);
-        m.setCol(2, c2);
-        m.setCol(3, c3);
-        return m;
+    #[must_use]
+    pub fn rows(r0: &V4, r1: &V4, r2: &V4, r3: &V4) -> Self {
+        let mut m = Self::make_uninitialized();
+        m.set_row(0, r0);
+        m.set_row(1, r1);
+        m.set_row(2, r2);
+        m.set_row(3, r3);
+        m
     }
 
-    static SkM44 RowMajor(const SkScalar r[16]) {
-        return SkM44(r[ 0], r[ 1], r[ 2], r[ 3],
-                     r[ 4], r[ 5], r[ 6], r[ 7],
-                     r[ 8], r[ 9], r[10], r[11],
-                     r[12], r[13], r[14], r[15]);
-    }
-    static SkM44 ColMajor(const SkScalar c[16]) {
-        return SkM44(c[0], c[4], c[ 8], c[12],
-                     c[1], c[5], c[ 9], c[13],
-                     c[2], c[6], c[10], c[14],
-                     c[3], c[7], c[11], c[15]);
+    #[must_use]
+    pub fn cols(c0: &V4, c1: &V4, c2: &V4, c3: &V4) -> Self {
+        let mut m = Self::make_uninitialized();
+        m.set_col(0, c0);
+        m.set_col(1, c1);
+        m.set_col(2, c2);
+        m.set_col(3, c3);
+        m
     }
 
-    static SkM44 Translate(SkScalar x, SkScalar y, SkScalar z = 0) {
-        return SkM44(1, 0, 0, x,
-                     0, 1, 0, y,
-                     0, 0, 1, z,
-                     0, 0, 0, 1);
+    #[must_use]
+    pub fn row_major(r: &[Scalar; 16]) -> Self {
+        Self::make(
+            r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13],
+            r[14], r[15],
+        )
     }
 
-    static SkM44 Scale(SkScalar x, SkScalar y, SkScalar z = 1) {
-        return SkM44(x, 0, 0, 0,
-                     0, y, 0, 0,
-                     0, 0, z, 0,
-                     0, 0, 0, 1);
+    #[must_use]
+    pub fn col_major(c: &[Scalar; 16]) -> Self {
+        Self::make(
+            c[0], c[4], c[8], c[12], c[1], c[5], c[9], c[13], c[2], c[6], c[10], c[14], c[3], c[7],
+            c[11], c[15],
+        )
     }
 
-    static SkM44 Rotate(SkV3 axis, SkScalar radians) {
-        SkM44 m(kUninitialized_Constructor);
-        m.setRotate(axis, radians);
-        return m;
+    #[must_use]
+    pub fn translate(x: Scalar, y: Scalar, z: Scalar) -> Self {
+        Self::make(
+            1.0, 0.0, 0.0, x, 0.0, 1.0, 0.0, y, 0.0, 0.0, 1.0, z, 0.0, 0.0, 0.0, 1.0,
+        )
+    }
+
+    #[must_use]
+    pub fn scale(x: Scalar, y: Scalar, z: Scalar) -> Self {
+        Self::make(
+            x, 0.0, 0.0, 0.0, 0.0, y, 0.0, 0.0, 0.0, 0.0, z, 0.0, 0.0, 0.0, 0.0, 1.0,
+        )
+    }
+
+    #[must_use]
+    pub fn rotate(axis: &V3, radians: Scalar) -> Self {
+        let mut m = Self::make_uninitialized();
+        m.set_rotate(axis, radians);
+        m
     }
 
     // Scales and translates 'src' to fill 'dst' exactly.
-    static SkM44 RectToRect(const SkRect& src, const SkRect& dst);
-
-    static SkM44 LookAt(const SkV3& eye, const SkV3& center, const SkV3& up);
-    static SkM44 Perspective(float near, float far, float angle);
-
-    bool operator==(const SkM44& other) const;
-    bool operator!=(const SkM44& other) const {
-        return !(other == *this);
+    #[must_use]
+    pub fn rect_to_rect(_src: &Rect, _dst: &Rect) -> Self {
+        unimplemented!()
     }
 
-    void getColMajor(SkScalar v[]) const {
-        memcpy(v, fMat, sizeof(fMat));
-    }
-    void getRowMajor(SkScalar v[]) const;
-
-    SkScalar rc(int r, int c) const {
-        SkASSERT(r >= 0 && r <= 3);
-        SkASSERT(c >= 0 && c <= 3);
-        return fMat[c*4 + r];
-    }
-    void setRC(int r, int c, SkScalar value) {
-        SkASSERT(r >= 0 && r <= 3);
-        SkASSERT(c >= 0 && c <= 3);
-        fMat[c*4 + r] = value;
+    #[must_use]
+    pub fn look_at(_eye: &V3, _center: &V3, _up: &V3) -> Self {
+        unimplemented!()
     }
 
-    SkV4 row(int i) const {
-        SkASSERT(i >= 0 && i <= 3);
-        return {fMat[i + 0], fMat[i + 4], fMat[i + 8], fMat[i + 12]};
-    }
-    SkV4 col(int i) const {
-        SkASSERT(i >= 0 && i <= 3);
-        return {fMat[i*4 + 0], fMat[i*4 + 1], fMat[i*4 + 2], fMat[i*4 + 3]};
+    #[must_use]
+    pub fn perspective(_near: f32, _far: f32, _angle: f32) -> Self {
+        unimplemented!()
     }
 
-    void setRow(int i, const SkV4& v) {
-        SkASSERT(i >= 0 && i <= 3);
-        fMat[i + 0]  = v.x;
-        fMat[i + 4]  = v.y;
-        fMat[i + 8]  = v.z;
-        fMat[i + 12] = v.w;
-    }
-    void setCol(int i, const SkV4& v) {
-        SkASSERT(i >= 0 && i <= 3);
-        memcpy(&fMat[i*4], v.ptr(), sizeof(v));
+    pub fn get_col_major(&self /*SkScalar v[]*/) {
+        //memcpy(v, fMat, sizeof(fMat));
+        unimplemented!()
     }
 
-    SkM44& setIdentity() {
-        *this = { 1, 0, 0, 0,
-                  0, 1, 0, 0,
-                  0, 0, 1, 0,
-                  0, 0, 0, 1 };
-        return *this;
+    pub fn get_row_major(&self /*SkScalar v[]*/) {
+        unimplemented!()
     }
 
-    SkM44& setTranslate(SkScalar x, SkScalar y, SkScalar z = 0) {
-        *this = { 1, 0, 0, x,
-                  0, 1, 0, y,
-                  0, 0, 1, z,
-                  0, 0, 0, 1 };
-        return *this;
+    #[must_use]
+    pub fn rc(&self, r: usize, c: usize) -> Scalar {
+        debug_assert!(r <= 3);
+        debug_assert!(c <= 3);
+        self.mat[c * 4 + r]
     }
 
-    SkM44& setScale(SkScalar x, SkScalar y, SkScalar z = 1) {
-        *this = { x, 0, 0, 0,
-                  0, y, 0, 0,
-                  0, 0, z, 0,
-                  0, 0, 0, 1 };
-        return *this;
+    pub fn set_rc(&mut self, r: usize, c: usize, value: Scalar) {
+        debug_assert!(r <= 3);
+        debug_assert!(c <= 3);
+        self.mat[c * 4 + r] = value;
     }
 
-    /**
-     *  Set this matrix to rotate about the specified unit-length axis vector,
-     *  by an angle specified by its sin() and cos().
-     *
-     *  This does not attempt to verify that axis.length() == 1 or that the sin,cos values
-     *  are correct.
-     */
-    SkM44& setRotateUnitSinCos(SkV3 axis, SkScalar sinAngle, SkScalar cosAngle);
-
-    /**
-     *  Set this matrix to rotate about the specified unit-length axis vector,
-     *  by an angle specified in radians.
-     *
-     *  This does not attempt to verify that axis.length() == 1.
-     */
-    SkM44& setRotateUnit(SkV3 axis, SkScalar radians) {
-        return this->setRotateUnitSinCos(axis, SkScalarSin(radians), SkScalarCos(radians));
+    #[must_use]
+    pub fn row(&self, r: usize) -> V4 {
+        debug_assert!(r <= 3);
+        V4::make(
+            self.mat[r + 0],
+            self.mat[r + 4],
+            self.mat[r + 8],
+            self.mat[r + 12],
+        )
     }
 
-    /**
-     *  Set this matrix to rotate about the specified axis vector,
-     *  by an angle specified in radians.
-     *
-     *  Note: axis is not assumed to be unit-length, so it will be normalized internally.
-     *        If axis is already unit-length, call setRotateAboutUnitRadians() instead.
-     */
-    SkM44& setRotate(SkV3 axis, SkScalar radians);
-
-    SkM44& setConcat(const SkM44& a, const SkM44& b);
-
-    friend SkM44 operator*(const SkM44& a, const SkM44& b) {
-        return SkM44(a, b);
+    #[must_use]
+    pub fn col(&self, c: usize) -> V4 {
+        debug_assert!(c <= 3);
+        V4::make(
+            self.mat[c * 4],
+            self.mat[c * 4 + 1],
+            self.mat[c * 4 + 2],
+            self.mat[c * 4 + 3],
+        )
     }
 
-    SkM44& preConcat(const SkM44& m) {
-        return this->setConcat(*this, m);
+    pub fn set_row(&mut self, r: usize, v: &V4) {
+        debug_assert!(r <= 3);
+        self.mat[r] = v.x;
+        self.mat[r + 4] = v.y;
+        self.mat[r + 8] = v.z;
+        self.mat[r + 12] = v.w;
     }
 
-    SkM44& postConcat(const SkM44& m) {
-        return this->setConcat(m, *this);
+    pub fn set_col(&mut self, c: usize, _v: &V4) {
+        debug_assert!(c <= 3);
+        unimplemented!()
+        //memcpy(&fMat[i*4], v.ptr(), sizeof(v));
     }
 
-    /**
-     *  A matrix is categorized as 'perspective' if the bottom row is not [0, 0, 0, 1].
-     *  For most uses, a bottom row of [0, 0, 0, X] behaves like a non-perspective matrix, though
-     *  it will be categorized as perspective. Calling normalizePerspective() will change the
-     *  matrix such that, if its bottom row was [0, 0, 0, X], it will be changed to [0, 0, 0, 1]
-     *  by scaling the rest of the matrix by 1/X.
-     *
-     *  | A B C D |    | A/X B/X C/X D/X |
-     *  | E F G H | -> | E/X F/X G/X H/X |   for X != 0
-     *  | I J K L |    | I/X J/X K/X L/X |
-     *  | 0 0 0 X |    |  0   0   0   1  |
-     */
-    void normalizePerspective();
-
-    /** Returns true if all elements of the matrix are finite. Returns false if any
-        element is infinity, or NaN.
-
-        @return  true if matrix has only finite elements
-    */
-    bool isFinite() const { return SkScalarsAreFinite(fMat, 16); }
-
-    /** If this is invertible, return that in inverse and return true. If it is
-     *  not invertible, return false and leave the inverse parameter unchanged.
-     */
-    [[nodiscard]] bool invert(SkM44* inverse) const;
-
-    [[nodiscard]] SkM44 transpose() const;
-
-    void dump() const;
-
-    ////////////
-
-    SkV4 map(float x, float y, float z, float w) const;
-    SkV4 operator*(const SkV4& v) const {
-        return this->map(v.x, v.y, v.z, v.w);
-    }
-    SkV3 operator*(SkV3 v) const {
-        auto v4 = this->map(v.x, v.y, v.z, 0);
-        return {v4.x, v4.y, v4.z};
-    }
-    ////////////////////// Converting to/from SkMatrix
-
-    /* When converting from SkM44 to SkMatrix, the third row and
-     * column is dropped.  When converting from SkMatrix to SkM44
-     * the third row and column remain as identity:
-     * [ a b c ]      [ a b 0 c ]
-     * [ d e f ]  ->  [ d e 0 f ]
-     * [ g h i ]      [ 0 0 1 0 ]
-     *                [ g h 0 i ]
-     */
-    SkMatrix asM33() const {
-        return SkMatrix::MakeAll(fMat[0], fMat[4], fMat[12],
-                                 fMat[1], fMat[5], fMat[13],
-                                 fMat[3], fMat[7], fMat[15]);
+    pub fn set_identity(&mut self) -> &Self {
+        self.mat = [
+            1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+        ];
+        self
     }
 
-    explicit SkM44(const SkMatrix& src)
+    pub fn set_translate(&mut self, x: Scalar, y: Scalar, z: Scalar) -> &Self {
+        self.mat = [
+            1.0, 0.0, 0.0, x, 0.0, 1.0, 0.0, y, 0.0, 0.0, 1.0, z, 0.0, 0.0, 0.0, 1.0,
+        ];
+        self
+    }
+
+    pub fn set_scale(&mut self, x: Scalar, y: Scalar, z: Scalar) -> &Self {
+        self.mat = [
+            x, 0.0, 0.0, 0.0, 0.0, y, 0.0, 0.0, 0.0, 0.0, z, 0.0, 0.0, 0.0, 0.0, 1.0,
+        ];
+        self
+    }
+
+    /// Set this matrix to rotate about the specified unit-length axis vector,
+    /// by an angle specified by its sin() and cos().
+    ///
+    /// This does not attempt to verify that axis.length() == 1 or that the sin,cos values
+    /// are correct.
+    pub fn set_rotate_unit_sin_cos(
+        &mut self,
+        _axis: &V3,
+        _sin_angle: Scalar,
+        _cos_angle: Scalar,
+    ) -> &Self {
+        unimplemented!()
+    }
+
+    /// Set this matrix to rotate about the specified unit-length axis vector,
+    /// by an angle specified in radians.
+    ///
+    /// This does not attempt to verify that axis.length() == 1.
+    pub fn set_rotate_unit(&mut self, axis: &V3, radians: Scalar) -> &Self {
+        self.set_rotate_unit_sin_cos(axis, radians.sin(), radians.cos())
+    }
+
+    /// Set this matrix to rotate about the specified axis vector,
+    /// by an angle specified in radians.
+    ///
+    /// Note: axis is not assumed to be unit-length, so it will be normalized internally.
+    /// If axis is already unit-length, call `set_rotate_about_unit_radians()` instead.
+    pub fn set_rotate(&mut self, _axis: &V3, _radians: Scalar) -> &Self {
+        unimplemented!()
+    }
+
+    pub fn set_concat(&mut self, _a: &Self, _b: &Self) -> &Self {
+        unimplemented!()
+    }
+
+    pub fn pre_concat(&mut self, _m: &Self) -> &Self {
+        unimplemented!()
+        //self.set_concat(self, m)
+    }
+
+    pub fn post_concat(&mut self, _m: &Self) -> &Self {
+        unimplemented!()
+        //self.set_concat(m, self)
+    }
+
+    /// A matrix is categorized as 'perspective' if the bottom row is not [0, 0, 0, 1].
+    ///
+    /// For most uses, a bottom row of [0, 0, 0, X] behaves like a non-perspective matrix, though
+    /// it will be categorized as perspective.
+    /// Calling `normalize_perspective()` will change the
+    /// matrix such that, if its bottom row was [0, 0, 0, X], it will be changed to [0, 0, 0, 1]
+    /// by scaling the rest of the matrix by 1/X.
+    /// | A B C D |    | A/X B/X C/X D/X |
+    /// | E F G H | -> | E/X F/X G/X H/X |   for X != 0
+    /// | I J K L |    | I/X J/X K/X L/X |
+    /// | 0 0 0 X |    |  0   0   0   1  |
+    pub fn normalize_perspective(&self) {
+        unimplemented!()
+    }
+
+    /// Returns true if all elements of the matrix are finite.
+    ///
+    /// Returns false if any element is infinity, or NaN.
+    #[must_use]
+    pub fn is_finite(&self) -> bool {
+        unimplemented!()
+        //SkScalarsAreFinite(fMat, 16);
+    }
+
+    /// If this is invertible, return that in inverse and return true.
+    /// If it is not invertible, return false and leave the inverse parameter unchanged.
+    pub fn invert(&self, _inverse: &mut Self) -> bool {
+        unimplemented!()
+    }
+
+    #[must_use]
+    pub fn transpose(&self) -> Self {
+        unimplemented!()
+    }
+
+    pub fn dump(&self) {
+        unimplemented!()
+    }
+
+    #[must_use]
+    pub fn map(&self, _x: f32, _y: f32, _z: f32, _w: f32) -> V4 {
+        unimplemented!()
+    }
+
+    //SkV4 operator*(const SkV4& v) const { return this->map(v.x, v.y, v.z, v.w); }
+    //SkV3 operator*(SkV3 v) const { auto v4 = this->map(v.x, v.y, v.z, 0); return {v4.x, v4.y, v4.z}; }
+
+    // Converting to/from Matrix
+
+    ///When converting from M44 to Matrix, the third row and
+    /// column is dropped.
+    ///
+    /// When converting from Matrix to M44 the third row and column remain as identity:
+    /// [ a b c ]      [ a b 0 c ]
+    /// [ d e f ]  ->  [ d e 0 f ]
+    /// [ g h i ]      [ 0 0 1 0 ]
+    ///
+    ///                [ g h 0 i ]
+    #[must_use]
+    pub fn as_m33(&self) -> Matrix {
+        unimplemented!()
+        //return SkMatrix::MakeAll(fMat[0], fMat[4], fMat[12],
+        //                         fMat[1], fMat[5], fMat[13],
+        //                         fMat[3], fMat[7], fMat[15]);
+    }
+
+    /*
+    pub fn m44(const SkMatrix& src)
     : SkM44(src[SkMatrix::kMScaleX], src[SkMatrix::kMSkewX],  0, src[SkMatrix::kMTransX],
             src[SkMatrix::kMSkewY],  src[SkMatrix::kMScaleY], 0, src[SkMatrix::kMTransY],
             0,                       0,                       1, 0,
             src[SkMatrix::kMPersp0], src[SkMatrix::kMPersp1], 0, src[SkMatrix::kMPersp2])
     {}
+    */
 
-    SkM44& preTranslate(SkScalar x, SkScalar y, SkScalar z = 0);
-    SkM44& postTranslate(SkScalar x, SkScalar y, SkScalar z = 0);
+    pub fn pre_translate(&mut self, _x: Scalar, _y: Scalar, _z: Scalar) -> &Self {
+        unimplemented!()
+    }
 
-    SkM44& preScale(SkScalar x, SkScalar y);
-    SkM44& preScale(SkScalar x, SkScalar y, SkScalar z);
-    SkM44& preConcat(const SkMatrix&);
+    pub fn post_translate(&mut self, _x: Scalar, _y: Scalar, _z: Scalar) -> &Self {
+        unimplemented!()
+    }
 
-private:
+    pub fn pre_scale(&mut self, _x: Scalar, _y: Scalar) -> &Self {
+        unimplemented!()
+    }
 
-    friend class SkMatrixPriv;
+    pub fn pre_concat_matrix(&mut self, _m: &Matrix) -> &Self {
+        unimplemented!()
+    }
 }
-
