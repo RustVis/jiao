@@ -9,6 +9,7 @@ pub mod clip_op;
 pub mod color;
 pub mod color_space;
 pub mod color_type;
+pub mod font_style;
 pub mod image_info;
 pub mod irect;
 pub mod m44;
