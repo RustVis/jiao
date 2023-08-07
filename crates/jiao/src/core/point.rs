@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+#![allow(clippy::module_name_repetitions)]
+
 use std::ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign};
 
 use crate::core::scalar::ScalarExt;
@@ -146,25 +148,26 @@ impl Point {
     }
 
     /// Sets new x and y, promoting integers to float values.
+    #[allow(clippy::cast_precision_loss)]
     pub fn iset(&mut self, x: i32, y: i32) {
         self.x = x as f32;
         self.y = y as f32;
     }
 
     /// Sets x to absolute value of `pt.x`; and y to absolute value of `pt.y`.
-    pub fn set_abs(&mut self, pt: Point) {
+    pub fn set_abs(&mut self, pt: Self) {
         self.x = pt.x.abs();
         self.y = pt.y.abs();
     }
 
     /// Adds offset (dx, dy) to each `Point` in points array of length count.
     pub fn offset_slice(points: &mut [Self], dx: f32, dy: f32) {
-        for i in 0..points.len() {
-            points[i].offset(dx, dy);
+        for point in points {
+            point.offset(dx, dy);
         }
     }
 
-    /// Adds offset (dx, dy) to SkPoint.
+    /// Adds offset (dx, dy) to `Point`.
     pub fn offset(&mut self, dx: f32, dy: f32) {
         self.x += dx;
         self.y += dy;
@@ -179,6 +182,7 @@ impl Point {
 
     /// Returns the Euclidean distance from origin, computed as:
     /// `(x * x + y * y).sqrt()`
+    #[must_use]
     pub fn distance_to_origin(&self) -> f32 {
         self.length()
     }
@@ -219,10 +223,11 @@ impl Point {
     /// otherwise returns true.
     ///
     /// # Parameters
-    /// - `x` - proportional value for fX
-    /// - `y` - proportional value for fY
+    /// - `x` - proportional value for x
+    /// - `y` - proportional value for y
     /// - `length` - straight-line distance to origin
-    pub fn set_length_todo(_x: f32, _y: f32, _length: f32) -> bool {
+    #[must_use]
+    pub fn set_xy_length(_x: f32, _y: f32, _length: f32) -> bool {
         unimplemented!()
     }
 
@@ -231,7 +236,7 @@ impl Point {
     /// # Parameters
     /// - `scale` - factor to multiply `Point` by
     /// - `dst` - storage for scaled `Point`
-    pub fn scale_dst(&mut self, _scale: f32, _dst: &mut Point) {
+    pub fn scale_dst(&mut self, _scale: f32, _dst: &mut Self) {
         unimplemented!()
     }
 
@@ -304,6 +309,7 @@ impl Point {
 }
 
 impl From<IPoint> for Point {
+    #[allow(clippy::cast_precision_loss)]
     fn from(point: IPoint) -> Self {
         Self::make(point.x() as f32, point.y() as f32)
     }
