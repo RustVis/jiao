@@ -11,6 +11,7 @@ pub mod color_space;
 pub mod color_type;
 pub mod image_info;
 pub mod irect;
+pub mod m44;
 pub mod paint;
 pub mod path;
 pub mod path_builder;
