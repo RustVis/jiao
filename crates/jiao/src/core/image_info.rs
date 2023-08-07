@@ -6,7 +6,7 @@ use crate::base::math::MAX_S32;
 use crate::core::alpha_type::AlphaType;
 use crate::core::color_space::ColorSpace;
 use crate::core::color_type::{self, ColorType};
-use crate::core::rect::IRect;
+use crate::core::irect::IRect;
 use crate::core::size::ISize;
 
 /// `YUVColorSpace` describes color range of YUV pixels.
