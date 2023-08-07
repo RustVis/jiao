@@ -76,6 +76,10 @@ pub trait ScalarExt {
     /// t must be [0..1.0]
     #[must_use]
     fn interp(self, other: Self, t: Self) -> Self;
+
+    // TODO(Shaohua): Remove this method when f32::midpoint() is availabel in stable API.
+    #[must_use]
+    fn mid_point(self, other: Self) -> Self;
 }
 
 impl ScalarExt for Scalar {
@@ -174,6 +178,29 @@ impl ScalarExt for Scalar {
     fn interp(self, other: Self, t: Self) -> Self {
         debug_assert!((0.0..=1.0).contains(&t));
         (other - self).mul_add(t, self)
+    }
+
+    fn mid_point(self, other: Self) -> Self {
+        const LO: f32 = f32::MIN_POSITIVE * 2.0;
+        const HI: f32 = f32::MAX / 2.0;
+
+        let (a, b) = (self, other);
+        let abs_a = a.abs();
+        let abs_b = b.abs();
+
+        if abs_a <= HI && abs_b <= HI {
+            // Overflow is impossible
+            (a + b) / 2.0
+        } else if abs_a < LO {
+            // Not safe to halve a
+            a + (b / 2.0)
+        } else if abs_b < LO {
+            // Not safe to halve b
+            (a / 2.0) + b
+        } else {
+            // Not safe to halve a and b
+            (a / 2.0) + (b / 2.0)
+        }
     }
 }
 
