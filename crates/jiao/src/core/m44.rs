@@ -18,6 +18,11 @@ pub struct V2 {
 
 impl V2 {
     #[must_use]
+    pub const fn make(x: f32, y: f32) -> Self {
+        Self { x, y }
+    }
+
+    #[must_use]
     pub fn dot(&self, other: &Self) -> Scalar {
         self.x.mul_add(other.x, self.y * other.y)
     }
@@ -181,6 +186,7 @@ pub struct V3 {
 }
 
 impl V3 {
+    #[must_use]
     pub const fn make(x: f32, y: f32, z: f32) -> Self {
         Self { x, y, z }
     }
@@ -329,6 +335,7 @@ pub struct V4 {
 }
 
 impl V4 {
+    #[must_use]
     pub const fn make(x: f32, y: f32, z: f32, w: f32) -> Self {
         Self { x, y, z, w }
     }
@@ -509,7 +516,7 @@ impl M44 {
     }
 
     #[must_use]
-    pub fn make_identity() -> Self {
+    pub const fn make_identity() -> Self {
         Self {
             mat: [
                 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
@@ -520,7 +527,9 @@ impl M44 {
     //SkM44(const SkM44& a, const SkM44& b) { this->setConcat(a, b); }
 
     /// The constructor parameters are in row-major order.
+    // FIXME(Shaohua): too many arguments
     #[must_use]
+    #[allow(clippy::too_many_arguments)]
     pub const fn make(
         m0: Scalar,
         m4: Scalar,
@@ -568,7 +577,7 @@ impl M44 {
     }
 
     #[must_use]
-    pub fn row_major(r: &[Scalar; 16]) -> Self {
+    pub const fn row_major(r: &[Scalar; 16]) -> Self {
         Self::make(
             r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13],
             r[14], r[15],
@@ -576,7 +585,7 @@ impl M44 {
     }
 
     #[must_use]
-    pub fn col_major(c: &[Scalar; 16]) -> Self {
+    pub const fn col_major(c: &[Scalar; 16]) -> Self {
         Self::make(
             c[0], c[4], c[8], c[12], c[1], c[5], c[9], c[13], c[2], c[6], c[10], c[14], c[3], c[7],
             c[11], c[15],
@@ -584,14 +593,14 @@ impl M44 {
     }
 
     #[must_use]
-    pub fn translate(x: Scalar, y: Scalar, z: Scalar) -> Self {
+    pub const fn translate(x: Scalar, y: Scalar, z: Scalar) -> Self {
         Self::make(
             1.0, 0.0, 0.0, x, 0.0, 1.0, 0.0, y, 0.0, 0.0, 1.0, z, 0.0, 0.0, 0.0, 1.0,
         )
     }
 
     #[must_use]
-    pub fn scale(x: Scalar, y: Scalar, z: Scalar) -> Self {
+    pub const fn scale(x: Scalar, y: Scalar, z: Scalar) -> Self {
         Self::make(
             x, 0.0, 0.0, 0.0, 0.0, y, 0.0, 0.0, 0.0, 0.0, z, 0.0, 0.0, 0.0, 0.0, 1.0,
         )
@@ -646,7 +655,7 @@ impl M44 {
     pub fn row(&self, r: usize) -> V4 {
         debug_assert!(r <= 3);
         V4::make(
-            self.mat[r + 0],
+            self.mat[r],
             self.mat[r + 4],
             self.mat[r + 8],
             self.mat[r + 12],
