@@ -5,6 +5,7 @@
 pub mod alpha_type;
 pub mod blend_mode;
 pub mod canvas;
+pub mod clip_op;
 pub mod color;
 pub mod color_space;
 pub mod color_type;
