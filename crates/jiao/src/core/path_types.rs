@@ -107,3 +107,12 @@ impl PathVerb {
         }
     }
 }
+
+#[repr(u8)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub enum ArcSize {
+    /// smaller of arc pair
+    Small,
+    /// larger of arc pair
+    Large,
+}
