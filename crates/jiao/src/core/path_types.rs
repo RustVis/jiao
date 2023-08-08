@@ -32,6 +32,16 @@ impl PathFillType {
     }
 
     #[must_use]
+    pub const fn inverse(self) -> Self {
+        match self {
+            Self::Winding => Self::InverseWinding,
+            Self::EvenOdd => Self::InverseEvenOdd,
+            Self::InverseWinding => Self::Winding,
+            Self::InverseEvenOdd => Self::EvenOdd,
+        }
+    }
+
+    #[must_use]
     pub const fn convert_to_non_inverse(self) -> Self {
         match self {
             Self::Winding => Self::InverseWinding,
