@@ -22,7 +22,18 @@ pub struct IPoint {
     y: i32,
 }
 
+impl Default for IPoint {
+    fn default() -> Self {
+        Self::make_empty()
+    }
+}
+
 impl IPoint {
+    #[must_use]
+    pub const fn make_empty() -> Self {
+        Self { x: 0, y: 0 }
+    }
+
     #[must_use]
     pub const fn make(x: i32, y: i32) -> Self {
         Self { x, y }
@@ -117,7 +128,18 @@ pub struct Point {
     y: f32,
 }
 
+impl Default for Point {
+    fn default() -> Self {
+        Self::make_empty()
+    }
+}
+
 impl Point {
+    #[must_use]
+    pub const fn make_empty() -> Self {
+        Self { x: 0.0, y: 0.0 }
+    }
+
     #[must_use]
     pub const fn make(x: f32, y: f32) -> Self {
         Self { x, y }

@@ -21,6 +21,7 @@ pub mod path_types;
 pub mod point;
 pub mod point3;
 pub mod rect;
+pub mod rrect;
 pub mod scalar;
 pub mod size;
 pub mod surface_props;
