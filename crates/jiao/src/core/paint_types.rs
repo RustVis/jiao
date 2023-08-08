@@ -28,7 +28,7 @@ impl Default for PaintStyle {
     }
 }
 
-/// `PaintJoin` specifies how corners are drawn when a shape is stroked.
+/// `StrokeJoin` specifies how corners are drawn when a shape is stroked.
 /// Join affects the four corners of a stroked rectangle, and the connected segments in a
 /// stroked path.
 ///
@@ -43,7 +43,7 @@ impl Default for PaintStyle {
 /// include circles at each connected segment.
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub enum PaintJoin {
+pub enum StrokeJoin {
     /// Extends to miter limit
     Miter,
 
@@ -54,14 +54,16 @@ pub enum PaintJoin {
     Bevel,
 }
 
-impl Default for PaintJoin {
+impl Default for StrokeJoin {
     fn default() -> Self {
         Self::Miter
     }
 }
 
-/// `PaintCap` draws at the beginning and end of an open path contour.
-pub enum PaintCap {
+/// `StrokeCap` draws at the beginning and end of an open path contour.
+#[repr(u8)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub enum StrokeCap {
     /// No stroke extension
     Butt,
 
@@ -72,7 +74,7 @@ pub enum PaintCap {
     Square,
 }
 
-impl Default for PaintCap {
+impl Default for StrokeCap {
     fn default() -> Self {
         Self::Butt
     }

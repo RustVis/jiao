@@ -375,7 +375,7 @@ impl Rgba4F<AlphaType> {
     }
 }
 
-// TODO(Shaohua): Replace with partial specialization
+// TODO(Shaohua): Replace with partial specialization of Rgba4F<AlphaType>
 /// `Color4F` represents RGBA color value, holding four floating point components.
 ///
 /// Color components are always in a known order, and are unpremultiplied.

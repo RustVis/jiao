@@ -14,28 +14,45 @@
 
 #![allow(clippy::module_name_repetitions)]
 
-use crate::core::color::Color4F;
+use crate::core::color::{colors::BLACK, Color4F};
 use crate::core::color_space::ColorSpace;
-use crate::core::paint_types::PaintStyle;
+use crate::core::font_types::FontHinting;
+use crate::core::paint_types::{PaintStyle, StrokeCap, StrokeJoin};
+use crate::core::scalar::Scalar;
+
+pub const DEFAULT_TEXT_SIZE: Scalar = 12.0;
+pub const DEFAULT_FONT_HINTING: FontHinting = FontHinting::Normal;
+pub const DEFAULT_MITER_LIMIT: Scalar = 4.0;
 
 #[derive(Debug, Clone)]
 pub struct Paint {
-    color: Color4F,
     color_space: Option<ColorSpace>,
+    color: Color4F,
+    stroke_width: Scalar,
+    miter_limit: Scalar,
+
     anti_alias: bool,
     dither: bool,
     style: PaintStyle,
+    cap: StrokeCap,
+    join: StrokeJoin,
 }
 
 impl Paint {
+    /// Constructs Paint with default values.
     #[must_use]
     pub fn new() -> Self {
         Self {
-            color: Color4F::default(),
             color_space: None,
+            color: BLACK,
+            stroke_width: 0.0,
+            miter_limit: DEFAULT_MITER_LIMIT,
+
             anti_alias: false,
             dither: false,
             style: PaintStyle::Fill,
+            cap: StrokeCap::default(),
+            join: StrokeJoin::default(),
         }
     }
 
@@ -60,6 +77,46 @@ impl Paint {
     /// This is equivalent to replacing Paint with the result of `Paint::default()`.
     pub fn reset(&mut self) {
         unimplemented!()
+    }
+
+    /// Returns the thickness of the pen used by Paint to outline the shape.
+    ///
+    /// Returns zero for hairline, greater than zero for pen thickness
+    #[must_use]
+    pub const fn get_stroke_width(&self) -> Scalar {
+        self.stroke_width
+    }
+
+    /// Sets the thickness of the pen used by the paint to outline the shape.
+    ///
+    /// A stroke-width of zero is treated as "hairline" width. Hairlines are always exactly one
+    /// pixel wide in device space (their thickness does not change as the canvas is scaled).
+    /// Negative stroke-widths are invalid; setting a negative width will have no effect.
+    ///
+    /// # Parameters
+    /// - `width` - zero thickness for hairline; greater than zero for pen thickness
+    pub fn set_stroke_width(&mut self, width: Scalar) {
+        self.stroke_width = width;
+    }
+
+    /// Returns the limit at which a sharp corner is drawn beveled.
+    ///
+    /// Returns zero and greater miter limit
+    #[must_use]
+    pub const fn get_stroke_miter(&self) -> Scalar {
+        self.miter_limit
+    }
+
+    /// Sets the limit at which a sharp corner is drawn beveled.
+    ///
+    /// Valid values are zero and greater.
+    /// Has no effect if miter is less than zero.
+    ///
+    /// # Parameters
+    /// - `miter` - zero and greater miter limit
+    pub fn set_stroke_miter(&mut self, miter: Scalar) {
+        debug_assert!(miter >= 0.0);
+        self.miter_limit = miter;
     }
 
     /// Returns true if pixels on the active edges of Path may be drawn with partial transparency.
@@ -95,6 +152,28 @@ impl Paint {
     /// Has no effect if style is not a legal `PaintStyle` value.
     pub fn set_style(&mut self, style: PaintStyle) {
         self.style = style;
+    }
+
+    /// Returns the geometry drawn at the beginning and end of strokes.
+    #[must_use]
+    pub const fn get_stroke_cap(&self) -> StrokeCap {
+        self.cap
+    }
+
+    /// Sets the geometry drawn at the beginning and end of strokes.
+    pub fn set_stroke_cap(&mut self, cap: StrokeCap) {
+        self.cap = cap;
+    }
+
+    /// Returns the geometry drawn at the corners of strokes.
+    #[must_use]
+    pub const fn get_stroke_join(&self) -> StrokeJoin {
+        self.join
+    }
+
+    /// Sets the geometry drawn at the corners of strokes.
+    pub fn set_stroke_join(&mut self, join: StrokeJoin) {
+        self.join = join;
     }
 }
 
