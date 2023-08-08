@@ -24,18 +24,18 @@ pub struct IPoint {
 
 impl Default for IPoint {
     fn default() -> Self {
-        Self::make_empty()
+        Self::new()
     }
 }
 
 impl IPoint {
     #[must_use]
-    pub const fn make_empty() -> Self {
+    pub const fn new() -> Self {
         Self { x: 0, y: 0 }
     }
 
     #[must_use]
-    pub const fn make(x: i32, y: i32) -> Self {
+    pub const fn from_xy(x: i32, y: i32) -> Self {
         Self { x, y }
     }
 
@@ -130,18 +130,18 @@ pub struct Point {
 
 impl Default for Point {
     fn default() -> Self {
-        Self::make_empty()
+        Self::new()
     }
 }
 
 impl Point {
     #[must_use]
-    pub const fn make_empty() -> Self {
+    pub const fn new() -> Self {
         Self { x: 0.0, y: 0.0 }
     }
 
     #[must_use]
-    pub const fn make(x: f32, y: f32) -> Self {
+    pub const fn from_xy(x: f32, y: f32) -> Self {
         Self { x, y }
     }
 
@@ -333,7 +333,7 @@ impl Point {
 impl From<IPoint> for Point {
     #[allow(clippy::cast_precision_loss)]
     fn from(point: IPoint) -> Self {
-        Self::make(point.x() as f32, point.y() as f32)
+        Self::from_xy(point.x() as f32, point.y() as f32)
     }
 }
 

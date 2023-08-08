@@ -364,7 +364,7 @@ impl Rgba4F<AlphaType> {
 
     /// Returns a copy of the `Rgba4F` but with alpha component set to 1.0f.
     #[must_use]
-    pub const fn make_opaque(&self) -> Self {
+    pub const fn new_opaque(&self) -> Self {
         Self {
             red: self.red,
             green: self.green,
@@ -494,7 +494,7 @@ impl Color4F {
 
     /// Returns a copy of the `Color4F` but with alpha component set to 1.0f.
     #[must_use]
-    pub const fn make_opaque(&self) -> Self {
+    pub const fn new_opaque(&self) -> Self {
         Self {
             red: self.red,
             green: self.green,

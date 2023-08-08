@@ -13,7 +13,7 @@ use crate::core::size::ISize;
 /// `IRect` may be created from outer bounds or from position, width, and height.
 /// `IRect` describes an area; if its right is less than or equal to its left,
 /// or if its bottom is less than or equal to its top, it is considered empty.
-#[derive(Debug, Default, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct IRect {
     /// smaller x-axis bounds
     left: i32,
@@ -28,6 +28,12 @@ pub struct IRect {
     bottom: i32,
 }
 
+impl Default for IRect {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl IRect {
     /// Returns constructed `IRect` set to (0, 0, 0, 0).
     ///
@@ -35,7 +41,7 @@ impl IRect {
     /// or if top is equal to or greater than bottom. Setting all members to zero
     /// is a convenience, but does not designate a special empty rectangle.
     #[must_use]
-    pub const fn make_empty() -> Self {
+    pub const fn new() -> Self {
         Self {
             left: 0,
             top: 0,
@@ -48,7 +54,7 @@ impl IRect {
     ///
     /// Does not validate input; width or height may be negative.
     #[must_use]
-    pub const fn make_wh(width: i32, height: i32) -> Self {
+    pub const fn from_wh(width: i32, height: i32) -> Self {
         Self {
             left: 0,
             top: 0,
@@ -61,7 +67,7 @@ impl IRect {
     ///
     /// Does not validate input; size.width() or size.height() may be negative.
     #[must_use]
-    pub const fn make_size(size: ISize) -> Self {
+    pub const fn from_size(size: ISize) -> Self {
         Self {
             left: 0,
             top: 0,
@@ -79,8 +85,8 @@ impl IRect {
     /// - `pt` - values for `IRect` left and top
     /// - `size` - values for `IRect` width and height
     #[must_use]
-    pub const fn make_pt_size(&self, size: ISize) -> Self {
-        Self::make_xywh(self.x(), self.y(), size.width(), size.height())
+    pub const fn from_pt_size(&self, size: ISize) -> Self {
+        Self::from_xywh(self.x(), self.y(), size.width(), size.height())
     }
 
     /// Returns constructed `IRect` set to (l, t, r, b).
@@ -88,7 +94,7 @@ impl IRect {
     /// Does not sort input; `IRect` may result in left greater than right,
     /// or top greater than bottom.
     #[must_use]
-    pub const fn make_ltrb(left: i32, top: i32, right: i32, bottom: i32) -> Self {
+    pub const fn from_ltrb(left: i32, top: i32, right: i32, bottom: i32) -> Self {
         Self {
             left,
             top,
@@ -106,7 +112,7 @@ impl IRect {
     /// - `width` - added to x and stored in right
     /// - `height` - added to y and stored in bottom
     #[must_use]
-    pub const fn make_xywh(x: i32, y: i32, width: i32, height: i32) -> Self {
+    pub const fn from_xywh(x: i32, y: i32, width: i32, height: i32) -> Self {
         Self {
             left: x,
             top: y,
@@ -169,7 +175,7 @@ impl IRect {
 
     #[must_use]
     pub const fn top_left(&self) -> IPoint {
-        IPoint::make(self.left, self.top)
+        IPoint::from_xy(self.left, self.top)
     }
 
     /// Returns span on the x-axis.
@@ -198,7 +204,7 @@ impl IRect {
     /// result may be negative.
     #[must_use]
     pub const fn size(&self) -> ISize {
-        ISize::make(self.width(), self.height())
+        ISize::from_wh(self.width(), self.height())
     }
 
     /// Returns span on the x-axis.
@@ -312,7 +318,7 @@ impl IRect {
     ///
     /// Returns `IRect` offset by dx and dy, with original width and height
     #[must_use]
-    pub const fn make_offset(&self, dx: i32, dy: i32) -> Self {
+    pub const fn from_offset(&self, dx: i32, dy: i32) -> Self {
         // FIXME(Shaohua): Check add overflow
         Self {
             left: self.left + dx,
@@ -334,8 +340,8 @@ impl IRect {
     ///
     /// Returns `IRect` translated by offset, with original width and height
     #[must_use]
-    pub const fn make_offset_point(&self, offset: &IPoint) -> Self {
-        self.make_offset(offset.x(), offset.y())
+    pub const fn from_offset_point(&self, offset: &IPoint) -> Self {
+        self.from_offset(offset.x(), offset.y())
     }
 
     /// Returns `IRect`, inset by (dx, dy).
@@ -351,7 +357,7 @@ impl IRect {
     ///
     /// Returns `IRect` inset symmetrically left and right, top and bottom
     #[must_use]
-    pub const fn make_inset(&self, dx: i32, dy: i32) -> Self {
+    pub const fn from_inset(&self, dx: i32, dy: i32) -> Self {
         // FIXME(Shaohua): Check add/sub overflow
         Self {
             left: self.left + dx,
@@ -374,7 +380,7 @@ impl IRect {
     ///
     /// Returns `IRect` outset symmetrically left and right, top and bottom
     #[must_use]
-    pub const fn make_outset(&self, dx: i32, dy: i32) -> Self {
+    pub const fn from_outset(&self, dx: i32, dy: i32) -> Self {
         // FIXME(Shaohua): Check add/sub overflow
         Self {
             left: self.left - dx,
@@ -560,8 +566,8 @@ impl IRect {
     ///
     /// Result may be empty; and width() and height() will be zero or positive.
     #[must_use]
-    pub fn make_sorted(&self) -> Self {
-        Self::make_ltrb(
+    pub fn from_sorted(&self) -> Self {
+        Self::from_ltrb(
             self.left.min(self.right),
             self.top.min(self.bottom),
             self.left.max(self.right),

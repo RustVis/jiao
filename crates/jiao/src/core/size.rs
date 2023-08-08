@@ -12,18 +12,24 @@ pub struct ISize {
     height: i32,
 }
 
+impl Default for ISize {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ISize {
     #[must_use]
-    pub const fn make(width: i32, height: i32) -> Self {
-        Self { width, height }
-    }
-
-    #[must_use]
-    pub const fn make_empty() -> Self {
+    pub const fn new() -> Self {
         Self {
             width: 0,
             height: 0,
         }
+    }
+
+    #[must_use]
+    pub const fn from_wh(width: i32, height: i32) -> Self {
+        Self { width, height }
     }
 
     #[inline]
@@ -77,9 +83,23 @@ pub struct Size {
     height: Scalar,
 }
 
+impl Default for Size {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Size {
     #[must_use]
-    pub const fn make(width: Scalar, height: Scalar) -> Self {
+    pub const fn new() -> Self {
+        Self {
+            width: 0.0,
+            height: 0.0,
+        }
+    }
+
+    #[must_use]
+    pub const fn from_wh(width: Scalar, height: Scalar) -> Self {
         Self { width, height }
     }
 
@@ -88,14 +108,6 @@ impl Size {
         Self {
             width: scalar_from_int(src.width()),
             height: scalar_from_int(src.height()),
-        }
-    }
-
-    #[must_use]
-    pub const fn make_empty() -> Self {
-        Self {
-            width: 0.0,
-            height: 0.0,
         }
     }
 
@@ -139,16 +151,16 @@ impl Size {
 
     #[must_use]
     pub fn to_round(&self) -> ISize {
-        ISize::make(self.width.round_to_int(), self.height.round_to_int())
+        ISize::from_wh(self.width.round_to_int(), self.height.round_to_int())
     }
 
     #[must_use]
     pub fn to_ceil(&self) -> ISize {
-        ISize::make(self.width.ceil_to_int(), self.height.ceil_to_int())
+        ISize::from_wh(self.width.ceil_to_int(), self.height.ceil_to_int())
     }
 
     #[must_use]
     pub fn to_floor(&self) -> ISize {
-        ISize::make(self.width.floor_to_int(), self.height.floor_to_int())
+        ISize::from_wh(self.width.floor_to_int(), self.height.floor_to_int())
     }
 }

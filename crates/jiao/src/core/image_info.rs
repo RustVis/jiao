@@ -84,7 +84,7 @@ impl ColorInfo {
     /// Creates `ColorInfo` from `ColorType`, `AlphaType` and `ColorSpace`.
     /// `ColorSpace` defaults to `sRGB`.
     #[must_use]
-    pub const fn make(
+    pub const fn from(
         color_type: ColorType,
         alpha_type: AlphaType,
         color_space: Option<ColorSpace>,
@@ -101,7 +101,7 @@ impl ColorInfo {
     /// Created `ColorInfo` contains `new_alpha_type` even if it is incompatible with
     /// `ColorType`, in which case `AlphaType` in `ColorInfo` is ignored.
     #[must_use]
-    pub fn make_alpha_type(&self, new_alpha_type: AlphaType) -> Self {
+    pub fn from_alpha_type(&self, new_alpha_type: AlphaType) -> Self {
         Self {
             color_space: self.color_space.clone(),
             color_type: self.color_type,
@@ -112,7 +112,7 @@ impl ColorInfo {
     /// Creates new `ColorInfo` with same `AlphaType`, `ColorSpace` as self, with `ColorType`
     /// changed.
     #[must_use]
-    pub fn make_color_type(&self, new_color_type: ColorType) -> Self {
+    pub fn from_color_type(&self, new_color_type: ColorType) -> Self {
         Self {
             color_space: self.color_space.clone(),
             color_type: new_color_type,
@@ -122,7 +122,7 @@ impl ColorInfo {
 
     /// Creates `ColorInfo` with same `AlphaType`, `ColorType` as self, with `ColorSpace` changed.
     #[must_use]
-    pub const fn make_color_space(&self, new_color_space: Option<ColorSpace>) -> Self {
+    pub const fn from_color_space(&self, new_color_space: Option<ColorSpace>) -> Self {
         Self {
             color_space: new_color_space,
             color_type: self.color_type,
@@ -214,7 +214,7 @@ impl ImageInfo {
     pub const fn new() -> Self {
         Self {
             color_info: ColorInfo::new(),
-            dimensions: ISize::make(0, 0),
+            dimensions: ISize::new(),
         }
     }
 
@@ -232,7 +232,7 @@ impl ImageInfo {
     /// - `height` - pixel row count; must be zero or greater
     /// - `cs` - range of colors; may be None
     #[must_use]
-    pub const fn make(
+    pub const fn from(
         width: i32,
         height: i32,
         ct: ColorType,
@@ -240,8 +240,8 @@ impl ImageInfo {
         cs: Option<ColorSpace>,
     ) -> Self {
         Self {
-            color_info: ColorInfo::make(ct, at, cs),
-            dimensions: ISize::make(width, height),
+            color_info: ColorInfo::from(ct, at, cs),
+            dimensions: ISize::from_wh(width, height),
         }
     }
 
@@ -253,7 +253,7 @@ impl ImageInfo {
         cs: Option<ColorSpace>,
     ) -> Self {
         Self {
-            color_info: ColorInfo::make(ct, at, cs),
+            color_info: ColorInfo::from(ct, at, cs),
             dimensions,
         }
     }
@@ -268,7 +268,7 @@ impl ImageInfo {
     /// - `color_info` - the pixel encoding consisting of `ColorType`, `AlphaType`, and
     ///                  `ColorSpace` (which may be nullptr)
     #[must_use]
-    pub const fn make_color_info(dimensions: ISize, color_info: ColorInfo) -> Self {
+    pub const fn from_color_info(dimensions: ISize, color_info: ColorInfo) -> Self {
         Self {
             color_info,
             dimensions,
@@ -292,10 +292,10 @@ impl ImageInfo {
     /// - `height` -  pixel row count; must be zero or greater
     /// - `cs` - range of colors; may be None
     #[must_use]
-    pub const fn make_n32(width: i32, height: i32, at: AlphaType, cs: Option<ColorSpace>) -> Self {
+    pub const fn new_n32(width: i32, height: i32, at: AlphaType, cs: Option<ColorSpace>) -> Self {
         Self {
-            color_info: ColorInfo::make(color_type::N32, at, cs),
-            dimensions: ISize::make(width, height),
+            color_info: ColorInfo::from(color_type::N32, at, cs),
+            dimensions: ISize::from_wh(width, height),
         }
     }
 
@@ -309,11 +309,11 @@ impl ImageInfo {
     /// - `width` - pixel column count; must be zero or greater
     /// - `height` - pixel column count; must be zero or greater
     #[must_use]
-    pub const fn make_s32(width: i32, height: i32, at: AlphaType) -> Self {
+    pub const fn new_s32(width: i32, height: i32, at: AlphaType) -> Self {
         Self {
             // TODO(Shaohua): Set color space.
-            color_info: ColorInfo::make(color_type::N32, at, None),
-            dimensions: ISize::make(width, height),
+            color_info: ColorInfo::from(color_type::N32, at, None),
+            dimensions: ISize::from_wh(width, height),
         }
     }
 
@@ -331,10 +331,10 @@ impl ImageInfo {
     /// - `height` -  pixel row count; must be zero or greater
     /// - `cs` - range of colors; may be None
     #[must_use]
-    pub const fn make_n32_premul(width: i32, height: i32, cs: Option<ColorSpace>) -> Self {
+    pub const fn new_n32_premul(width: i32, height: i32, cs: Option<ColorSpace>) -> Self {
         Self {
-            color_info: ColorInfo::make(ColorType::Alpha8, AlphaType::Premul, cs),
-            dimensions: ISize::make(width, height),
+            color_info: ColorInfo::from(ColorType::Alpha8, AlphaType::Premul, cs),
+            dimensions: ISize::from_wh(width, height),
         }
     }
 
@@ -345,10 +345,10 @@ impl ImageInfo {
     /// - `width` - pixel column count; must be zero or greater
     /// - `height` - pixel row count; must be zero or greater
     #[must_use]
-    pub const fn make_a8(width: i32, height: i32) -> Self {
+    pub const fn new_a8(width: i32, height: i32) -> Self {
         Self {
-            color_info: ColorInfo::make(ColorType::Alpha8, AlphaType::Premul, None),
-            dimensions: ISize::make(width, height),
+            color_info: ColorInfo::from(ColorType::Alpha8, AlphaType::Premul, None),
+            dimensions: ISize::from_wh(width, height),
         }
     }
 
@@ -362,18 +362,18 @@ impl ImageInfo {
     /// - `width` - pixel column count; must be zero or greater
     /// - `height` - pixel row count; must be zero or greater
     #[must_use]
-    pub const fn make_unknown(width: i32, height: i32) -> Self {
+    pub const fn new_unknown(width: i32, height: i32) -> Self {
         Self {
-            color_info: ColorInfo::make(ColorType::Unknown, AlphaType::Unknown, None),
-            dimensions: ISize::make(width, height),
+            color_info: ColorInfo::from(ColorType::Unknown, AlphaType::Unknown, None),
+            dimensions: ISize::from_wh(width, height),
         }
     }
 
     /// Creates `ImageInfo` from integral dimensions width and height set to zero,
     /// `ColorType::Unknown`, `AlphaType::Unknown`, with `ColorSpace` set to None.
     #[must_use]
-    pub const fn make_unknown_empty() -> Self {
-        Self::make_unknown(0, 0)
+    pub const fn new_unknown_empty() -> Self {
+        Self::new_unknown(0, 0)
     }
 
     /// Creates `ImageInfo` with the same `ColorType`, `ColorSpace`, and `AlphaType`,
@@ -383,15 +383,18 @@ impl ImageInfo {
     /// - `new_width` - pixel column count; must be zero or greater
     /// - `new_height` - pixel row count; must be zero or greater
     #[must_use]
-    pub fn make_wh(&self, new_width: i32, new_height: i32) -> Self {
-        Self::make_color_info(ISize::make(new_width, new_height), self.color_info.clone())
+    pub fn from_wh(&self, new_width: i32, new_height: i32) -> Self {
+        Self::from_color_info(
+            ISize::from_wh(new_width, new_height),
+            self.color_info.clone(),
+        )
     }
 
     /// Creates `ImageInfo` with the same `ColorType`, `ColorSpace`, and `AlphaType`,
     /// with dimensions set to `new_dimensions`.
     #[must_use]
-    pub fn make_dimensions(&self, new_size: ISize) -> Self {
-        Self::make_color_info(new_size, self.color_info.clone())
+    pub fn from_dimensions(&self, new_size: ISize) -> Self {
+        Self::from_color_info(new_size, self.color_info.clone())
     }
 
     /// Creates `ImageInfo` with same `ColorType`, `ColorSpace`, width, and height,
@@ -400,30 +403,30 @@ impl ImageInfo {
     /// Created `ImageInfo` contains `new_alpha_type` even if it is incompatible with
     /// `ColorType`, in which case `AlphaType` in `ImageInfo` is ignored.
     #[must_use]
-    pub fn make_alpha_type(&self, new_alpha_type: AlphaType) -> Self {
-        Self::make_color_info(
+    pub fn from_alpha_type(&self, new_alpha_type: AlphaType) -> Self {
+        Self::from_color_info(
             self.dimensions,
-            self.color_info.make_alpha_type(new_alpha_type),
+            self.color_info.from_alpha_type(new_alpha_type),
         )
     }
 
     /// Creates `ImageInfo` with same `AlphaType`, `ColorSpace`, width, and height,
     /// with `ColorType` set to `new_color_type`.
     #[must_use]
-    pub fn make_color_type(&self, new_color_type: ColorType) -> Self {
-        Self::make_color_info(
+    pub fn from_color_type(&self, new_color_type: ColorType) -> Self {
+        Self::from_color_info(
             self.dimensions,
-            self.color_info.make_color_type(new_color_type),
+            self.color_info.from_color_type(new_color_type),
         )
     }
 
     /// Creates `ImageInfo` with same `AlphaType`, `ColorType`, width, and height,
     /// with `ColorSpace` set to `new_color_space`.
     #[must_use]
-    pub const fn make_color_space(&self, new_color_space: Option<ColorSpace>) -> Self {
-        Self::make_color_info(
+    pub const fn from_color_space(&self, new_color_space: Option<ColorSpace>) -> Self {
+        Self::from_color_info(
             self.dimensions,
-            self.color_info.make_color_space(new_color_space),
+            self.color_info.from_color_space(new_color_space),
         )
     }
 
@@ -516,7 +519,7 @@ impl ImageInfo {
     /// Returns integral rectangle from origin to width() and height()
     #[must_use]
     pub const fn bounds(&self) -> IRect {
-        IRect::make_size(self.dimensions)
+        IRect::from_size(self.dimensions)
     }
 
     /// Returns true if associated `ColorSpace` is not None, and `ColorSpace` gamma

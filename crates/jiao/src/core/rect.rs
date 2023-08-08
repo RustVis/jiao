@@ -34,7 +34,7 @@ impl Rect {
     /// or if top is equal to or greater than bottom. Setting all members to zero
     /// is a convenience, but does not designate a special empty rectangle.
     #[must_use]
-    pub const fn make_empty() -> Self {
+    pub const fn new() -> Self {
         Self {
             left: 0.0,
             top: 0.0,
@@ -50,7 +50,7 @@ impl Rect {
     /// Passing integer values may generate a compiler warning since Rect cannot
     /// represent 32-bit integers exactly. Use `IRect` for an exact integer rectangle.
     #[must_use]
-    pub const fn make_wh(width: f32, height: f32) -> Self {
+    pub const fn from_wh(width: f32, height: f32) -> Self {
         Self {
             left: 0.0,
             top: 0.0,
@@ -64,7 +64,7 @@ impl Rect {
     /// Does not validate input; width or height may be negative.
     #[must_use]
     #[allow(clippy::cast_precision_loss)]
-    pub const fn make_iwh(width: i32, height: i32) -> Self {
+    pub const fn from_iwh(width: i32, height: i32) -> Self {
         Self {
             left: 0.0,
             top: 0.0,
@@ -77,7 +77,7 @@ impl Rect {
     ///
     /// Does not validate input; size.width() or size.height() may be negative.
     #[must_use]
-    pub const fn make_size(size: &Size) -> Self {
+    pub const fn from_size(size: &Size) -> Self {
         Self {
             left: 0.0,
             top: 0.0,
@@ -91,7 +91,7 @@ impl Rect {
     /// Does not sort input; Rect may result in left greater than right,
     /// or top greater than bottom.
     #[must_use]
-    pub const fn make_ltrb(left: f32, top: f32, right: f32, bottom: f32) -> Self {
+    pub const fn from_ltrb(left: f32, top: f32, right: f32, bottom: f32) -> Self {
         Self {
             left,
             top,
@@ -110,7 +110,7 @@ impl Rect {
     /// - `width` - added to x and stored in right
     /// - `height` - added to y and stored in bottom
     #[must_use]
-    pub fn make_xywh(x: f32, y: f32, width: f32, height: f32) -> Self {
+    pub fn from_xywh(x: f32, y: f32, width: f32, height: f32) -> Self {
         Self {
             left: x,
             top: y,
@@ -123,8 +123,8 @@ impl Rect {
     ///
     /// Does not validate input; size.width() or size.height() may be negative.
     #[must_use]
-    pub const fn make_isize(size: ISize) -> Self {
-        Self::make_iwh(size.width(), size.height())
+    pub const fn from_isize(size: ISize) -> Self {
+        Self::from_iwh(size.width(), size.height())
     }
 
     /// Returns constructed `IRect` set to irect, promoting integers to float.
@@ -133,13 +133,21 @@ impl Rect {
     /// top may be greater than bottom.
     #[must_use]
     #[allow(clippy::cast_precision_loss)]
-    pub const fn make_irect(irect: &IRect) -> Self {
+    pub const fn from_irect(irect: &IRect) -> Self {
         Self {
             left: irect.left() as f32,
             top: irect.top() as f32,
             right: irect.right() as f32,
             bottom: irect.bottom() as f32,
         }
+    }
+
+    /// Returns Rect to bounds of Point array.
+    #[must_use]
+    pub fn from_points(points: &[Point]) -> Self {
+        let mut r = Self::new();
+        r.set_bounds(points);
+        r
     }
 
     /// Returns true if left is equal to or greater than right,
@@ -270,7 +278,7 @@ impl Rect {
     /// Returns the point `(center_x(), center_y())`.
     #[must_use]
     pub fn center(&self) -> Point {
-        Point::make(self.center_x(), self.center_y())
+        Point::from_xy(self.center_x(), self.center_y())
     }
 
     /// Returns four points in quad that enclose Rect ordered as: top-left, top-right,
@@ -285,7 +293,7 @@ impl Rect {
     /// or if top is equal to or greater than bottom. Setting all members to zero
     /// is a convenience, but does not designate a special empty rectangle.
     pub fn set_empty(&mut self) {
-        *self = Self::make_empty();
+        *self = Self::new();
     }
 
     /// Sets Rect to src, promoting src members from integer to float.
@@ -310,15 +318,15 @@ impl Rect {
         self.bottom = bottom;
     }
 
-    /// Sets to bounds of Point array with count entries.
+    /// Sets to bounds of Point array.
     ///
     /// If count is zero or smaller, or if Point array contains an infinity or NaN,
     /// sets to (0, 0, 0, 0).
     ///
     /// Result is either empty or sorted: left is less than or equal to right, and
     /// top is less than or equal to bottom.
-    pub fn set_bounds(&mut self, pts: &[Point]) {
-        self.set_bounds_check(pts);
+    pub fn set_bounds(&mut self, points: &[Point]) {
+        self.set_bounds_check(points);
     }
 
     /// Sets to bounds of Point array with count entries.
@@ -328,14 +336,14 @@ impl Rect {
     ///
     /// Result is either empty or sorted: left is less than or equal to right, and
     /// top is less than or equal to bottom.
-    pub fn set_bounds_check(&mut self, _pts: &[Point]) {
+    pub fn set_bounds_check(&mut self, _points: &[Point]) {
         unimplemented!()
     }
 
     /// Sets to bounds of Point pts array with count entries.
     ///
     /// If any Point in pts contains infinity or NaN, all Rect dimensions are set to NaN.
-    pub fn set_bounds_no_check(&mut self, _pts: &[Point]) {
+    pub fn set_bounds_no_check(&mut self, _points: &[Point]) {
         unimplemented!()
     }
 
@@ -405,8 +413,8 @@ impl Rect {
     ///
     /// Returns Rect offset on axes, with original width and height.
     #[must_use]
-    pub fn make_offset(&self, dx: f32, dy: f32) -> Self {
-        Self::make_ltrb(
+    pub fn from_offset(&self, dx: f32, dy: f32) -> Self {
+        Self::from_ltrb(
             self.left + dx,
             self.top + dy,
             self.right + dx,
@@ -416,8 +424,8 @@ impl Rect {
 
     /// Returns Rect offset by v.
     #[must_use]
-    pub fn make_offset_vector(&self, v: &Vector) -> Self {
-        self.make_offset(v.x(), v.y())
+    pub fn from_offset_vector(&self, v: &Vector) -> Self {
+        self.from_offset(v.x(), v.y())
     }
 
     /// Returns Rect, inset by (dx, dy).
@@ -433,8 +441,8 @@ impl Rect {
     ///
     /// Returns Rect inset symmetrically left and right, top and bottom
     #[must_use]
-    pub fn make_inset(&self, dx: f32, dy: f32) -> Self {
-        Self::make_ltrb(
+    pub fn from_inset(&self, dx: f32, dy: f32) -> Self {
+        Self::from_ltrb(
             self.left + dx,
             self.top + dy,
             self.right - dx,
@@ -455,8 +463,8 @@ impl Rect {
     ///
     /// Returns Rect outset symmetrically left and right, top and bottom
     #[must_use]
-    pub fn make_outset(&self, dx: f32, dy: f32) -> Self {
-        Self::make_ltrb(
+    pub fn from_outset(&self, dx: f32, dy: f32) -> Self {
+        Self::from_ltrb(
             self.left - dx,
             self.top - dy,
             self.right + dx,
@@ -724,8 +732,8 @@ impl Rect {
     ///
     /// Result may be empty; and width() and height() will be zero or positive.
     #[must_use]
-    pub fn make_sorted(&self) -> Self {
-        Self::make_ltrb(
+    pub fn from_sorted(&self) -> Self {
+        Self::from_ltrb(
             self.left.min(self.right),
             self.top.min(self.bottom),
             self.left.max(self.right),

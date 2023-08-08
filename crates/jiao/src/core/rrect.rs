@@ -39,7 +39,7 @@ pub struct RRect {
 
 impl Default for RRect {
     fn default() -> Self {
-        Self::make_empty()
+        Self::new()
     }
 }
 
@@ -100,15 +100,10 @@ impl RRect {
     /// Initializes bounds at (0, 0), the origin, with zero width and height.
     /// Initializes corner radii to (0, 0), and sets type of `Empty`.
     #[must_use]
-    pub const fn make_empty() -> Self {
+    pub const fn new() -> Self {
         Self {
-            rect: Rect::make_empty(),
-            radii: [
-                Vector::make_empty(),
-                Vector::make_empty(),
-                Vector::make_empty(),
-                Vector::make_empty(),
-            ],
+            rect: Rect::new(),
+            radii: [Vector::new(), Vector::new(), Vector::new(), Vector::new()],
             kind: Type::Empty,
         }
     }
@@ -180,7 +175,7 @@ impl RRect {
     ///
     /// Sets corner radii to zero and sets type to Empty.
     pub fn set_empty(&mut self) {
-        *self = Self::make_empty();
+        *self = Self::new();
     }
 
     /// Sets bounds to sorted rect, and sets corner radii to zero.
@@ -193,7 +188,7 @@ impl RRect {
         }
 
         //memset(fRadii, 0, sizeof(fRadii));
-        self.radii.fill(Vector::make_empty());
+        self.radii.fill(Vector::new());
         self.kind = Type::Rect;
 
         debug_assert!(self.is_valid());
@@ -204,8 +199,8 @@ impl RRect {
     /// # Parameters
     /// - `r` - bounds to copy
     #[must_use]
-    pub fn make_rect(r: &Rect) -> Self {
-        let mut rr = Self::make_empty();
+    pub fn from_rect(r: &Rect) -> Self {
+        let mut rr = Self::new();
         rr.set_rect(r);
         rr
     }
@@ -218,8 +213,8 @@ impl RRect {
     /// # Parameters
     /// - `oval` - bounds of oval
     #[must_use]
-    pub fn make_oval(oval: &Rect) -> Self {
-        let mut rr = Self::make_empty();
+    pub fn from_oval(oval: &Rect) -> Self {
+        let mut rr = Self::new();
         rr.set_oval(oval);
         rr
     }
@@ -237,8 +232,8 @@ impl RRect {
     /// - `x_rad` - x-axis radius of corners
     /// - `y_rad` - y-axis radius of corners
     #[must_use]
-    pub fn make_rect_xy(rect: &Rect, x_rad: Scalar, y_rad: Scalar) -> Self {
-        let mut rr = Self::make_empty();
+    pub fn from_rect_xy(rect: &Rect, x_rad: Scalar, y_rad: Scalar) -> Self {
+        let mut rr = Self::new();
         rr.set_rect_xy(rect, x_rad, y_rad);
         rr
     }
@@ -443,9 +438,9 @@ impl RRect {
     ///
     /// Returns `RRect` bounds offset by (dx, dy), with unchanged corner radii
     #[must_use]
-    pub fn make_offset(&self, dx: Scalar, dy: Scalar) -> Self {
+    pub fn from_offset(&self, dx: Scalar, dy: Scalar) -> Self {
         Self {
-            rect: self.rect.make_offset(dx, dy),
+            rect: self.rect.from_offset(dx, dy),
             radii: self.radii,
             kind: self.kind,
         }
