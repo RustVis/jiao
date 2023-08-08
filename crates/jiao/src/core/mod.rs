@@ -15,6 +15,7 @@ pub mod irect;
 pub mod m44;
 pub mod matrix;
 pub mod paint;
+pub mod paint_types;
 pub mod path;
 pub mod path_builder;
 mod path_builder_priv;

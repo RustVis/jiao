@@ -16,24 +16,7 @@
 
 use crate::core::color::Color4F;
 use crate::core::color_space::ColorSpace;
-
-/// `PaintStyle` set Style to fill, stroke, or both fill and stroke geometry.
-///
-/// The stroke and fill share all paint attributes; for instance,
-/// they are drawn with the same color.
-///
-/// Use `StrokeAndFill` to avoid hitting the same pixels twice with a stroke draw
-/// and a fill draw.
-#[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub enum PaintStyle {
-    /// Set to fill geometry
-    Fill,
-    /// Set to stroke geometry
-    Stroke,
-    /// Sets to stroke and fill geometry
-    StrokeAndFill,
-}
+use crate::core::paint_types::PaintStyle;
 
 #[derive(Debug, Clone)]
 pub struct Paint {
@@ -41,6 +24,7 @@ pub struct Paint {
     color_space: Option<ColorSpace>,
     anti_alias: bool,
     dither: bool,
+    style: PaintStyle,
 }
 
 impl Paint {
@@ -51,19 +35,20 @@ impl Paint {
             color_space: None,
             anti_alias: false,
             dither: false,
+            style: PaintStyle::Fill,
         }
     }
 
     /// Constructs Paint with default values and the given color.
     #[must_use]
-    pub fn new_with_color(color: &Color4F) -> Self {
+    pub fn from_color(color: &Color4F) -> Self {
         let mut obj = Self::new();
         obj.color = color.clone();
         obj
     }
 
     #[must_use]
-    pub fn new_with_color_space(color: &Color4F, color_space: &ColorSpace) -> Self {
+    pub fn from_color_space(color: &Color4F, color_space: &ColorSpace) -> Self {
         let mut obj = Self::new();
         obj.color = color.clone();
         obj.color_space = Some(color_space.clone());
@@ -97,6 +82,19 @@ impl Paint {
     /// Requests, but does not require, to distribute color error.
     pub fn set_dither(&mut self, dither: bool) {
         self.dither = dither;
+    }
+
+    /// Returns whether the geometry is filled, stroked, or filled and stroked.
+    #[must_use]
+    pub const fn get_style(&self) -> PaintStyle {
+        self.style
+    }
+
+    /// Sets whether the geometry is filled, stroked, or filled and stroked.
+    ///
+    /// Has no effect if style is not a legal `PaintStyle` value.
+    pub fn set_style(&mut self, style: PaintStyle) {
+        self.style = style;
     }
 }
 
