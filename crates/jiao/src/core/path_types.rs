@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+use bitflags::bitflags;
+
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum PathFillType {
@@ -61,13 +63,14 @@ pub enum PathDirection {
     CCW,
 }
 
-#[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub enum PathSegmentMask {
-    Line = 1 << 0,
-    Quad = 1 << 1,
-    Conic = 1 << 2,
-    Cubic = 1 << 3,
+bitflags! {
+    #[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Hash)]
+    pub struct PathSegmentMask : u8 {
+        const Line = 1 << 0;
+        const Quad = 1 << 1;
+        const Conic = 1 << 2;
+        const Cubic = 1 << 3;
+    }
 }
 
 #[repr(u8)]

@@ -5,6 +5,7 @@
 use crate::core::path::Path;
 use crate::core::path_types::ArcSize;
 use crate::core::path_types::PathDirection;
+use crate::core::path_types::PathSegmentMask;
 use crate::core::path_types::{PathFillType, PathVerb};
 use crate::core::point::Point;
 use crate::core::rect::Rect;
@@ -17,8 +18,39 @@ pub struct PathBuilder {
     verbs: Vec<PathVerb>,
     conic_weights: Vec<Scalar>,
     fill_type: PathFillType,
-    last_move_to_index: usize,
-    move_to_required: bool,
+
+    // Internal states:
+    segment_mask: PathSegmentMask,
+    last_move_point: Point,
+    needs_move_verb: bool,
+
+    is_a: IsA,
+    // tracks direction iff fIsA is not unknown
+    is_a_start: isize,
+    // tracks direction iff fIsA is not unknown
+    is_a_ccw: bool,
+}
+
+#[repr(u8)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
+enum IsA {
+    /// we only have 0 or more moves
+    JustMoves,
+
+    /// we have verbs other than just move
+    MoreThanMoves,
+
+    /// we are 0 or more moves followed by an oval
+    Oval,
+
+    /// we are 0 or more moves followed by a rrect
+    RRect,
+}
+
+impl Default for IsA {
+    fn default() -> Self {
+        Self::JustMoves
+    }
 }
 
 impl Default for PathBuilder {
@@ -35,8 +67,14 @@ impl PathBuilder {
             verbs: Vec::new(),
             conic_weights: Vec::new(),
             fill_type: PathFillType::Winding,
-            last_move_to_index: 0,
-            move_to_required: true,
+
+            segment_mask: PathSegmentMask::empty(),
+            last_move_point: Point::new(),
+            needs_move_verb: true,
+
+            is_a: IsA::JustMoves,
+            is_a_start: -1,
+            is_a_ccw: false,
         }
     }
 
@@ -47,20 +85,36 @@ impl PathBuilder {
             verbs: Vec::new(),
             conic_weights: Vec::new(),
             fill_type,
-            last_move_to_index: 0,
-            move_to_required: true,
+
+            segment_mask: PathSegmentMask::empty(),
+            last_move_point: Point::new(),
+            needs_move_verb: true,
+
+            is_a: IsA::JustMoves,
+            is_a_start: -1,
+            is_a_ccw: false,
         }
     }
 
     #[must_use]
-    pub fn from_points_verbs(points: Vec<Point>, verbs: Vec<PathVerb>) -> Self {
+    pub fn from_points_verbs(
+        points: Vec<Point>,
+        verbs: Vec<PathVerb>,
+        conic_weights: Vec<Scalar>,
+    ) -> Self {
         Self {
             points,
             verbs,
-            conic_weights: Vec::new(),
+            conic_weights,
             fill_type: PathFillType::Winding,
-            last_move_to_index: 0,
-            move_to_required: true,
+
+            segment_mask: PathSegmentMask::empty(),
+            last_move_point: Point::new(),
+            needs_move_verb: true,
+
+            is_a: IsA::JustMoves,
+            is_a_start: -1,
+            is_a_ccw: false,
         }
     }
 
@@ -72,17 +126,32 @@ impl PathBuilder {
             verbs: path.verbs,
             conic_weights: Vec::new(),
             fill_type: path.fill_type,
-            last_move_to_index: 0,
-            move_to_required: true,
+
+            segment_mask: PathSegmentMask::empty(),
+            last_move_point: Point::new(),
+            needs_move_verb: true,
+
+            is_a: IsA::JustMoves,
+            is_a_start: -1,
+            is_a_ccw: false,
         }
     }
 
-    pub fn reset(&mut self) {
+    pub fn reset(&mut self) -> &mut Self {
         self.points.clear();
         self.verbs.clear();
+        self.conic_weights.clear();
         self.fill_type = PathFillType::Winding;
-        self.last_move_to_index = 0;
-        self.move_to_required = true;
+
+        self.segment_mask = PathSegmentMask::empty();
+        self.last_move_point = Point::new();
+        self.needs_move_verb = true;
+
+        self.is_a = IsA::JustMoves;
+        self.is_a_start = -1;
+        self.is_a_ccw = false;
+
+        self
     }
 
     /// The builder is unchanged after returning this path
@@ -97,6 +166,7 @@ impl PathBuilder {
         Some(Path::new(
             self.points.clone(),
             self.verbs.clone(),
+            self.conic_weights.clone(),
             bounds,
             self.fill_type,
         ))
@@ -114,6 +184,7 @@ impl PathBuilder {
         let path = Some(Path::new(
             self.points.clone(),
             self.verbs.clone(),
+            self.conic_weights.clone(),
             bounds,
             self.fill_type,
         ));
@@ -133,7 +204,13 @@ impl PathBuilder {
 
         let bounds = self.compute_bounds()?;
 
-        Some(Path::new(self.points, self.verbs, bounds, self.fill_type))
+        Some(Path::new(
+            self.points,
+            self.verbs,
+            self.conic_weights,
+            bounds,
+            self.fill_type,
+        ))
     }
 
     pub fn set_fill_type(&mut self, fill_type: PathFillType) {
@@ -189,7 +266,13 @@ impl PathBuilder {
         self.move_to_point(Point::from_xy(x, y))
     }
 
-    pub fn move_to_point(&mut self, _point: Point) -> &mut Self {
+    pub fn move_to_point(&mut self, point: Point) -> &mut Self {
+        self.points.push(point);
+        self.verbs.push(PathVerb::Move);
+
+        self.last_move_point = point;
+        self.needs_move_verb = false;
+
         self
     }
 
@@ -197,7 +280,14 @@ impl PathBuilder {
         self.line_to_point(Point::from_xy(x, y))
     }
 
-    pub fn line_to_point(&mut self, _point: Point) -> &mut Self {
+    pub fn line_to_point(&mut self, point: Point) -> &mut Self {
+        self.ensure_move();
+
+        self.points.push(point);
+        self.verbs.push(PathVerb::Line);
+
+        self.segment_mask |= PathSegmentMask::Line;
+
         self
     }
 
@@ -359,7 +449,6 @@ impl PathBuilder {
         self
     }
 
-    // Arcs
     /// Appends arc to the builder.
     ///
     /// Arc added is part of ellipse bounded by oval, from `start_angle` through `sweep_angle`.
@@ -465,5 +554,13 @@ impl PathBuilder {
         _sweep_angle_deg: Scalar,
     ) -> &mut Self {
         self
+    }
+
+    // called right before we add a (non-move) verb
+    fn ensure_move(&mut self) {
+        self.is_a = IsA::MoreThanMoves;
+        if self.needs_move_verb {
+            self.move_to_point(self.last_move_point);
+        }
     }
 }

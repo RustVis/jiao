@@ -6,11 +6,13 @@ use crate::core::path_builder::PathBuilder;
 use crate::core::path_types::{PathFillType, PathVerb};
 use crate::core::point::Point;
 use crate::core::rect::Rect;
+use crate::core::scalar::Scalar;
 
 #[derive(Debug, Clone)]
 pub struct Path {
     pub(crate) points: Vec<Point>,
     pub(crate) verbs: Vec<PathVerb>,
+    pub(crate) conic_weights: Vec<Scalar>,
     pub(crate) bounds: Rect,
     pub(crate) fill_type: PathFillType,
 }
@@ -20,12 +22,14 @@ impl Path {
     pub(crate) fn new(
         points: Vec<Point>,
         verbs: Vec<PathVerb>,
+        conic_weights: Vec<Scalar>,
         bounds: Rect,
         fill_type: PathFillType,
     ) -> Self {
         Self {
             points,
             verbs,
+            conic_weights,
             bounds,
             fill_type,
         }
@@ -36,8 +40,9 @@ impl Path {
     pub fn clear(mut self) -> PathBuilder {
         self.points.clear();
         self.verbs.clear();
+        self.conic_weights.clear();
 
-        PathBuilder::from_points_verbs(self.points, self.verbs)
+        PathBuilder::from_points_verbs(self.points, self.verbs, self.conic_weights)
     }
 
     #[must_use]
