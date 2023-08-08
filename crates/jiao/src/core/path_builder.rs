@@ -21,9 +21,10 @@ pub struct PathBuilder {
 
     // Internal states:
     segment_mask: PathSegmentMask,
-    last_move_point: Point,
+    last_move_to_index: usize,
     needs_move_verb: bool,
 
+    // TODO(Shaohua): Remove
     is_a: IsA,
     // tracks direction iff fIsA is not unknown
     is_a_start: isize,
@@ -69,7 +70,7 @@ impl PathBuilder {
             fill_type: PathFillType::Winding,
 
             segment_mask: PathSegmentMask::empty(),
-            last_move_point: Point::new(),
+            last_move_to_index: usize::MAX,
             needs_move_verb: true,
 
             is_a: IsA::JustMoves,
@@ -87,7 +88,7 @@ impl PathBuilder {
             fill_type,
 
             segment_mask: PathSegmentMask::empty(),
-            last_move_point: Point::new(),
+            last_move_to_index: usize::MAX,
             needs_move_verb: true,
 
             is_a: IsA::JustMoves,
@@ -109,7 +110,7 @@ impl PathBuilder {
             fill_type: PathFillType::Winding,
 
             segment_mask: PathSegmentMask::empty(),
-            last_move_point: Point::new(),
+            last_move_to_index: usize::MAX,
             needs_move_verb: true,
 
             is_a: IsA::JustMoves,
@@ -128,7 +129,7 @@ impl PathBuilder {
             fill_type: path.fill_type,
 
             segment_mask: PathSegmentMask::empty(),
-            last_move_point: Point::new(),
+            last_move_to_index: usize::MAX,
             needs_move_verb: true,
 
             is_a: IsA::JustMoves,
@@ -144,7 +145,7 @@ impl PathBuilder {
         self.fill_type = PathFillType::Winding;
 
         self.segment_mask = PathSegmentMask::empty();
-        self.last_move_point = Point::new();
+        self.last_move_to_index = usize::MAX;
         self.needs_move_verb = true;
 
         self.is_a = IsA::JustMoves;
@@ -249,10 +250,6 @@ impl PathBuilder {
         self.verbs.is_empty()
     }
 
-    pub fn close(&mut self) {
-        unimplemented!()
-    }
-
     pub fn offset(&mut self, _dx: Scalar, _dy: Scalar) -> &mut Self {
         unimplemented!()
     }
@@ -262,16 +259,39 @@ impl PathBuilder {
         self
     }
 
+    pub fn close(&mut self) -> &mut Self {
+        if !self.verbs.is_empty() {
+            self.ensure_move();
+
+            self.verbs.push(PathVerb::Close);
+
+            // last_move_to_index stays where it is -- the previous moveTo
+            self.needs_move_verb = true;
+        }
+
+        self
+    }
+
     pub fn move_to(&mut self, x: Scalar, y: Scalar) -> &mut Self {
         self.move_to_point(Point::from_xy(x, y))
     }
 
-    pub fn move_to_point(&mut self, point: Point) -> &mut Self {
-        self.points.push(point);
-        self.verbs.push(PathVerb::Move);
+    /// Adds beginning of a contour.
+    ///
+    /// Multiple continuous `MoveTo` segments are not allowed.
+    /// If the previous segment was also `MoveTo`, it will be overwritten with the current one.
 
-        self.last_move_point = point;
-        self.needs_move_verb = false;
+    pub fn move_to_point(&mut self, point: Point) -> &mut Self {
+        if self.verbs.last() == Some(&PathVerb::Move) {
+            let last_idx = self.points.len() - 1;
+            self.points[last_idx] = point;
+        } else {
+            self.points.push(point);
+            self.verbs.push(PathVerb::Move);
+
+            self.last_move_to_index = self.points.len();
+            self.needs_move_verb = false;
+        }
 
         self
     }
@@ -295,7 +315,15 @@ impl PathBuilder {
         self.quad_to_point(Point::from_xy(x1, y1), Point::from_xy(x2, y2))
     }
 
-    pub fn quad_to_point(&mut self, _pt1: Point, _pt2: Point) -> &mut Self {
+    pub fn quad_to_point(&mut self, pt1: Point, pt2: Point) -> &mut Self {
+        self.ensure_move();
+
+        self.points.push(pt1);
+        self.points.push(pt2);
+        self.verbs.push(PathVerb::Quad);
+
+        self.segment_mask |= PathSegmentMask::Quad;
+
         self
     }
 
@@ -310,7 +338,16 @@ impl PathBuilder {
         self.conic_to_point(Point::from_xy(x1, y1), Point::from_xy(x2, y2), weight)
     }
 
-    pub fn conic_to_point(&mut self, _pt1: Point, _pt2: Point, _weight: Scalar) -> &mut Self {
+    pub fn conic_to_point(&mut self, pt1: Point, pt2: Point, weight: Scalar) -> &mut Self {
+        self.ensure_move();
+
+        self.points.push(pt1);
+        self.points.push(pt2);
+        self.verbs.push(PathVerb::Conic);
+        self.conic_weights.push(weight);
+
+        self.segment_mask |= PathSegmentMask::Conic;
+
         self
     }
 
@@ -330,7 +367,16 @@ impl PathBuilder {
         )
     }
 
-    pub fn cubic_to_point(&mut self, _pt1: Point, _pt2: Point, _pt3: Point) -> &mut Self {
+    pub fn cubic_to_point(&mut self, pt1: Point, pt2: Point, pt3: Point) -> &mut Self {
+        self.ensure_move();
+
+        self.points.push(pt1);
+        self.points.push(pt2);
+        self.points.push(pt3);
+        self.verbs.push(PathVerb::Cubic);
+
+        self.segment_mask |= PathSegmentMask::Cubic;
+
         self
     }
 
@@ -344,8 +390,13 @@ impl PathBuilder {
         self.relative_line_to_point(Point::from_xy(x, y))
     }
 
-    pub fn relative_line_to_point(&mut self, _point: Point) -> &mut Self {
-        self
+    pub fn relative_line_to_point(&mut self, point: Point) -> &mut Self {
+        self.ensure_move();
+
+        match self.points.last().copied() {
+            Some(last_pt) => self.line_to_point(last_pt + point),
+            None => self.line_to_point(point),
+        }
     }
 
     pub fn relative_quad_to(
@@ -358,8 +409,13 @@ impl PathBuilder {
         self.relative_quad_to_point(Point::from_xy(x1, y1), Point::from_xy(x2, y2))
     }
 
-    pub fn relative_quad_to_point(&mut self, _pt1: Point, _pt2: Point) -> &mut Self {
-        self
+    pub fn relative_quad_to_point(&mut self, pt1: Point, pt2: Point) -> &mut Self {
+        self.ensure_move();
+
+        match self.points.last().copied() {
+            Some(last_pt) => self.quad_to_point(last_pt + pt1, last_pt + pt2),
+            None => self.quad_to_point(pt1, pt2),
+        }
     }
 
     pub fn relative_conic_to(
@@ -373,13 +429,13 @@ impl PathBuilder {
         self.relative_conic_to_point(Point::from_xy(x1, y1), Point::from_xy(x2, y2), weight)
     }
 
-    pub fn relative_conic_to_point(
-        &mut self,
-        _pt1: Point,
-        _pt2: Point,
-        _weight: Scalar,
-    ) -> &mut Self {
-        self
+    pub fn relative_conic_to_point(&mut self, pt1: Point, pt2: Point, weight: Scalar) -> &mut Self {
+        self.ensure_move();
+
+        match self.points.last().copied() {
+            Some(last_pt) => self.conic_to_point(last_pt + pt1, last_pt + pt2, weight),
+            None => self.conic_to_point(pt1, pt2, weight),
+        }
     }
 
     pub fn relative_cubic_to(
@@ -398,8 +454,13 @@ impl PathBuilder {
         )
     }
 
-    pub fn relative_cubic_to_point(&mut self, _pt1: Point, _pt2: Point, _pt3: Point) -> &mut Self {
-        self
+    pub fn relative_cubic_to_point(&mut self, pt1: Point, pt2: Point, pt3: Point) -> &mut Self {
+        self.ensure_move();
+
+        match self.points.last().copied() {
+            Some(last_pt) => self.cubic_to_point(last_pt + pt1, last_pt + pt2, last_pt + pt3),
+            None => self.cubic_to_point(pt1, pt2, pt3),
+        }
     }
 
     pub fn add_path(&mut self, _path: &Path) -> &mut Self {
@@ -557,10 +618,15 @@ impl PathBuilder {
     }
 
     // called right before we add a (non-move) verb
-    fn ensure_move(&mut self) {
+    fn ensure_move(&mut self) -> &mut Self {
         self.is_a = IsA::MoreThanMoves;
         if self.needs_move_verb {
-            self.move_to_point(self.last_move_point);
+            match self.points.get(self.last_move_to_index).copied() {
+                Some(p) => self.move_to_point(p),
+                None => self.move_to(0.0, 0.0),
+            }
+        } else {
+            self
         }
     }
 }
