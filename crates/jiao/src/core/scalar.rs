@@ -10,6 +10,7 @@ pub type Scalar = f32;
 
 pub const NEARLY_ZERO: Scalar = 1.0 / (1 << 12) as Scalar;
 pub const SIN_COS_NEARLY_ZERO: Scalar = 1.0 / (1 << 16) as Scalar;
+pub const ROOT_2_OVER_2: f32 = std::f32::consts::FRAC_1_SQRT_2;
 
 pub trait ScalarExt {
     #[must_use]

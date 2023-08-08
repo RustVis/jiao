@@ -3,6 +3,7 @@
 // in the LICENSE file.
 
 use crate::core::path::Path;
+use crate::core::path_builder_priv::{OvalPointIter, RectPointIter};
 use crate::core::path_types::ArcSize;
 use crate::core::path_types::PathDirection;
 use crate::core::path_types::PathSegmentMask;
@@ -10,7 +11,7 @@ use crate::core::path_types::{PathFillType, PathVerb};
 use crate::core::point::Point;
 use crate::core::rect::Rect;
 use crate::core::rrect::RRect;
-use crate::core::scalar::Scalar;
+use crate::core::scalar::{Scalar, ROOT_2_OVER_2};
 
 #[derive(Debug, Clone)]
 pub struct PathBuilder {
@@ -27,7 +28,7 @@ pub struct PathBuilder {
     // TODO(Shaohua): Remove
     is_a: IsA,
     // tracks direction iff fIsA is not unknown
-    is_a_start: isize,
+    is_a_start: usize,
     // tracks direction iff fIsA is not unknown
     is_a_ccw: bool,
 }
@@ -74,7 +75,7 @@ impl PathBuilder {
             needs_move_verb: true,
 
             is_a: IsA::JustMoves,
-            is_a_start: -1,
+            is_a_start: usize::MAX,
             is_a_ccw: false,
         }
     }
@@ -92,7 +93,7 @@ impl PathBuilder {
             needs_move_verb: true,
 
             is_a: IsA::JustMoves,
-            is_a_start: -1,
+            is_a_start: usize::MAX,
             is_a_ccw: false,
         }
     }
@@ -114,7 +115,7 @@ impl PathBuilder {
             needs_move_verb: true,
 
             is_a: IsA::JustMoves,
-            is_a_start: -1,
+            is_a_start: usize::MAX,
             is_a_ccw: false,
         }
     }
@@ -133,7 +134,7 @@ impl PathBuilder {
             needs_move_verb: true,
 
             is_a: IsA::JustMoves,
-            is_a_start: -1,
+            is_a_start: usize::MAX,
             is_a_ccw: false,
         }
     }
@@ -149,7 +150,7 @@ impl PathBuilder {
         self.needs_move_verb = true;
 
         self.is_a = IsA::JustMoves;
-        self.is_a_start = -1;
+        self.is_a_start = usize::MAX;
         self.is_a_ccw = false;
 
         self
@@ -468,22 +469,59 @@ impl PathBuilder {
     }
 
     // Add a new contour
-
-    pub fn add_rect(
-        &mut self,
-        _rect: &Rect,
-        _dir: PathDirection,
-        _start_index: usize,
-    ) -> &mut Self {
-        self
+    pub fn add_rect(&mut self, rect: &Rect) -> &mut Self {
+        self.add_rect_detail(rect, PathDirection::Cw, 0)
     }
 
-    pub fn add_oval(
+    pub fn add_rect_detail(
         &mut self,
-        _rect: &Rect,
-        _dir: PathDirection,
-        _start_index: usize,
+        rect: &Rect,
+        dir: PathDirection,
+        start_index: usize,
     ) -> &mut Self {
+        // moveTo + 3 lines
+        const POINTS: usize = 4;
+        // moveTo + 3 lines + close
+        const VERBS: usize = 5;
+        self.reserve(POINTS, VERBS);
+
+        let mut iter = RectPointIter::new(rect, dir, start_index);
+
+        self.move_to_point(iter.current());
+        self.line_to_point(iter.next());
+        self.line_to_point(iter.next());
+        self.line_to_point(iter.next());
+        self.close()
+    }
+
+    pub fn add_oval(&mut self, oval: &Rect, dir: PathDirection, start_index: usize) -> &mut Self {
+        // moveTo + 4 conics(2 pts each)
+        const POINTS: usize = 9;
+        // moveTo + 4 conics + close
+        const VERBS: usize = 6;
+        self.reserve(POINTS, VERBS);
+
+        let prev_isa = self.is_a;
+
+        let mut oval_iter = OvalPointIter::new(oval, dir, start_index);
+        let rect_index = match dir {
+            PathDirection::Cw => start_index,
+            PathDirection::Ccw => start_index + 1,
+        };
+        let mut rect_iter = RectPointIter::new(oval, dir, rect_index);
+
+        // The corner iterator pts are tracking "behind" the oval/radii pts.
+
+        self.move_to_point(oval_iter.current());
+        for _i in 0..4 {
+            self.conic_to_point(rect_iter.next(), oval_iter.next(), ROOT_2_OVER_2);
+        }
+        self.close();
+        if prev_isa == IsA::JustMoves {
+            self.is_a = IsA::Oval;
+            self.is_a_ccw = dir == PathDirection::Ccw;
+            self.is_a_start = start_index % 4;
+        }
         self
     }
 
