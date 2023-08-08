@@ -328,6 +328,11 @@ impl Point {
     pub fn dot(&self, _other: Self) -> f32 {
         unimplemented!()
     }
+
+    #[must_use]
+    pub fn nearly_equal(&self, other: Self) -> bool {
+        self.x.nearly_equal(other.x) && self.y.nearly_equal(other.y)
+    }
 }
 
 impl From<IPoint> for Point {

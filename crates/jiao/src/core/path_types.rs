@@ -57,10 +57,10 @@ impl PathFillType {
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum PathDirection {
     /// clockwise direction for adding closed contours
-    CW,
+    Cw,
 
     /// counter-clockwise direction for adding closed contours
-    CCW,
+    Ccw,
 }
 
 bitflags! {
