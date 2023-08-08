@@ -46,13 +46,14 @@ impl PathFillType {
 pub enum PathDirection {
     /// clockwise direction for adding closed contours
     CW,
+
     /// counter-clockwise direction for adding closed contours
     CCW,
 }
 
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub enum SkPathSegmentMask {
+pub enum PathSegmentMask {
     Line = 1 << 0,
     Quad = 1 << 1,
     Conic = 1 << 2,
@@ -64,14 +65,35 @@ pub enum SkPathSegmentMask {
 pub enum PathVerb {
     /// Iter returns 1 point.
     Move,
+
     /// Iter returns 2 points
     Line,
+
     /// Iter returns 3 points
     Quad,
+
     /// Iter returns 3 points + 1 weight
     Conic,
+
     /// Iter returns 4 points
     Cubic,
+
     /// Iter returns 0 points
     Close,
+}
+
+impl PathVerb {
+    /// Get number of points of a path verb.
+    #[must_use]
+    #[allow(clippy::match_same_arms)]
+    pub const fn points(self) -> usize {
+        match self {
+            Self::Move => 1,
+            Self::Line => 2,
+            Self::Quad => 3,
+            Self::Conic => 3,
+            Self::Cubic => 4,
+            Self::Close => 0,
+        }
+    }
 }
