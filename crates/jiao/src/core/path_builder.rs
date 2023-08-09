@@ -3,7 +3,7 @@
 // in the LICENSE file.
 
 use crate::core::path::Path;
-use crate::core::path_builder_priv::{OvalPointIter, RectPointIter};
+use crate::core::path_builder_priv::PointIter;
 use crate::core::path_types::ArcSize;
 use crate::core::path_types::PathDirection;
 use crate::core::path_types::PathSegmentMask;
@@ -137,6 +137,40 @@ impl PathBuilder {
             is_a_start: usize::MAX,
             is_a_ccw: false,
         }
+    }
+
+    /// Creates a new `Path` from `Rect`.
+    ///
+    /// Never fails since `Rect` is always valid.
+    ///
+    /// Segments are created clockwise: `TopLeft -> TopRight -> BottomRight -> BottomLeft`
+    ///
+    /// The contour is closed.
+    #[must_use]
+    pub fn from_rect(rect: &Rect) -> Option<Path> {
+        let mut pb = Self::new();
+        pb.add_rect(rect);
+        pb.finish()
+    }
+
+    /// Creates a new `Path` from a circle.
+    ///
+    /// Segments are created clockwise.
+    #[must_use]
+    pub fn from_circle(cx: f32, cy: f32, radius: f32) -> Option<Path> {
+        let mut pb = Self::new();
+        pb.add_circle(cx, cy, radius);
+        pb.finish()
+    }
+
+    /// Creates a new `Path` from an oval.
+    ///
+    /// Segments are created clockwise.
+    #[must_use]
+    pub fn from_oval(oval: &Rect) -> Option<Path> {
+        let mut pb = Self::new();
+        pb.add_oval(oval);
+        pb.finish()
     }
 
     pub fn reset(&mut self) -> &mut Self {
@@ -468,7 +502,9 @@ impl PathBuilder {
         self
     }
 
-    // Add a new contour
+    /// Add a new rect contour.
+    ///
+    /// The contour is closed and has a clock-wise direction.
     pub fn add_rect(&mut self, rect: &Rect) -> &mut Self {
         self.add_rect_detail(rect, PathDirection::Cw, 0)
     }
@@ -485,7 +521,7 @@ impl PathBuilder {
         const VERBS: usize = 5;
         self.reserve(POINTS, VERBS);
 
-        let mut iter = RectPointIter::new(rect, dir, start_index);
+        let mut iter = PointIter::new_rect(rect, dir, start_index);
 
         self.move_to_point(iter.current());
         self.line_to_point(iter.next());
@@ -494,7 +530,19 @@ impl PathBuilder {
         self.close()
     }
 
-    pub fn add_oval(&mut self, oval: &Rect, dir: PathDirection, start_index: usize) -> &mut Self {
+    /// Adds an oval contour bounded by the provided rectangle.
+    ///
+    /// The contour is closed and has a clock-wise direction.
+    pub fn add_oval(&mut self, oval: &Rect) -> &mut Self {
+        self.add_oval_detail(oval, PathDirection::Cw, 0)
+    }
+
+    pub fn add_oval_detail(
+        &mut self,
+        oval: &Rect,
+        dir: PathDirection,
+        start_index: usize,
+    ) -> &mut Self {
         // moveTo + 4 conics(2 pts each)
         const POINTS: usize = 9;
         // moveTo + 4 conics + close
@@ -503,12 +551,12 @@ impl PathBuilder {
 
         let prev_isa = self.is_a;
 
-        let mut oval_iter = OvalPointIter::new(oval, dir, start_index);
+        let mut oval_iter = PointIter::new_oval(oval, dir, start_index);
         let rect_index = match dir {
             PathDirection::Cw => start_index,
             PathDirection::Ccw => start_index + 1,
         };
-        let mut rect_iter = RectPointIter::new(oval, dir, rect_index);
+        let mut rect_iter = PointIter::new_rect(oval, dir, rect_index);
 
         // The corner iterator pts are tracking "behind" the oval/radii pts.
 
@@ -525,7 +573,11 @@ impl PathBuilder {
         self
     }
 
-    pub fn add_rrect(
+    pub fn add_rrect(&mut self, rrect: &RRect) -> &mut Self {
+        self.add_rrect_detail(rrect, PathDirection::Cw, 0)
+    }
+
+    pub fn add_rrect_detail(
         &mut self,
         _rrect: &RRect,
         _dir: PathDirection,
@@ -534,7 +586,14 @@ impl PathBuilder {
         self
     }
 
-    pub fn add_circle(
+    /// Add a circular contour.
+    ///
+    /// Segments are created clockwise.
+    pub fn add_circle(&mut self, center_x: Scalar, center_y: Scalar, radius: Scalar) -> &mut Self {
+        self.add_circle_detail(center_x, center_y, radius, PathDirection::Cw)
+    }
+
+    pub fn add_circle_detail(
         &mut self,
         _center_x: Scalar,
         _center_y: Scalar,
