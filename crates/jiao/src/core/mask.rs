@@ -62,6 +62,88 @@ pub struct Mask {
 }
 
 impl Mask {
+    #[must_use]
+    pub const fn new() -> Self {
+        Self {
+            image: Vec::new(),
+            bounds: IRect::new(),
+            row_bytes: 0,
+            format: MaskFormat::Bw,
+        }
+    }
+
+    #[must_use]
+    pub const fn from_bounds(bounds: IRect) -> Self {
+        Self {
+            image: Vec::new(),
+            bounds,
+            row_bytes: 0,
+            format: MaskFormat::Bw,
+        }
+    }
+
+    /// Creates a new mask by taking ownership over a mask buffer.
+    ///
+    /// The size needs to match the data provided.
+    pub fn from_vec(image: Vec<u8>, bounds: IRect) -> Option<Self> {
+        let data_len = bounds.width() as usize * bounds.height() as usize;
+        if image.len() != data_len {
+            return None;
+        }
+
+        Some(Self {
+            image,
+            bounds,
+            row_bytes: 0,
+            format: MaskFormat::Bw,
+        })
+    }
+
+    pub fn image(&self) -> &[u8] {
+        &self.image
+    }
+
+    pub fn image_mut(&mut self) -> &mut [u8] {
+        &mut self.image
+    }
+
+    #[must_use]
+    pub const fn width(&self) -> i32 {
+        self.bounds.width()
+    }
+
+    #[must_use]
+    pub const fn height(&self) -> i32 {
+        self.bounds.height()
+    }
+
+    #[must_use]
+    pub const fn bounds(&self) -> &IRect {
+        &self.bounds
+    }
+
+    pub fn set_bounds(&mut self, bounds: IRect) {
+        self.bounds = bounds;
+    }
+
+    #[must_use]
+    pub const fn row_bytes(&self) -> usize {
+        self.row_bytes
+    }
+
+    pub fn set_row_bytes(&mut self, row_bytes: usize) {
+        self.row_bytes = row_bytes;
+    }
+
+    #[must_use]
+    pub const fn format(&self) -> MaskFormat {
+        self.format
+    }
+
+    pub fn set_format(&mut self, format: MaskFormat) {
+        self.format = format;
+    }
+
     /// Returns true if the mask is empty: i.e. it has an empty bounds.
     #[must_use]
     pub const fn is_empty(&self) -> bool {
@@ -152,8 +234,22 @@ impl Mask {
     ///
     /// This should not be called with `MaskFormat::Bw`, as it will give unspecified
     /// results.
-    pub fn get_addr(_x: i32, _y: i32) -> u8 {
-        unimplemented!()
+    #[allow(clippy::match_same_arms)]
+    pub fn get_addr(&self, x: i32, y: i32) -> &[u8] {
+        debug_assert!(self.format != MaskFormat::Bw);
+        debug_assert!(self.bounds.contains(x, y));
+        let shift = match self.format {
+            MaskFormat::Bw => 0, // not supported
+            MaskFormat::A8 => 0,
+            MaskFormat::D3 => 0,
+            MaskFormat::Argb32 => 2,
+            MaskFormat::Lcd16 => 1,
+            MaskFormat::Sdf => 0,
+        };
+
+        let row = (y - self.bounds.top()) as usize * self.row_bytes;
+        let col = ((x - self.bounds.left()) as usize) << shift;
+        &self.image[row + col..]
     }
 
     #[must_use]
@@ -167,7 +263,35 @@ impl Mask {
     }
 
     /// Returns initial destination mask data padded by `radius_x` and `radius_y`
-    pub fn prepare_destination(_radius_x: i32, _radius_y: i32, _src: &Self) -> Self {
-        unimplemented!()
+    pub fn prepare_destination(&self, radius_x: i32, radius_y: i32) -> Self {
+        let mut dst = Self::new();
+        dst.format = MaskFormat::A8;
+
+        // dstW = srcW + 2 * radiusX;
+        // TODO(Shaohua): Check addition overflow.
+        let width = self.bounds.width() + radius_x + radius_x;
+        // dstH = srcH + 2 * radiusY;
+        let height = self.bounds.height() + radius_y + radius_y;
+
+        // TODO(Shaohua): Check multiply overflow.
+        let to_alloc: usize = width as usize * height as usize;
+
+        // We can only deal with masks that fit in INT_MAX and sides that fit in int.
+        if to_alloc > i32::MAX as usize {
+            dst.bounds.set_empty();
+            dst.row_bytes = 0;
+            return dst;
+        }
+
+        dst.bounds.set_wh(width, height);
+        dst.bounds.offset(self.bounds.x(), self.bounds.y());
+        dst.bounds.offset(-radius_x, -radius_y);
+        dst.row_bytes = width as usize;
+
+        if !self.image.is_empty() {
+            dst.image = Self::alloc_image(to_alloc, MaskAllocType::ZeroInit);
+        }
+
+        dst
     }
 }
