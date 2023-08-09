@@ -24,4 +24,19 @@
 //! Canvas can be constructed to draw to Bitmap without first creating raster surface.
 //! This approach may be deprecated in the future.
 
+use crate::core::image_info::ImageInfo;
+
 pub struct Canvas {}
+
+impl Canvas {
+    /// Returns `ImageInfo` for Canvas.
+    ///
+    /// If Canvas is not associated with raster surface or GPU surface,
+    /// returned `ColorType` is set to `ColorType::Unknown`.
+    ///
+    /// Returns dimensions and `ColorType` of Canvas
+    #[must_use]
+    pub fn image_info(&self) -> ImageInfo {
+        unimplemented!()
+    }
+}
