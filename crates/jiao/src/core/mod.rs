@@ -4,6 +4,7 @@
 
 pub mod alpha_type;
 pub mod blend_mode;
+pub mod blur_types;
 pub mod canvas;
 pub mod clip_op;
 pub mod color;
