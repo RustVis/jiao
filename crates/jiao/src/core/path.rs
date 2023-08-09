@@ -10,11 +10,11 @@ use crate::core::scalar::Scalar;
 
 #[derive(Debug, Clone)]
 pub struct Path {
-    pub(crate) points: Vec<Point>,
-    pub(crate) verbs: Vec<PathVerb>,
-    pub(crate) conic_weights: Vec<Scalar>,
-    pub(crate) bounds: Rect,
-    pub(crate) fill_type: PathFillType,
+    points: Vec<Point>,
+    verbs: Vec<PathVerb>,
+    conic_weights: Vec<Scalar>,
+    bounds: Rect,
+    fill_type: PathFillType,
 }
 
 impl Path {
@@ -48,5 +48,26 @@ impl Path {
     #[must_use]
     pub const fn fill_type(&self) -> PathFillType {
         self.fill_type
+    }
+
+    #[must_use]
+    pub fn points(&self) -> &[Point] {
+        &self.points
+    }
+
+    #[must_use]
+    pub fn verbs(&self) -> &[PathVerb] {
+        &self.verbs
+    }
+
+    #[must_use]
+    pub fn conic_weights(&self) -> &[Scalar] {
+        &self.conic_weights
+    }
+}
+
+impl From<Path> for PathBuilder {
+    fn from(path: Path) -> Self {
+        Self::from_points_verbs(path.points, path.verbs, path.conic_weights)
     }
 }

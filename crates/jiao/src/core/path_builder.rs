@@ -123,20 +123,7 @@ impl PathBuilder {
     #[must_use]
     #[allow(clippy::missing_const_for_fn)]
     pub fn from_path(path: Path) -> Self {
-        Self {
-            points: path.points,
-            verbs: path.verbs,
-            conic_weights: Vec::new(),
-            fill_type: path.fill_type,
-
-            segment_mask: PathSegmentMask::empty(),
-            last_move_to_index: usize::MAX,
-            needs_move_verb: true,
-
-            is_a: IsA::JustMoves,
-            is_a_start: usize::MAX,
-            is_a_ccw: false,
-        }
+        path.into()
     }
 
     /// Creates a new `Path` from `Rect`.
@@ -498,7 +485,13 @@ impl PathBuilder {
         }
     }
 
-    pub fn add_path(&mut self, _path: &Path) -> &mut Self {
+    pub fn add_path(&mut self, path: &Path) -> &mut Self {
+        self.last_move_to_index = self.points.len();
+
+        self.verbs.extend_from_slice(path.verbs());
+        self.points.extend_from_slice(path.points());
+        self.conic_weights.extend_from_slice(path.conic_weights());
+
         self
     }
 
