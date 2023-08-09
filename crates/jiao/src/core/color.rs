@@ -458,6 +458,12 @@ impl From<&Color4F> for Color {
     }
 }
 
+impl From<Color4F> for Color {
+    fn from(_color: Color4F) -> Self {
+        unimplemented!()
+    }
+}
+
 impl Color4F {
     #[must_use]
     pub const fn from_rgba(red: f32, green: f32, blue: f32, alpha: f32) -> Self {
@@ -467,6 +473,31 @@ impl Color4F {
             blue,
             alpha,
         }
+    }
+
+    #[must_use]
+    pub const fn red(&self) -> f32 {
+        self.red
+    }
+
+    #[must_use]
+    pub const fn green(&self) -> f32 {
+        self.green
+    }
+
+    #[must_use]
+    pub const fn blue(&self) -> f32 {
+        self.blue
+    }
+
+    #[must_use]
+    pub const fn alpha(&self) -> f32 {
+        self.alpha
+    }
+
+    pub fn set_alpha(&mut self, alpha: f32) {
+        debug_assert!((0.0..=1.0).contains(&alpha));
+        self.alpha = alpha;
     }
 
     /// Returns a pointer to components of `Color4F`, for array access.

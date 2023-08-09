@@ -14,7 +14,7 @@
 
 #![allow(clippy::module_name_repetitions)]
 
-use crate::core::color::{colors::BLACK, Color4F};
+use crate::core::color::{colors::BLACK, Color, Color4F};
 use crate::core::color_space::ColorSpace;
 use crate::core::font_types::FontHinting;
 use crate::core::paint_types::{PaintStyle, StrokeCap, StrokeJoin};
@@ -24,10 +24,10 @@ pub const DEFAULT_TEXT_SIZE: Scalar = 12.0;
 pub const DEFAULT_FONT_HINTING: FontHinting = FontHinting::Normal;
 pub const DEFAULT_MITER_LIMIT: Scalar = 4.0;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Paint {
     color_space: Option<ColorSpace>,
-    color: Color4F,
+    color4f: Color4F,
     stroke_width: Scalar,
     miter_limit: Scalar,
 
@@ -44,7 +44,7 @@ impl Paint {
     pub fn new() -> Self {
         Self {
             color_space: None,
-            color: BLACK,
+            color4f: BLACK,
             stroke_width: 0.0,
             miter_limit: DEFAULT_MITER_LIMIT,
 
@@ -59,24 +59,35 @@ impl Paint {
     /// Constructs Paint with default values and the given color.
     #[must_use]
     pub fn from_color(color: &Color4F) -> Self {
-        let mut obj = Self::new();
-        obj.color = color.clone();
-        obj
+        let mut p = Self::new();
+        p.color4f = color.clone();
+        p
     }
 
+    /// Constructs Paint with default values and the given color.
+    ///
+    /// Sets alpha and RGB used when stroking and filling.
+    /// The color is four floating point values, unpremultiplied.
+    /// The color values are interpreted as being in the `color_space`.
+    /// If `color_space` is None, then color is assumed to be in the
+    /// `sRGB` color space.
+    ///
+    /// # Parameters
+    /// - `color` - unpremultiplied RGBA
+    /// - `color_space` - `ColorSpace` describing the encoding of color
     #[must_use]
-    pub fn from_color_space(color: &Color4F, color_space: &ColorSpace) -> Self {
-        let mut obj = Self::new();
-        obj.color = color.clone();
-        obj.color_space = Some(color_space.clone());
-        obj
+    pub fn from_color_space(color: &Color4F, color_space: &Option<ColorSpace>) -> Self {
+        let mut p = Self::new();
+        p.color4f = color.clone();
+        p.color_space = color_space.clone();
+        p
     }
 
     /// Sets all Paint contents to their initial values.
     ///
     /// This is equivalent to replacing Paint with the result of `Paint::default()`.
     pub fn reset(&mut self) {
-        unimplemented!()
+        *self = Self::new();
     }
 
     /// Returns the thickness of the pen used by Paint to outline the shape.
@@ -96,7 +107,10 @@ impl Paint {
     /// # Parameters
     /// - `width` - zero thickness for hairline; greater than zero for pen thickness
     pub fn set_stroke_width(&mut self, width: Scalar) {
-        self.stroke_width = width;
+        debug_assert!(width >= 0.0);
+        if width >= 0.0 {
+            self.stroke_width = width;
+        }
     }
 
     /// Returns the limit at which a sharp corner is drawn beveled.
@@ -116,7 +130,9 @@ impl Paint {
     /// - `miter` - zero and greater miter limit
     pub fn set_stroke_miter(&mut self, miter: Scalar) {
         debug_assert!(miter >= 0.0);
-        self.miter_limit = miter;
+        if miter >= 0.0 {
+            self.miter_limit = miter;
+        }
     }
 
     /// Returns true if pixels on the active edges of Path may be drawn with partial transparency.
@@ -154,6 +170,15 @@ impl Paint {
         self.style = style;
     }
 
+    /// Set paint's style to `PaintStyle::Stroke` if true, or `PaintStyle::Fill` if false.
+    pub fn set_stroke(&mut self, is_stroke: bool) {
+        self.style = if is_stroke {
+            PaintStyle::Stroke
+        } else {
+            PaintStyle::Fill
+        };
+    }
+
     /// Returns the geometry drawn at the beginning and end of strokes.
     #[must_use]
     pub const fn get_stroke_cap(&self) -> StrokeCap {
@@ -174,6 +199,93 @@ impl Paint {
     /// Sets the geometry drawn at the corners of strokes.
     pub fn set_stroke_join(&mut self, join: StrokeJoin) {
         self.join = join;
+    }
+
+    /// Retrieves alpha and RGB, unpremultiplied, packed into 32 bits.
+    ///
+    /// Use helpers `get_alpha()`, `get_red()`, `get_green()`, and `get_blue()`
+    /// to extract a color component.
+    #[must_use]
+    pub fn get_color(&self) -> Color {
+        (&self.color4f).into()
+    }
+
+    /// Retrieves alpha and RGB, unpremultiplied, as four floating point values.
+    ///
+    /// RGB are extended `sRGB` values (`sRGB` gamut, and encoded with the `sRGB` transfer function).
+    #[must_use]
+    pub const fn get_color4f(&self) -> &Color4F {
+        &self.color4f
+    }
+
+    /// Sets alpha and RGB used when stroking and filling.
+    ///
+    /// The color is a 32-bit value, unpremultiplied, packing 8-bit components
+    /// for alpha, red, blue, and green.
+    ///
+    /// # Parameters
+    /// - `color` - unpremultiplied ARGB
+    pub fn set_color(&mut self, color: Color) {
+        self.color4f = color.into();
+    }
+
+    /// Sets alpha and RGB used when stroking and filling.
+    ///
+    /// The color is four floating point values, unpremultiplied.
+    /// The color values are interpreted as being in the `color_space`.
+    /// If `color_space` is None , then color is assumed to be in the `sRGB` color space.
+    ///
+    /// # Parameters
+    /// - `color` - unpremultiplied RGBA
+    /// - `color_space` - `ColorSpace` describing the encoding of color
+    pub fn set_color_space(&mut self, color: &Color4F, color_space: &Option<ColorSpace>) {
+        self.color4f = color.clone();
+        self.color_space = color_space.clone();
+    }
+
+    /// Retrieves alpha from the color used when stroking and filling.
+    ///
+    /// Returns alpha ranging from zero, fully transparent, to one, fully opaque
+    #[must_use]
+    pub const fn get_alphaf(&self) -> Scalar {
+        self.color4f.alpha()
+    }
+
+    /// Helper that scales the alpha by 255.
+    #[must_use]
+    #[allow(clippy::cast_sign_loss)]
+    #[allow(clippy::cast_possible_truncation)]
+    pub fn get_alpha(&self) -> u8 {
+        (self.color4f.alpha() * 255.0) as u8
+    }
+
+    /// Replaces alpha, leaving RGB unchanged.
+    ///
+    /// alpha is a value from 0.0 to 1.0.
+    /// alpha set to zero makes color fully transparent; a set to 1.0 makes color
+    /// fully opaque.
+    pub fn set_alphaf(&mut self, alpha: f32) {
+        self.color4f.set_alpha(alpha);
+    }
+
+    /// Helper that accepts an int between 0 and 255, and divides it by 255.0
+    #[allow(clippy::cast_lossless)]
+    pub fn set_alpha(&mut self, alpha: u8) {
+        self.color4f.set_alpha(alpha as f32 / 255.0);
+    }
+
+    /// Sets color used when drawing solid fills.
+    ///
+    /// The color components range from 0 to 255. The color is unpremultiplied;
+    /// alpha sets the transparency independent of RGB.
+    ///
+    /// # Parameters
+    /// - `alpha` - amount of alpha, from fully transparent (0) to fully opaque (255)
+    /// - `red` - amount of red, from no red (0) to full red (255)
+    /// - `green` - amount of green, from no green (0) to full green (255)
+    /// - `blue` - amount of blue, from no blue (0) to full blue (255)
+    pub fn set_argb(&mut self, alpha: u8, red: u8, green: u8, blue: u8) {
+        self.set_color(Color::from_argb(alpha, red, green, blue));
     }
 }
 
