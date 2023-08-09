@@ -50,7 +50,7 @@ pub enum ColorType {
     /// pixel with grayscale level in 8-bit byte
     Gray8,
 
-    /// pixel with half floats in [0,1] for red, green, blue, alpha; in 64-bit word
+    /// pixel with half floats in `[0, 1]` for red, green, blue, alpha; in 64-bit word
     RgbaF16Norm,
 
     /// pixel with half floats for red, green, blue, alpha; in 64-bit word
