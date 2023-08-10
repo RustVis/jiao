@@ -24,5 +24,12 @@
 #![allow(dead_code)]
 
 pub mod base;
+pub mod codec;
 pub mod core;
+pub mod effects;
 pub mod encode;
+pub mod gpu;
+pub mod pdf;
+pub mod svg;
+pub mod text;
+pub mod utils;
