@@ -23,6 +23,7 @@ pub mod path;
 pub mod path_builder;
 mod path_builder_priv;
 pub mod path_types;
+pub mod pathops;
 pub mod point;
 pub mod point3;
 pub mod rect;
