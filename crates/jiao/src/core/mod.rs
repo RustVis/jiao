@@ -36,3 +36,4 @@ pub mod surface_props;
 pub mod texture_compression_type;
 pub mod tile_mode;
 pub mod types;
+pub mod vertices;
