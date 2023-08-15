@@ -11,6 +11,7 @@ pub mod color;
 pub mod color_space;
 pub mod color_type;
 pub mod flattenable;
+pub mod font_metrics;
 pub mod font_style;
 pub mod font_types;
 pub mod image_info;
