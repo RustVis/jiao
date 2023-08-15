@@ -16,6 +16,7 @@ pub mod font_style;
 pub mod font_types;
 pub mod image_info;
 pub mod irect;
+pub(crate) mod line_clipper;
 pub mod m44;
 pub(crate) mod mask;
 pub mod matrix;
