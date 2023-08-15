@@ -25,5 +25,5 @@ license = "Apache-2.0"
 publish = true
 
 [dependencies]
-bitflags = "2.3.3"
+bitflags = "2.4.0"
 
