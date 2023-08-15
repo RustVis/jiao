@@ -10,6 +10,7 @@ pub mod clip_op;
 pub mod color;
 pub mod color_space;
 pub mod color_type;
+pub(crate) mod cubic_clipper;
 pub mod flattenable;
 pub mod font_metrics;
 pub mod font_style;
