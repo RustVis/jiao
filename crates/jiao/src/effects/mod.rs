@@ -3,3 +3,4 @@
 // in the LICENSE file.
 
 pub mod d1_path_effect;
+pub mod stroke_and_fill_path_effect;
