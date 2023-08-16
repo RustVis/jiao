@@ -14,6 +14,7 @@ pub(crate) mod cubic_clipper;
 pub mod flattenable;
 pub mod font_arguments;
 pub mod font_metrics;
+pub mod font_parameters;
 pub mod font_style;
 pub mod font_types;
 pub mod image_info;
