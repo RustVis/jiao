@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+pub const R32_SHIFT: usize = 0;
+pub const B32_SHIFT: usize = 16 - R32_SHIFT;
 pub const G32_SHIFT: usize = 8;
 pub const A32_SHIFT: usize = 24;
 
@@ -20,6 +22,13 @@ pub const A32_SHIFT: usize = 24;
 //         SK_ ## C2 ## 32_SHIFT == 16 &&             \
 //         SK_ ## C3 ## 32_SHIFT == 24)
 //#endif
+
+pub type FourByteTag = u32;
+
+#[must_use]
+pub fn set_four_byte_tag(a: u8, b: u8, c: u8, d: u8) -> FourByteTag {
+    (u32::from(a) << 24) | (u32::from(b) << 16) | (u32::from(c) << 8) | u32::from(d)
+}
 
 /// 32 bit integer to hold a unicode value
 pub type Unichar = i32;
