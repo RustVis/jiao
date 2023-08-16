@@ -26,4 +26,5 @@ publish = true
 
 [dependencies]
 bitflags = "2.4.0"
+serde = { version = "1.0.183", features = ["derive"] }
 

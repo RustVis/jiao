@@ -2,6 +2,9 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+// TODO(Shaohua): Make Flattenable inherit from Serialize and Deserialize
+//use serde::{Deserialize, Serialize};
+
 pub enum Type {
     ColorFilter,
     Blender,
