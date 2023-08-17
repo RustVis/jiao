@@ -36,6 +36,7 @@ pub mod pathops;
 pub mod pixel_ref;
 //pub mod pixmap;
 pub mod cubic_map;
+pub mod path_utils;
 pub mod point;
 pub mod point3;
 pub mod rect;
