@@ -3,6 +3,7 @@
 // in the LICENSE file.
 
 pub mod alpha_type;
+pub mod annotation;
 //pub mod bitmap;
 pub mod blend_mode;
 pub mod blur_types;
@@ -10,8 +11,9 @@ pub mod canvas;
 pub mod clip_op;
 pub mod color;
 pub mod color_space;
-pub mod color_table;
+//pub mod color_table;
 pub mod color_type;
+pub mod data;
 pub mod flattenable;
 pub mod font_arguments;
 pub mod font_metrics;
