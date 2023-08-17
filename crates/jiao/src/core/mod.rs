@@ -12,6 +12,7 @@ pub mod clip_op;
 pub mod color;
 pub mod color_space;
 //pub mod color_table;
+pub mod capabilities;
 pub mod color_type;
 pub mod data;
 pub mod flattenable;

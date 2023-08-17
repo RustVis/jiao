@@ -2,97 +2,93 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+/// Pixmap provides a utility to pair `ImageInfo` with pixels and row bytes.
+///
+/// Pixmap is a low level class which provides convenience functions to access
+/// raster destinations. Canvas can not draw Pixmap, nor does Pixmap provide
+/// a direct drawing destination.
+///
+/// Use Bitmap to draw pixels referenced by Pixmap; use Surface to draw into
+/// pixels referenced by Pixmap.
+///
+/// Pixmap does not try to manage the lifetime of the pixel memory.
+/// Use PixelRef to manage pixel memory; SkPixelRef is safe across threads.
+#[derive(Debug, Default, Clone)]
+pub struct Pixmap {
+    row_bytes: usize,
+    info: ImageInfo,
+    pixels: Vec<u8>,
+}
 
-/** \class SkPixmap
-    SkPixmap provides a utility to pair SkImageInfo with pixels and row bytes.
-    SkPixmap is a low level class which provides convenience functions to access
-    raster destinations. SkCanvas can not draw SkPixmap, nor does SkPixmap provide
-    a direct drawing destination.
+impl Pixmap {
+    /// Creates an empty Pixmap without pixels, with `ColorType::Unknown`, with
+    /// `AlphaType::Unknown`, and with a width and height of zero.
+    ///
+    /// Use `reset()` to associate pixels, `ColorType`, `AlphaType`, width, and height
+    /// after Pixmap has been created.
+    ///
+    /// Returns empty Pixmap.
+    #[must_use]
+    pub fn new() -> Self {
+        Self::default()
+    }
 
-    Use SkBitmap to draw pixels referenced by SkPixmap; use SkSurface to draw into
-    pixels referenced by SkPixmap.
+    /// Creates Pixmap from info width, height, `AlphaType`, and `ColorType`.
+    ///
+    /// buf points to pixels slice. `row_bytes` should be `info.width() * info.bytes_per_pixel()`,
+    /// or larger.
+    ///
+    /// No parameter checking is performed; it is up to the caller to ensure that
+    /// addr and `row_bytes` agree with info.
+    ///
+    /// The memory lifetime of pixels is managed by the caller. When Pixmap goes
+    /// out of scope, addr is unaffected.
+    ///
+    /// Pixmap may be later modified by reset() to change its size, pixel type, or
+    /// storage.
+    ///
+    /// # Parameters
+    /// - `info` - width, height, `AlphaType`, `ColorType` of `ImageInfo`
+    /// - `row_bytes` - size of one row of addr; width times pixel size, or larger
+    /// - `pixel` - point to pixels allocated by caller
+    ///
+    /// Returns initialized Pixmap
+    pub fn from(info: ImageInfo, row_bytes: usize, pixels: &[u8]) -> Self {
+        Self {
+            row_bytes,
+            info,
+            pixels: Vec::from(pixels),
+        }
+    }
 
-    SkPixmap does not try to manage the lifetime of the pixel memory. Use SkPixelRef
-    to manage pixel memory; SkPixelRef is safe across threads.
-*/
-class SK_API SkPixmap {
-public:
+    /// Sets width, height, row bytes to zero; pixel to empty; `ColorType` to
+    /// `ColorType::Unknown`; and `AlphaType` to `AlphaType::Unknown`.
+    ///
+    /// The prior pixels are unaffected; it is up to the caller to release pixels
+    /// memory if desired.
+    pub fn reset(&mut self) {
+        unimplemented!()
+    }
 
-    /** Creates an empty SkPixmap without pixels, with kUnknown_SkColorType, with
-        kUnknown_SkAlphaType, and with a width and height of zero. Use
-        reset() to associate pixels, SkColorType, SkAlphaType, width, and height
-        after SkPixmap has been created.
+    /// Sets width, height, `AlphaType`, and `ColorType` from info.
+    ///
+    /// Sets row bytes from `row_bytes`, which should be `info.width() * info.bytes_per_pixel()`,
+    /// or larger.
+    ///
+    /// # Parameters
+    /// - `info` - width, height, `AlphaType`, `ColorType` of `ImageInfo`
+    /// - `row_bytes` - size of one row of addr; width times pixel size, or larger
+    pub fn set(&mut self, info: ImageInfo, row_bytes: usize, pixels: &[u8]) {
+        self.info = info;
+        self.row_bytes = row_bytes;
+        self.pixels = pixel.into_vec();
+    }
 
-        @return  empty SkPixmap
-    */
-    SkPixmap()
-        : fPixels(nullptr), fRowBytes(0), fInfo(SkImageInfo::MakeUnknown(0, 0))
-    {}
-
-    /** Creates SkPixmap from info width, height, SkAlphaType, and SkColorType.
-        addr points to pixels, or nullptr. rowBytes should be info.width() times
-        info.bytesPerPixel(), or larger.
-
-        No parameter checking is performed; it is up to the caller to ensure that
-        addr and rowBytes agree with info.
-
-        The memory lifetime of pixels is managed by the caller. When SkPixmap goes
-        out of scope, addr is unaffected.
-
-        SkPixmap may be later modified by reset() to change its size, pixel type, or
-        storage.
-
-        @param info      width, height, SkAlphaType, SkColorType of SkImageInfo
-        @param addr      pointer to pixels allocated by caller; may be nullptr
-        @param rowBytes  size of one row of addr; width times pixel size, or larger
-        @return          initialized SkPixmap
-    */
-    SkPixmap(const SkImageInfo& info, const void* addr, size_t rowBytes)
-        : fPixels(addr), fRowBytes(rowBytes), fInfo(info)
-    {}
-
-    /** Sets width, height, row bytes to zero; pixel address to nullptr; SkColorType to
-        kUnknown_SkColorType; and SkAlphaType to kUnknown_SkAlphaType.
-
-        The prior pixels are unaffected; it is up to the caller to release pixels
-        memory if desired.
-
-        example: https://fiddle.skia.org/c/@Pixmap_reset
-    */
-    void reset();
-
-    /** Sets width, height, SkAlphaType, and SkColorType from info.
-        Sets pixel address from addr, which may be nullptr.
-        Sets row bytes from rowBytes, which should be info.width() times
-        info.bytesPerPixel(), or larger.
-
-        Does not check addr. Asserts if built with SK_DEBUG defined and if rowBytes is
-        too small to hold one row of pixels.
-
-        The memory lifetime pixels are managed by the caller. When SkPixmap goes
-        out of scope, addr is unaffected.
-
-        @param info      width, height, SkAlphaType, SkColorType of SkImageInfo
-        @param addr      pointer to pixels allocated by caller; may be nullptr
-        @param rowBytes  size of one row of addr; width times pixel size, or larger
-
-        example: https://fiddle.skia.org/c/@Pixmap_reset_2
-    */
-    void reset(const SkImageInfo& info, const void* addr, size_t rowBytes);
-
-    /** Changes SkColorSpace in SkImageInfo; preserves width, height, SkAlphaType, and
-        SkColorType in SkImage, and leaves pixel address and row bytes unchanged.
-        SkColorSpace reference count is incremented.
-
-        @param colorSpace  SkColorSpace moved to SkImageInfo
-
-        example: https://fiddle.skia.org/c/@Pixmap_setColorSpace
-    */
-    void setColorSpace(sk_sp<SkColorSpace> colorSpace);
-
-    /** Deprecated.
-    */
-    [[nodiscard]] bool reset(const SkMask& mask);
+    /// Changes `ColorSpace` in `ImageInfo`; preserves width, height, `AlphaType`, and
+    /// `ColorType` in Image, and leaves pixel address and row bytes unchanged.
+    pub fn set_color_space(&mut self, _color_space: &ColorSpace) {
+        unimplemented!()
+    }
 
     /** Sets subset width, height, pixel address to intersection of SkPixmap with area,
         if intersection is not empty; and return true. Otherwise, leave subset unchanged
@@ -104,279 +100,318 @@ public:
         @param area    bounds to intersect with SkPixmap
         @return        true if intersection of SkPixmap and area is not empty
     */
-    [[nodiscard]] bool extractSubset(SkPixmap* subset, const SkIRect& area) const;
-
-    /** Returns width, height, SkAlphaType, SkColorType, and SkColorSpace.
-
-        @return  reference to SkImageInfo
-    */
-    const SkImageInfo& info() const { return fInfo; }
-
-    /** Returns row bytes, the interval from one pixel row to the next. Row bytes
-        is at least as large as: width() * info().bytesPerPixel().
-
-        Returns zero if colorType() is kUnknown_SkColorType.
-        It is up to the SkBitmap creator to ensure that row bytes is a useful value.
-
-        @return  byte length of pixel row
-    */
-    size_t rowBytes() const { return fRowBytes; }
-
-    /** Returns pixel address, the base address corresponding to the pixel origin.
-
-        It is up to the SkPixmap creator to ensure that pixel address is a useful value.
-
-        @return  pixel address
-    */
-    const void* addr() const { return fPixels; }
-
-    /** Returns pixel count in each pixel row. Should be equal or less than:
-        rowBytes() / info().bytesPerPixel().
-
-        @return  pixel width in SkImageInfo
-    */
-    int width() const { return fInfo.width(); }
-
-    /** Returns pixel row count.
-
-        @return  pixel height in SkImageInfo
-    */
-    int height() const { return fInfo.height(); }
-
-    /**
-     *  Return the dimensions of the pixmap (from its ImageInfo)
-     */
-    SkISize dimensions() const { return fInfo.dimensions(); }
-
-    SkColorType colorType() const { return fInfo.colorType(); }
-
-    SkAlphaType alphaType() const { return fInfo.alphaType(); }
-
-    /** Returns SkColorSpace, the range of colors, associated with SkImageInfo. The
-        reference count of SkColorSpace is unchanged. The returned SkColorSpace is
-        immutable.
-
-        @return  SkColorSpace in SkImageInfo, or nullptr
-    */
-    SkColorSpace* colorSpace() const;
-
-    /** Returns smart pointer to SkColorSpace, the range of colors, associated with
-        SkImageInfo. The smart pointer tracks the number of objects sharing this
-        SkColorSpace reference so the memory is released when the owners destruct.
-
-        The returned SkColorSpace is immutable.
-
-        @return  SkColorSpace in SkImageInfo wrapped in a smart pointer
-    */
-    sk_sp<SkColorSpace> refColorSpace() const;
-
-    /** Returns true if SkAlphaType is kOpaque_SkAlphaType.
-        Does not check if SkColorType allows alpha, or if any pixel value has
-        transparency.
-
-        @return  true if SkImageInfo has opaque SkAlphaType
-    */
-    bool isOpaque() const { return fInfo.isOpaque(); }
-
-    /** Returns SkIRect { 0, 0, width(), height() }.
-
-        @return  integral rectangle from origin to width() and height()
-    */
-    SkIRect bounds() const { return SkIRect::MakeWH(this->width(), this->height()); }
-
-    /** Returns number of pixels that fit on row. Should be greater than or equal to
-        width().
-
-        @return  maximum pixels per row
-    */
-    int rowBytesAsPixels() const { return int(fRowBytes >> this->shiftPerPixel()); }
-
-    /** Returns bit shift converting row bytes to row pixels.
-        Returns zero for kUnknown_SkColorType.
-
-        @return  one of: 0, 1, 2, 3; left shift to convert pixels to bytes
-    */
-    int shiftPerPixel() const { return fInfo.shiftPerPixel(); }
-
-    /** Returns minimum memory required for pixel storage.
-        Does not include unused memory on last row when rowBytesAsPixels() exceeds width().
-        Returns SIZE_MAX if result does not fit in size_t.
-        Returns zero if height() or width() is 0.
-        Returns height() times rowBytes() if colorType() is kUnknown_SkColorType.
-
-        @return  size in bytes of image buffer
-    */
-    size_t computeByteSize() const { return fInfo.computeByteSize(fRowBytes); }
-
-    /** Returns true if all pixels are opaque. SkColorType determines how pixels
-        are encoded, and whether pixel describes alpha. Returns true for SkColorType
-        without alpha in each pixel; for other SkColorType, returns true if all
-        pixels have alpha values equivalent to 1.0 or greater.
-
-        For SkColorType kRGB_565_SkColorType or kGray_8_SkColorType: always
-        returns true. For SkColorType kAlpha_8_SkColorType, kBGRA_8888_SkColorType,
-        kRGBA_8888_SkColorType: returns true if all pixel alpha values are 255.
-        For SkColorType kARGB_4444_SkColorType: returns true if all pixel alpha values are 15.
-        For kRGBA_F16_SkColorType: returns true if all pixel alpha values are 1.0 or
-        greater.
-
-        Returns false for kUnknown_SkColorType.
-
-        @return  true if all pixels have opaque values or SkColorType is opaque
-
-        example: https://fiddle.skia.org/c/@Pixmap_computeIsOpaque
-    */
-    bool computeIsOpaque() const;
-
-    /** Returns pixel at (x, y) as unpremultiplied color.
-        Returns black with alpha if SkColorType is kAlpha_8_SkColorType.
-
-        Input is not validated: out of bounds values of x or y trigger an assert() if
-        built with SK_DEBUG defined; and returns undefined values or may crash if
-        SK_RELEASE is defined. Fails if SkColorType is kUnknown_SkColorType or
-        pixel address is nullptr.
-
-        SkColorSpace in SkImageInfo is ignored. Some color precision may be lost in the
-        conversion to unpremultiplied color; original pixel data may have additional
-        precision.
-
-        @param x  column index, zero or greater, and less than width()
-        @param y  row index, zero or greater, and less than height()
-        @return   pixel converted to unpremultiplied color
-
-        example: https://fiddle.skia.org/c/@Pixmap_getColor
-    */
-    SkColor getColor(int x, int y) const;
-
-    /** Returns pixel at (x, y) as unpremultiplied color as an SkColor4f.
-        Returns black with alpha if SkColorType is kAlpha_8_SkColorType.
-
-        Input is not validated: out of bounds values of x or y trigger an assert() if
-        built with SK_DEBUG defined; and returns undefined values or may crash if
-        SK_RELEASE is defined. Fails if SkColorType is kUnknown_SkColorType or
-        pixel address is nullptr.
-
-        SkColorSpace in SkImageInfo is ignored. Some color precision may be lost in the
-        conversion to unpremultiplied color; original pixel data may have additional
-        precision, though this is less likely than for getColor(). Rounding errors may
-        occur if the underlying type has lower precision.
-
-        @param x  column index, zero or greater, and less than width()
-        @param y  row index, zero or greater, and less than height()
-        @return   pixel converted to unpremultiplied float color
-    */
-    SkColor4f getColor4f(int x, int y) const;
-
-    /** Look up the pixel at (x,y) and return its alpha component, normalized to [0..1].
-        This is roughly equivalent to SkGetColorA(getColor()), but can be more efficent
-        (and more precise if the pixels store more than 8 bits per component).
-
-        @param x  column index, zero or greater, and less than width()
-        @param y  row index, zero or greater, and less than height()
-        @return   alpha converted to normalized float
-     */
-    float getAlphaf(int x, int y) const;
-
-    /** Returns readable pixel address at (x, y). Returns nullptr if SkPixelRef is nullptr.
-
-        Input is not validated: out of bounds values of x or y trigger an assert() if
-        built with SK_DEBUG defined. Returns nullptr if SkColorType is kUnknown_SkColorType.
-
-        Performs a lookup of pixel size; for better performance, call
-        one of: addr8, addr16, addr32, addr64, or addrF16().
-
-        @param x  column index, zero or greater, and less than width()
-        @param y  row index, zero or greater, and less than height()
-        @return   readable generic pointer to pixel
-    */
-    const void* addr(int x, int y) const {
-        return (const char*)fPixels + fInfo.computeOffset(x, y, fRowBytes);
+    pub const fn extract_subset(&mut self, _subset: &mut Self, _area: &IRect) -> bool {
+        unimplemented!()
     }
 
-    /** Returns readable base pixel address. Result is addressable as unsigned 8-bit bytes.
-        Will trigger an assert() if SkColorType is not kAlpha_8_SkColorType or
-        kGray_8_SkColorType, and is built with SK_DEBUG defined.
-
-        One byte corresponds to one pixel.
-
-        @return  readable unsigned 8-bit pointer to pixels
-    */
-    const uint8_t* addr8() const {
-        SkASSERT(1 == fInfo.bytesPerPixel());
-        return reinterpret_cast<const uint8_t*>(fPixels);
+    /// Returns width, height, `AlphaType`, `ColorType`, and `ColorSpace`.
+    #[must_use]
+    pub const info(&self) -> &ImageInfo {
+        &self.info
     }
 
-    /** Returns readable base pixel address. Result is addressable as unsigned 16-bit words.
-        Will trigger an assert() if SkColorType is not kRGB_565_SkColorType or
-        kARGB_4444_SkColorType, and is built with SK_DEBUG defined.
-
-        One word corresponds to one pixel.
-
-        @return  readable unsigned 16-bit pointer to pixels
-    */
-    const uint16_t* addr16() const {
-        SkASSERT(2 == fInfo.bytesPerPixel());
-        return reinterpret_cast<const uint16_t*>(fPixels);
+    /// Returns row bytes, the interval from one pixel row to the next.
+    /// Row bytes is at least as large as: `width() * info().bytes_per_pixel()`.
+    ///
+    /// Returns zero if `color_type()` is `ColorType::Unknown`.
+    ///
+    /// It is up to the Bitmap creator to ensure that row bytes is a useful value.
+    #[must_use]
+    pub const fn row_bytes(&self) -> usize {
+        self.row_bytes
     }
 
-    /** Returns readable base pixel address. Result is addressable as unsigned 32-bit words.
-        Will trigger an assert() if SkColorType is not kRGBA_8888_SkColorType or
-        kBGRA_8888_SkColorType, and is built with SK_DEBUG defined.
-
-        One word corresponds to one pixel.
-
-        @return  readable unsigned 32-bit pointer to pixels
-    */
-    const uint32_t* addr32() const {
-        SkASSERT(4 == fInfo.bytesPerPixel());
-        return reinterpret_cast<const uint32_t*>(fPixels);
+    /// Returns pixel slice.
+    #[must_use]
+    pub fn pixels(&self) -> &[u8] {
+        &self.pixels
     }
 
-    /** Returns readable base pixel address. Result is addressable as unsigned 64-bit words.
-        Will trigger an assert() if SkColorType is not kRGBA_F16_SkColorType and is built
-        with SK_DEBUG defined.
-
-        One word corresponds to one pixel.
-
-        @return  readable unsigned 64-bit pointer to pixels
-    */
-    const uint64_t* addr64() const {
-        SkASSERT(8 == fInfo.bytesPerPixel());
-        return reinterpret_cast<const uint64_t*>(fPixels);
+    /// Returns pixel count in each pixel row.
+    ///
+    /// Should be equal or less than: `row_bytes() / info().bytes_per_pixel()`.
+    #[must_use]
+    pub const fn width(&self) -> i32 {
+        self.info.width()
     }
 
-    /** Returns readable base pixel address. Result is addressable as unsigned 16-bit words.
-        Will trigger an assert() if SkColorType is not kRGBA_F16_SkColorType and is built
-        with SK_DEBUG defined.
-
-        Each word represents one color component encoded as a half float.
-        Four words correspond to one pixel.
-
-        @return  readable unsigned 16-bit pointer to first component of pixels
-    */
-    const uint16_t* addrF16() const {
-        SkASSERT(8 == fInfo.bytesPerPixel());
-        SkASSERT(kRGBA_F16_SkColorType     == fInfo.colorType() ||
-                 kRGBA_F16Norm_SkColorType == fInfo.colorType());
-        return reinterpret_cast<const uint16_t*>(fPixels);
+    #[must_use]
+    pub const fn height(&self) -> i32 {
+        self.info.height()
     }
 
-    /** Returns readable pixel address at (x, y).
+    /// Return the dimensions of the pixmap (from its `ImageInfo`)
+    #[must_use]
+    pub const fn dimensiions(&self) -> ISize {
+        self.info.dimensiions()
+    }
 
-        Input is not validated: out of bounds values of x or y trigger an assert() if
-        built with SK_DEBUG defined.
+    #[must_use]
+    pub const color_type(&self) -> ColorType {
+        self.info.color_type()
+    }
 
-        Will trigger an assert() if SkColorType is not kAlpha_8_SkColorType or
-        kGray_8_SkColorType, and is built with SK_DEBUG defined.
+    #[must_use]
+    pub const fn alpha_type(&self) -> AlphaType {
+        self.info.alpha_type
+    }
 
-        @param x  column index, zero or greater, and less than width()
-        @param y  row index, zero or greater, and less than height()
-        @return   readable unsigned 8-bit pointer to pixel at (x, y)
-    */
-    const uint8_t* addr8(int x, int y) const {
-        SkASSERT((unsigned)x < (unsigned)fInfo.width());
-        SkASSERT((unsigned)y < (unsigned)fInfo.height());
-        return (const uint8_t*)((const char*)this->addr8() + (size_t)y * fRowBytes + (x << 0));
+    /// Returns `ColorSpace`, the range of colors, associated with `ImageInfo`.
+    ///
+    /// The reference count of ColorSpace is unchanged.
+    /// The returned ColorSpace is immutable.
+    #[must_use]
+    pub const color_space(&self) -> &Option<ColorSpace> {
+        self.info.color_space()
+    }
+
+    /// Returns true if `AlphaType` is `AlphaType::Opaque`.
+    ///
+    /// Does not check if `ColorType` allows alpha, or if any pixel value has
+    /// transparency.
+    #[must_use]
+    pub const fn is_opaque(&self) -> bool {
+        self.info.is_opaque()
+    }
+
+    /// Returns IRect { 0, 0, width(), height() }.
+    ///
+    /// Returns integral rectangle from origin to width() and height()
+    #[must_use]
+    pub const fn bounds(&self) -> IRect {
+        IRect::from_wh(self.width(), self.height())
+    }
+
+    /// Returns number of pixels that fit on row.
+    ///
+    /// Should be greater than or equal to width().
+    #[must_use]
+    pub const fn row_bytes_as_pixels(&self) -> usize {
+        self.row_bytes >> self.shift_per_pixel()
+    }
+
+    /// Returns bit shift converting row bytes to row pixels.
+    ///
+    /// Returns zero for `ColorType::Unknown`.
+    ///
+    /// Returns one of: 0, 1, 2, 3; left shift to convert pixels to bytes.
+    #[must_use]
+    pub const fn shift_per_pixel(&self) -> i32 {
+        self.info.shift_per_pixel()
+    }
+
+    /// Returns minimum memory required for pixel storage.
+    ///
+    /// Does not include unused memory on last row when `row_bytes_as_pixels()` exceeds width().
+    ///
+    /// Returns `usize::MAX` if result does not fit in usize.
+    /// Returns zero if height() or width() is 0.
+    /// Returns `height() * row_bytes()` if `color_type()` is `ColorType::Unknown`.
+    #[must_use]
+    pub const fn compute_byte_size(&self) -> usize {
+        self.info.compute_byte_size(self.row_bytes)
+    }
+
+    /// Returns true if all pixels are opaque.
+    ///
+    /// ColorType determines how pixels are encoded, and whether pixel describes alpha.
+    /// Returns true for ColorType without alpha in each pixel; for other `ColorType`,
+    /// returns true if all pixels have alpha values equivalent to 1.0 or greater.
+    ///
+    /// - For `ColorType::Rgb565` or `ColorType::Gray8`, always returns true.
+    /// - For `ColorType::Alpha8`, `ColorType::Bgra8888`, `ColorType::Rgba8888`, returns true
+    /// if all pixel alpha values are 255.
+    /// - For `ColorType::Argb4444_`, returns true if all pixel alpha values are 15.
+    /// - For `ColorType::RgbaF16`, returns true if all pixel alpha values are 1.0 or greater.
+    /// - Returns false for `ColorType::Unknown`.
+    ///
+    /// Returns true if all pixels have opaque values or `ColorType` is opaque
+    #[must_use]
+    pub const fn compute_is_opaque(&self) -> bool {
+        unimplemented!()
+    }
+
+    /// Returns pixel at (x, y) as unpremultiplied color.
+    ///
+    /// Returns black with alpha if `ColorType` is `ColorType::Alpha8`.
+    ///
+    /// Return None if ColorType is `ColorType::Unknown` or pixel address is empty.
+    ///
+    /// `ColorSpace` in `ImageInfo` is ignored. Some color precision may be lost in the
+    /// conversion to unpremultiplied color; original pixel data may have additional precision.
+    ///
+    /// # Parameters
+    /// - `x` - column index, zero or greater, and less than width()
+    /// - `y` - row index, zero or greater, and less than height()
+    ///
+    /// Returns pixel converted to unpremultiplied color
+    #[must_use]
+    pub fn get_color(&self, _x: i32, _y: i32) -> Option<Color> {
+        unimplemented!()
+    }
+
+    /// Returns pixel at (x, y) as unpremultiplied color as an `Color4F`.
+    ///
+    /// Returns black with alpha if `ColorType` is `ColorType::Alpha8`.
+    ///
+    /// Return None if `ColorType` is `ColorType::Unknown` or pixel address is empty.
+    ///
+    /// `ColorSpace` in `ImageInfo` is ignored. Some color precision may be lost in the
+    /// conversion to unpremultiplied color; original pixel data may have additional
+    /// precision, though this is less likely than for `get_color()`.
+    /// Rounding errors may occur if the underlying type has lower precision.
+    ///
+    /// # Parameters
+    /// - `x` - column index, zero or greater, and less than width()
+    /// - `y` - row index, zero or greater, and less than height()
+    ///
+    /// Returns pixel converted to unpremultiplied float color
+    pub fn get_color4f(&self, _x: i32, _y: i32) -> Option<Color4F> {
+        unimplemented!()
+    }
+
+    /// Look up the pixel at (x,y) and return its alpha component, normalized to [0..1].
+    ///
+    /// This is roughly equivalent to `get_color().alpha(), but can be more efficent
+    /// (and more precise if the pixels store more than 8 bits per component).
+    ///
+    /// # Parameters
+    /// - `x` - column index, zero or greater, and less than width()
+    /// - `y` - row index, zero or greater, and less than height()
+    ///
+    /// Returns alpha converted to normalized float
+    #[must_use]
+    pub const fn get_alphaf(&self, _x: i32, _y: i32) -> f32 {
+        unimplemented!()
+    }
+
+    /// Returns readable pixel address at (x, y).
+    ///
+    /// Returns None if PixelRef is empty.
+    ///
+    /// Returns None if `ColorType` is Unknown.
+    ///
+    /// Performs a lookup of pixel size; for better performance, call
+    /// one of: addr8, addr16, addr32, addr64, or addrF16().
+    ///
+    /// # Parameters
+    /// - `x` - column index, zero or greater, and less than width()
+    /// - `y` - row index, zero or greater, and less than height()
+    #[must_use]
+    pub const fn pixels_at(&self, x: i32, y: i32) -> Option<&[u8]> {
+        let offset = self.info.compute_offset(x, y, self.row_bytes);
+        Some(self.pixels[offset..])
+    }
+
+    /// Returns readable base pixel address.
+    ///
+    /// Result is addressable as unsigned 8-bit bytes.
+    /// Return None if ColorType is not Alpha8 or Gray8.
+    ///
+    /// One byte corresponds to one pixel.
+    ///
+    /// Returns readable unsigned 8-bit pointer to pixels.
+    #[must_use]
+    pub const fn addr8(&self) -> Option<&[u8]> {
+        if self.info.bytes_per_pixel() == 1 {
+            Some(&self.pixels)
+        } else {
+            None
+        }
+    }
+
+    /// Returns readable base pixel address.
+    ///
+    /// Result is addressable as unsigned 16-bit words.
+    /// Return None if ColorType is not Rgb565 or Argb4444.
+    ///
+    /// One word corresponds to one pixel.
+    ///
+    /// Returns readable unsigned 16-bit pointer to pixels.
+    #[must_use]
+    pub const fn addr16(&self) -> Option<&[u16]> {
+        if self.info.bytes_per_pixel() == 2 {
+            Some(&self.pixels)
+        } else {
+            None
+        }
+    }
+
+    /// Returns readable base pixel address.
+    ///
+    /// Result is addressable as unsigned 32-bit words.
+    /// Return None if ColorType is not Rgba8888 or Bgra8888.
+    ///
+    /// One word corresponds to one pixel.
+    ///
+    /// Returns readable unsigned 32-bit pointer to pixels.
+    #[must_use]
+    pub const fn addr32(&self) -> Option<&[u32]> {
+        if self.info.bytes_per_pixel() == 4 {
+            Some(&self.pixels)
+        } else {
+            None
+        }
+    }
+
+    /// Returns readable base pixel address.
+    ///
+    /// Result is addressable as unsigned 64-bit words.
+    ///
+    /// Return None if `ColorType` is not RgbaF16
+    ///
+    /// One word corresponds to one pixel.
+    ///
+    /// Returns readable unsigned 64-bit pointer to pixels.
+    #[must_use]
+    pub const fn addr64(&self) -> Option<&[u64]> {
+        if self.info.bytes_per_pixel() == 8 {
+            Some(&self.pixels)
+        } else {
+            None
+        }
+    }
+
+    /// Returns readable base pixel address.
+    ///
+    /// Result is addressable as unsigned 16-bit words.
+    ///
+    /// Return None if ColorType is not RgbaF16
+    ///
+    /// Each word represents one color component encoded as a half float.
+    /// Four words correspond to one pixel.
+    ///
+    /// Returns readable unsigned 16-bit pointer to first component of pixels.
+    #[must_use]
+    pub const fn addr_f16(&self) -> Option<&[u16]> {
+        if !self.info.bytes_per_pixel() {
+            return None;
+        }
+        match self.info.color_type() {
+            ColorType::RgbaF16 | ColorType::RgbaF16Norm => Some(&self.pixels),
+            _ => None,
+        }
+    }
+
+    /// Returns readable pixel address at (x, y).
+    ///
+    /// Input is not validated: out of bounds values of x or y return None.
+    ///
+    /// Return None if `ColorType` is not Alpha8 or Gray8.
+    ///
+    /// # Parameters
+    /// - `x` - column index, zero or greater, and less than width()
+    /// - `y` - row index, zero or greater, and less than height()
+    ///
+    /// Returns readable unsigned 8-bit pointer to pixel at (x, y)
+    #[must_use]
+    pub const fn addr8_at(&self, x: i32, y: i32) -> Option<&[u8]> {
+        if x < self.info.width() && y < self.info.height() {
+            let offset = 9y as usize) * self.row_bytes + ((x as usize) << 0));
+            &self.pixels[offset..]
+        } else {
+            None
+        }
     }
 
     /** Returns readable pixel address at (x, y).
@@ -699,9 +734,4 @@ public:
         @return        true if pixels are changed
     */
     bool erase(const SkColor4f& color, const SkIRect* subset = nullptr) const;
-
-private:
-    const void*     fPixels;
-    size_t          fRowBytes;
-    SkImageInfo     fInfo;
-};
+}
