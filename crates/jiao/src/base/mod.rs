@@ -3,6 +3,6 @@
 // in the LICENSE file.
 
 pub mod align;
+pub mod cubics;
+pub mod id_change_listener;
 pub mod math;
-
-pub(crate) mod id_change_listener;

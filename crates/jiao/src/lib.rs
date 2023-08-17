@@ -23,7 +23,7 @@
 )]
 #![allow(dead_code)]
 
-pub mod base;
+pub(crate) mod base;
 pub mod codec;
 pub mod core;
 pub mod effects;
