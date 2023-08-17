@@ -6,7 +6,8 @@
 pub struct Capabilities {}
 
 impl Capabilities {
-    pub fn raster_backend() -> Self {
+    #[must_use]
+    pub const fn raster_backend() -> Self {
         Self {}
     }
 }

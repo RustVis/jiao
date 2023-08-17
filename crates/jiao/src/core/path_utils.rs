@@ -14,9 +14,9 @@ use crate::core::scalar::Scalar;
 /// - `src` - Path read to create a filled version
 /// - `paint` - Paint, from which attributes such as stroke cap, width, miter, and join,
 ///             as well as path effect will be used.
-/// - `dst` - resulting SkPath; may be the same as src
+/// - `dst` - resulting Path; may be the same as src
 /// - `cull_rect` - optional limit passed to `PathEffect`
-/// - `res_scale` - if > 1.0, increase precision, else if (0.0 < res_scale < 1.0)
+/// - `res_scale` - if > 1.0, increase precision, else if (`0.0 < res_scale < 1.0`)
 ///                 reduce precision to favor speed and size
 ///
 /// Returns true if the dst path was updated, false if it was not

@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+#![allow(clippy::module_name_repetitions)]
+
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 
@@ -43,7 +45,7 @@ pub trait IdChangeListenerTrait {
     fn changed(&mut self);
 }
 
-/// Manages a list of IdChangeListeners.
+/// Manages a list of `IdChangeListeners`.
 pub struct IdChangeListenerList {
     mutex: Arc<Mutex<i32>>,
     listeners: Vec<IdChangeListener>,
@@ -75,12 +77,12 @@ impl IdChangeListenerList {
     }
 
     /// Calls changed() on all listeners that haven't been deregistered and resets the list.
-    pub fn changed(&mut self) {
+    pub fn changed() {
         unimplemented!()
     }
 
     /// Resets without calling changed() on the listeners.
-    pub fn reset(&mut self) {
+    pub fn reset() {
         unimplemented!()
     }
 }

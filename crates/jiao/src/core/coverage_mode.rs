@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+#![allow(clippy::module_name_repetitions)]
+
 /// `CoverageMode` describes geometric operations (ala `Region::Op`) that can be applied
 /// to coverage bytes.
 ///

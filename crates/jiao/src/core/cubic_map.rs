@@ -41,10 +41,12 @@ impl CubicMap {
         p1.x().nearly_equal(p1.y()) && p2.x().nearly_equal(p2.y())
     }
 
+    #[must_use]
     pub fn compute_y_from_x(&self, _x: f32) -> f32 {
         unimplemented!()
     }
 
+    #[must_use]
     pub fn compute_from_t(&self, _t: f32) -> Point {
         unimplemented!()
     }

@@ -64,6 +64,7 @@ impl PixelRef {
     /// All pixel bytes are zeroed.
     ///
     /// Returns None on failure.
+    #[must_use]
     pub fn with_image_info(_info: &ImageInfo, _row_bytes: usize) -> Option<Self> {
         unimplemented!()
     }
@@ -73,6 +74,7 @@ impl PixelRef {
     /// The Data will be refed and on destruction of the `PixelRef`, the Data will be unrefed.
     ///
     /// Returns None on failure.
+    #[must_use]
     pub fn with_data(_info: &ImageInfo, _row_bytes: usize /*_data: &Data*/) -> Option<Self> {
         unimplemented!()
     }
@@ -138,13 +140,13 @@ impl PixelRef {
 
     /// Register a listener that may be called the next time our generation ID changes.
     ///
-    /// We'll only call the listener if we're confident that we are the only PixelRef with this
+    /// We'll only call the listener if we're confident that we are the only `PixelRef` with this
     /// generation ID.
     /// If our generation ID changes and we decide not to call the listener, we'll
     /// never call it: you must add a new listener for each generation ID change.
     /// We also won't call the listener when we're certain no one knows what our generation ID is.
     ///
-    /// This can be used to invalidate caches keyed by PixelRef generation ID.
+    /// This can be used to invalidate caches keyed by `PixelRef` generation ID.
     /// Takes ownership of listener.
     /// Threadsafe.
     pub fn add_gen_id_change_listener(&mut self, listener: IdChangeListener) {
@@ -159,16 +161,16 @@ impl PixelRef {
         self.added_to_cache.store(true, Ordering::Relaxed);
     }
 
-    // Bottom bit indicates the Gen ID is unique.
+    /// Bottom bit indicates the Gen ID is unique.
     fn gen_id_is_unique(&self) -> bool {
         self.tagged_gen_id.load(Ordering::Relaxed) & 1 == 1
     }
 
-    fn needs_new_gen_id(&mut self) {
+    fn needs_new_gen_id() {
         unimplemented!()
     }
 
-    fn call_gen_id_change_listeners(&mut self) {
+    fn call_gen_id_change_listeners() {
         unimplemented!()
     }
 

@@ -7,7 +7,7 @@
 /// Not only is the data immutable, but the actual ptr that is returned
 /// (by data() or bytes()) is guaranteed to always be the same for the life
 /// of this instance.
-#[derive(Debug, Default, Clone, PartialEq)]
+#[derive(Debug, Default, Clone, Eq, PartialEq)]
 pub struct Data {
     data: Vec<u8>,
 }
@@ -72,7 +72,7 @@ impl Data {
 
     /// Create a new data with zero-initialized contents.
     ///
-    /// The caller should call writable_data() to write into the buffer,
+    /// The caller should call `writable_data()` to write into the buffer,
     /// but this must be done before another ref() is made.
     #[must_use]
     pub fn with_zero_initialized(len: usize) -> Self {
@@ -97,6 +97,7 @@ impl Data {
     }
 
     /// Create a new dataref using a subset of the data in the specified src dataref.
+    #[must_use]
     pub fn new_subset(src: &Self, offset: usize, length: usize) -> Self {
         Self {
             data: src.data[offset..offset + length].to_vec(),
@@ -105,7 +106,8 @@ impl Data {
 
     /// Returns a new empty dataref (or a reference to a shared empty dataref).
     /// New or shared, the caller must see that unref() is eventually called.
-    pub fn new() -> Self {
+    #[must_use]
+    pub const fn new() -> Self {
         Self { data: Vec::new() }
     }
 }
