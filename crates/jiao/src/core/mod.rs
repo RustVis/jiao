@@ -11,6 +11,7 @@ pub mod canvas;
 pub mod clip_op;
 pub mod color;
 pub mod color_space;
+pub mod coverage_mode;
 //pub mod color_table;
 pub mod capabilities;
 pub mod color_type;
