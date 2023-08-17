@@ -50,6 +50,7 @@ impl PixelRef {
             mutability: Mutability::Mutable,
 
             tagged_gen_id: AtomicU32::new(0),
+            gen_id_change_listeners: IdChangeListenerList::new(),
             added_to_cache: AtomicBool::new(false),
         }
     }
@@ -92,7 +93,7 @@ impl PixelRef {
     }
 
     #[must_use]
-    pub const fn pixels(&self) -> &[u8] {
+    pub fn pixels(&self) -> &[u8] {
         &self.pixels
     }
 
@@ -106,7 +107,7 @@ impl PixelRef {
     /// Each time the pixels are changed (and `notify_pixels_changed()` is called),
     /// a different generation ID will be returned.
     #[must_use]
-    pub const fn get_generation_id(&self) -> u32 {
+    pub fn get_generation_id(&self) -> u32 {
         //unimplemented!();
         self.tagged_gen_id.load(Ordering::Relaxed)
     }
@@ -155,7 +156,7 @@ impl PixelRef {
     /// This allows the cache to know automatically those entries can be purged
     /// when this pixelref is changed or deleted.
     pub fn notify_added_to_cache(&mut self) {
-        self.added_to_cache.store(true);
+        self.added_to_cache.store(true, Ordering::Relaxed);
     }
 
     // Bottom bit indicates the Gen ID is unique.

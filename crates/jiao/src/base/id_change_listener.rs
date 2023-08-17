@@ -65,9 +65,13 @@ impl IdChangeListenerList {
 
     /// The number of registered listeners (including deregisterd listeners that are yet-to-be
     /// removed.
-    pub const fn count(&self) -> usize {
+    pub fn len(&self) -> usize {
         // unimplemented!()
-        self.listeners
+        self.listeners.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.listeners.is_empty()
     }
 
     /// Calls changed() on all listeners that haven't been deregistered and resets the list.
