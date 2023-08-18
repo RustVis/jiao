@@ -4,7 +4,7 @@
 
 use crate::base::math::mul_div_255_round;
 use crate::core::color::PMColor;
-use crate::core::scalar::Scalar;
+use crate::core::scalar::{Scalar, ScalarExt};
 
 /// Turn 0..255 into 0..256 by adding 1 at the half-way point.
 ///
@@ -23,7 +23,7 @@ pub fn alpha_mul(value: u8, alpha256: u8) -> u32 {
 }
 
 pub fn unit_scalar_clamp_to_byte(x: Scalar) -> u8 {
-    (t_pin(x, 0.0, 1.0) * 255.0 + 0.5) as u8
+    (x.tpin(0.0, 1.0) * 255.0 + 0.5) as u8
 }
 
 pub const A32_BITS: usize = 8;

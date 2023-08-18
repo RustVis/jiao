@@ -81,6 +81,9 @@ pub trait ScalarExt {
     // TODO(Shaohua): Remove this method when f32::midpoint() is availabel in stable API.
     #[must_use]
     fn mid_point(self, other: Self) -> Self;
+
+    #[must_use]
+    fn tpin(self, low: Self, hi: Self) -> Self;
 }
 
 impl ScalarExt for Scalar {
@@ -202,6 +205,11 @@ impl ScalarExt for Scalar {
             // Not safe to halve a and b
             (a / 2.0) + (b / 2.0)
         }
+    }
+
+    #[must_use]
+    fn tpin(self, low: Self, hi: Self) -> Self {
+        low.max(self.min(hi))
     }
 }
 
