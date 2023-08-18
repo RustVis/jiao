@@ -9,6 +9,7 @@ use crate::core::color::Color;
 use crate::core::color::Color4F;
 use crate::core::color_space::ColorSpace;
 use crate::core::color_table::ColorTable;
+use crate::effects::color_matrix::ColorMatrix;
 
 /// `ColorFilters` are optional objects in the drawing pipeline.
 ///
