@@ -213,11 +213,6 @@ impl ScalarExt for Scalar {
     }
 }
 
-#[must_use]
-pub const fn scalar_from_int(x: i32) -> Scalar {
-    x as Scalar
-}
-
 /// Helper to compare an array of scalars.
 #[must_use]
 pub fn scalars_equal(a: &[Scalar], b: &[Scalar], n: usize) -> bool {

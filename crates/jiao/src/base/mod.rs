@@ -4,5 +4,6 @@
 
 pub mod align;
 pub mod cubics;
+pub mod floating_point;
 pub mod id_change_listener;
 pub mod math;

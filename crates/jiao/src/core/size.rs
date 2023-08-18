@@ -4,7 +4,7 @@
 
 #![allow(clippy::module_name_repetitions)]
 
-use crate::core::scalar::{scalar_from_int, Scalar, ScalarExt};
+use crate::core::scalar::{Scalar, ScalarExt};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ISize {
@@ -106,8 +106,8 @@ impl Size {
     #[must_use]
     pub const fn from_isize(src: &ISize) -> Self {
         Self {
-            width: scalar_from_int(src.width()),
-            height: scalar_from_int(src.height()),
+            width: src.width() as Scalar,
+            height: src.height() as Scalar,
         }
     }
 
