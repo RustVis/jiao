@@ -52,6 +52,7 @@ pub mod types;
 pub mod vertices;
 
 // Private modules
+pub(crate) mod color_priv;
 pub(crate) mod cubic_clipper;
 pub(crate) mod line_clipper;
 pub(crate) mod mask;

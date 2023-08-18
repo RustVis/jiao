@@ -11,6 +11,7 @@ use std::ops::{Index, IndexMut, Mul};
 
 use crate::core::alpha_type::AlphaType;
 use crate::core::scalar::{Scalar, ScalarExt};
+use crate::core::types::{A32_SHIFT, B32_SHIFT, G32_SHIFT, R32_SHIFT};
 
 /// 8-bit type for an alpha value. 255 is 100% opaque, zero is 100% transparent.
 pub type Alpha = u8;
@@ -210,10 +211,54 @@ impl From<Color> for PMColor {
     }
 }
 
+impl From<PMColor> for u32 {
+    fn from(color: PMColor) -> u32 {
+        (u32::from(color.alpha) << A32_SHIFT)
+            | (u32::from(color.red) << R32_SHIFT)
+            | (u32::from(color.green) << G32_SHIFT)
+            | (u32::from(color.blue) << B32_SHIFT)
+    }
+}
+
+impl From<u32> for PMColor {
+    fn from(packed: u32) -> Self {
+        let alpha = ((packed << (24 - A32_SHIFT)) >> 24) as u8;
+        let red = ((packed << (24 - R32_SHIFT)) >> 24) as u8;
+        let green = ((packed << (24 - G32_SHIFT)) >> 24) as u8;
+        let blue = ((packed << (24 - B32_SHIFT)) >> 24) as u8;
+        Self::from_argb(alpha, red, green, blue)
+    }
+}
+
 impl PMColor {
     #[must_use]
-    pub const fn from_argb(_alpha: u8, _red: u8, _green: u8, _blue: u8) -> Self {
-        unimplemented!()
+    pub const fn from_argb(alpha: u8, red: u8, green: u8, blue: u8) -> Self {
+        Self {
+            alpha,
+            red,
+            green,
+            blue,
+        }
+    }
+
+    #[must_use]
+    pub const fn alpha(&self) -> u8 {
+        self.alpha
+    }
+
+    #[must_use]
+    pub const fn red(&self) -> u8 {
+        self.red
+    }
+
+    #[must_use]
+    pub const fn green(&self) -> u8 {
+        self.green
+    }
+
+    #[must_use]
+    pub const fn blue(&self) -> u8 {
+        self.blue
     }
 }
 

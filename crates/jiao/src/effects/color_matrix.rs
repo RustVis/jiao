@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+pub type YuvColorSpace = i32;
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct ColorMatrix {
     mat: [f32; 20],
@@ -45,7 +47,7 @@ impl ColorMatrix {
     }
 
     #[must_use]
-    pub fn rgb_to_yuv(_color_space: YuvcolorSpace) -> Self {
+    pub fn rgb_to_yuv(_color_space: YuvColorSpace) -> Self {
         unimplemented!()
     }
 

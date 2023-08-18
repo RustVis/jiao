@@ -2,10 +2,10 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-pub const R32_SHIFT: usize = 0;
-pub const B32_SHIFT: usize = 16 - R32_SHIFT;
-pub const G32_SHIFT: usize = 8;
-pub const A32_SHIFT: usize = 24;
+pub const R32_SHIFT: u32 = 0;
+pub const B32_SHIFT: u32 = 16 - R32_SHIFT;
+pub const G32_SHIFT: u32 = 8;
+pub const A32_SHIFT: u32 = 24;
 
 // NOTE(Shaohua): Use byte order cfg instead.
 // SK_PMCOLOR_BYTE_ORDER can be used to query the byte order of SkPMColor at compile time.
