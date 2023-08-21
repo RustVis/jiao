@@ -30,6 +30,7 @@ pub fn mul_16_shift_round(a: u16, b: u16, shift: i32) -> u32 {
 ///
 /// Only valid if a and b are unsigned and <= 32767.
 #[must_use]
+#[allow(clippy::cast_possible_truncation)]
 pub fn mul_div_255_round(a: u16, b: u16) -> u8 {
     mul_16_shift_round(a, b, 8) as u8
 }
