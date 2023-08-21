@@ -47,6 +47,7 @@ pub mod sampling_options;
 pub mod scalar;
 pub mod size;
 pub mod surface_props;
+pub mod swizzle;
 pub mod texture_compression_type;
 pub mod tile_mode;
 pub mod types;
