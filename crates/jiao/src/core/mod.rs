@@ -53,6 +53,7 @@ pub mod tile_mode;
 pub mod types;
 pub mod vertices;
 pub mod yuva_info;
+pub mod yuva_pixmap;
 
 // Private modules
 pub(crate) mod color_priv;

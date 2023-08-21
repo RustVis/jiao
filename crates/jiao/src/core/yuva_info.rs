@@ -254,6 +254,12 @@ pub struct YuvaInfo {
     siting_y: Siting,
 }
 
+impl Default for YuvaInfo {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl YuvaInfo {
     /// Given image dimensions, a planer configuration, subsampling, and origin,
     /// determine the expected size of each plane.

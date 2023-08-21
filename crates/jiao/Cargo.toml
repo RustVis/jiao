@@ -25,6 +25,8 @@ license = "Apache-2.0"
 publish = true
 
 [dependencies]
+bit-set = "0.5.3"
 bitflags = "2.4.0"
+log = "0.4.20"
 serde = { version = "1.0.183", features = ["derive"] }
 
