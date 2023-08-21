@@ -2,6 +2,8 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
+#![allow(clippy::module_name_repetitions)]
+
 use crate::core::color_filter::ColorFilter;
 use crate::core::flattenable::{Flattenable, Type};
 use crate::core::irect::IRect;
@@ -48,11 +50,11 @@ impl ImageFilter {
     /// but should never be smaller than the real answer. The default implementation
     /// recursively unions all input bounds, or returns the source rect if no inputs.
     ///
-    /// In Reverse mode, 'input_rect' is the device-space bounds of the input pixels.
+    /// In Reverse mode, `input_rect` is the device-space bounds of the input pixels.
     /// In Forward mode it should always be null.
-    /// If 'input_rect' is null in Reverse mode the resulting answer may be incorrect.
+    /// If `input_rect` is null in Reverse mode the resulting answer may be incorrect.
     #[must_use]
-    pub fn filter_bounds(
+    pub const fn filter_bounds(
         &self,
         _src: &IRect,
         _ctm: &Matrix,
@@ -90,16 +92,18 @@ impl ImageFilter {
 
     /// Returns the input filter at a given index, or NULL if no input is connected.
     /// The indices used are filter-specific.
-    pub fn get_input(&self, index: i32) -> &Self {
+    #[must_use]
+    pub fn get_input(&self, _index: i32) -> &Self {
         unimplemented!()
     }
 
     /// Can this filter DAG compute the resulting bounds of an object-space rectangle?
+    #[must_use]
     pub fn can_compute_fast_bounds(&self) -> bool {
         unimplemented!()
     }
 
-    /// If this filter can be represented by another filter + a local_matrix,
+    /// If this filter can be represented by another filter + a `local_matrix`,
     /// return that filter, else return null.
     #[must_use]
     pub fn with_local_matrix(_matrix: &Matrix) -> Option<Self> {
@@ -109,7 +113,7 @@ impl ImageFilter {
 
 pub trait ImageFilterTrait {
     /// Default impl returns union of all input bounds.
-    fn computeFastBounds(&self, bounds: &Rect) -> Rect {
+    fn compute_fast_bounds(&self, _bounds: &Rect) -> Rect {
         unimplemented!()
     }
 }

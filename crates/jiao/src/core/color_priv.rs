@@ -22,8 +22,10 @@ pub fn alpha_mul(value: u8, alpha256: u8) -> u32 {
     (u32::from(value) * u32::from(alpha256)) >> 8
 }
 
+#[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_sign_loss)]
 pub fn unit_scalar_clamp_to_byte(x: Scalar) -> u8 {
-    (x.tpin(0.0, 1.0) * 255.0 + 0.5) as u8
+    x.tpin(0.0, 1.0).mul_add(255.0, 0.5) as u8
 }
 
 pub const A32_BITS: usize = 8;
@@ -77,17 +79,17 @@ pub const fn b32_assert(b: u32) {
 
 pub fn premultiply_argb_inline(a: u8, mut r: u8, mut g: u8, mut b: u8) -> PMColor {
     if a != 255 {
-        let a16 = a as u16;
-        r = mul_div_255_round(r as u16, a16);
-        g = mul_div_255_round(g as u16, a16);
-        b = mul_div_255_round(b as u16, a16);
+        let a16 = u16::from(a);
+        r = mul_div_255_round(u16::from(r), a16);
+        g = mul_div_255_round(u16::from(g), a16);
+        b = mul_div_255_round(u16::from(b), a16);
     }
     PMColor::from_argb(a, r, g, b)
 }
 
 // When Android is compiled optimizing for size, SkAlphaMulQ doesn't get
 // inlined; forcing inlining significantly improves performance.
-pub fn alpha_mul_q(c: u32, scale: u32) -> u32 {
+pub const fn alpha_mul_q(c: u32, scale: u32) -> u32 {
     let mask: u32 = 0x00FF_00FF;
 
     let rb: u32 = ((c & mask) * scale) >> 8;

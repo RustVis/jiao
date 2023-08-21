@@ -212,6 +212,7 @@ impl From<Color> for PMColor {
 }
 
 impl From<PMColor> for u32 {
+    #[allow(clippy::use_self)]
     fn from(color: PMColor) -> u32 {
         (u32::from(color.alpha) << A32_SHIFT)
             | (u32::from(color.red) << R32_SHIFT)

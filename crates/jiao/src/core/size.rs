@@ -104,6 +104,7 @@ impl Size {
     }
 
     #[must_use]
+    #[allow(clippy::cast_precision_loss)]
     pub const fn from_isize(src: &ISize) -> Self {
         Self {
             width: src.width() as Scalar,

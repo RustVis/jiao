@@ -31,6 +31,7 @@ impl ColorMatrix {
 
     #[must_use]
     #[rustfmt::skip]
+    #[allow(clippy::too_many_arguments)]
     pub const fn from(
         m00: f32, m01: f32, m02: f32, m03: f32, m04: f32,
         m10: f32, m11: f32, m12: f32, m13: f32, m14: f32,
@@ -107,7 +108,7 @@ impl ColorMatrix {
     }
 
     #[must_use]
-    pub fn get_row_major(&self) -> &[f32; 20] {
+    pub const fn get_row_major(&self) -> &[f32; 20] {
         &self.mat
     }
 }

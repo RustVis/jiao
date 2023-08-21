@@ -14,7 +14,7 @@ use crate::effects::color_matrix::ColorMatrix;
 /// `ColorFilters` are optional objects in the drawing pipeline.
 ///
 /// When present in a paint, they are called with the "src" colors, and return new colors,
-/// which are then passed onto the next stage (either ImageFilter or Xfermode).
+/// which are then passed onto the next stage (either `ImageFilter` or `Xfermode`).
 ///
 /// All subclasses are required to be reentrant-safe : it must be legal to share
 /// the same instance between several threads.
@@ -26,7 +26,7 @@ impl ColorFilter {
     ///
     /// If not, this returns false and ignores the parameters.
     #[must_use]
-    pub fn as_a_color_mode(&self, color: &mut Color, mode: &mut BlendMode) -> bool {
+    pub fn as_a_color_mode(&self, _color: &mut Color, _mode: &mut BlendMode) -> bool {
         unimplemented!()
     }
 
@@ -35,7 +35,7 @@ impl ColorFilter {
     ///
     /// If not, this returns false and ignores the parameter.
     #[must_use]
-    pub fn as_a_color_matrix(&self, matrix: &mut [f32; 20]) -> bool {
+    pub fn as_a_color_matrix(&self, _matrix: &mut [f32; 20]) -> bool {
         unimplemented!()
     }
 
@@ -46,18 +46,18 @@ impl ColorFilter {
     }
 
     #[must_use]
-    pub fn filter_color(&self, color: Color) -> Color {
+    pub fn filter_color(&self, _color: Color) -> Color {
         unimplemented!()
     }
 
     /// Converts the src color (in src colorspace), into the dst colorspace,
     /// then applies this filter to it, returning the filtered color in the dst colorspace.
     #[must_use]
-    pub fn filterColor4f(
+    pub fn filter_color4f(
         &self,
-        src_color: &Color4F,
-        src_cs: &ColorSpace,
-        dst_cs: &mut ColorSpace,
+        _src_color: &Color4F,
+        _src_cs: &ColorSpace,
+        _dst_cs: &mut ColorSpace,
     ) -> Color4F {
         unimplemented!()
     }
@@ -66,48 +66,49 @@ impl ColorFilter {
     /// then apply this filter, applied to the output of the inner filter.
     /// `result = this(inner(...))`
     #[must_use]
-    pub fn from_composed(&self, inner: &Rc<Self>) -> Rc<Self> {
+    pub fn from_composed(&self, _inner: &Rc<Self>) -> Rc<Self> {
         unimplemented!()
     }
 }
 
 impl ColorFilter {
     #[must_use]
-    pub fn compose(outer: &Rc<ColorFilter>, inner: &Rc<ColorFilter>) -> Rc<ColorFilter> {
+    pub fn compose(outer: &Rc<Self>, inner: &Rc<Self>) -> Rc<Self> {
         outer.from_composed(inner)
     }
 
-    /// Blends between the constant color (src) and input color (dst) based on the BlendMode.
+    /// Blends between the constant color (src) and input color (dst) based on the `BlendMode`.
     ///
-    /// If the color space is null, the constant color is assumed to be defined in sRGB.
+    /// If the color space is null, the constant color is assumed to be defined in `sRGB`.
     #[must_use]
-    pub fn blend_with_cs(color: &Color4F, cs: &ColorSpace, mode: BlendMode) -> Rc<ColorFilter> {
+    pub fn blend_with_cs(_color: &Color4F, _cs: &ColorSpace, _mode: BlendMode) -> Rc<Self> {
         unimplemented!()
     }
 
     #[must_use]
-    pub fn blend(color: Color, mode: BlendMode) -> Rc<ColorFilter> {
+    pub fn blend(_color: Color, _mode: BlendMode) -> Rc<Self> {
         unimplemented!()
     }
 
     #[must_use]
-    pub fn matrix(matrix: &ColorMatrix) -> Rc<ColorFilter> {
+    pub fn matrix(_matrix: &ColorMatrix) -> Rc<Self> {
         unimplemented!()
     }
 
     #[must_use]
-    pub fn matrix_row_major(row_major: &[f32; 20]) -> Rc<ColorFilter> {
+    pub fn matrix_row_major(_row_major: &[f32; 20]) -> Rc<Self> {
         unimplemented!()
     }
 
     /// A version of Matrix which operates in HSLA space instead of RGBA.
     /// I.e. HSLA-to-RGBA(Matrix(RGBA-to-HSLA(input))).
-    pub fn hsla_matrix(matrix: &ColorMatrix) -> Rc<Self> {
+    #[must_use]
+    pub fn hsla_matrix(_matrix: &ColorMatrix) -> Rc<Self> {
         unimplemented!()
     }
 
     #[must_use]
-    pub fn hsla_matrix_row_major(row_major: &[f32; 20]) -> Rc<Self> {
+    pub fn hsla_matrix_row_major(_row_major: &[f32; 20]) -> Rc<Self> {
         unimplemented!()
     }
 
@@ -117,12 +118,12 @@ impl ColorFilter {
     }
 
     #[must_use]
-    pub fn SRGBToLinearGamma() -> Rc<Self> {
+    pub fn srgb_to_linear_gamma() -> Rc<Self> {
         unimplemented!()
     }
 
     #[must_use]
-    pub fn lerp(t: f32, dst: Rc<Self>, src: Rc<Self>) -> Rc<Self> {
+    pub fn lerp(_t: f32, _dst: &Rc<Self>, _src: &Rc<Self>) -> Rc<Self> {
         unimplemented!()
     }
 
@@ -136,7 +137,7 @@ impl ColorFilter {
     /// If the incomming colors are premultiplied, they are temporarily unpremultiplied,
     /// then the table is applied, and then the result is remultiplied.
     #[must_use]
-    pub fn table_slice(table: &[u8; 256]) -> Rc<Self> {
+    pub fn table_slice(_table: &[u8; 256]) -> Rc<Self> {
         unimplemented!()
     }
 
@@ -147,16 +148,17 @@ impl ColorFilter {
     /// If a table is not null, then its contents are copied into the filter.
     #[must_use]
     pub fn table_argb(
-        table_alpha: &[u8; 256],
-        table_red: &[u8; 256],
-        table_green: &[u8; 256],
-        table_blue: &[u8; 256],
+        _table_alpha: &[u8; 256],
+        _table_red: &[u8; 256],
+        _table_green: &[u8; 256],
+        _table_blue: &[u8; 256],
     ) -> Rc<Self> {
         unimplemented!()
     }
 
     /// Create a table colorfilter that holds a ref to the shared color table.
-    pub fn table(table: &ColorTable) -> Rc<ColorFilter> {
+    #[must_use]
+    pub fn table(_table: &ColorTable) -> Rc<Self> {
         unimplemented!()
     }
 
@@ -165,7 +167,8 @@ impl ColorFilter {
     /// [0..255].
     ///
     /// The alpha components of the mul and add arguments are ignored.
-    pub fn lighting(mul: Color, add: Color) -> Rc<ColorFilter> {
+    #[must_use]
+    pub fn lighting(_mul: Color, _add: Color) -> Rc<Self> {
         unimplemented!()
     }
 }
