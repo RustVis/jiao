@@ -2,7 +2,7 @@
 // Use of this source is governed by Apache-2.0 License that can be found
 // in the LICENSE file.
 
-pub type YuvColorSpace = i32;
+use crate::core::image_info::YuvColorSpace;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ColorMatrix {

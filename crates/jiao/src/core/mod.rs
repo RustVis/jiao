@@ -52,6 +52,7 @@ pub mod texture_compression_type;
 pub mod tile_mode;
 pub mod types;
 pub mod vertices;
+pub mod yuva_info;
 
 // Private modules
 pub(crate) mod color_priv;
