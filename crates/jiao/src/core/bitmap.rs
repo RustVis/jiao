@@ -106,7 +106,7 @@ impl Bitmap {
 
     /// Returns `ColorSpace`, the range of colors, associated with ImageInfo.
     ///
-    /// The reference count of ColorSpace is unchanged.
+    /// The reference count of `ColorSpace` is unchanged.
     /// The returned ColorSpace is immutable.
     ///
     /// Returns `ColorSpace` in `ImageInfo`, or None.
@@ -114,164 +114,185 @@ impl Bitmap {
         unimplemented!()
     }
 
-    /** Returns smart pointer to SkColorSpace, the range of colors, associated with
-        SkImageInfo. The smart pointer tracks the number of objects sharing this
-        SkColorSpace reference so the memory is released when the owners destruct.
-
-        The returned SkColorSpace is immutable.
-
-        @return  SkColorSpace in SkImageInfo wrapped in a smart pointer
-    */
-    sk_sp<SkColorSpace> refColorSpace() const;
-
-    /** Returns number of bytes per pixel required by SkColorType.
-        Returns zero if colorType( is kUnknown_SkColorType.
-
-        @return  bytes in pixel
-    */
-    int bytesPerPixel() const { return fPixmap.info().bytesPerPixel(); }
-
-    /** Returns number of pixels that fit on row. Should be greater than or equal to
-        width().
-
-        @return  maximum pixels per row
-    */
-    int rowBytesAsPixels() const { return fPixmap.rowBytesAsPixels(); }
-
-    /** Returns bit shift converting row bytes to row pixels.
-        Returns zero for kUnknown_SkColorType.
-
-        @return  one of: 0, 1, 2, 3; left shift to convert pixels to bytes
-    */
-    int shiftPerPixel() const { return fPixmap.shiftPerPixel(); }
-
-    /** Returns true if either width() or height() are zero.
-
-        Does not check if SkPixelRef is nullptr; call drawsNothing() to check width(),
-        height(), and SkPixelRef.
-
-        @return  true if dimensions do not enclose area
-    */
-    bool empty() const { return fPixmap.info().isEmpty(); }
-
-    /** Returns true if SkPixelRef is nullptr.
-
-        Does not check if width() or height() are zero; call drawsNothing() to check
-        width(), height(), and SkPixelRef.
-
-        @return  true if no SkPixelRef is associated
-    */
-    bool isNull() const { return nullptr == fPixelRef; }
-
-    /** Returns true if width() or height() are zero, or if SkPixelRef is nullptr.
-        If true, SkBitmap has no effect when drawn or drawn into.
-
-        @return  true if drawing has no effect
-    */
-    bool drawsNothing() const {
-        return this->empty() || this->isNull();
+    /// Returns smart pointer to ColorSpace, the range of colors, associated with
+    /// `ImageInfo`.
+    ///
+    /// The smart pointer tracks the number of objects sharing this `ColorSpace`
+    /// reference so the memory is released when the owners destruct.
+    ///
+    /// The returned `ColorSpace` is immutable.
+    pub fn ref_color_space(&self) -> Rc<ColorSpace> {
+        unimplemented!()
     }
 
-    /** Returns row bytes, the interval from one pixel row to the next. Row bytes
-        is at least as large as: width() * info().bytesPerPixel().
-
-        Returns zero if colorType() is kUnknown_SkColorType, or if row bytes supplied to
-        setInfo() is not large enough to hold a row of pixels.
-
-        @return  byte length of pixel row
-    */
-    size_t rowBytes() const { return fPixmap.rowBytes(); }
-
-    /** Sets SkAlphaType, if alphaType is compatible with SkColorType.
-        Returns true unless alphaType is kUnknown_SkAlphaType and current SkAlphaType
-        is not kUnknown_SkAlphaType.
-
-        Returns true if SkColorType is kUnknown_SkColorType. alphaType is ignored, and
-        SkAlphaType remains kUnknown_SkAlphaType.
-
-        Returns true if SkColorType is kRGB_565_SkColorType or kGray_8_SkColorType.
-        alphaType is ignored, and SkAlphaType remains kOpaque_SkAlphaType.
-
-        If SkColorType is kARGB_4444_SkColorType, kRGBA_8888_SkColorType,
-        kBGRA_8888_SkColorType, or kRGBA_F16_SkColorType: returns true unless
-        alphaType is kUnknown_SkAlphaType and SkAlphaType is not kUnknown_SkAlphaType.
-        If SkAlphaType is kUnknown_SkAlphaType, alphaType is ignored.
-
-        If SkColorType is kAlpha_8_SkColorType, returns true unless
-        alphaType is kUnknown_SkAlphaType and SkAlphaType is not kUnknown_SkAlphaType.
-        If SkAlphaType is kUnknown_SkAlphaType, alphaType is ignored. If alphaType is
-        kUnpremul_SkAlphaType, it is treated as kPremul_SkAlphaType.
-
-        This changes SkAlphaType in SkPixelRef; all bitmaps sharing SkPixelRef
-        are affected.
-
-        @return           true if SkAlphaType is set
-
-        example: https://fiddle.skia.org/c/@Bitmap_setAlphaType
-    */
-    bool setAlphaType(SkAlphaType alphaType);
-
-    /** Returns pixel address, the base address corresponding to the pixel origin.
-
-        @return  pixel address
-    */
-    void* getPixels() const { return fPixmap.writable_addr(); }
-
-    /** Returns minimum memory required for pixel storage.
-        Does not include unused memory on last row when rowBytesAsPixels() exceeds width().
-        Returns SIZE_MAX if result does not fit in size_t.
-        Returns zero if height() or width() is 0.
-        Returns height() times rowBytes() if colorType() is kUnknown_SkColorType.
-
-        @return  size in bytes of image buffer
-    */
-    size_t computeByteSize() const { return fPixmap.computeByteSize(); }
-
-    /** Returns true if pixels can not change.
-
-        Most immutable SkBitmap checks trigger an assert only on debug builds.
-
-        @return  true if pixels are immutable
-
-        example: https://fiddle.skia.org/c/@Bitmap_isImmutable
-    */
-    bool isImmutable() const;
-
-    /** Sets internal flag to mark SkBitmap as immutable. Once set, pixels can not change.
-        Any other bitmap sharing the same SkPixelRef are also marked as immutable.
-        Once SkPixelRef is marked immutable, the setting cannot be cleared.
-
-        Writing to immutable SkBitmap pixels triggers an assert on debug builds.
-
-        example: https://fiddle.skia.org/c/@Bitmap_setImmutable
-    */
-    void setImmutable();
-
-    /** Returns true if SkAlphaType is set to hint that all pixels are opaque; their
-        alpha value is implicitly or explicitly 1.0. If true, and all pixels are
-        not opaque, Skia may draw incorrectly.
-
-        Does not check if SkColorType allows alpha, or if any pixel value has
-        transparency.
-
-        @return  true if SkImageInfo SkAlphaType is kOpaque_SkAlphaType
-    */
-    bool isOpaque() const {
-        return SkAlphaTypeIsOpaque(this->alphaType());
+    /// Returns number of bytes per pixel required by `ColorType`.
+    ///
+    /// Returns zero if color type is Unknown.
+    ///
+    /// Returns bytes in pixel
+    #[must_use]
+    pub const fn bytes_per_pixel(&self) -> i32 {
+        self.pixmap.info().bytes_per_pixel()
     }
 
-    /** Resets to its initial state; all fields are set to zero, as if SkBitmap had
-        been initialized by SkBitmap().
+    /// Returns number of pixels that fit on row.
+    ///
+    /// Should be greater than or equal to width().
+    ///
+    /// Returns maximum pixels per row.
+    #[must_use]
+    pub const fn row_bytes_as_pixels(&self) -> i32 {
+        self.pixmap.row_bytes_as_pixels()
+    }
 
-        Sets width, height, row bytes to zero; pixel address to nullptr; SkColorType to
-        kUnknown_SkColorType; and SkAlphaType to kUnknown_SkAlphaType.
+    /// Returns bit shift converting row bytes to row pixels.
+    ///
+    /// Returns zero for Unknown.
+    ///
+    /// Returns one of: 0, 1, 2, 3; left shift to convert pixels to bytes.
+    #[must_use]
+    pub const fn shift_per_pixel(&self) -> i32 {
+        self.pixmap.shift_per_pixel()
+    }
 
-        If SkPixelRef is allocated, its reference count is decreased by one, releasing
-        its memory if SkBitmap is the sole owner.
+    /// Returns true if either width() or height() are zero.
+    ///
+    /// Does not check if `PixelRef` is nullptr; call `draws_nothing() to check width(),
+    /// height(), and `PixelRef`.
+    ///
+    /// Returns true if dimensions do not enclose area.
+    #[must_use]
+    pub const fn is_empty(&self) -> bool {
+        self.pixmap.info().is_empty()
+    }
 
-        example: https://fiddle.skia.org/c/@Bitmap_reset
-    */
-    void reset();
+    /// Returns true if `PixelRef` is nullptr.
+    ///
+    /// Does not check if width() or height() are zero; call `draws_nothing()` to check
+    /// width(), height(), and `PixelRef`.
+    ///
+    /// Returns true if no `PixelRef` is associated
+    #[must_use]
+    pub const fn is_null(&self) -> bool {
+        self.pixel_ref.is_none()
+    }
+
+    /// Returns true if width() or height() are zero, or if PixelRef is nullptr.
+    ///
+    /// If true, Bitmap has no effect when drawn or drawn into.
+    ///
+    /// Returns true if drawing has no effect
+    #[must_use]
+    pub const fn draws_nothing(&self) -> bool {
+        self.is_empty() || self.is_null()
+    }
+
+    /// Returns row bytes, the interval from one pixel row to the next.
+    ///
+    /// Row bytes is at least as large as: `width() * info().bytes_per_pixel()`.
+    ///
+    /// Returns zero if `color_type()` is Unknown, or if row bytes supplied to
+    /// `set_info()` is not large enough to hold a row of pixels.
+    ///
+    /// Returns byte length of pixel row.
+    #[must_use]
+    pub const fn row_bytes(&self) -> usize {
+        self.pixmap.row_bytes()
+    }
+
+    /// Sets `AlphaType`, if `alpha_type` is compatible with `ColorType`.
+    ///
+    /// Returns true unless `alpha_type` is Unknown and current `AlphaType`
+    /// is not Unknown.
+    ///
+    /// Returns true if `ColorType` is Unknown. `alpha_type` is ignored, and
+    /// `AlphaType` remains Unknown.
+    ///
+    /// Returns true if `ColorType` is Rgb565 or Gray8.
+    /// `alpha_type` is ignored, and `AlphaType` remains Opaque.
+    ///
+    /// If `ColorType` is Argb4444, Rgba8888, Bgra8888, or RgbaF16: returns true unless
+    /// `alpha_type` is Unknown and `AlphaType` is not Unknown.
+    /// If `AlphaType` is Unknown, `alpha_type` is ignored.
+    ///
+    /// If `ColorType` is Alpha8, returns true unless `alpha_type` is Unknown and
+    /// `AlphaType` is not Unknown. If `AlphaType` is Unknown, `alpha_type` is ignored.
+    /// If `alpha_type` is Unpremul, it is treated as Premul.
+    ///
+    /// This changes `AlphaType` in `PixelRef`; all bitmaps sharing `PixelRef`
+    /// are affected.
+    ///
+    /// Returns true if `AlphaType` is set
+    pub fn set_alpha_type(&mut self, _alpha_type: AlphaType) -> bool {
+        unimplemented!()
+    }
+
+    /// Returns pixel address, the base address corresponding to the pixel origin.
+    ///
+    /// Returns pixel address.
+    pub fn get_pixels(&self) -> &[u8] {
+        self.pixmap.addr()
+    }
+
+    /// Returns minimum memory required for pixel storage.
+    ///
+    /// - Does not include unused memory on last row when `row_bytes_as_pixels()` exceeds width().
+    /// - Returns `usize::MAX` if result does not fit in usize.
+    /// - Returns zero if height() or width() is 0.
+    /// - Returns `height() times row_bytes()` if `color_type()` is Unknown.
+    ///
+    /// Returns size in bytes of image buffer.
+    #[must_use]
+    pub const fn compute_byte_size(&self) -> usize {
+        self.pixmap.compute_byte_size()
+    }
+
+    /// Returns true if pixels can not change.
+    ///
+    /// Most immutable Bitmap checks trigger an assert only on debug builds.
+    ///
+    /// Returns true if pixels are immutable.
+    #[must_use]
+    pub const fn is_immutable(&self) -> bool {
+        unimplemented!()
+    }
+
+    /// Sets internal flag to mark Bitmap as immutable.
+    ///
+    /// Once set, pixels can not change.
+    /// Any other bitmap sharing the same PixelRef are also marked as immutable.
+    /// Once PixelRef is marked immutable, the setting cannot be cleared.
+    ///
+    /// Writing to immutable Bitmap pixels triggers an assert on debug builds.
+    pub fn set_immutable(&mut self) {
+        unimplemented!()
+    }
+
+    /// Returns true if `AlphaType` is set to hint that all pixels are opaque; their
+    /// alpha value is implicitly or explicitly 1.0.
+    ///
+    /// If true, and all pixels are not opaque, it may draw incorrectly.
+    ///
+    /// Does not check if `ColorType` allows alpha, or if any pixel value has
+    /// transparency.
+    ///
+    /// @return  true if `ImageInfo` `AlphaType` is Opaque.
+    #[must_use]
+    pub const fn is_opaque(&self) -> bool {
+        self.alpa_type.is_opaque()
+    }
+
+    /// Resets to its initial state; all fields are set to zero, as if Bitmap had
+    /// been initialized by `new()`.
+    ///
+    /// Sets width, height, row bytes to zero; pixel address to nullptr;
+    /// `ColorType` to Unknown; and `AlphaType` to Unknown.
+    ///
+    /// If `PixelRef` is allocated, its reference count is decreased by one,
+    /// releasing its memory if Bitmap is the sole owner.
+    pub fn reset(&mut self) {
+        unimplemented!()
+    }
 
     /** Returns true if all pixels are opaque. SkColorType determines how pixels
         are encoded, and whether pixel describes alpha. Returns true for SkColorType
