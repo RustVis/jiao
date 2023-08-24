@@ -34,9 +34,8 @@ use crate::core::pixmap::Pixmap;
 ///
 /// Bitmap is not thread safe. Each thread must have its own copy of Bitmap fields,
 /// although threads may share the underlying pixel array.
-#[derive(Debug, Clone, Copy)]
 pub struct Bitmap {
-    pixel_ref: PixelRef,
+    pixel_ref: Option<PixelRef>,
     pixmap: Pixmap,
     mips: Mipmap,
 }
@@ -68,7 +67,7 @@ impl Bitmap {
     /// Returns reference to SkPixmap describing this SkBitmap.
     #[must_use]
     pub const fn pixmap(&self) -> &Pixmap {
-        self.pixmap
+        &self.pixmap
     }
 
     /// Returns width, height, `AlphaType`, `ColorType`, and `ColorSpace`.
@@ -240,7 +239,7 @@ impl Bitmap {
     ///
     /// Returns pixel address.
     pub fn get_pixels(&self) -> &[u8] {
-        self.pixmap.addr()
+        self.pixmap.pixels()
     }
 
     /// Returns minimum memory required for pixel storage.

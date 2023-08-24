@@ -197,8 +197,8 @@ impl Pixmap {
     ///
     /// Should be greater than or equal to width().
     #[must_use]
-    pub const fn row_bytes_as_pixels(&self) -> usize {
-        self.row_bytes >> self.shift_per_pixel()
+    pub const fn row_bytes_as_pixels(&self) -> i32 {
+        (self.row_bytes >> self.shift_per_pixel()) as i32
     }
 
     /// Returns bit shift converting row bytes to row pixels.
