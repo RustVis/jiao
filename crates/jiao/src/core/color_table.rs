@@ -39,23 +39,23 @@ impl ColorTable {
 
     /// Per-channel constant value lookup (0-255).
     #[must_use]
-    pub fn alpha_table(&self) -> &[u8] {
-        self.table.get_addr8(0, 0)
+    pub fn alpha_table(&self) -> Option<&[u8]> {
+        self.table.addr8_at(0, 0)
     }
 
     #[must_use]
-    pub fn red_table(&self) -> &[u8] {
-        self.table.get_addr8(0, 1)
+    pub fn red_table(&self) -> Option<&[u8]> {
+        self.table.addr8_at(0, 1)
     }
 
     #[must_use]
-    pub fn green_table(&self) -> &[u8] {
-        self.table.get_addr8(0, 2)
+    pub fn green_table(&self) -> Option<&[u8]> {
+        self.table.addr8_at(0, 2)
     }
 
     #[must_use]
-    pub fn blue_table(&self) -> &[u8] {
-        self.table.get_addr8(0, 3)
+    pub fn blue_table(&self) -> Option<&[u8]> {
+        self.table.addr8_at(0, 3)
     }
 
     #[must_use]
