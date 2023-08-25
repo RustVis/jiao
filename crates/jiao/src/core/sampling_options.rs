@@ -52,7 +52,7 @@ impl CubicResampler {
         }
     }
 
-    // Historic default for kHigh_SkFilterQuality
+    /// Historic default for `FilterQuality::High`
     #[must_use]
     pub fn mitchell() -> Self {
         Self {

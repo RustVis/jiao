@@ -189,5 +189,5 @@ impl PixelRef {
         unimplemented!()
     }
 
-    //friend void BitmapCache_setImmutableWithID(SkPixelRef*, uint32_t);
+    //friend void BitmapCache_setImmutableWithID(PixelRef*, uint32_t);
 }

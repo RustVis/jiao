@@ -524,7 +524,7 @@ impl M44 {
         }
     }
 
-    //SkM44(const SkM44& a, const SkM44& b) { this->setConcat(a, b); }
+    //M44(const M44& a, const M44& b) { this->setConcat(a, b); }
 
     /// The constructor parameters are in row-major order.
     // FIXME(Shaohua): too many arguments
@@ -629,12 +629,12 @@ impl M44 {
         unimplemented!()
     }
 
-    pub fn get_col_major(&self /*SkScalar v[]*/) {
+    pub fn get_col_major(&self /*Scalar v[]*/) {
         //memcpy(v, fMat, sizeof(fMat));
         unimplemented!()
     }
 
-    pub fn get_row_major(&self /*SkScalar v[]*/) {
+    pub fn get_row_major(&self /*Scalar v[]*/) {
         unimplemented!()
     }
 
@@ -774,7 +774,7 @@ impl M44 {
     #[must_use]
     pub fn is_finite(&self) -> bool {
         unimplemented!()
-        //SkScalarsAreFinite(fMat, 16);
+        //ScalarsAreFinite(fMat, 16);
     }
 
     /// If this is invertible, return that in inverse and return true.
@@ -797,12 +797,12 @@ impl M44 {
         unimplemented!()
     }
 
-    //SkV4 operator*(const SkV4& v) const { return this->map(v.x, v.y, v.z, v.w); }
-    //SkV3 operator*(SkV3 v) const { auto v4 = this->map(v.x, v.y, v.z, 0); return {v4.x, v4.y, v4.z}; }
+    //V4 operator*(const V4& v) const { return this->map(v.x, v.y, v.z, v.w); }
+    //V3 operator*(V3 v) const { auto v4 = this->map(v.x, v.y, v.z, 0); return {v4.x, v4.y, v4.z}; }
 
     // Converting to/from Matrix
 
-    ///When converting from M44 to Matrix, the third row and
+    /// When converting from M44 to Matrix, the third row and
     /// column is dropped.
     ///
     /// When converting from Matrix to M44 the third row and column remain as identity:
@@ -814,17 +814,18 @@ impl M44 {
     #[must_use]
     pub fn as_m33(&self) -> Matrix {
         unimplemented!()
-        //return SkMatrix::MakeAll(fMat[0], fMat[4], fMat[12],
+        //return Matrix::MakeAll(fMat[0], fMat[4], fMat[12],
         //                         fMat[1], fMat[5], fMat[13],
         //                         fMat[3], fMat[7], fMat[15]);
     }
 
+    // TODO(Shaohua):
     /*
-    pub fn m44(const SkMatrix& src)
-    : SkM44(src[SkMatrix::kMScaleX], src[SkMatrix::kMSkewX],  0, src[SkMatrix::kMTransX],
-            src[SkMatrix::kMSkewY],  src[SkMatrix::kMScaleY], 0, src[SkMatrix::kMTransY],
+    pub fn m44(const Matrix& src)
+    : M44(src[Matrix::kMScaleX], src[Matrix::kMewX],  0, src[Matrix::kMTransX],
+            src[Matrix::kMewY],  src[Matrix::kMScaleY], 0, src[Matrix::kMTransY],
             0,                       0,                       1, 0,
-            src[SkMatrix::kMPersp0], src[SkMatrix::kMPersp1], 0, src[SkMatrix::kMPersp2])
+            src[Matrix::kMPersp0], src[Matrix::kMPersp1], 0, src[Matrix::kMPersp2])
     {}
     */
 

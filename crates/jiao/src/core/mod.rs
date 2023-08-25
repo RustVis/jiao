@@ -60,4 +60,5 @@ pub(crate) mod color_priv;
 pub(crate) mod cubic_clipper;
 pub(crate) mod line_clipper;
 pub(crate) mod mask;
+pub(crate) mod mipmap;
 pub(crate) mod path_builder_priv;

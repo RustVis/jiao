@@ -28,7 +28,7 @@ pub(crate) struct Desc {
 
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) struct Sizes {
-    /// size of entire SkVertices allocation (obj + arrays)
+    /// size of entire Vertices allocation (obj + arrays)
     pub total: usize,
     /// size of all the data arrays (V + D + T + C + I)
     pub arrays: usize,

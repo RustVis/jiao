@@ -13,7 +13,7 @@
 /// See `MaskFilter` for ways to use these when combining two different masks.
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
-pub enum SkCoverageMode {
+pub enum CoverageMode {
     /// A ∪ B    A+B-A*B
     Union,
 

@@ -8,6 +8,7 @@ use crate::core::alpha_type::AlphaType;
 use crate::core::color_space::ColorSpace;
 use crate::core::color_type::ColorType;
 use crate::core::image_info::ImageInfo;
+use crate::core::mipmap::Mipmap;
 use crate::core::pixel_ref::PixelRef;
 use crate::core::pixmap::Pixmap;
 
@@ -64,7 +65,7 @@ impl Bitmap {
     /// Returns a constant reference to the Pixmap holding the Bitmap pixel
     /// address, row bytes, and ImageInfo.
     ///
-    /// Returns reference to SkPixmap describing this SkBitmap.
+    /// Returns reference to Pixmap describing this Bitmap.
     #[must_use]
     pub const fn pixmap(&self) -> &Pixmap {
         &self.pixmap

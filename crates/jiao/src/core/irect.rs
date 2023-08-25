@@ -116,7 +116,7 @@ impl IRect {
         Self {
             left: x,
             top: y,
-            // TODO(Shaohua): Replace with Sk32_sat_add()
+            // TODO(Shaohua): Replace with 32_sat_add()
             right: x + width,
             bottom: y + height,
         }
@@ -245,7 +245,7 @@ impl IRect {
             return true;
         }
         // Return true if either exceeds i32
-        //return !SkTFitsIn<int32_t>(w | h);
+        //return !TFitsIn<int32_t>(w | h);
         // FIXME(Shaohua): Check fits in i32
         false
     }

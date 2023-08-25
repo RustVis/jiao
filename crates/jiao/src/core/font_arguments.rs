@@ -58,13 +58,13 @@ impl FontArguments {
         self
     }
 
-    /** Specify a position in the variation design space.
-     *
-     *  Any axis not specified will use the default value.
-     *  Any specified axis not actually present in the font will be ignored.
-     *
-     *  @param position not copied. The value must remain valid for life of SkFontArguments.
-     */
+    /// Specify a position in the variation design space.
+    ///
+    /// Any axis not specified will use the default value.
+    /// Any specified axis not actually present in the font will be ignored.
+    ///
+    /// # Parameters
+    /// - `position` not copied. The value must remain valid for life of `FontArguments`.
     pub fn set_variation_design_position(&mut self, position: VariationPosition) -> &mut Self {
         self.variation_design_position.coordinates = position.coordinates;
         self

@@ -42,7 +42,7 @@ pub const B32_MASK: u32 = (1 << B32_BITS) - 1;
 //
 // This is specified by R32_SHIFT=0 or R32_SHIFT=16.
 //
-// For easier compatibility with Skia's GPU backend, we further restrict these
+// For easier compatibility with its GPU backend, we further restrict these
 // to either (in memory-byte-order) RGBA or BGRA.
 // Note that this "order" does not directly correspond to the same shift-order,
 // since we have to take endianess into account.
@@ -87,8 +87,8 @@ pub fn premultiply_argb_inline(a: u8, mut r: u8, mut g: u8, mut b: u8) -> PMColo
     PMColor::from_argb(a, r, g, b)
 }
 
-// When Android is compiled optimizing for size, SkAlphaMulQ doesn't get
-// inlined; forcing inlining significantly improves performance.
+/// When Android is compiled optimizing for size, `AlphaMulQ` doesn't get inlined;
+/// forcing inlining significantly improves performance.
 pub const fn alpha_mul_q(c: u32, scale: u32) -> u32 {
     let mask: u32 = 0x00FF_00FF;
 

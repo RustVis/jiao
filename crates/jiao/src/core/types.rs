@@ -8,7 +8,7 @@ pub const G32_SHIFT: u32 = 8;
 pub const A32_SHIFT: u32 = 24;
 
 // NOTE(Shaohua): Use byte order cfg instead.
-// SK_PMCOLOR_BYTE_ORDER can be used to query the byte order of SkPMColor at compile time.
+// SK_PMCOLOR_BYTE_ORDER can be used to query the byte order of PMColor at compile time.
 //#ifdef SK_CPU_BENDIAN
 //#  define SK_PMCOLOR_BYTE_ORDER(C0, C1, C2, C3)     \
 //        (SK_ ## C3 ## 32_SHIFT == 0  &&             \

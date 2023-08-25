@@ -44,7 +44,7 @@ impl Mipmap {
         unimplemented!()
     }
 
-    /// Determines how many levels a SkMipmap will have without creating that mipmap.
+    /// Determines how many levels a Mipmap will have without creating that mipmap.
     ///
     /// This does not include the base mipmap level that the user provided when
     /// creating the Mipmap.

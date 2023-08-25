@@ -508,7 +508,7 @@ impl ImageInfo {
         self.color_info.is_valid()
     }
 
-    /// Returns true if Skia has defined a pixel conversion from the `src` to the `self`.
+    /// Returns true if it has defined a pixel conversion from the `src` to the `self`.
     /// Returns false otherwise.
     #[must_use]
     pub fn valid_conversion(&self, src: &Self) -> bool {
@@ -568,7 +568,7 @@ impl ImageInfo {
     pub const fn min_row_bytes(&self) -> usize {
         let min_row_bytes = self.min_row_bytes64();
         // TODO(Shaohua): Check range
-        //if (!SkTFitsIn<int32_t>(minRowBytes)) {
+        //if (!TFitsIn<int32_t>(minRowBytes)) {
         //    return 0;
         //}
         min_row_bytes as usize

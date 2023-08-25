@@ -26,22 +26,22 @@ pub enum ApplyPerspectiveClip {
 bitflags! {
     /// `TypeMask`, enum of bit fields for mask returned by `get_type()`.
     ///
-    /// Used to identify the complexity of SkMatrix, to optimize performance.
+    /// Used to identify the complexity of Matrix, to optimize performance.
     #[derive(Debug, Clone, Copy, Eq, PartialEq)]
     pub struct TypeMask : u8 {
-        /// identity SkMatrix; all bits clear
+        /// identity Matrix; all bits clear
         const IDENTITY    = 0;
 
-        /// translation SkMatrix
+        /// translation Matrix
         const TRANSLATE   = 0x01;
 
-        /// scale SkMatrix
+        /// scale Matrix
         const SCALE       = 0x02;
 
-        /// skew or rotate SkMatrix
+        /// skew or rotate Matrix
         const AFFINE      = 0x04;
 
-        /// perspective SkMatrix
+        /// perspective Matrix
         const PERSPECTIVE = 0x08;
 
         /// Set if the matrix will map a rectangle to another rectangle.
@@ -120,7 +120,7 @@ pub const A_TRANS_Y: usize = 5;
 
 pub type MapXYProc = fn(mat: &Matrix, x: Scalar, y: Scalar, result: &mut Point);
 
-pub type MapPtsProc = fn(mat: &Matrix, dst: &mut [Point], src: &[Point], count: i32);
+pub type MapPtsProc = fn(mat: &Matrix, dst: &mut [Point], src: &[Point], count: usize);
 
 pub const MAP_XY_PROCS: &[MapXYProc] = &[
     Matrix::identity_xy,
@@ -257,7 +257,7 @@ impl Matrix {
 
     fn set_type_mask(&mut self, mask: TypeMask) {
         // allow kUnknown or a valid mask
-        //SkASSERT(kUnknown_Mask == mask || (mask & kAllMasks) == mask ||
+        //ASSERT(kUnknown_Mask == mask || (mask & kAllMasks) == mask ||
         //         ((kUnknown_Mask | kOnlyPerspectiveValid_Mask) & mask)
         //         == (kUnknown_Mask | kOnlyPerspectiveValid_Mask));
         self.type_mask = mask;
@@ -285,7 +285,7 @@ impl Matrix {
 
     /// Returns true if we already know that the matrix is identity; false otherwise.
     #[must_use]
-    const fn is_trivially_identity(&self) -> bool {
+    fn is_trivially_identity(&self) -> bool {
         if self.type_mask.contains(TypeMask::UNKNOWN) {
             false
         } else {
@@ -302,12 +302,12 @@ impl Matrix {
     }
 
     #[must_use]
-    fn get_map_xy_proc(&self) -> MapXYProc {
+    fn get_map_xy_proc(&mut self) -> MapXYProc {
         self.get_type().get_map_xy_proc()
     }
 
     #[must_use]
-    fn get_map_pts_proc(&self) -> MapPtsProc {
+    fn get_map_pts_proc(&mut self) -> MapPtsProc {
         self.get_type().get_map_pts_proc()
     }
 
@@ -317,74 +317,74 @@ impl Matrix {
     }
 
     #[must_use]
-    fn poly2proc(points: &[Point], matrix: &mut Self) -> bool {
+    fn poly2proc(_points: &[Point], _matrix: &mut Self) -> bool {
         unimplemented!()
     }
 
     #[must_use]
-    fn poly3proc(points: &[Point], matrix: &mut Self) -> bool {
+    fn poly3proc(_points: &[Point], _matrix: &mut Self) -> bool {
         unimplemented!()
     }
 
     #[must_use]
-    fn poly4proc(points: &[Point], matrix: &mut Self) -> bool {
+    fn poly4proc(_points: &[Point], _matrix: &mut Self) -> bool {
         unimplemented!()
     }
 
-    fn identity_xy(&self, x: Scalar, y: Scalar, point: &mut Point) {
+    fn identity_xy(&self, _x: Scalar, _y: Scalar, _point: &mut Point) {
         unimplemented!()
     }
 
-    fn trans_xy(&self, x: Scalar, y: Scalar, point: &mut Point) {
+    fn trans_xy(&self, _x: Scalar, _y: Scalar, _point: &mut Point) {
         unimplemented!()
     }
 
-    fn scale_xy(&self, x: Scalar, y: Scalar, point: &mut Point) {
+    fn scale_xy(&self, _x: Scalar, _y: Scalar, _point: &mut Point) {
         unimplemented!()
     }
 
-    fn scale_trans_xy(&self, x: Scalar, y: Scalar, point: &mut Point) {
+    fn scale_trans_xy(&self, _x: Scalar, _y: Scalar, _point: &mut Point) {
         unimplemented!()
     }
 
-    fn rot_xy(&self, x: Scalar, y: Scalar, point: &mut Point) {
+    fn rot_xy(&self, _x: Scalar, _y: Scalar, _point: &mut Point) {
         unimplemented!()
     }
 
-    fn rot_trans_xy(&self, x: Scalar, y: Scalar, point: &mut Point) {
+    fn rot_trans_xy(&self, _x: Scalar, _y: Scalar, _point: &mut Point) {
         unimplemented!()
     }
 
-    fn persp_xy(&self, x: Scalar, y: Scalar, point: &mut Point) {
+    fn persp_xy(&self, _x: Scalar, _y: Scalar, _point: &mut Point) {
         unimplemented!()
     }
 
-    fn identity_pts(&self, dest: &mut [Point], src: &[Point], count: i32) {
+    fn identity_pts(&self, _dest: &mut [Point], _src: &[Point], _count: usize) {
         unimplemented!()
     }
 
-    fn trans_pts(&self, dest: &mut [Point], src: &[Point], count: i32) {
+    fn trans_pts(&self, _dest: &mut [Point], _src: &[Point], _count: usize) {
         unimplemented!()
     }
 
-    fn scale_pts(&self, dest: &mut [Point], src: &[Point], count: i32) {
+    fn scale_pts(&self, _dest: &mut [Point], _src: &[Point], _count: usize) {
         unimplemented!()
     }
 
-    fn scale_trans_pts(&self, dest: &mut [Point], src: &[Point], count: i32) {
+    fn scale_trans_pts(&self, _dest: &mut [Point], _src: &[Point], _count: usize) {
         unimplemented!()
     }
 
-    fn persp_pts(&self, dest: &mut [Point], src: &[Point], count: i32) {
+    fn persp_pts(&self, _dest: &mut [Point], _src: &[Point], _count: usize) {
         unimplemented!()
     }
 
-    fn affine_vpts(&self, dest: &mut [Point], src: &[Point], count: i32) {
+    fn affine_vpts(&self, _dest: &mut [Point], _src: &[Point], _count: usize) {
         unimplemented!()
     }
 
     /// return the number of bytes written, whether or not buffer is null
-    fn write_to_memory(&self, buffer: &mut [u8]) -> usize {
+    fn write_to_memory(&self, _buffer: &mut [u8]) -> usize {
         unimplemented!()
     }
 
@@ -395,7 +395,7 @@ impl Matrix {
     ///
     /// Returns number of bytes read (must be a multiple of 4) or 0 if there was
     /// not enough memory available
-    fn read_from_memory(&mut self, buffer: &[u8]) -> usize {
+    fn read_from_memory(&mut self, _buffer: &[u8]) -> usize {
         unimplemented!()
     }
 }

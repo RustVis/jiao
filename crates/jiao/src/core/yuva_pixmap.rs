@@ -247,7 +247,7 @@ impl YuvaPixmapInfo {
     // Takes an allocation that is assumed to be at least computeTotalBytes() in size and configures
     // the first numPlanes() entries in pixmaps array to point into that memory. The remaining
     // entries of pixmaps are default initialized. Fails if this YuvaPixmapInfo not valid.
-    //bool initPixmapsFromSingleAllocation(void* memory, SkPixmap pixmaps[kMaxPlanes]) const;
+    //bool initPixmapsFromSingleAllocation(void* memory, Pixmap pixmaps[kMaxPlanes]) const;
 
     /// Returns true if this has been configured with a non-empty dimensioned `YuvaInfo` with
     /// compatible color types and row bytes.
@@ -306,7 +306,7 @@ impl YuvaPixmaps {
     // Use passed in memory as backing store for pixmaps' pixels. Caller must ensure memory remains
     // allocated while pixmaps are in use. There must be at least
     // YuvaPixmapInfo::computeTotalBytes() allocated starting at memory.
-    //static SkYUVAPixmaps FromExternalMemory(const YuvaPixmapInfo&, void* memory);
+    //static YUVAPixmaps FromExternalMemory(const YuvaPixmapInfo&, void* memory);
 
     /// Wraps existing Pixmaps.
     ///
