@@ -1,5 +1,5 @@
 // Copyright (c) 2023 Xu Shaohua <shaohua@biofan.org>. All rights reserved.
-// Use of this source is governed by LGPL-3.0 License that can be found
+// Use of this source is governed by Lesser General Public License that can be found
 // in the LICENSE file.
 
 pub mod alpha_type;
@@ -20,6 +20,8 @@ pub mod cubic_map;
 pub mod data;
 pub mod flattenable;
 pub mod font_arguments;
+//pub mod font_manager;
+pub mod advanced_typeface_metrics;
 pub mod font_metrics;
 pub mod font_parameters;
 pub mod font_style;
@@ -51,6 +53,7 @@ pub mod surface_props;
 pub mod swizzle;
 pub mod texture_compression_type;
 pub mod tile_mode;
+//pub mod typeface;
 pub mod types;
 pub mod vertices;
 pub mod yuva_info;
