@@ -28,6 +28,7 @@ pub mod image_filter;
 pub mod image_info;
 pub mod irect;
 pub mod m44;
+pub mod mask_filter;
 pub mod matrix;
 pub mod paint;
 pub mod paint_types;
