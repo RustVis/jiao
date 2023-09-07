@@ -197,6 +197,8 @@ impl Pixmap {
     ///
     /// Should be greater than or equal to width().
     #[must_use]
+    #[allow(clippy::cast_possible_truncation)]
+    #[allow(clippy::cast_possible_wrap)]
     pub const fn row_bytes_as_pixels(&self) -> i32 {
         (self.row_bytes >> self.shift_per_pixel()) as i32
     }

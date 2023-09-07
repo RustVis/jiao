@@ -56,17 +56,14 @@ bitflags! {
         const ONLY_PERSPECTIVE_VALID = 0x40;
 
         const UNKNOWN = 0x80;
+
+        /// Self::TRANSLATE | Self::SCALE | Self::AFFINE | Self::PERSPECTIVE
+        const ORABLE_MASKS = 0x01 | 0x02 | 0x04 | 0x08;
+
+        /// Self::TRANSLATE | Self::SCALE | Self::AFFINE | Self::PERSPECTIVE | Self::RECT_STAYS_RECT
+        const ALL_MASKS = 0x01 | 0x02 | 0x04 | 0x08 | 0x10;
     }
 }
-
-const ORABLE_MASKS: TypeMask =
-    TypeMask::TRANSLATE | TypeMask::SCALE | TypeMask::AFFINE | TypeMask::PERSPECTIVE;
-
-const ALL_MASKS: TypeMask = TypeMask::TRANSLATE
-    | TypeMask::SCALE
-    | TypeMask::AFFINE
-    | TypeMask::PERSPECTIVE
-    | TypeMask::RECT_STAYS_RECT;
 
 /// Matrix organizes its values in row-major order.
 ///
@@ -165,15 +162,15 @@ pub const MAP_PTS_PROCS: &[MapPtsProc] = &[
 impl TypeMask {
     #[must_use]
     pub fn get_map_xy_proc(self) -> MapXYProc {
-        debug_assert!((self & !ALL_MASKS) == TypeMask::empty());
-        let index = (self & ALL_MASKS).bits() as usize;
+        debug_assert!((self & !Self::ALL_MASKS) == Self::empty());
+        let index = (self & Self::ALL_MASKS).bits() as usize;
         MAP_XY_PROCS[index]
     }
 
     #[must_use]
     pub fn get_map_pts_proc(self) -> MapPtsProc {
-        debug_assert!((self & !ALL_MASKS) == TypeMask::empty());
-        let index = (self & ALL_MASKS).bits() as usize;
+        debug_assert!((self & !Self::ALL_MASKS) == Self::empty());
+        let index = (self & Self::ALL_MASKS).bits() as usize;
         MAP_PTS_PROCS[index]
     }
 }
@@ -218,14 +215,15 @@ impl Matrix {
         }
 
         // only return the public masks
-        self.type_mask & ORABLE_MASKS
+        self.type_mask & TypeMask::ORABLE_MASKS
     }
 }
 
 // Private methods
 impl Matrix {
     #[rustfmt::skip]
-    fn from(
+    #[allow(clippy::too_many_arguments)]
+    const fn from(
         sx: Scalar, kx: Scalar, tx: Scalar,
         ky: Scalar, sy: Scalar, ty: Scalar,
         p0: Scalar, p1: Scalar, p2: Scalar,
@@ -247,11 +245,13 @@ impl Matrix {
 
     #[must_use]
     fn compute_type_mask(&self) -> TypeMask {
+        debug_assert!(self.type_mask == TypeMask::empty());
         unimplemented!()
     }
 
     #[must_use]
     fn compute_perspective_type_mask(&self) -> TypeMask {
+        debug_assert!(self.type_mask == TypeMask::empty());
         unimplemented!()
     }
 
@@ -264,7 +264,7 @@ impl Matrix {
     }
 
     fn or_type_mask(&mut self, mask: TypeMask) {
-        debug_assert!(mask.contains(ORABLE_MASKS));
+        debug_assert!(mask.contains(TypeMask::ORABLE_MASKS));
         self.type_mask |= mask;
     }
 
@@ -280,7 +280,7 @@ impl Matrix {
             self.type_mask = self.compute_perspective_type_mask();
         }
 
-        self.type_mask & ORABLE_MASKS
+        self.type_mask & TypeMask::ORABLE_MASKS
     }
 
     /// Returns true if we already know that the matrix is identity; false otherwise.
@@ -289,7 +289,7 @@ impl Matrix {
         if self.type_mask.contains(TypeMask::UNKNOWN) {
             false
         } else {
-            self.type_mask & ORABLE_MASKS == TypeMask::empty()
+            self.type_mask & TypeMask::ORABLE_MASKS == TypeMask::empty()
         }
     }
 
@@ -313,6 +313,7 @@ impl Matrix {
 
     #[must_use]
     fn invert_non_identity(&self, _inverse: &mut Self) -> bool {
+        debug_assert!(self.type_mask == TypeMask::empty());
         unimplemented!()
     }
 
@@ -332,59 +333,73 @@ impl Matrix {
     }
 
     fn identity_xy(&self, _x: Scalar, _y: Scalar, _point: &mut Point) {
+        debug_assert!(self.type_mask == TypeMask::empty());
         unimplemented!()
     }
 
     fn trans_xy(&self, _x: Scalar, _y: Scalar, _point: &mut Point) {
+        debug_assert!(self.type_mask == TypeMask::empty());
         unimplemented!()
     }
 
     fn scale_xy(&self, _x: Scalar, _y: Scalar, _point: &mut Point) {
+        debug_assert!(self.type_mask == TypeMask::empty());
         unimplemented!()
     }
 
     fn scale_trans_xy(&self, _x: Scalar, _y: Scalar, _point: &mut Point) {
+        debug_assert!(self.type_mask == TypeMask::empty());
         unimplemented!()
     }
 
     fn rot_xy(&self, _x: Scalar, _y: Scalar, _point: &mut Point) {
+        debug_assert!(self.type_mask == TypeMask::empty());
         unimplemented!()
     }
 
     fn rot_trans_xy(&self, _x: Scalar, _y: Scalar, _point: &mut Point) {
+        debug_assert!(self.type_mask == TypeMask::empty());
         unimplemented!()
     }
 
     fn persp_xy(&self, _x: Scalar, _y: Scalar, _point: &mut Point) {
+        debug_assert!(self.type_mask == TypeMask::empty());
         unimplemented!()
     }
 
     fn identity_pts(&self, _dest: &mut [Point], _src: &[Point], _count: usize) {
+        debug_assert!(self.type_mask == TypeMask::empty());
         unimplemented!()
     }
 
     fn trans_pts(&self, _dest: &mut [Point], _src: &[Point], _count: usize) {
+        debug_assert!(self.type_mask == TypeMask::empty());
         unimplemented!()
     }
 
     fn scale_pts(&self, _dest: &mut [Point], _src: &[Point], _count: usize) {
+        debug_assert!(self.type_mask == TypeMask::empty());
         unimplemented!()
     }
 
     fn scale_trans_pts(&self, _dest: &mut [Point], _src: &[Point], _count: usize) {
+        debug_assert!(self.type_mask == TypeMask::empty());
         unimplemented!()
     }
 
     fn persp_pts(&self, _dest: &mut [Point], _src: &[Point], _count: usize) {
+        debug_assert!(self.type_mask == TypeMask::empty());
         unimplemented!()
     }
 
     fn affine_vpts(&self, _dest: &mut [Point], _src: &[Point], _count: usize) {
+        debug_assert!(self.type_mask == TypeMask::empty());
         unimplemented!()
     }
 
     /// return the number of bytes written, whether or not buffer is null
     fn write_to_memory(&self, _buffer: &mut [u8]) -> usize {
+        debug_assert!(self.type_mask == TypeMask::empty());
         unimplemented!()
     }
 
@@ -396,6 +411,7 @@ impl Matrix {
     /// Returns number of bytes read (must be a multiple of 4) or 0 if there was
     /// not enough memory available
     fn read_from_memory(&mut self, _buffer: &[u8]) -> usize {
+        self.type_mask = TypeMask::empty();
         unimplemented!()
     }
 }

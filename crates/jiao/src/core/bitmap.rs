@@ -41,6 +41,12 @@ pub struct Bitmap {
     mips: Mipmap,
 }
 
+impl Default for Bitmap {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Bitmap {
     /// Creates an empty Bitmap without pixels, with `ColorType::Unknown`,
     /// `AlphaType::Unknown`, and with a width and height of zero.
@@ -63,7 +69,7 @@ impl Bitmap {
     }
 
     /// Returns a constant reference to the Pixmap holding the Bitmap pixel
-    /// address, row bytes, and ImageInfo.
+    /// address, row bytes, and `ImageInfo`.
     ///
     /// Returns reference to Pixmap describing this Bitmap.
     #[must_use]
@@ -86,7 +92,7 @@ impl Bitmap {
     /// May be less than `pixel_ref().width()`.
     /// Will not exceed `pixel_ref().width() - pixel_ref_origin().x()`.
     ///
-    /// Returns pixel width in ImageInfo.
+    /// Returns pixel width in `ImageInfo`.
     #[must_use]
     pub const fn width(&self) -> i32 {
         self.pixmap.width()
@@ -95,9 +101,9 @@ impl Bitmap {
     /// Returns pixel row count.
     ///
     /// Maybe be less than `pixel_ref().height()`.
-    /// `Will not exceed `pixel_ref().height() - pixel_ref_origin().y()`.
+    /// Will not exceed `pixel_ref().height() - pixel_ref_origin().y()`.
     ///
-    /// Returns pixel height in ImageInfo.
+    /// Returns pixel height in `ImageInfo`.
     #[must_use]
     pub const fn height(&self) -> i32 {
         self.pixmap.height()
@@ -113,17 +119,17 @@ impl Bitmap {
         self.pixmap.alpha_type()
     }
 
-    /// Returns `ColorSpace`, the range of colors, associated with ImageInfo.
+    /// Returns `ColorSpace`, the range of colors, associated with `ImageInfo`.
     ///
     /// The reference count of `ColorSpace` is unchanged.
-    /// The returned ColorSpace is immutable.
+    /// The returned `ColorSpace` is immutable.
     ///
     /// Returns `ColorSpace` in `ImageInfo`, or None.
     pub const fn color_space(&self) -> &Option<ColorSpace> {
         unimplemented!()
     }
 
-    /// Returns smart pointer to ColorSpace, the range of colors, associated with
+    /// Returns smart pointer to `ColorSpace`, the range of colors, associated with
     /// `ImageInfo`.
     ///
     /// The smart pointer tracks the number of objects sharing this `ColorSpace`
@@ -166,7 +172,7 @@ impl Bitmap {
 
     /// Returns true if either width() or height() are zero.
     ///
-    /// Does not check if `PixelRef` is nullptr; call `draws_nothing() to check width(),
+    /// Does not check if `PixelRef` is nullptr; call `draws_nothing()` to check width(),
     /// height(), and `PixelRef`.
     ///
     /// Returns true if dimensions do not enclose area.
@@ -186,7 +192,7 @@ impl Bitmap {
         self.pixel_ref.is_none()
     }
 
-    /// Returns true if width() or height() are zero, or if PixelRef is nullptr.
+    /// Returns true if width() or height() are zero, or if `PixelRef` is nullptr.
     ///
     /// If true, Bitmap has no effect when drawn or drawn into.
     ///
@@ -220,7 +226,7 @@ impl Bitmap {
     /// Returns true if `ColorType` is Rgb565 or Gray8.
     /// `alpha_type` is ignored, and `AlphaType` remains Opaque.
     ///
-    /// If `ColorType` is Argb4444, Rgba8888, Bgra8888, or RgbaF16: returns true unless
+    /// If `ColorType` is Argb4444, Rgba8888, Bgra8888, or `RgbaF16`: returns true unless
     /// `alpha_type` is Unknown and `AlphaType` is not Unknown.
     /// If `AlphaType` is Unknown, `alpha_type` is ignored.
     ///
@@ -269,8 +275,8 @@ impl Bitmap {
     /// Sets internal flag to mark Bitmap as immutable.
     ///
     /// Once set, pixels can not change.
-    /// Any other bitmap sharing the same PixelRef are also marked as immutable.
-    /// Once PixelRef is marked immutable, the setting cannot be cleared.
+    /// Any other bitmap sharing the same `PixelRef` are also marked as immutable.
+    /// Once `PixelRef` is marked immutable, the setting cannot be cleared.
     ///
     /// Writing to immutable Bitmap pixels triggers an assert on debug builds.
     pub fn set_immutable(&mut self) {
@@ -287,7 +293,7 @@ impl Bitmap {
     ///
     /// @return  true if `ImageInfo` `AlphaType` is Opaque.
     #[must_use]
-    pub const fn is_opaque(&self) -> bool {
+    pub fn is_opaque(&self) -> bool {
         self.alpha_type().is_opaque()
     }
 

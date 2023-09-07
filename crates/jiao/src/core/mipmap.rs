@@ -63,19 +63,19 @@ impl Mipmap {
 
     /// Computes the fractional level based on the scaling in X and Y.
     #[must_use]
-    pub fn compute_level_by_scale(_scale_size: Size) -> f32 {
+    pub fn compute_level_by_scale(_scale_size: &Size) -> f32 {
         unimplemented!()
     }
 
     #[must_use]
-    pub fn extract_level(&self, _scale_size: Size) -> Option<Level> {
+    pub fn extract_level(_scale_size: &Size) -> Option<Level> {
         unimplemented!()
     }
 
     /// countLevels returns the number of mipmap levels generated (which does not
     /// include the base mipmap level).
     #[must_use]
-    pub fn count_levels(&self) -> usize {
+    pub fn count_levels() -> usize {
         unimplemented!()
     }
 
@@ -84,12 +84,12 @@ impl Mipmap {
     /// It does not include the base level.
     /// So index 0 represents mipmap level 1.
     #[must_use]
-    pub fn get_level(&self, _index: usize) -> Option<Level> {
+    pub fn get_level(_index: usize) -> Option<Level> {
         unimplemented!()
     }
 
     #[must_use]
-    pub fn valid_for_root_level(&self, _image_info: &ImageInfo) -> bool {
+    pub fn valid_for_root_level(_image_info: &ImageInfo) -> bool {
         unimplemented!()
     }
 }
