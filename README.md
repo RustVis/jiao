@@ -18,4 +18,4 @@ Jiao is a cross platform 2D graphics library.
 - [raquote](https://github.com/jrmuizel/raqote), Rust 2D graphics library
 
 ## License
-This crate is released under [Apache-2.0](LICENSE) license.
+This crate is released under [LGPL-3.0](LICENSE) license.

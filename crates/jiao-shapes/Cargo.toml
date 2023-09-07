@@ -21,7 +21,7 @@ keywords = [
   "objects",
 ]
 edition = "2021"
-license = "Apache-2.0"
+license = "LGPL-3.0"
 publish = true
 
 [features]

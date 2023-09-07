@@ -14,4 +14,4 @@ This crate contains common 2d vector shapes.
 - [Release notes](https://github.com/RustVis/jiao/releases)
 
 ## License
-This crate is released under [Apache-2.0](LICENSE) license.
+This crate is released under [LGPL-3.0](LICENSE) license.
