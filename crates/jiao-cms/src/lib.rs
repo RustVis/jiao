@@ -11,6 +11,8 @@
 )]
 #![allow(dead_code)]
 
+use std::f32::EPSILON;
+
 /// A row-major 3x3 matrix (ie vals[row][col])
 #[derive(Debug, Default, Clone, PartialEq)]
 pub struct Matrix3x3 {
@@ -81,8 +83,55 @@ pub struct TransferFunction {
 
 impl TransferFunction {
     #[must_use]
-    pub fn eval(&self, _val: f32) -> f32 {
-        unimplemented!()
+    #[allow(clippy::suboptimal_flops)]
+    pub fn eval(&self, mut x: f32) -> f32 {
+        let sign = if x < 0.0 { -1.0 } else { 1.0 };
+        x *= sign;
+
+        let mut pq = TF_PQish::default();
+        let mut hlg = TF_HLGish::default();
+        let type_ = self.classify(Some(&mut pq), Some(&mut hlg));
+
+        match type_ {
+            TFType::Invalid => 0.0,
+
+            TFType::HLGish => {
+                let k = hlg.k_minus_1 + 1.0;
+                let exp = if x * hlg.r <= 1.0 {
+                    (x * hlg.r).powf(hlg.g)
+                } else {
+                    ((x - hlg.c) * hlg.a).exp() + hlg.b
+                };
+                k * sign * exp
+            }
+
+            TFType::HLGinvish => {
+                // invert() inverts R, G, and a for HLGinvish so this math is fast.
+                let k = hlg.k_minus_1 + 1.0;
+                x /= k;
+                let exp = if x <= 1.0 {
+                    hlg.r * x.powf(hlg.g)
+                } else {
+                    hlg.a * (x - hlg.b).log2() + hlg.c
+                };
+                sign * exp
+            }
+
+            TFType::SRGBish => {
+                let exp = if x < self.d {
+                    self.c * x + self.f
+                } else {
+                    (self.a * x + self.b).powf(self.g) + self.e
+                };
+
+                sign * exp
+            }
+
+            TFType::PQish => {
+                sign * ((pq.a + pq.b * x.powf(pq.c)).max(0.0) / (pq.d + pq.e * x.powf(pq.c)))
+                    .powf(pq.f)
+            }
+        }
     }
 
     #[must_use]
@@ -93,7 +142,7 @@ impl TransferFunction {
     /// Identify which kind of transfer function is encoded in an `TransferFunction`
     #[must_use]
     pub fn get_type(&self) -> TFType {
-        unimplemented!()
+        self.classify(None, None)
     }
 
     /// We can jam a couple alternate transfer function forms into `TransferFunction`,
@@ -104,8 +153,17 @@ impl TransferFunction {
     ///   max(A + B|encoded|^C, 0)
     ///   linear = sign(encoded) * (------------------------) ^ F
     /// ```
-    pub fn make_pqish(&mut self, _a: f32, _b: f32, _c: f32, _d: f32, _e: f32, _f: f32) -> bool {
-        unimplemented!()
+    #[allow(clippy::many_single_char_names)]
+    pub fn make_pqish(&mut self, a: f32, b: f32, c: f32, d: f32, e: f32, f: f32) -> bool {
+        self.g = TFType::PQish.marker();
+        self.a = a;
+        self.b = b;
+        self.c = c;
+        self.d = d;
+        self.e = e;
+        self.f = f;
+        debug_assert!(self.is_pqish());
+        true
     }
 
     /// `HLGish`:
@@ -113,25 +171,29 @@ impl TransferFunction {
     ///   { K * sign(encoded) * ( (R|encoded|)^G )          when 0   <= |encoded| <= 1/R
     ///   linear = { K * sign(encoded) * ( e^(a(|encoded|-c)) + b )  when 1/R <  |encoded|
     /// ```
-    pub fn make_scaled_hlgish(
-        &mut self,
-        _k: f32,
-        _r: f32,
-        _g: f32,
-        _a: f32,
-        _b: f32,
-        _c: f32,
-    ) -> bool {
-        unimplemented!()
+    #[must_use]
+    #[allow(clippy::many_single_char_names)]
+    pub fn make_scaled_hlgish(&mut self, k: f32, r: f32, g: f32, a: f32, b: f32, c: f32) -> bool {
+        self.g = TFType::HLGish.marker();
+        self.a = r;
+        self.b = g;
+        self.c = a;
+        self.d = b;
+        self.e = c;
+        self.f = k - 1.0;
+        debug_assert!(self.is_hlgish());
+        true
     }
 
     /// Compatibility shim with K=1 for old callers.
+    #[must_use]
     #[allow(clippy::many_single_char_names)]
     pub fn make_hlgish(&mut self, r: f32, g: f32, a: f32, b: f32, c: f32) -> bool {
         self.make_scaled_hlgish(1.0, r, g, a, b, c)
     }
 
     /// PQ mapping encoded [0,1] to linear [0,1].
+    #[must_use]
     pub fn make_pq(&mut self) -> bool {
         self.make_pqish(
             -107.0 / 128.0,
@@ -152,17 +214,17 @@ impl TransferFunction {
     /// Is this an ordinary sRGB-ish transfer function, or one of the HDR forms we support?
     #[must_use]
     pub fn is_srgbish(&self) -> bool {
-        unimplemented!()
+        self.get_type() == TFType::SRGBish
     }
 
     #[must_use]
     pub fn is_pqish(&self) -> bool {
-        unimplemented!()
+        self.get_type() == TFType::PQish
     }
 
     #[must_use]
     pub fn is_hlgish(&self) -> bool {
-        unimplemented!()
+        self.get_type() == TFType::HLGish
     }
 
     #[must_use]
@@ -179,15 +241,141 @@ impl TransferFunction {
     pub const fn new_identity() -> Self {
         unimplemented!()
     }
+
+    #[must_use]
+    #[allow(clippy::cast_possible_truncation)]
+    #[allow(clippy::cast_precision_loss)]
+    #[allow(clippy::cast_sign_loss)]
+    fn classify(&self, pq: Option<&mut TF_PQish>, hlg: Option<&mut TF_HLGish>) -> TFType {
+        if self.g < 0.0 && (((self.g as i32) as f32) - self.g).abs() < EPSILON {
+            // TODO: soundness checks for PQ/HLG like we do for sRGBish?
+            match ((-(self.g) as i32) as u8).try_into() {
+                Ok(TFType::PQish) => {
+                    if let Some(pq) = pq {
+                        pq.set_all(self.a);
+                    }
+                    return TFType::PQish;
+                }
+                Ok(TFType::HLGish) => {
+                    if let Some(hlg) = hlg {
+                        hlg.set_all(self.a);
+                    }
+                    return TFType::HLGish;
+                }
+                Ok(TFType::HLGinvish) => {
+                    if let Some(hlg) = hlg {
+                        hlg.set_all(self.a);
+                    }
+                    return TFType::HLGinvish;
+                }
+                _ => return TFType::Invalid,
+            }
+        }
+
+        // Basic soundness checks for sRGBish transfer functions.
+        if (self.a + self.b + self.c + self.d + self.e + self.f + self.g).is_finite()
+            // a,c,d,g should be non-negative to make any sense.
+            && self.a >= 0.0
+            && self.c >= 0.0
+            && self.d >= 0.0
+            && self.g >= 0.0
+            // Raising a negative value to a fractional tf->g produces complex numbers.
+            && self.a.mul_add(self.d , self.b) >= 0.0
+        {
+            return TFType::SRGBish;
+        }
+
+        TFType::Invalid
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
 pub enum TFType {
-    Invalid,
-    SRGBish,
-    PQish,
-    HLGish,
-    HLGinvish,
+    Invalid = 0,
+    SRGBish = 1,
+    PQish = 2,
+    HLGish = 3,
+    HLGinvish = 4,
+}
+
+impl Default for TFType {
+    fn default() -> Self {
+        Self::Invalid
+    }
+}
+
+impl TFType {
+    #[must_use]
+    fn marker(self) -> f32 {
+        // We'd use different NaNs, but those aren't guaranteed to be preserved by WASM.
+        -f32::from(self as u8)
+    }
+}
+
+impl TryFrom<u8> for TFType {
+    type Error = &'static str;
+
+    fn try_from(val: u8) -> Result<Self, Self::Error> {
+        match val {
+            0 => Ok(Self::Invalid),
+            1 => Ok(Self::SRGBish),
+            2 => Ok(Self::PQish),
+            3 => Ok(Self::HLGish),
+            4 => Ok(Self::HLGinvish),
+            _ => Err("Invalid TFType value"),
+        }
+    }
+}
+
+// Most transfer functions we work with are sRGBish.
+// For exotic HDR transfer functions, we encode them using a tf.g that makes no sense,
+// and repurpose the other fields to hold the parameters of the HDR functions.
+#[derive(Debug, Default, Clone)]
+#[allow(non_camel_case_types)]
+struct TF_PQish {
+    a: f32,
+    b: f32,
+    c: f32,
+    d: f32,
+    e: f32,
+    f: f32,
+}
+
+impl TF_PQish {
+    fn set_all(&mut self, val: f32) {
+        self.a = val;
+        self.b = val;
+        self.c = val;
+        self.d = val;
+        self.e = val;
+        self.f = val;
+    }
+}
+
+// We didn't originally support a scale factor K for HLG, and instead just stored 0 in
+// the unused `f` field of skcms_TransferFunction for HLGish and HLGInvish transfer functions.
+// By storing f=K-1, those old unusued f=0 values now mean K=1, a noop scale factor.
+#[derive(Debug, Default, Clone)]
+#[allow(non_camel_case_types)]
+struct TF_HLGish {
+    r: f32,
+    g: f32,
+    a: f32,
+    b: f32,
+    c: f32,
+    k_minus_1: f32,
+}
+
+impl TF_HLGish {
+    fn set_all(&mut self, val: f32) {
+        self.r = val;
+        self.g = val;
+        self.a = val;
+        self.b = val;
+        self.c = val;
+        self.k_minus_1 = val;
+    }
 }
 
 /// Unified representation of 'curv' or 'para' tag data, or a 1D table from 'mft1' or 'mft2'
@@ -390,7 +578,6 @@ impl ICCProfile {
 
     /// Utilities for programmatically constructing profiles
     fn init(&mut self) {
-        //memset(p, 0, sizeof(*p));
         *self = Self::default();
         self.data_color_space = Signature::RGB;
         self.pcs = Signature::XYZ;
