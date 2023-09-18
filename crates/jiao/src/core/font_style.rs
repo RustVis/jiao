@@ -24,6 +24,13 @@ impl Default for FontWeight {
     }
 }
 
+impl FontWeight {
+    #[must_use]
+    pub const fn is_bold(self) -> bool {
+        self as u16 >= Self::SemiBold as u16
+    }
+}
+
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum FontWidth {
@@ -55,6 +62,13 @@ pub enum FontSlant {
 impl Default for FontSlant {
     fn default() -> Self {
         Self::Upright
+    }
+}
+
+impl FontSlant {
+    #[must_use]
+    pub fn is_italic(self) -> bool {
+        self != Self::Upright
     }
 }
 

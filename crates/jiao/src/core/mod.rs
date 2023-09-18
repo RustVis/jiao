@@ -15,6 +15,7 @@ pub mod color_filter;
 pub mod color_space;
 pub mod color_table;
 pub mod color_type;
+pub mod contour_measure;
 pub mod coverage_mode;
 pub mod cubic_map;
 pub mod data;
