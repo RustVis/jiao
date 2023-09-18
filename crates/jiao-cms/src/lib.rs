@@ -30,13 +30,16 @@ impl Matrix3x3 {
     }
 
     /// Returns a matrix to adapt XYZ color from given the whitepoint to D50.
+    #[must_use]
     pub fn adapt_to_xyzd50(_wx: f32, _wy: f32) -> Option<Self> {
         unimplemented!()
     }
 
     /// Returns a matrix to convert RGB color into XYZ adapted to D50, given the
     /// primaries and whitepoint of the RGB model.
-    pub fn primaries_to_xyzd50(
+    #[must_use]
+    #[allow(clippy::too_many_arguments)]
+    pub const fn primaries_to_xyzd50(
         _rx: f32,
         _ry: f32,
         _gx: f32,
@@ -87,7 +90,7 @@ impl TransferFunction {
         unimplemented!()
     }
 
-    /// Identify which kind of transfer function is encoded in an skcms_TransferFunction
+    /// Identify which kind of transfer function is encoded in an `TransferFunction`
     #[must_use]
     pub fn get_type(&self) -> TFType {
         unimplemented!()
@@ -96,17 +99,20 @@ impl TransferFunction {
     /// We can jam a couple alternate transfer function forms into `TransferFunction`,
     /// including those matching the general forms of the SMPTE ST 2084 PQ function or HLG.
     ///
-    /// PQish:
-    ///                              max(A + B|encoded|^C, 0)
-    ///    linear = sign(encoded) * (------------------------) ^ F
-    ///                                  D + E|encoded|^C
+    /// `PQish`:
+    /// ```txt
+    ///   max(A + B|encoded|^C, 0)
+    ///   linear = sign(encoded) * (------------------------) ^ F
+    /// ```
     pub fn make_pqish(&mut self, _a: f32, _b: f32, _c: f32, _d: f32, _e: f32, _f: f32) -> bool {
         unimplemented!()
     }
 
-    /// HLGish:
-    ///            { K * sign(encoded) * ( (R|encoded|)^G )          when 0   <= |encoded| <= 1/R
+    /// `HLGish`:
+    /// ```txt
+    ///   { K * sign(encoded) * ( (R|encoded|)^G )          when 0   <= |encoded| <= 1/R
     ///   linear = { K * sign(encoded) * ( e^(a(|encoded|-c)) + b )  when 1/R <  |encoded|
+    /// ```
     pub fn make_scaled_hlgish(
         &mut self,
         _k: f32,
@@ -120,6 +126,7 @@ impl TransferFunction {
     }
 
     /// Compatibility shim with K=1 for old callers.
+    #[allow(clippy::many_single_char_names)]
     pub fn make_hlgish(&mut self, r: f32, g: f32, a: f32, b: f32, c: f32) -> bool {
         self.make_scaled_hlgish(1.0, r, g, a, b, c)
     }
@@ -137,31 +144,38 @@ impl TransferFunction {
     }
 
     /// HLG mapping encoded [0,1] to linear [0,12].
+    #[must_use]
     pub fn make_hlg(&mut self) -> bool {
-        self.make_hlgish(2.0, 2.0, 1.0 / 0.17883277, 0.28466892, 0.55991073)
+        self.make_hlgish(2.0, 2.0, 1.0 / 0.178_832_77, 0.284_668_92, 0.559_910_7)
     }
 
     /// Is this an ordinary sRGB-ish transfer function, or one of the HDR forms we support?
+    #[must_use]
     pub fn is_srgbish(&self) -> bool {
         unimplemented!()
     }
 
+    #[must_use]
     pub fn is_pqish(&self) -> bool {
         unimplemented!()
     }
 
+    #[must_use]
     pub fn is_hlgish(&self) -> bool {
         unimplemented!()
     }
 
+    #[must_use]
     pub const fn new_srgb() -> Self {
         unimplemented!()
     }
 
+    #[must_use]
     pub const fn new_srgb_inverse() -> Self {
         unimplemented!()
     }
 
+    #[must_use]
     pub const fn new_identity() -> Self {
         unimplemented!()
     }
@@ -185,14 +199,17 @@ pub struct Curve {
 }
 
 impl Curve {
-    /// Practical test that answers: Is curve roughly the inverse of inv_tf? Typically used by passing
-    /// the inverse of a known parametric transfer function (like sRGB), to determine if a particular
-    /// curve is very close to sRGB.
+    /// Practical test that answers: Is curve roughly the inverse of `inv_tf`?
+    ///
+    /// Typically used by passing the inverse of a known parametric transfer function
+    /// (like `sRGB`), to determine if a particular curve is very close to `sRGB`.
+    #[must_use]
     pub fn are_approximate_inverses(&self, _inv_tf: &TransferFunction) -> bool {
         unimplemented!()
     }
 
     /// Returns max error.
+    #[must_use]
     pub fn approximate(&self, _approx: &TransferFunction) -> Option<f32> {
         unimplemented!()
     }
@@ -257,6 +274,7 @@ pub struct CICP {
 }
 
 #[derive(Debug, Default, Clone)]
+#[allow(clippy::struct_excessive_bools)]
 pub struct ICCProfile {
     pub buffer: Vec<u8>,
 
@@ -276,46 +294,49 @@ pub struct ICCProfile {
     pub has_to_xyzd50: bool,
     pub to_xyzd50: Matrix3x3,
 
-    // If the profile has a valid A2B0 or A2B1 tag, skcms_Parse() sets A2B to
-    // that data, and has_A2B to true.  skcms_ParseWithA2BPriority() does the
+    // If the profile has a valid A2B0 or A2B1 tag, Parse() sets A2B to
+    // that data, and has_A2B to true.  ParseWithA2BPriority() does the
     // same following any user-provided prioritization of A2B0, A2B1, or A2B2.
     pub has_a2b: bool,
     pub a2b: A2B,
 
-    // If the profile has a valid B2A0 or B2A1 tag, skcms_Parse() sets B2A to
-    // that data, and has_B2A to true.  skcms_ParseWithA2BPriority() does the
+    // If the profile has a valid B2A0 or B2A1 tag, Parse() sets B2A to
+    // that data, and has_B2A to true.  ParseWithA2BPriority() does the
     // same following any user-provided prioritization of B2A0, B2A1, or B2A2.
     pub has_b2a: bool,
     pub b2a: B2A,
 
-    // If the profile has a valid CICP tag, skcms_Parse() sets CICP to that data,
+    // If the profile has a valid CICP tag, Parse() sets CICP to that data,
     // and has_CICP to true.
     pub has_cicp: bool,
     pub cicp: CICP,
 }
 
 impl ICCProfile {
-    /// The sRGB color profile is so commonly used that we offer a canonical skcms_ICCProfile for it.
+    /// The `sRGB` color profile is so commonly used that we offer a canonical `ICCProfile` for it.
     #[must_use]
     pub const fn srgb_profile() -> Self {
         unimplemented!()
     }
 
     /// Ditto for XYZD50, the most common profile connection space.
+    #[must_use]
     pub const fn xyzd50_profile() -> Self {
         unimplemented!()
     }
 
-    /// Practical equality test for two ICCProfiles.
+    /// Practical equality test for two `ICCProfiles`.
     /// The implementation is subject to change, but it will always try to answer
     /// "can I substitute A for B?" and "can I skip transforming from A to B?".
+    #[must_use]
     pub fn approximately_equal(&self, _other: &Self) -> bool {
         unimplemented!()
     }
 
     /// Answering the question for all three TRC curves of the given profile. Again,
-    /// passing skcms_sRGB_InverseTransferFunction as inv_tf will answer the question:
-    /// "Does this profile have a transfer function that is very close to sRGB?"
+    /// passing `sRGB_InverseTransferFunction` as `inv_tf` will answer the question:
+    /// "Does this profile have a transfer function that is very close to `sRGB`?"
+    #[must_use]
     pub fn trcs_are_approximate_inverse(&self, _inv_tf: &TransferFunction) -> bool {
         unimplemented!()
     }
@@ -330,17 +351,21 @@ impl ICCProfile {
         unimplemented!()
     }
 
-    /// If profile can be used as a destination in skcms_Transform, return true. Otherwise, attempt to
-    /// rewrite it with approximations where reasonable. If successful, return true. If no reasonable
-    /// approximation exists, leave the profile unchanged and return false.
+    /// If profile can be used as a destination in Transform, return true.
+    /// Otherwise, attempt to rewrite it with approximations where reasonable.
+    ///
+    /// If successful, return true. If no reasonable approximation exists,
+    /// leave the profile unchanged and return false.
     #[must_use]
     pub fn make_usable_as_destination(&mut self) -> bool {
         unimplemented!()
     }
 
     /// If profile can be used as a destination with a single parametric transfer function (ie for
-    /// rasterization), return true. Otherwise, attempt to rewrite it with approximations where
-    /// reasonable. If successful, return true. If no reasonable approximation exists, leave the
+    /// rasterization), return true.
+    /// Otherwise, attempt to rewrite it with approximations where reasonable.
+    ///
+    /// If successful, return true. If no reasonable approximation exists, leave the
     /// profile unchanged and return false.
     #[must_use]
     pub fn make_usable_as_destination_with_single_curve(&mut self) -> bool {
@@ -348,8 +373,9 @@ impl ICCProfile {
     }
 
     /// Parse an ICC profile and return true if possible, otherwise return false.
+    ///
     /// Selects an A2B profile (if present) according to priority list (each entry 0-2).
-    /// The buffer is not copied; it must remain valid as long as the skcms_ICCProfile will be used.
+    /// The buffer is not copied; it must remain valid as long as the `ICCProfile` will be used.
     #[must_use]
     pub fn parse_with_a2b_priority(_buf: &[u8], _priorities: &[i32]) -> Option<Self> {
         unimplemented!()
@@ -389,13 +415,13 @@ impl ICCProfile {
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Signature {
     // data_color_space
-    CMYK = 0x434D594B,
-    Gray = 0x47524159,
-    RGB = 0x52474220,
+    CMYK = 0x434D_594B,
+    Gray = 0x4752_4159,
+    RGB = 0x5247_4220,
 
     // pcs
-    Lab = 0x4C616220,
-    XYZ = 0x58595A20,
+    Lab = 0x4C61_6220,
+    XYZ = 0x5859_5A20,
 }
 
 impl Default for Signature {
@@ -478,7 +504,7 @@ pub enum PixelFormat {
 /// any source alpha and treat it as 1.0, and will make sure that any destination alpha
 /// channel is filled with the equivalent of 1.0.
 ///
-/// We used to offer multiple types of premultiplication, but now just one, PremulAsEncoded.
+/// We used to offer multiple types of premultiplication, but now just one, `PremulAsEncoded`.
 /// This is the premul you're probably used to working with.
 pub enum AlphaFormat {
     /// alpha is always opaque. tf-1(r),   tf-1(g),   tf-1(b),   1.0
@@ -495,32 +521,27 @@ pub enum AlphaFormat {
 ///// Convert npixels pixels from src format and color profile to dst format and color profile
 ///// and return true, otherwise return false.  It is safe to alias dst == src if dstFmt == srcFmt.
 //pub fn transform(const void*             src,
-//                               skcms_PixelFormat       srcFmt,
-//                               skcms_AlphaFormat       srcAlpha,
-//                               const skcms_ICCProfile* srcProfile,
+//                               PixelFormat       srcFmt,
+//                               AlphaFormat       srcAlpha,
+//                               const ICCProfile* srcProfile,
 //                               void*                   dst,
-//                               skcms_PixelFormat       dstFmt,
-//                               skcms_AlphaFormat       dstAlpha,
-//                               const skcms_ICCProfile* dstProfile,
+//                               PixelFormat       dstFmt,
+//                               AlphaFormat       dstAlpha,
+//                               const ICCProfile* dstProfile,
 //                               size_t                  npixels) -> bool {
 //    unimplemented!()
 //}
 //
 ///// As `transform()`, supporting srcFmts with a palette.
 //pub fn transform_with_palette(const void*             src,
-//                                          skcms_PixelFormat       srcFmt,
-//                                          skcms_AlphaFormat       srcAlpha,
-//                                          const skcms_ICCProfile* srcProfile,
+//                                          PixelFormat       srcFmt,
+//                                          AlphaFormat       srcAlpha,
+//                                          const ICCProfile* srcProfile,
 //                                          void*                   dst,
-//                                          skcms_PixelFormat       dstFmt,
-//                                          skcms_AlphaFormat       dstAlpha,
-//                                          const skcms_ICCProfile* dstProfile,
+//                                          PixelFormat       dstFmt,
+//                                          AlphaFormat       dstAlpha,
+//                                          const ICCProfile* dstProfile,
 //                                          size_t                  npixels,
 //                                          const void*             palette) -> bool {
 //    unimplemented!()
 //}
-
-// Call before your first call to skcms_Transform() to skip runtime CPU detection.
-pub fn disable_runtime_cpu_detection() {
-    unimplemented!()
-}
