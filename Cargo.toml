@@ -2,10 +2,7 @@
 [workspace]
 members = [
   "crates/jiao",
-]
-
-default-members = [
-  "crates/jiao",
+  "crates/jiao-cms",
 ]
 
 exclude = [
