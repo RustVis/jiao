@@ -709,9 +709,9 @@ impl M44 {
     }
 
     /// Set this matrix to rotate about the specified unit-length axis vector,
-    /// by an angle specified by its sin() and cos().
+    /// by an angle specified by its `sin()` and `cos()`.
     ///
-    /// This does not attempt to verify that axis.length() == 1 or that the sin,cos values
+    /// This does not attempt to verify that `axis.length()` == 1 or that the sin,cos values
     /// are correct.
     pub fn set_rotate_unit_sin_cos(
         &mut self,
@@ -725,7 +725,7 @@ impl M44 {
     /// Set this matrix to rotate about the specified unit-length axis vector,
     /// by an angle specified in radians.
     ///
-    /// This does not attempt to verify that axis.length() == 1.
+    /// This does not attempt to verify that `axis.length()` == 1.
     pub fn set_rotate_unit(&mut self, axis: &V3, radians: Scalar) -> &Self {
         self.set_rotate_unit_sin_cos(axis, radians.sin(), radians.cos())
     }

@@ -73,9 +73,9 @@ impl Rect {
         }
     }
 
-    /// Returns constructed Rect set to (0, 0, size.width(), size.height()).
+    /// Returns constructed Rect set to (0, 0, `size.width()`, `size.height()`).
     ///
-    /// Does not validate input; size.width() or size.height() may be negative.
+    /// Does not validate input; `size.width()` or `size.height()` may be negative.
     #[must_use]
     pub const fn from_size(size: &Size) -> Self {
         Self {
@@ -119,9 +119,9 @@ impl Rect {
         }
     }
 
-    /// Returns constructed `IRect` set to (0, 0, size.width(), size.height()).
+    /// Returns constructed `IRect` set to (0, 0, `size.width()`, `size.height()`).
     ///
-    /// Does not validate input; size.width() or size.height() may be negative.
+    /// Does not validate input; `size.width()` or `size.height()` may be negative.
     #[must_use]
     pub const fn from_isize(size: ISize) -> Self {
         Self::from_iwh(size.width(), size.height())
@@ -153,7 +153,7 @@ impl Rect {
     /// Returns true if left is equal to or greater than right,
     /// or if top is equal to or greater than bottom.
     ///
-    /// Call sort() to reverse rectangles with negative width() or height().
+    /// Call `sort()` to reverse rectangles with negative `width()` or `height()`.
     #[must_use]
     pub fn is_empty(&self) -> bool {
         // We write it as the NOT of a non-empty rect, so we will return true if any values
@@ -164,7 +164,7 @@ impl Rect {
     /// Returns true if left is equal to or less than right,
     /// or if top is equal to or less than bottom.
     ///
-    /// Call sort() to reverse rectangles with negative width() or height().
+    /// Call `sort()` to reverse rectangles with negative `width()` or `height()`.
     #[must_use]
     pub fn is_sorted(&self) -> bool {
         self.left <= self.right && self.top <= self.bottom
@@ -189,7 +189,7 @@ impl Rect {
     /// Returns left edge of Rect, if sorted.
     ///
     /// Call `is_sorted()` to see if Rect is valid.
-    /// Call sort() to reverse left and right if needed.
+    /// Call `sort()` to reverse left and right if needed.
     #[must_use]
     pub const fn x(&self) -> f32 {
         self.left
@@ -198,7 +198,7 @@ impl Rect {
     /// Returns top edge of Rect, if sorted.
     ///
     /// Call `is_empty()` to see if Rect may be invalid,
-    /// and sort() to reverse top and bottom if needed.
+    /// and `sort()` to reverse top and bottom if needed.
     #[must_use]
     pub const fn y(&self) -> f32 {
         self.top
@@ -207,7 +207,7 @@ impl Rect {
     /// Returns left edge of Rect, if sorted.
     ///
     /// Call `is_sorted()` to see if Rect is valid.
-    /// Call sort() to reverse left and right if needed.
+    /// Call `sort()` to reverse left and right if needed.
     #[must_use]
     pub const fn left(&self) -> f32 {
         self.left
@@ -216,7 +216,7 @@ impl Rect {
     /// Returns top edge of Rect, if sorted.
     ///
     /// Call `is_empty()` to see if Rect may be invalid,
-    /// and sort() to reverse top and bottom if needed.
+    /// and `sort()` to reverse top and bottom if needed.
     #[must_use]
     pub const fn top(&self) -> f32 {
         self.top
@@ -225,7 +225,7 @@ impl Rect {
     /// Returns right edge of Rect, if sorted.
     ///
     /// Call `is_sorted()` to see if Rect is valid.
-    /// Call sort() to reverse left and right if needed.
+    /// Call `sort()` to reverse left and right if needed.
     #[must_use]
     pub const fn right(&self) -> f32 {
         self.right
@@ -234,7 +234,7 @@ impl Rect {
     /// Returns bottom edge of Rect, if sorted.
     ///
     /// Call `is_empty()` to see if Rect may be invalid,
-    /// and sort() to reverse top and bottom if needed.
+    /// and `sort()` to reverse top and bottom if needed.
     #[must_use]
     pub const fn bottom(&self) -> f32 {
         self.bottom
@@ -504,8 +504,8 @@ impl Rect {
     /// width and height are unchanged.
     ///
     /// # Parameters
-    /// - `new_x` - stored in left, preserving width()
-    /// - `new_y` - stored in top, preserving height()
+    /// - `new_x` - stored in left, preserving `width()`
+    /// - `new_y` - stored in top, preserving `height()`
     pub fn offset_to(&mut self, new_x: f32, new_y: f32) {
         self.right += new_x - self.left;
         self.bottom += new_y - self.top;
@@ -721,7 +721,7 @@ impl Rect {
     /// Swaps left and right if left is greater than right; and swaps
     /// top and bottom if top is greater than bottom.
     ///
-    /// Result may be empty; and width() and height() will be zero or positive.
+    /// Result may be empty; and `width()` and `height()` will be zero or positive.
     pub fn sort(&mut self) {
         (self.left, self.right) = (self.left.min(self.right), self.left.max(self.right));
         (self.top, self.bottom) = (self.top.min(self.bottom), self.top.max(self.bottom));
@@ -730,7 +730,7 @@ impl Rect {
     /// Returns Rect with left and right swapped if left is greater than right; and
     /// with top and bottom swapped if top is greater than bottom.
     ///
-    /// Result may be empty; and width() and height() will be zero or positive.
+    /// Result may be empty; and `width()` and `height()` will be zero or positive.
     #[must_use]
     pub fn from_sorted(&self) -> Self {
         Self::from_ltrb(

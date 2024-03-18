@@ -517,7 +517,7 @@ impl ImageInfo {
 
     /// Returns bounding rect.
     ///
-    /// Returns integral rectangle from origin to width() and height()
+    /// Returns integral rectangle from origin to `width()` and `height()`
     #[must_use]
     pub const fn bounds(&self) -> IRect {
         IRect::from_size(self.dimensions)
@@ -547,19 +547,19 @@ impl ImageInfo {
         self.color_info.shift_per_pixel()
     }
 
-    /// Returns minimum bytes per row, computed from pixel width() and `ColorType`,
+    /// Returns minimum bytes per row, computed from pixel `width()` and `ColorType`,
     /// which specifies `bytes_per_pixel()`.
     ///
     /// `Bitmap` maximum value for row bytes must fit in 31 bits.
     ///
-    /// Return width() times `bytes_per_pixel()` as unsigned 64-bit integer
+    /// Return `width()` times `bytes_per_pixel()` as unsigned 64-bit integer
     #[must_use]
     #[allow(clippy::cast_sign_loss)]
     pub const fn min_row_bytes64(&self) -> u64 {
         (self.width() as u64) * (self.bytes_per_pixel() as u64)
     }
 
-    /// Returns minimum bytes per row, computed from pixel width() and `ColorType`,
+    /// Returns minimum bytes per row, computed from pixel `width()` and `ColorType`,
     /// which specifies `bytes_per_pixel()`.
     ///
     /// `Bitmap` maximum value for row bytes must fit in 31 bits.
@@ -581,8 +581,8 @@ impl ImageInfo {
     /// even though result may be incorrect.
     ///
     /// # Parameters
-    /// - `x` - column index, zero or greater, and less than width()
-    /// - `y` - row index, zero or greater, and less than height()
+    /// - `x` - column index, zero or greater, and less than `width()`
+    /// - `y` - row index, zero or greater, and less than `height()`
     /// - `row_bytes` - size of pixel row or larger
     #[must_use]
     pub const fn compute_offset(&self, _x: i32, _y: i32, _row_bytes: usize) -> usize {

@@ -396,7 +396,7 @@ impl YuvaInfo {
     /// the expected dimensions for each plane.
     ///
     /// Dimensions are as stored in memory, before transformation to image display space
-    /// as indicated by origin().
+    /// as indicated by `origin()`.
     pub fn plane_dimensions(&self, plane_dimensions: &mut [ISize; MAX_PLANES]) -> i32 {
         Self::plane_dimensions_impl(
             self.dimensions,

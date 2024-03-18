@@ -95,7 +95,7 @@ impl ContourMeasure {
     /// Given a start and stop distance, return in dst the intervening segment(s).
     ///
     /// If the segment is zero-length, return false, else return true.
-    /// `start_d` and `stop_d` are pinned to legal values (0..getLength()).
+    /// `start_d` and `stop_d` are pinned to legal values (`0..getLength()`).
     /// If `start_d > stop_d` then return false (and leave dst untouched).
     /// Begin the segment with a moveTo if `start_with_move_to` is true.
     #[must_use]
@@ -109,7 +109,7 @@ impl ContourMeasure {
         unimplemented!()
     }
 
-    /// Return true if the contour is closed()
+    /// Return true if the contour is `closed()`
     #[must_use]
     pub const fn is_closed(&self) -> bool {
         self.is_closed

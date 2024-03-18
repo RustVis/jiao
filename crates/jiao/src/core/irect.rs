@@ -63,9 +63,9 @@ impl IRect {
         }
     }
 
-    /// Returns constructed `IRect` set to (0, 0, size.width(), size.height()).
+    /// Returns constructed `IRect` set to (0, 0, `size.width()`, `size.height()`).
     ///
-    /// Does not validate input; size.width() or size.height() may be negative.
+    /// Does not validate input; `size.width()` or `size.height()` may be negative.
     #[must_use]
     pub const fn from_size(size: ISize) -> Self {
         Self {
@@ -77,9 +77,9 @@ impl IRect {
     }
 
     /// Returns constructed `IRect` set to
-    /// (pt.x(), pt.y(), pt.x() + size.width(), pt.y() + size.height()).
+    /// (`pt.x()`, `pt.y()`, `pt.x()` + `size.width()`, `pt.y()` + `size.height()`).
     ///
-    /// Does not validate input; size.width() or size.height() may be negative.
+    /// Does not validate input; `size.width()` or `size.height()` may be negative.
     ///
     /// # Parameters
     /// - `pt` - values for `IRect` left and top
@@ -124,7 +124,7 @@ impl IRect {
 
     /// Returns left edge of `IRect`, if sorted.
     ///
-    /// Call sort() to reverse left and right if needed.
+    /// Call `sort()` to reverse left and right if needed.
     #[must_use]
     pub const fn left(&self) -> i32 {
         self.left
@@ -132,7 +132,7 @@ impl IRect {
 
     /// Returns top edge of `IRect`, if sorted.
     /// Call `is_empty()` to see if `IRect` may be invalid,
-    /// and sort() to reverse top and bottom if needed.
+    /// and `sort()` to reverse top and bottom if needed.
     #[must_use]
     pub const fn top(&self) -> i32 {
         self.top
@@ -140,7 +140,7 @@ impl IRect {
 
     /// Returns right edge of `IRect`, if sorted.
     ///
-    /// Call sort() to reverse left and right if needed.
+    /// Call `sort()` to reverse left and right if needed.
     #[must_use]
     pub const fn right(&self) -> i32 {
         self.right
@@ -149,7 +149,7 @@ impl IRect {
     /// Returns bottom edge of `IRect`, if sorted.
     ///
     /// Call `is_empty()` to see if `IRect` may be invalid,
-    /// and sort() to reverse top and bottom if needed.
+    /// and `sort()` to reverse top and bottom if needed.
     #[must_use]
     pub const fn bottom(&self) -> i32 {
         self.bottom
@@ -158,7 +158,7 @@ impl IRect {
     /// Returns left edge of `IRect`, if sorted.
     ///
     /// Call `is_empty()` to see if `IRect` may be invalid,
-    /// and sort() to reverse left and right if needed.
+    /// and `sort()` to reverse left and right if needed.
     #[must_use]
     pub const fn x(&self) -> i32 {
         self.left
@@ -167,7 +167,7 @@ impl IRect {
     /// Returns top edge of `IRect`, if sorted.
     ///
     /// Call `is_empty()` to see if `IRect` may be invalid,
-    /// and sort() to reverse top and bottom if needed.
+    /// and `sort()` to reverse top and bottom if needed.
     #[must_use]
     pub const fn y(&self) -> i32 {
         self.top
@@ -210,7 +210,7 @@ impl IRect {
     /// Returns span on the x-axis.
     ///
     /// This does not check if `IRect` is sorted, so the result may be negative.
-    /// This is safer than calling width() since width() might overflow in its calculation.
+    /// This is safer than calling `width()` since `width()` might overflow in its calculation.
     #[must_use]
     pub const fn width64(&self) -> i64 {
         self.right as i64 - self.left as i64
@@ -219,7 +219,7 @@ impl IRect {
     /// Returns span on the y-axis.
     ///
     /// This does not check if `IRect` is sorted, so the result may be negative.
-    /// This is safer than calling height() since height() might overflow in its calculation.
+    /// This is safer than calling `height()` since `height()` might overflow in its calculation.
     #[must_use]
     pub const fn height64(&self) -> i64 {
         self.bottom as i64 - self.top as i64
@@ -228,15 +228,15 @@ impl IRect {
     /// Returns true if left is equal to or greater than right,
     /// or if top is equal to or greater than bottom.
     ///
-    /// Call sort() to reverse rectangles with negative width64() or height64().
+    /// Call `sort()` to reverse rectangles with negative `width64()` or `height64()`.
     ///
-    /// Returns true if width64() or height64() are zero or negative
+    /// Returns true if `width64()` or `height64()` are zero or negative
     #[must_use]
     pub const fn is_empty64(&self) -> bool {
         self.right <= self.left || self.bottom <= self.top
     }
 
-    /// Returns true if width() or height() are zero or negative.
+    /// Returns true if `width()` or `height()` are zero or negative.
     #[must_use]
     pub const fn is_empty(&self) -> bool {
         let w = self.width64();
@@ -328,12 +328,12 @@ impl IRect {
         }
     }
 
-    /// Returns `IRect` offset by (offset.x(), offset.y()).
+    /// Returns `IRect` offset by (`offset.x()`, `offset.y()`).
     ///
-    /// If offset.x() is negative, `IRect` returned is moved to the left.
-    /// If offset.x() is positive, `IRect` returned is moved to the right.
-    /// If offset.y() is negative, `IRect` returned is moved upward.
-    /// If offset.y() is positive, `IRect` returned is moved downward.
+    /// If `offset.x()` is negative, `IRect` returned is moved to the left.
+    /// If `offset.x()` is positive, `IRect` returned is moved to the right.
+    /// If `offset.y()` is negative, `IRect` returned is moved upward.
+    /// If `offset.y()` is positive, `IRect` returned is moved downward.
     ///
     /// # Parameters
     /// - `offset` - translation vector
@@ -424,8 +424,8 @@ impl IRect {
     /// width and height are unchanged.
     ///
     /// # Parameters
-    /// - `new_x` - stored in left, preserving width()
-    /// - `new_y` - stored in top, preserving height()
+    /// - `new_x` - stored in left, preserving `width()`
+    /// - `new_y` - stored in top, preserving `height()`
     pub fn offset_to(&mut self, new_x: i32, new_y: i32) {
         // TODO(Shaohua): Call pin_tos32()
         self.right = self.right + new_x - self.left;
@@ -475,7 +475,7 @@ impl IRect {
     /// - If `delta_bottom` is positive, shrinks `IRect` on the bottom. If negative, lengthens it on the bottom.
     ///
     /// The resulting `IRect` is not checked for validity. Thus, if the resulting `IRect` left is
-    /// greater than right, the `IRect` will be considered empty. Call sort() after this call
+    /// greater than right, the `IRect` will be considered empty. Call `sort()` after this call
     /// if that is not the desired behavior.
     ///
     /// # Parameters
@@ -555,7 +555,7 @@ impl IRect {
     /// Swaps left and right if left is greater than right;
     /// and swaps top and bottom if top is greater than bottom.
     ///
-    /// Result may be empty, and width() and height() will be zero or positive.
+    /// Result may be empty, and `width()` and `height()` will be zero or positive.
     pub fn sort(&mut self) {
         (self.left, self.right) = (self.left.min(self.right), self.left.max(self.right));
         (self.top, self.bottom) = (self.top.min(self.bottom), self.top.max(self.bottom));
@@ -564,7 +564,7 @@ impl IRect {
     /// Returns `IRect` with left and right swapped if left is greater than right;
     /// and with top and bottom swapped if top is greater than bottom.
     ///
-    /// Result may be empty; and width() and height() will be zero or positive.
+    /// Result may be empty; and `width()` and `height()` will be zero or positive.
     #[must_use]
     pub fn from_sorted(&self) -> Self {
         Self::from_ltrb(

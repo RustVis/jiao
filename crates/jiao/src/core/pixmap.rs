@@ -53,7 +53,7 @@ impl Pixmap {
     /// The memory lifetime of pixels is managed by the caller. When Pixmap goes
     /// out of scope, addr is unaffected.
     ///
-    /// Pixmap may be later modified by reset() to change its size, pixel type, or
+    /// Pixmap may be later modified by `reset()` to change its size, pixel type, or
     /// storage.
     ///
     /// # Parameters
@@ -187,7 +187,7 @@ impl Pixmap {
 
     /// Returns `IRect { 0, 0, width(), height() }`.
     ///
-    /// Returns integral rectangle from origin to width() and height()
+    /// Returns integral rectangle from origin to `width()` and `height()`
     #[must_use]
     pub const fn bounds(&self) -> IRect {
         IRect::from_wh(self.width(), self.height())
@@ -195,7 +195,7 @@ impl Pixmap {
 
     /// Returns number of pixels that fit on row.
     ///
-    /// Should be greater than or equal to width().
+    /// Should be greater than or equal to `width()`.
     #[must_use]
     #[allow(clippy::cast_possible_truncation)]
     #[allow(clippy::cast_possible_wrap)]
@@ -215,10 +215,10 @@ impl Pixmap {
 
     /// Returns minimum memory required for pixel storage.
     ///
-    /// Does not include unused memory on last row when `row_bytes_as_pixels()` exceeds width().
+    /// Does not include unused memory on last row when `row_bytes_as_pixels()` exceeds `width()`.
     ///
     /// Returns `usize::MAX` if result does not fit in usize.
-    /// Returns zero if height() or width() is 0.
+    /// Returns zero if `height()` or `width()` is 0.
     /// Returns `height() * row_bytes()` if `color_type()` is `ColorType::Unknown`.
     #[must_use]
     pub const fn compute_byte_size(&self) -> usize {
@@ -254,8 +254,8 @@ impl Pixmap {
     /// conversion to unpremultiplied color; original pixel data may have additional precision.
     ///
     /// # Parameters
-    /// - `x` - column index, zero or greater, and less than width()
-    /// - `y` - row index, zero or greater, and less than height()
+    /// - `x` - column index, zero or greater, and less than `width()`
+    /// - `y` - row index, zero or greater, and less than `height()`
     ///
     /// Returns pixel converted to unpremultiplied color
     #[must_use]
@@ -275,8 +275,8 @@ impl Pixmap {
     /// Rounding errors may occur if the underlying type has lower precision.
     ///
     /// # Parameters
-    /// - `x` - column index, zero or greater, and less than width()
-    /// - `y` - row index, zero or greater, and less than height()
+    /// - `x` - column index, zero or greater, and less than `width()`
+    /// - `y` - row index, zero or greater, and less than `height()`
     ///
     /// Returns pixel converted to unpremultiplied float color
     #[must_use]
@@ -290,8 +290,8 @@ impl Pixmap {
     /// (and more precise if the pixels store more than 8 bits per component).
     ///
     /// # Parameters
-    /// - `x` - column index, zero or greater, and less than width()
-    /// - `y` - row index, zero or greater, and less than height()
+    /// - `x` - column index, zero or greater, and less than `width()`
+    /// - `y` - row index, zero or greater, and less than `height()`
     ///
     /// Returns alpha converted to normalized float
     #[must_use]
@@ -309,8 +309,8 @@ impl Pixmap {
     /// one of: addr8, addr16, addr32, addr64, or `addr_f16()`.
     ///
     /// # Parameters
-    /// - `x` - column index, zero or greater, and less than width()
-    /// - `y` - row index, zero or greater, and less than height()
+    /// - `x` - column index, zero or greater, and less than `width()`
+    /// - `y` - row index, zero or greater, and less than `height()`
     #[must_use]
     pub fn pixels_at(&self, x: i32, y: i32) -> Option<&[u8]> {
         let offset = self.info.compute_offset(x, y, self.row_bytes);
@@ -419,8 +419,8 @@ impl Pixmap {
     /// Return None if `ColorType` is not Alpha8 or Gray8.
     ///
     /// # Parameters
-    /// - `x` - column index, zero or greater, and less than width()
-    /// - `y` - row index, zero or greater, and less than height()
+    /// - `x` - column index, zero or greater, and less than `width()`
+    /// - `y` - row index, zero or greater, and less than `height()`
     ///
     /// Returns readable unsigned 8-bit pointer to pixel at (x, y)
     #[must_use]
@@ -446,8 +446,8 @@ impl Pixmap {
     /// Returns None if `ColorType` is not Rgb565 or Argb4444.
     ///
     /// # Parameters
-    /// - `x` - column index, zero or greater, and less than width()
-    /// - `y` - row index, zero or greater, and less than height()
+    /// - `x` - column index, zero or greater, and less than `width()`
+    /// - `y` - row index, zero or greater, and less than `height()`
     ///
     /// Returns readable unsigned 16-bit pointer to pixel at (x, y)
     #[must_use]
@@ -471,8 +471,8 @@ impl Pixmap {
     /// Return None if `ColorType` is not Rgba8888 or Bgra8888.
     ///
     /// # Parameters
-    /// - `x` - column index, zero or greater, and less than width()
-    /// - `y` - row index, zero or greater, and less than height()
+    /// - `x` - column index, zero or greater, and less than `width()`
+    /// - `y` - row index, zero or greater, and less than `height()`
     ///
     /// Returns readable unsigned 32-bit pointer to pixel at (x, y)
     #[must_use]
@@ -495,8 +495,8 @@ impl Pixmap {
     /// Returns None if `ColorType` is not `RgbaF16`.
     ///
     /// # Parameters
-    /// - `x` - column index, zero or greater, and less than width()
-    /// - `y` - row index, zero or greater, and less than height()
+    /// - `x` - column index, zero or greater, and less than `width()`
+    /// - `y` - row index, zero or greater, and less than `height()`
     ///
     /// Returns readable unsigned 64-bit pointer to pixel at (x, y)
     #[must_use]
@@ -522,8 +522,8 @@ impl Pixmap {
     /// Four words correspond to one pixel.
     ///
     /// # Parameters
-    /// - `x` - column index, zero or greater, and less than width()
-    /// - `y` - row index, zero or greater, and less than height()
+    /// - `x` - column index, zero or greater, and less than `width()`
+    /// - `y` - row index, zero or greater, and less than `height()`
     ///
     /// Returns readable unsigned 16-bit pointer to pixel component at (x, y)
     #[must_use]
@@ -551,8 +551,8 @@ impl Pixmap {
     /// Returns None if `ColorType` is Unknown.
     ///
     /// # Parameters
-    /// - `x` - column index, zero or greater, and less than width()
-    /// - `y` - row index, zero or greater, and less than height()
+    /// - `x` - column index, zero or greater, and less than `width()`
+    /// - `y` - row index, zero or greater, and less than `height()`
     ///
     /// Returns writable generic pointer to pixel.
     #[allow(clippy::cast_sign_loss)]
@@ -576,8 +576,8 @@ impl Pixmap {
     /// One byte corresponds to one pixel.
     ///
     /// # Parameters
-    /// - `x` - column index, zero or greater, and less than width()
-    /// - `y` - row index, zero or greater, and less than height()
+    /// - `x` - column index, zero or greater, and less than `width()`
+    /// - `y` - row index, zero or greater, and less than `height()`
     ///
     /// Returns writable unsigned 8-bit pointer to pixels.
     #[allow(clippy::cast_sign_loss)]
@@ -603,8 +603,8 @@ impl Pixmap {
     /// One word corresponds to one pixel.
     ///
     /// # Parameters
-    /// - `x` - column index, zero or greater, and less than width()
-    /// - `y` - row index, zero or greater, and less than height()
+    /// - `x` - column index, zero or greater, and less than `width()`
+    /// - `y` - row index, zero or greater, and less than `height()`
     ///
     /// Returns writable unsigned 16-bit pointer to pixel.
     #[allow(clippy::cast_sign_loss)]
@@ -630,8 +630,8 @@ impl Pixmap {
     /// One word corresponds to one pixel.
     ///
     /// # Parameters
-    /// - `x` - column index, zero or greater, and less than width()
-    /// - `y` - row index, zero or greater, and less than height()
+    /// - `x` - column index, zero or greater, and less than `width()`
+    /// - `y` - row index, zero or greater, and less than `height()`
     ///
     /// Returns writable unsigned 32-bit pointer to pixel.
     #[allow(clippy::cast_sign_loss)]
@@ -657,8 +657,8 @@ impl Pixmap {
     /// One word corresponds to one pixel.
     ///
     /// # Parameters
-    /// - `x` - column index, zero or greater, and less than width()
-    /// - `y` - row index, zero or greater, and less than height()
+    /// - `x` - column index, zero or greater, and less than `width()`
+    /// - `y` - row index, zero or greater, and less than `height()`
     ///
     /// Returns writable unsigned 64-bit pointer to pixel.
     #[allow(clippy::cast_sign_loss)]
@@ -685,8 +685,8 @@ impl Pixmap {
     /// Four words correspond to one pixel.
     ///
     /// # Parameters
-    /// - `x` - column index, zero or greater, and less than width()
-    /// - `y` - row index, zero or greater, and less than height()
+    /// - `x` - column index, zero or greater, and less than `width()`
+    /// - `y` - row index, zero or greater, and less than `height()`
     ///
     /// Returns writable unsigned 16-bit pointer to first component of pixel.
     #[allow(clippy::cast_sign_loss)]
@@ -705,7 +705,7 @@ impl Pixmap {
 
     /// Copies a Rect of pixels to `dst_pixels`.
     ///
-    /// Copy starts at (0, 0), and does not exceed Pixmap (width(), height()).
+    /// Copy starts at (0, 0), and does not exceed Pixmap (`width()`, `height()`).
     ///
     /// `dst_info` specifies width, height, `ColorType`, `AlphaType`, and `ColorSpace` of destination.
     /// `dst_row_bytes` specifics the gap from one destination row to the next.
@@ -720,7 +720,7 @@ impl Pixmap {
     /// - If Pixmap `color_space()` is None, `dst_info.color_space()` must match.
     ///
     /// Returns false if pixel conversion is not possible.
-    /// Returns false if Pixmap width() or height() is zero or negative.
+    /// Returns false if Pixmap `width()` or `height()` is zero or negative.
     ///
     /// # Parameters
     /// - `dst_info` - destination width, height, `ColorType`, `AlphaType`, `ColorSpace`
@@ -739,7 +739,7 @@ impl Pixmap {
 
     /// Copies a Rect of pixels to `dst_pixels`.
     ///
-    /// Copy starts at `(src_x, src_y)`, and does not exceed Pixmap (width(), height()).
+    /// Copy starts at `(src_x, src_y)`, and does not exceed Pixmap (`width()`, `height()`).
     ///
     /// `dst_info` specifies width, height, `ColorType`, `AlphaType`, and `ColorSpace` of destination.
     ///
@@ -757,15 +757,15 @@ impl Pixmap {
     /// Returns false if pixel conversion is not possible.
     ///
     /// `src_x` and `src_y` may be negative to copy only top or left of source.
-    /// Returns false if Pixmap width() or height() is zero or negative.
+    /// Returns false if Pixmap `width()` or `height()` is zero or negative.
     /// Returns false if: `abs(src_x) >= Pixmap width()`, or if `abs(src_y) >= Pixmap height()`.
     ///
     /// # Parameters
     /// - `dst_info` - destination width, height, `ColorType`, `AlphaType`, `ColorSpace`
     /// - `dst_pixels` - destination pixel storage
     /// - `dst_row_bytes` - destination row length
-    /// - `src_x` - column index whose absolute value is less than width()
-    /// - `src_y` - row index whose absolute value is less than height()
+    /// - `src_x` - column index whose absolute value is less than `width()`
+    /// - `src_y` - row index whose absolute value is less than `height()`
     ///
     /// Returns true if pixels are copied to `dst_pixels`.
     pub fn read_pixels_with_info_at(
@@ -781,7 +781,7 @@ impl Pixmap {
 
     /// Copies a Rect of pixels to dst.
     ///
-    /// Copy starts at `(src_x, src_y)`, and does not exceed Pixmap (width(), height()).
+    /// Copy starts at `(src_x, src_y)`, and does not exceed Pixmap (`width()`, `height()`).
     /// dst specifies width, height, `ColorType`, `AlphaType`, and `ColorSpace` of destination.
     ///
     /// Returns true if pixels are copied.
@@ -797,13 +797,13 @@ impl Pixmap {
     /// Returns false if pixel conversion is not possible.
     ///
     /// `src_x` and `src_y` may be negative to copy only top or left of source.
-    /// Returns false Pixmap width() or height() is zero or negative.
+    /// Returns false Pixmap `width()` or `height()` is zero or negative.
     /// Returns false if: `abs(srcX) >= Pixmap width()`, or if `abs(srcY) >= Pixmap height()`.
     ///
     /// # Parameters
     /// - `dst` - `ImageInfo` and pixel address to write to
-    /// - `src_x` - column index whose absolute value is less than width()
-    /// - `src_y` - row index whose absolute value is less than height()
+    /// - `src_x` - column index whose absolute value is less than `width()`
+    /// - `src_y` - row index whose absolute value is less than `height()`
     ///
     /// Returns true if pixels are copied to dst.
     pub fn read_pixels_at(&self, dst: &mut Self, src_x: i32, src_y: i32) -> bool {
@@ -812,7 +812,7 @@ impl Pixmap {
         self.read_pixels_with_info_at(&info, dst.addr_mut(), row_bytes, src_x, src_y)
     }
 
-    /// Copies pixels inside bounds() to dst. dst specifies width, height, `ColorType`,
+    /// Copies pixels inside `bounds()` to dst. dst specifies width, height, `ColorType`,
     /// `AlphaType`, and `ColorSpace` of destination.
     ///
     /// Returns true if pixels are copied.
@@ -827,7 +827,7 @@ impl Pixmap {
     ///
     /// Returns false if pixel conversion is not possible.
     ///
-    /// Returns false if Pixmap width() or height() is zero or negative.
+    /// Returns false if Pixmap `width()` or `height()` is zero or negative.
     ///
     /// # Parameters
     /// - `dst` - `ImageInfo` and pixel address to write to
@@ -839,7 +839,7 @@ impl Pixmap {
         self.read_pixels_with_info_at(&info, dst.addr_mut(), row_bytes, 0, 0)
     }
 
-    /// Copies Bitmap to dst, scaling pixels to fit dst.width() and dst.height(), and
+    /// Copies Bitmap to dst, scaling pixels to fit `dst.width()` and `dst.height()`, and
     /// converting pixels to match `dst.color_type()` and `dst.alpha_type()`.
     ///
     /// Returns true if pixels are copied.
@@ -853,7 +853,7 @@ impl Pixmap {
     /// - If Pixmap `color_space()` is nullptr, dst `ColorSpace` must match.
     ///
     /// Returns false if pixel conversion is not possible.
-    /// Returns false if Bitmap width() or height() is zero or negative.
+    /// Returns false if Bitmap `width()` or `height()` is zero or negative.
     ///
     /// #Parameters
     /// - `dst` - `ImageInfo` and pixel address to write to
@@ -864,7 +864,7 @@ impl Pixmap {
 
     /// Writes color to pixels bounded by subset; returns true on success.
     ///
-    /// Returns false if `color_type()` is Unknown, or if subset does not intersect bounds().
+    /// Returns false if `color_type()` is Unknown, or if subset does not intersect `bounds()`.
     ///
     /// # Parameters
     /// - `color` - `sRGB` unpremultiplied color to write
@@ -875,9 +875,9 @@ impl Pixmap {
         unimplemented!()
     }
 
-    /// Writes color to pixels inside bounds(); returns true on success.
+    /// Writes color to pixels inside `bounds()`; returns true on success.
     ///
-    /// Returns false if `color_type()` is Unknown, or if bounds() is empty.
+    /// Returns false if `color_type()` is Unknown, or if `bounds()` is empty.
     ///
     /// # Parameters
     /// - `color` - `sRGB` unpremultiplied color to write
@@ -889,9 +889,9 @@ impl Pixmap {
 
     /// Writes color to pixels bounded by subset; returns true on success.
     ///
-    /// if subset is nullptr, writes colors pixels inside bounds().
+    /// if subset is nullptr, writes colors pixels inside `bounds()`.
     /// Returns false if `color_type()` is Unknown, if subset is not nullptr and
-    /// does not intersect bounds(), or if subset is nullptr and bounds() is empty.
+    /// does not intersect `bounds()`, or if subset is nullptr and `bounds()` is empty.
     ///
     /// # Parameters
     /// - `color` - unpremultiplied color to write

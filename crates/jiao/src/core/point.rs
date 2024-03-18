@@ -218,7 +218,7 @@ impl Point {
         unimplemented!()
     }
 
-    /// Sets vector to (x, y) scaled so length() returns one, and so that
+    /// Sets vector to (x, y) scaled so `length()` returns one, and so that
     /// (x, y) is proportional to (x, y).
     ///
     /// If (x, y) length is nearly zero, sets vector to (0, 0) and returns false;
@@ -302,7 +302,7 @@ impl Point {
     /// zero; otherwise, returns length of vec before vec is scaled.
     ///
     /// Returned prior length may be INFINITY if it can not be represented by float.
-    /// Note that normalize() is faster if prior length is not required.
+    /// Note that `normalize()` is faster if prior length is not required.
     pub fn normalize_todo(&mut self) -> f32 {
         unimplemented!()
     }

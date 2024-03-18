@@ -5,7 +5,7 @@
 /// Data holds an immutable data buffer.
 ///
 /// Not only is the data immutable, but the actual ptr that is returned
-/// (by data() or bytes()) is guaranteed to always be the same for the life
+/// (by `data()` or `bytes()`) is guaranteed to always be the same for the life
 /// of this instance.
 #[derive(Debug, Default, Clone, Eq, PartialEq)]
 pub struct Data {
@@ -30,7 +30,7 @@ impl Data {
         &self.data
     }
 
-    /// Like data(), returns a read-only ptr into the data
+    /// Like `data()`, returns a read-only ptr into the data
     #[must_use]
     pub fn bytes(&self) -> &[u8] {
         &self.data
@@ -73,7 +73,7 @@ impl Data {
     /// Create a new data with zero-initialized contents.
     ///
     /// The caller should call `writable_data()` to write into the buffer,
-    /// but this must be done before another ref() is made.
+    /// but this must be done before another `ref()` is made.
     #[must_use]
     pub fn with_zero_initialized(len: usize) -> Self {
         Self { data: vec![0; len] }
@@ -81,7 +81,7 @@ impl Data {
 
     /// Create a new dataref by copying the specified string.
     ///
-    /// The returned Data will have size() equal to length of string.
+    /// The returned Data will have `size()` equal to length of string.
     #[must_use]
     pub fn from_string(s: &str) -> Self {
         Self::from(s.as_bytes())
@@ -105,7 +105,7 @@ impl Data {
     }
 
     /// Returns a new empty dataref (or a reference to a shared empty dataref).
-    /// New or shared, the caller must see that unref() is eventually called.
+    /// New or shared, the caller must see that `unref()` is eventually called.
     #[must_use]
     pub const fn new() -> Self {
         Self { data: Vec::new() }

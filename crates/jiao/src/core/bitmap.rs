@@ -152,7 +152,7 @@ impl Bitmap {
 
     /// Returns number of pixels that fit on row.
     ///
-    /// Should be greater than or equal to width().
+    /// Should be greater than or equal to `width()`.
     ///
     /// Returns maximum pixels per row.
     #[must_use]
@@ -170,10 +170,10 @@ impl Bitmap {
         self.pixmap.shift_per_pixel()
     }
 
-    /// Returns true if either width() or height() are zero.
+    /// Returns true if either `width()` or `height()` are zero.
     ///
-    /// Does not check if `PixelRef` is nullptr; call `draws_nothing()` to check width(),
-    /// height(), and `PixelRef`.
+    /// Does not check if `PixelRef` is nullptr; call `draws_nothing()` to check `width()`,
+    /// `height()`, and `PixelRef`.
     ///
     /// Returns true if dimensions do not enclose area.
     #[must_use]
@@ -183,8 +183,8 @@ impl Bitmap {
 
     /// Returns true if `PixelRef` is nullptr.
     ///
-    /// Does not check if width() or height() are zero; call `draws_nothing()` to check
-    /// width(), height(), and `PixelRef`.
+    /// Does not check if `width()` or `height()` are zero; call `draws_nothing()` to check
+    /// `width()`, `height()`, and `PixelRef`.
     ///
     /// Returns true if no `PixelRef` is associated
     #[must_use]
@@ -192,7 +192,7 @@ impl Bitmap {
         self.pixel_ref.is_none()
     }
 
-    /// Returns true if width() or height() are zero, or if `PixelRef` is nullptr.
+    /// Returns true if `width()` or `height()` are zero, or if `PixelRef` is nullptr.
     ///
     /// If true, Bitmap has no effect when drawn or drawn into.
     ///
@@ -251,9 +251,9 @@ impl Bitmap {
 
     /// Returns minimum memory required for pixel storage.
     ///
-    /// - Does not include unused memory on last row when `row_bytes_as_pixels()` exceeds width().
+    /// - Does not include unused memory on last row when `row_bytes_as_pixels()` exceeds `width()`.
     /// - Returns `usize::MAX` if result does not fit in usize.
-    /// - Returns zero if height() or width() is 0.
+    /// - Returns zero if `height()` or `width()` is 0.
     /// - Returns `height() times row_bytes()` if `color_type()` is Unknown.
     ///
     /// Returns size in bytes of image buffer.

@@ -29,7 +29,7 @@ impl IdChangeListener {
 
     /// Mark the listener is no longer needed.
     ///
-    /// It should be removed and changed() should not be called.
+    /// It should be removed and `changed()` should not be called.
     pub fn mark_should_deregister(&mut self) {
         self.should_deregister.store(true, Ordering::Relaxed);
     }
@@ -76,12 +76,12 @@ impl IdChangeListenerList {
         self.listeners.is_empty()
     }
 
-    /// Calls changed() on all listeners that haven't been deregistered and resets the list.
+    /// Calls `changed()` on all listeners that haven't been deregistered and resets the list.
     pub fn changed() {
         unimplemented!()
     }
 
-    /// Resets without calling changed() on the listeners.
+    /// Resets without calling `changed()` on the listeners.
     pub fn reset() {
         unimplemented!()
     }
