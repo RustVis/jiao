@@ -6,9 +6,10 @@ use crate::core::matrix::Matrix;
 
 /// These values match the orientation [exif2](www.exif.org/Exif2-2.PDF).
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 pub enum EncodedOrigin {
     /// Default
+    #[default]
     TopLeft = 1,
 
     /// Reflected across y-axis
@@ -33,17 +34,12 @@ pub enum EncodedOrigin {
     LeftBottom = 8,
 }
 
-impl Default for EncodedOrigin {
-    fn default() -> Self {
-        Self::TopLeft
-    }
-}
-
 impl EncodedOrigin {
     /// Given an encoded origin and the width and height of the source data, returns a matrix
     /// that transforms the source rectangle with upper left corner at [0, 0] and origin to a correctly
     /// oriented destination rectangle of [0, 0, w, h].
     #[must_use]
+    #[inline]
     pub const fn to_matrix(self, w: i32, h: i32) -> Matrix {
         match self {
             Self::TopLeft => Matrix::identity(),
@@ -60,6 +56,7 @@ impl EncodedOrigin {
     /// Return true if the encoded origin includes a 90 degree rotation, in which case the width
     /// and height of the source data are swapped relative to a correctly oriented destination.
     #[must_use]
+    #[inline]
     pub fn swaps_width_height(self) -> bool {
         self >= Self::LeftTop
     }

@@ -3,3 +3,4 @@
 // in the LICENSE file.
 
 pub mod encoded_origin;
+pub mod exif;
