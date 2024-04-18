@@ -1,11 +1,33 @@
-
-[workspace]
-members = [
-  "jiao",
+[package]
+name = "jiao"
+version = "0.4.1"
+authors = ["Xu Shaohua <shaohua@biofan.org>"]
+description = "Cross platform 2D graphics library"
+homepage = "https://github.com/RustVis/jiao"
+repository = "https://github.com/RustVis/jiao"
+documentation = "https://docs.rs/jiao"
+readme = "README.md"
+categories = [
+  "computer-vision",
+  "graphics",
+  "rendering",
+  "visualization",
 ]
-
-exclude = [
-  "tools/*",
+keywords = [
+  "2d",
+  "canvas",
+  "painting",
+  "rendering",
+  "svg",
 ]
+edition = "2021"
+license = "LGPL-3.0"
+publish = true
+rust-version = "1.61.0"
 
-resolver = "2"
+[dependencies]
+bit-set = "0.5.3"
+bitflags = "2.5.0"
+log = "0.4.21"
+serde = { version = "1.0.197", features = ["derive"] }
+
