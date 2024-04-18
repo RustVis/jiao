@@ -11,7 +11,7 @@ pub struct Xmp {}
 impl Xmp {
     /// Create from XMP data.
     #[must_use]
-    pub fn from_data(_xmp_data: Data) -> Self {
+    pub fn from_data(_xmp_data: &Data) -> Self {
         todo!()
     }
 
@@ -19,7 +19,7 @@ impl Xmp {
     ///
     /// see XMP Specification Part 3: Storage in files, Section 1.1.3.1: Extended XMP in JPEG
     #[must_use]
-    pub fn from_extended(_xmp_standard: Data, _xmp_extended: Data) -> Self {
+    pub fn from_extended(_xmp_standard: &Data, _xmp_extended: &Data) -> Self {
         todo!()
     }
 

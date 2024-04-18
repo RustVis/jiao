@@ -27,7 +27,7 @@ impl Capabilities {
 
     #[must_use]
     #[inline]
-    pub fn sksl_version(&self) -> Version {
+    pub const fn sksl_version(&self) -> Version {
         self.sksl_version
     }
 

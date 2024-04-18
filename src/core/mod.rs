@@ -21,6 +21,7 @@ pub mod cubic_map;
 pub mod data;
 pub mod flattenable;
 pub mod font_arguments;
+pub mod sl_type_shared;
 //pub mod font_manager;
 pub mod advanced_typeface_metrics;
 pub mod font_metrics;
