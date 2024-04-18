@@ -33,6 +33,7 @@ pub mod irect;
 pub mod m44;
 pub mod mask_filter;
 pub mod matrix;
+pub mod milestone;
 pub mod paint;
 pub mod paint_types;
 pub mod path;
