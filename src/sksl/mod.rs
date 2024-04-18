@@ -3,6 +3,7 @@
 // in the LICENSE file.
 
 //pub mod context;
+//pub mod builtin_types;
 pub mod error_reporter;
 pub mod glsl;
 pub mod ir;
