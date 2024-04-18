@@ -4,3 +4,5 @@
 
 pub mod encoded_origin;
 pub mod exif;
+pub mod gainmap_info;
+pub mod xmp;
