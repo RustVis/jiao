@@ -3,7 +3,9 @@
 // in the LICENSE file.
 
 //pub mod context;
+pub mod error_reporter;
 pub mod glsl;
 pub mod ir;
+pub mod position;
 pub mod util;
 pub mod version;

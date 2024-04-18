@@ -2,6 +2,12 @@
 // Use of this source is governed by Lesser General Public License that can be found
 // in the LICENSE file.
 
+#![allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    clippy::cast_sign_loss
+)]
+
 use std::cmp::{self, Ordering};
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
@@ -10,7 +16,7 @@ pub struct Position {
     length: u8,
 }
 
-pub const MAX_OFFSET: i32 = 0x7FFFFF;
+pub const MAX_OFFSET: i32 = 0x007F_FFFF;
 
 impl Default for Position {
     fn default() -> Self {
@@ -53,6 +59,7 @@ impl Position {
         self.start_offset != -1
     }
 
+    #[must_use]
     pub fn line(&self, source: &str) -> i32 {
         debug_assert!(self.valid());
         if self.start_offset == -1 {
@@ -72,20 +79,23 @@ impl Position {
                 line += 1;
             }
         }
-        return line;
+        line
     }
 
+    #[must_use]
     pub const fn start_offset(self) -> i32 {
         debug_assert!(self.valid());
         self.start_offset
     }
 
+    #[must_use]
     pub const fn end_offset(self) -> i32 {
         debug_assert!(self.valid());
         self.start_offset + self.length as i32
     }
 
     /// Returns the position from this through, and including the entirety of, end.
+    #[must_use]
     pub fn range_through(self, end: Self) -> Self {
         if self.start_offset == -1 || end.start_offset == -1 {
             return self;
