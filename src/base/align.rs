@@ -72,6 +72,7 @@ align_impl! { isize i32 i64 usize u32 u64 }
 
 /// align up to a power of 2
 #[must_use]
+#[inline]
 pub fn align_to(x: usize, alignment: usize) -> usize {
     // The same as alignment && is_pow2(value), w/o a dependency cycle.
     debug_assert!(alignment != 0 && (alignment & (alignment - 1)) == 0);
