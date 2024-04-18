@@ -32,6 +32,7 @@ pub mod gpu;
 pub mod image;
 pub mod pdf;
 pub mod shaders;
+pub mod sksl;
 pub mod svg;
 pub mod text;
 pub mod utils;
