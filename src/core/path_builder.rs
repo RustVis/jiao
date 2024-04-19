@@ -11,7 +11,7 @@ use crate::core::path_types::{PathFillType, PathVerb};
 use crate::core::point::Point;
 use crate::core::rect::Rect;
 use crate::core::rrect::RRect;
-use crate::core::scalar::{Scalar, ROOT_2_OVER_2};
+use crate::core::scalar::{Scalar, SCALAR_ROOT_2_OVER_2};
 
 #[derive(Debug, Clone)]
 pub struct PathBuilder {
@@ -555,7 +555,7 @@ impl PathBuilder {
 
         self.move_to_point(oval_iter.current());
         for _i in 0..4 {
-            self.conic_to_point(rect_iter.next(), oval_iter.next(), ROOT_2_OVER_2);
+            self.conic_to_point(rect_iter.next(), oval_iter.next(), SCALAR_ROOT_2_OVER_2);
         }
         self.close();
         if prev_isa == IsA::JustMoves {

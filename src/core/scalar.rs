@@ -7,9 +7,9 @@
 
 pub type Scalar = f32;
 
-pub const NEARLY_ZERO: Scalar = 1.0 / (1 << 12) as Scalar;
-pub const SIN_COS_NEARLY_ZERO: Scalar = 1.0 / (1 << 16) as Scalar;
-pub const ROOT_2_OVER_2: f32 = std::f32::consts::FRAC_1_SQRT_2;
+pub const SCALAR_NEARLY_ZERO: Scalar = 1.0 / (1 << 12) as Scalar;
+pub const SCALAR_SIN_COS_NEARLY_ZERO: Scalar = 1.0 / (1 << 16) as Scalar;
+pub const SCALAR_ROOT_2_OVER_2: f32 = std::f32::consts::FRAC_1_SQRT_2;
 
 pub trait ScalarExt {
     #[must_use]
@@ -140,7 +140,7 @@ impl ScalarExt for Scalar {
     }
 
     fn nearly_zero(self) -> bool {
-        self.abs() <= NEARLY_ZERO
+        self.abs() <= SCALAR_NEARLY_ZERO
     }
 
     fn nearly_zero_tolerance(self, tolerance: Scalar) -> bool {
@@ -152,7 +152,7 @@ impl ScalarExt for Scalar {
     }
 
     fn nearly_equal(self, other: Self) -> bool {
-        (self - other).abs() <= NEARLY_ZERO
+        (self - other).abs() <= SCALAR_NEARLY_ZERO
     }
 
     fn nearly_equal_tolerance(self, other: Self, tolerance: Scalar) -> bool {
@@ -162,7 +162,7 @@ impl ScalarExt for Scalar {
 
     fn sin_snap_to_zero(self) -> Self {
         let v = self.sin();
-        if v.nearly_zero_tolerance(SIN_COS_NEARLY_ZERO) {
+        if v.nearly_zero_tolerance(SCALAR_SIN_COS_NEARLY_ZERO) {
             0.0
         } else {
             v
@@ -171,7 +171,7 @@ impl ScalarExt for Scalar {
 
     fn cos_snap_to_zero(self) -> Self {
         let v = self.cos();
-        if v.nearly_zero_tolerance(SIN_COS_NEARLY_ZERO) {
+        if v.nearly_zero_tolerance(SCALAR_SIN_COS_NEARLY_ZERO) {
             0.0
         } else {
             v
