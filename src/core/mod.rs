@@ -70,4 +70,4 @@ pub(crate) mod line_clipper;
 pub(crate) mod mask;
 pub(crate) mod mipmap;
 pub(crate) mod path_builder_priv;
-//pub(crate) mod point_priv;
+pub(crate) mod point_priv;

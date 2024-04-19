@@ -425,7 +425,7 @@ impl Point {
     // If we underflow, we return false. If we overflow, we compute again using
     // doubles, which is much slower (3x in a desktop test) but will not overflow.
     #[allow(clippy::cast_possible_truncation)]
-    fn set_point_length(
+    pub(crate) fn set_point_length(
         &mut self,
         mut x: f32,
         mut y: f32,
