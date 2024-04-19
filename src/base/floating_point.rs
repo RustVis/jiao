@@ -116,10 +116,14 @@ pub fn f64_nearly_zero(_a: f64) -> bool {
 /// - infinity and any other number - returns false.
 ///
 /// ulp is an initialism for Units in the Last Place.
+#[must_use]
+#[inline]
 pub fn doubles_nearly_equal_ulps(_a: f64, _b: f64, _max_ulps_diff: u8) -> bool {
     unimplemented!()
 }
 
+#[must_use]
+#[inline]
 pub fn doubles_nearly_equal(a: f64, b: f64) -> bool {
     doubles_nearly_equal_ulps(a, b, 16)
 }
