@@ -2,9 +2,6 @@
 // Use of this source is governed by Lesser General Public License that can be found
 // in the LICENSE file.
 
-#![allow(clippy::module_name_repetitions)]
-#![allow(dead_code)]
-
 use bitflags::bitflags;
 use std::marker::PhantomData;
 use std::ops::{Index, IndexMut, Mul};
@@ -302,7 +299,7 @@ bitflags! {
 /// `AlphaType` determines if the `Rgba4F`'s R, G, and B components are premultiplied by alpha or not.
 ///
 /// Crate public API always uses unpremultiplied colors, which can be stored as
-/// `Rgba4F<Unpremul>`. For convenience, this type can also be referred to as `Color4F`.
+/// `Rgba4F<Unpremul>`. For convenience, this type can also be referred to as `Color4f`.
 #[derive(Debug, Default, Clone, PartialEq)]
 pub struct Rgba4F<AlphaType> {
     red: f32,
@@ -422,19 +419,19 @@ impl Rgba4F<AlphaType> {
 }
 
 // TODO(Shaohua): Replace with partial specialization of Rgba4F<AlphaType>
-/// `Color4F` represents RGBA color value, holding four floating point components.
+/// `Color4f` represents RGBA color value, holding four floating point components.
 ///
 /// Color components are always in a known order, and are unpremultiplied.
 #[derive(Debug, Default, Clone, PartialEq)]
-pub struct Color4F {
+pub struct Color4f {
     red: f32,
     green: f32,
     blue: f32,
     alpha: f32,
 }
 
-/// Returns `Color4F` multiplied by scale.
-impl Mul<f32> for Color4F {
+/// Returns `Color4f` multiplied by scale.
+impl Mul<f32> for Color4f {
     type Output = Self;
 
     fn mul(self, scale: f32) -> Self {
@@ -447,8 +444,8 @@ impl Mul<f32> for Color4F {
     }
 }
 
-/// Returns `Color4F` multiplied component-wise by scale.
-impl Mul<&Self> for Color4F {
+/// Returns `Color4f` multiplied component-wise by scale.
+impl Mul<&Self> for Color4f {
     type Output = Self;
 
     fn mul(self, other: &Self) -> Self {
@@ -464,7 +461,7 @@ impl Mul<&Self> for Color4F {
 /// Returns one component.
 ///
 /// Index should not be larger than 3.
-impl Index<usize> for Color4F {
+impl Index<usize> for Color4f {
     type Output = f32;
 
     fn index(&self, index: usize) -> &Self::Output {
@@ -479,7 +476,7 @@ impl Index<usize> for Color4F {
     }
 }
 
-impl IndexMut<usize> for Color4F {
+impl IndexMut<usize> for Color4f {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         debug_assert!(index < 4);
         match index {
@@ -492,25 +489,25 @@ impl IndexMut<usize> for Color4F {
     }
 }
 
-impl From<Color> for Color4F {
+impl From<Color> for Color4f {
     fn from(_color: Color) -> Self {
         unimplemented!()
     }
 }
 
-impl From<&Color4F> for Color {
-    fn from(_color: &Color4F) -> Self {
+impl From<&Color4f> for Color {
+    fn from(_color: &Color4f) -> Self {
         unimplemented!()
     }
 }
 
-impl From<Color4F> for Color {
-    fn from(_color: Color4F) -> Self {
+impl From<Color4f> for Color {
+    fn from(_color: Color4f) -> Self {
         unimplemented!()
     }
 }
 
-impl Color4F {
+impl Color4f {
     #[must_use]
     pub const fn from_rgba(red: f32, green: f32, blue: f32, alpha: f32) -> Self {
         Self {
@@ -546,7 +543,7 @@ impl Color4F {
         self.alpha = alpha;
     }
 
-    /// Returns a pointer to components of `Color4F`, for array access.
+    /// Returns a pointer to components of `Color4f`, for array access.
     ///
     /// Orders in array is [red, green, blue, alpha]
     #[must_use]
@@ -554,7 +551,7 @@ impl Color4F {
         [self.red, self.green, self.blue, self.alpha]
     }
 
-    /// Returns true if `Color4F` is an opaque color.
+    /// Returns true if `Color4f` is an opaque color.
     #[must_use]
     pub fn is_opaque(&self) -> bool {
         debug_assert!((0.0..=1.0).contains(&self.alpha));
@@ -569,7 +566,7 @@ impl Color4F {
         range.contains(&self.red) && range.contains(&self.green) && range.contains(&self.blue)
     }
 
-    /// Returns a copy of the `Color4F` but with alpha component set to 1.0f.
+    /// Returns a copy of the `Color4f` but with alpha component set to 1.0f.
     #[must_use]
     pub const fn new_opaque(&self) -> Self {
         Self {
@@ -592,18 +589,18 @@ impl Color4F {
 }
 
 pub mod colors {
-    use super::Color4F;
+    use super::Color4f;
 
-    pub const TRANSPARENT: Color4F = Color4F::from_rgba(0.0, 0.0, 0.0, 0.0);
-    pub const BLACK: Color4F = Color4F::from_rgba(0.0, 0.0, 0.0, 1.0);
-    pub const DARK_GRAY: Color4F = Color4F::from_rgba(0.25, 0.25, 0.25, 1.0);
-    pub const GRAY: Color4F = Color4F::from_rgba(0.50, 0.50, 0.50, 1.0);
-    pub const LIGHT_GRAY: Color4F = Color4F::from_rgba(0.75, 0.75, 0.75, 1.0);
-    pub const WHITE: Color4F = Color4F::from_rgba(1.0, 1.0, 1.0, 1.0);
-    pub const RED: Color4F = Color4F::from_rgba(1.0, 0.0, 0.0, 1.0);
-    pub const GREEN: Color4F = Color4F::from_rgba(0.0, 1.0, 0.0, 1.0);
-    pub const BLUE: Color4F = Color4F::from_rgba(0.0, 0.0, 1.0, 1.0);
-    pub const YELLOW: Color4F = Color4F::from_rgba(1.0, 1.0, 0.0, 1.0);
-    pub const CYAN: Color4F = Color4F::from_rgba(0.0, 1.0, 1.0, 1.0);
-    pub const MAGENTA: Color4F = Color4F::from_rgba(1.0, 0.0, 1.0, 1.0);
+    pub const TRANSPARENT: Color4f = Color4f::from_rgba(0.0, 0.0, 0.0, 0.0);
+    pub const BLACK: Color4f = Color4f::from_rgba(0.0, 0.0, 0.0, 1.0);
+    pub const DARK_GRAY: Color4f = Color4f::from_rgba(0.25, 0.25, 0.25, 1.0);
+    pub const GRAY: Color4f = Color4f::from_rgba(0.50, 0.50, 0.50, 1.0);
+    pub const LIGHT_GRAY: Color4f = Color4f::from_rgba(0.75, 0.75, 0.75, 1.0);
+    pub const WHITE: Color4f = Color4f::from_rgba(1.0, 1.0, 1.0, 1.0);
+    pub const RED: Color4f = Color4f::from_rgba(1.0, 0.0, 0.0, 1.0);
+    pub const GREEN: Color4f = Color4f::from_rgba(0.0, 1.0, 0.0, 1.0);
+    pub const BLUE: Color4f = Color4f::from_rgba(0.0, 0.0, 1.0, 1.0);
+    pub const YELLOW: Color4f = Color4f::from_rgba(1.0, 1.0, 0.0, 1.0);
+    pub const CYAN: Color4f = Color4f::from_rgba(0.0, 1.0, 1.0, 1.0);
+    pub const MAGENTA: Color4f = Color4f::from_rgba(1.0, 0.0, 1.0, 1.0);
 }

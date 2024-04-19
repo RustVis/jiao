@@ -105,7 +105,7 @@ impl Point3 {
 }
 
 pub type Vector3 = Point3;
-pub type Color3F = Point3;
+pub type Color3f = Point3;
 
 /// Return a new point whose X, Y and Z coordinates are the negative of the original point's
 impl Neg for &Point3 {

@@ -22,6 +22,7 @@
     clippy::pedantic
 )]
 #![allow(dead_code)]
+#![allow(clippy::module_name_repetitions)]
 
 pub(crate) mod base;
 pub mod codec;

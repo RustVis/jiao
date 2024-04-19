@@ -6,7 +6,7 @@ use std::rc::Rc;
 
 use crate::core::blend_mode::BlendMode;
 use crate::core::color::Color;
-use crate::core::color::Color4F;
+use crate::core::color::Color4f;
 use crate::core::color_space::ColorSpace;
 use crate::core::color_table::ColorTable;
 use crate::effects::color_matrix::ColorMatrix;
@@ -55,10 +55,10 @@ impl ColorFilter {
     #[must_use]
     pub fn filter_color4f(
         &self,
-        _src_color: &Color4F,
+        _src_color: &Color4f,
         _src_cs: &ColorSpace,
         _dst_cs: &mut ColorSpace,
-    ) -> Color4F {
+    ) -> Color4f {
         unimplemented!()
     }
 
@@ -81,7 +81,7 @@ impl ColorFilter {
     ///
     /// If the color space is null, the constant color is assumed to be defined in `sRGB`.
     #[must_use]
-    pub fn blend_with_cs(_color: &Color4F, _cs: &ColorSpace, _mode: BlendMode) -> Rc<Self> {
+    pub fn blend_with_cs(_color: &Color4f, _cs: &ColorSpace, _mode: BlendMode) -> Rc<Self> {
         unimplemented!()
     }
 

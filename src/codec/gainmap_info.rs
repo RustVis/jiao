@@ -2,7 +2,7 @@
 // Use of this source is governed by Lesser General Public License that can be found
 // in the LICENSE file.
 
-use crate::core::color::Color4F;
+use crate::core::color::Color4f;
 use crate::core::color_space::ColorSpace;
 
 /// Gainmap rendering parameters.
@@ -37,13 +37,13 @@ pub struct GainmapInfo {
     /// Parameters for converting the gainmap from its image encoding to log space.
     ///
     /// These are specified per color channel. The alpha value is unused.
-    pub ratio_min: Color4F,
-    pub ratio_max: Color4F,
-    pub gamma: Color4F,
+    pub ratio_min: Color4f,
+    pub ratio_max: Color4f,
+    pub gamma: Color4f,
 
     /// Parameters sometimes used in gainmap computation to avoid numerical instability.
-    pub epsilon_sdr: Color4F,
-    pub epsilon_hdr: Color4F,
+    pub epsilon_sdr: Color4f,
+    pub epsilon_hdr: Color4f,
 
     /// If the output display's HDR to SDR ratio is less or equal than fDisplayRatioSdr then the SDR
     /// rendition is displayed.
@@ -67,12 +67,12 @@ pub struct GainmapInfo {
 impl Default for GainmapInfo {
     fn default() -> Self {
         Self {
-            ratio_min: Color4F::from_rgba(1.0, 1.0, 1.0, 1.0),
-            ratio_max: Color4F::from_rgba(2.0, 2.0, 2.0, 1.0),
-            gamma: Color4F::from_rgba(1.0, 1.0, 1.0, 1.0),
+            ratio_min: Color4f::from_rgba(1.0, 1.0, 1.0, 1.0),
+            ratio_max: Color4f::from_rgba(2.0, 2.0, 2.0, 1.0),
+            gamma: Color4f::from_rgba(1.0, 1.0, 1.0, 1.0),
 
-            epsilon_sdr: Color4F::from_rgba(0.0, 0.0, 0.0, 1.0),
-            epsilon_hdr: Color4F::from_rgba(0.0, 0.0, 0.0, 1.0),
+            epsilon_sdr: Color4f::from_rgba(0.0, 0.0, 0.0, 1.0),
+            epsilon_hdr: Color4f::from_rgba(0.0, 0.0, 0.0, 1.0),
 
             display_ratio_sdr: 1.0,
             display_ratio_hdr: 2.0,

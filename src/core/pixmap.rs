@@ -3,7 +3,7 @@
 // in the LICENSE file.
 
 use crate::core::alpha_type::AlphaType;
-use crate::core::color::{Color, Color4F};
+use crate::core::color::{Color, Color4f};
 use crate::core::color_space::ColorSpace;
 use crate::core::color_type::ColorType;
 use crate::core::image_info::ImageInfo;
@@ -263,7 +263,7 @@ impl Pixmap {
         unimplemented!()
     }
 
-    /// Returns pixel at (x, y) as unpremultiplied color as an `Color4F`.
+    /// Returns pixel at (x, y) as unpremultiplied color as an `Color4f`.
     ///
     /// Returns black with alpha if `ColorType` is Alpha8.
     ///
@@ -280,7 +280,7 @@ impl Pixmap {
     ///
     /// Returns pixel converted to unpremultiplied float color
     #[must_use]
-    pub fn get_color4f(&self, _x: i32, _y: i32) -> Option<Color4F> {
+    pub fn get_color4f(&self, _x: i32, _y: i32) -> Option<Color4f> {
         unimplemented!()
     }
 
@@ -898,7 +898,7 @@ impl Pixmap {
     /// - `subset` - bounding integer Rect of pixels to write; may be nullptr
     ///
     /// Returns true if pixels are changed.
-    pub fn erase_with_color4f(&mut self, _color: &Color4F, _subset: Option<&IRect>) -> bool {
+    pub fn erase_with_color4f(&mut self, _color: &Color4f, _subset: Option<&IRect>) -> bool {
         unimplemented!()
     }
 }

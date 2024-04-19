@@ -14,7 +14,7 @@
 
 #![allow(clippy::module_name_repetitions)]
 
-use crate::core::color::{colors::BLACK, Color, Color4F};
+use crate::core::color::{colors::BLACK, Color, Color4f};
 use crate::core::color_space::ColorSpace;
 use crate::core::font_types::FontHinting;
 use crate::core::paint_types::{PaintStyle, StrokeCap, StrokeJoin};
@@ -27,7 +27,7 @@ pub const DEFAULT_MITER_LIMIT: Scalar = 4.0;
 #[derive(Debug, Clone, PartialEq)]
 pub struct Paint {
     color_space: Option<ColorSpace>,
-    color4f: Color4F,
+    color4f: Color4f,
     stroke_width: Scalar,
     miter_limit: Scalar,
 
@@ -58,7 +58,7 @@ impl Paint {
 
     /// Constructs Paint with default values and the given color.
     #[must_use]
-    pub fn from_color(color: &Color4F) -> Self {
+    pub fn from_color(color: &Color4f) -> Self {
         let mut p = Self::new();
         p.color4f = color.clone();
         p
@@ -76,7 +76,7 @@ impl Paint {
     /// - `color` - unpremultiplied RGBA
     /// - `color_space` - `ColorSpace` describing the encoding of color
     #[must_use]
-    pub fn from_color_space(color: &Color4F, color_space: &Option<ColorSpace>) -> Self {
+    pub fn from_color_space(color: &Color4f, color_space: &Option<ColorSpace>) -> Self {
         let mut p = Self::new();
         p.color4f = color.clone();
         p.color_space = color_space.clone();
@@ -214,7 +214,7 @@ impl Paint {
     ///
     /// RGB are extended `sRGB` values (`sRGB` gamut, and encoded with the `sRGB` transfer function).
     #[must_use]
-    pub const fn get_color4f(&self) -> &Color4F {
+    pub const fn get_color4f(&self) -> &Color4f {
         &self.color4f
     }
 
@@ -238,7 +238,7 @@ impl Paint {
     /// # Parameters
     /// - `color` - unpremultiplied RGBA
     /// - `color_space` - `ColorSpace` describing the encoding of color
-    pub fn set_color_space(&mut self, color: &Color4F, color_space: &Option<ColorSpace>) {
+    pub fn set_color_space(&mut self, color: &Color4f, color_space: &Option<ColorSpace>) {
         self.color4f = color.clone();
         self.color_space = color_space.clone();
     }
