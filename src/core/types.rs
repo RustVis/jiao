@@ -7,25 +7,12 @@ pub const B32_SHIFT: u32 = 16 - R32_SHIFT;
 pub const G32_SHIFT: u32 = 8;
 pub const A32_SHIFT: u32 = 24;
 
-// NOTE(Shaohua): Use byte order cfg instead.
-// SK_PMCOLOR_BYTE_ORDER can be used to query the byte order of PMColor at compile time.
-//#ifdef SK_CPU_BENDIAN
-//#  define SK_PMCOLOR_BYTE_ORDER(C0, C1, C2, C3)     \
-//        (SK_ ## C3 ## 32_SHIFT == 0  &&             \
-//         SK_ ## C2 ## 32_SHIFT == 8  &&             \
-//         SK_ ## C1 ## 32_SHIFT == 16 &&             \
-//         SK_ ## C0 ## 32_SHIFT == 24)
-//#else
-//#  define SK_PMCOLOR_BYTE_ORDER(C0, C1, C2, C3)     \
-//        (SK_ ## C0 ## 32_SHIFT == 0  &&             \
-//         SK_ ## C1 ## 32_SHIFT == 8  &&             \
-//         SK_ ## C2 ## 32_SHIFT == 16 &&             \
-//         SK_ ## C3 ## 32_SHIFT == 24)
-//#endif
+// TODO(Shaohua): PMCOLOR_BYTE_ORDER can be used to query the byte order of SkPMColor at compile time.
 
 pub type FourByteTag = u32;
 
 #[must_use]
+#[inline]
 pub fn set_four_byte_tag(a: u8, b: u8, c: u8, d: u8) -> FourByteTag {
     (u32::from(a) << 24) | (u32::from(b) << 16) | (u32::from(c) << 8) | u32::from(d)
 }
@@ -38,7 +25,7 @@ pub type GlyphId = u16;
 
 /// 32 bit value to hold a millisecond duration.
 ///
-/// Note that `MSecMax` is about 25 days.
+/// Note that `MILLI_SEC_MAX` is about 25 days.
 pub type MilliSec = u32;
 
 /// Maximum representable milliseconds; 24d 20h 31m 23.647s.
