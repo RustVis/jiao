@@ -4,7 +4,6 @@
 
 #![allow(clippy::cast_possible_truncation)]
 #![allow(clippy::cast_precision_loss)]
-#![allow(clippy::module_name_repetitions)]
 
 pub type Scalar = f32;
 

@@ -2,8 +2,6 @@
 // Use of this source is governed by Lesser General Public License that can be found
 // in the LICENSE file.
 
-#![allow(clippy::module_name_repetitions)]
-
 use crate::core::point::IPoint;
 use crate::core::size::ISize;
 

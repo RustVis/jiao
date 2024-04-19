@@ -3,7 +3,6 @@
 // in the LICENSE file.
 
 //! Blends are operators that take in two colors (source, destination) and return a new color.
-#![allow(clippy::module_name_repetitions)]
 
 /// Many of color operators operate the same on all 4 components: red, green, blue, alpha. For these,
 /// we just document what happens to one component, rather than naming each one separately.

@@ -2,7 +2,7 @@
 // Use of this source is governed by Lesser General Public License that can be found
 // in the LICENSE file.
 
-#![allow(clippy::struct_excessive_bools, clippy::module_name_repetitions)]
+#![allow(clippy::struct_excessive_bools)]
 
 use super::encoded_origin::EncodedOrigin;
 use crate::core::data::Data;

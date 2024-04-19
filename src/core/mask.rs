@@ -3,7 +3,6 @@
 // in the LICENSE file.
 
 #![allow(clippy::cast_sign_loss)]
-#![allow(clippy::module_name_repetitions)]
 
 use crate::base::align::Align;
 use crate::core::irect::IRect;

@@ -12,8 +12,6 @@
 //! For instance, Paint does not directly implement dashing or blur, but contains
 //! the objects that do so.
 
-#![allow(clippy::module_name_repetitions)]
-
 use crate::core::color::{colors::BLACK, Color, Color4f};
 use crate::core::color_space::ColorSpace;
 use crate::core::font_types::FontHinting;
