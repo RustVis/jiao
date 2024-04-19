@@ -265,7 +265,7 @@ pub fn scalars_equal(a: &[Scalar], b: &[Scalar], n: usize) -> bool {
 }
 
 #[must_use]
-pub fn are_finite(array: &[Scalar]) -> bool {
+pub fn scalars_are_finite(array: &[Scalar]) -> bool {
     array.iter().all(|scalar| scalar.is_finite())
 }
 
