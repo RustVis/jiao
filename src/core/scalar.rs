@@ -67,6 +67,9 @@ pub trait ScalarExt {
     fn sign_as_scalar(self) -> Self;
 
     #[must_use]
+    fn fuzzy_zero(self) -> bool;
+
+    #[must_use]
     fn nearly_zero(self) -> bool;
 
     #[must_use]
@@ -74,6 +77,7 @@ pub trait ScalarExt {
 
     #[must_use]
     fn fuzzy_equal(self, other: Self) -> bool;
+
     #[must_use]
     fn nearly_equal(self, other: Self) -> bool;
 
@@ -105,39 +109,48 @@ pub trait ScalarExt {
 }
 
 impl ScalarExt for Scalar {
+    #[inline]
     fn invert(self) -> Self {
         debug_assert!(self != 0.0);
         1.0 / self
     }
 
+    #[inline]
     fn average(self, b: Self) -> Self {
         (self + b) / 2.0
     }
 
+    #[inline]
     fn half(self) -> Self {
         self / 2.0
     }
 
+    #[inline]
     fn square(self) -> Self {
         self * self
     }
 
+    #[inline]
     fn ceil_to_int(self) -> i32 {
         self.ceil() as i32
     }
 
+    #[inline]
     fn floor_to_int(self) -> i32 {
         self.floor() as i32
     }
 
+    #[inline]
     fn round_to_int(self) -> i32 {
         self.round() as i32
     }
 
+    #[inline]
     fn trunc_to_int(self) -> i32 {
         f32_saturate2int(self)
     }
 
+    #[inline]
     fn is_int(&self) -> bool {
         self.fuzzy_equal(self.floor())
     }
@@ -170,23 +183,33 @@ impl ScalarExt for Scalar {
         }
     }
 
+    #[inline]
+    fn fuzzy_zero(self) -> bool {
+        self.fuzzy_equal(0.0)
+    }
+
+    #[inline]
     fn nearly_zero(self) -> bool {
         self.abs() <= SCALAR_NEARLY_ZERO
     }
 
+    #[inline]
     fn nearly_zero_tolerance(self, tolerance: Scalar) -> bool {
         debug_assert!(tolerance >= 0.0);
         self.abs() <= tolerance
     }
 
+    #[inline]
     fn fuzzy_equal(self, other: Self) -> bool {
         (self - other).abs() <= Self::EPSILON
     }
 
+    #[inline]
     fn nearly_equal(self, other: Self) -> bool {
         (self - other).abs() <= SCALAR_NEARLY_ZERO
     }
 
+    #[inline]
     fn nearly_equal_tolerance(self, other: Self, tolerance: Scalar) -> bool {
         debug_assert!(tolerance >= 0.0);
         (self - other).abs() <= tolerance
@@ -216,6 +239,7 @@ impl ScalarExt for Scalar {
     /// If t is 1, return other
     /// else interpolate.
     /// t must be `[0..SCALAR_1]`
+    #[inline]
     fn interp(self, other: Self, t: Self) -> Self {
         debug_assert!((0.0..=1.0).contains(&t));
         (other - self).mul_add(t, self)
@@ -245,6 +269,7 @@ impl ScalarExt for Scalar {
     }
 
     #[must_use]
+    #[inline]
     fn tpin(self, low: Self, hi: Self) -> Self {
         low.max(self.min(hi))
     }
