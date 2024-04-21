@@ -29,5 +29,5 @@ rust-version = "1.66.0"
 bit-set = "0.5.3"
 bitflags = "2.5.0"
 log = "0.4.21"
-serde = { version = "1.0.197", features = ["derive"] }
+serde = { version = "1.0.198", features = ["derive"] }
 
