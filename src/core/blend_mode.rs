@@ -27,9 +27,10 @@
 /// ra : result alpha component
 /// rc : result "color": red, green, blue components
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum BlendMode {
     /// r = 0
+    #[default]
     Clear,
 
     /// r = s
@@ -124,7 +125,9 @@ pub const LAST_COEFF_MODE: BlendMode = BlendMode::Screen;
 pub const LAST_SEPARABLE_MODE: BlendMode = BlendMode::Multiply;
 
 /// last valid value
-pub const LAST_MODE: BlendMode = BlendMode::Luminosity;
+pub const LAST_BLEND_MODE: BlendMode = BlendMode::Luminosity;
+
+pub const BLEND_MODE_COUNT: usize = LAST_BLEND_MODE as usize + 1;
 
 /// For Porter-Duff `BlendModes` (those <= `LAST_COEFF_MODE`), these coefficients describe the blend
 /// equation used.
@@ -133,9 +136,10 @@ pub const LAST_MODE: BlendMode = BlendMode::Luminosity;
 /// ('dstCoeff' * dst + 'srcCoeff' * src), where the coefficient values are constants, functions of
 /// the src or dst alpha, or functions of the src or dst color.
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum BlendModeCoeff {
     /// 0
+    #[default]
     Zero,
 
     /// 1
@@ -166,17 +170,87 @@ pub enum BlendModeCoeff {
     IDA,
 }
 
+pub const COEFF_COUNT: usize = BlendModeCoeff::IDA as usize + 1;
+
 impl BlendMode {
     /// Returns true if `mode` is a coefficient-based blend mode (<= `LAST_COEFF_MODE`).
     ///
     /// If true is returned, the mode's src and dst coefficient functions are set in `src` and `dst`.
-    pub fn as_coeff(self, _src: &mut BlendModeCoeff, _dst: &mut BlendModeCoeff) -> bool {
-        unimplemented!()
+    ///
+    /// If `out_src` is true, the `out` is as src.
+    /// Else the `out` is as dest.
+    #[must_use]
+    pub fn as_coeff(self, out: &mut BlendModeCoeff, out_src: bool) -> bool {
+        let coeffs = [
+            // For Porter-Duff blend functions, color = src * src coeff + dst * dst coeff
+            // src coeff                  dst coeff                     blend func
+            // ----------------------     -----------------------       ----------
+            [BlendModeCoeff::Zero, BlendModeCoeff::Zero], // clear
+            [BlendModeCoeff::One, BlendModeCoeff::Zero],  // src
+            [BlendModeCoeff::Zero, BlendModeCoeff::One],  // dst
+            [BlendModeCoeff::One, BlendModeCoeff::ISA],   // src-over
+            [BlendModeCoeff::IDA, BlendModeCoeff::One],   // dst-over
+            [BlendModeCoeff::DA, BlendModeCoeff::Zero],   // src-in
+            [BlendModeCoeff::Zero, BlendModeCoeff::SA],   // dst-in
+            [BlendModeCoeff::IDA, BlendModeCoeff::Zero],  // src-out
+            [BlendModeCoeff::Zero, BlendModeCoeff::ISA],  // dst-out
+            [BlendModeCoeff::DA, BlendModeCoeff::ISA],    // src-atop
+            [BlendModeCoeff::IDA, BlendModeCoeff::SA],    // dst-atop
+            [BlendModeCoeff::IDA, BlendModeCoeff::ISA],   // xor
+            [BlendModeCoeff::One, BlendModeCoeff::One],   // plus
+            [BlendModeCoeff::Zero, BlendModeCoeff::SC],   // modulate
+            [BlendModeCoeff::One, BlendModeCoeff::ISC],   // screen
+        ];
+
+        if self > Self::Screen {
+            return false;
+        }
+
+        let index = self as usize;
+        if out_src {
+            *out = coeffs[index][0];
+        } else {
+            *out = coeffs[index][1];
+        }
+        true
     }
 
     /// Returns name of blendMode.
     #[must_use]
+    #[inline]
     pub const fn name(self) -> &'static str {
-        unimplemented!()
+        match self {
+            Self::Clear => "Clear",
+            Self::Src => "Src",
+            Self::Dst => "Dst",
+            Self::SrcOver => "SrcOver",
+            Self::DstOver => "DstOver",
+            Self::SrcIn => "SrcIn",
+            Self::DstIn => "DstIn",
+            Self::SrcOut => "SrcOut",
+            Self::DstOut => "DstOut",
+            Self::SrcATop => "SrcATop",
+            Self::DstATop => "DstATop",
+            Self::Xor => "Xor",
+            Self::Plus => "Plus",
+            Self::Modulate => "Modulate",
+            Self::Screen => "Screen",
+
+            Self::Overlay => "Overlay",
+            Self::Darken => "Darken",
+            Self::Lighten => "Lighten",
+            Self::ColorDodge => "ColorDodge",
+            Self::ColorBurn => "ColorBurn",
+            Self::HardLight => "HardLight",
+            Self::SoftLight => "SoftLight",
+            Self::Difference => "Difference",
+            Self::Exclusion => "Exclusion",
+            Self::Multiply => "Multiply",
+
+            Self::Hue => "Hue",
+            Self::Saturation => "Saturation",
+            Self::Color => "Color",
+            Self::Luminosity => "Luminosity",
+        }
     }
 }
