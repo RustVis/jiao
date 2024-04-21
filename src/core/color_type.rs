@@ -8,6 +8,9 @@ use crate::core::color::ColorChannelFlag;
 /// `ColorType` describes how pixel bits encode color.
 ///
 /// A pixel may be an alpha mask, a grayscale, RGB, or ARGB.
+///
+/// `N32` selects the native 32-bit ARGB format for the current configuration.
+/// This can lead to inconsistent results across platforms, so use with caution.
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 pub enum ColorType {
@@ -47,6 +50,12 @@ pub enum ColorType {
     /// pixel with 10 bits each for blue, green, red; in 32-bit word, extended range
     Bgr101010xXr,
 
+    /// pixel with 10 bits each for blue, green, red, alpha; in 64-bit word, extended range
+    Bgra10101010Xr,
+
+    /// pixel with 10 used bits (most significant) followed by 6 unused bits for red, green, blue, alpha; in 64-bit word
+    Rgba10x6,
+
     /// pixel with grayscale level in 8-bit byte
     Gray8,
 
@@ -55,10 +64,11 @@ pub enum ColorType {
 
     /// pixel with half floats for red, green, blue, alpha; in 64-bit word
     RgbaF16,
+
     /// pixel using C float for red, green, blue, alpha; in 128-bit word
     RgbaF32,
 
-    // The following 6 colortypes are just for reading from - not for rendering to
+    /// The following 6 colortypes are just for reading from - not for rendering to
     /// pixel with a uint8_t for red and green
     R8G8Unorm,
 
@@ -70,16 +80,19 @@ pub enum ColorType {
 
     /// pixel with a little endian uint16_t for alpha
     A16Unorm,
+
     /// pixel with a little endian uint16_t for red and green
     R16G16Unorm,
+
     /// pixel with a little endian uint16_t for red, green, blue and alpha
     R16G16B16A16Unorm,
 
     Srgba8888,
+
     R8Unorm,
 }
 
-// TODO(Shaohua): Check endian type
+// TODO(Shaohua): Check endian type with PMCOLOR_BYTE_ORDER(B,G,R,A)
 /// native 32-bit BGRA encoding
 #[cfg(target_endian = "big")]
 pub const N32: ColorType = ColorType::Bgra8888;
@@ -87,11 +100,16 @@ pub const N32: ColorType = ColorType::Bgra8888;
 /// native 32-bit RGBA encoding
 pub const N32: ColorType = ColorType::Rgba8888;
 
+pub const LAST_COLOR_TYPE: ColorType = ColorType::R8Unorm;
+
+pub const COLOR_TYPE_COUNT: usize = LAST_COLOR_TYPE as usize + 1;
+
 impl ColorType {
     /// Returns the number of bytes required to store a pixel, including unused padding.
     /// Returns zero if type is Unknown or invalid.
     #[must_use]
     #[allow(clippy::match_same_arms)]
+    // TODO(Shaohua): Remove these methods
     pub const fn bytes_per_pixel(self) -> i32 {
         match self {
             Self::Unknown => 0,
@@ -118,6 +136,7 @@ impl ColorType {
             Self::R16G16B16A16Unorm => 8,
             Self::Srgba8888 => 4,
             Self::R8Unorm => 1,
+            Self::Bgra10101010Xr | Self::Rgba10x6 => todo!(),
         }
     }
 
@@ -149,6 +168,7 @@ impl ColorType {
             Self::R16G16B16A16Unorm => 3,
             Self::Srgba8888 => 2,
             Self::R8Unorm => 0,
+            Self::Bgra10101010Xr | Self::Rgba10x6 => todo!(),
         }
     }
 
@@ -195,6 +215,7 @@ impl ColorType {
             Self::R16G16B16A16Unorm => ColorChannelFlag::RGBA,
             Self::Srgba8888 => ColorChannelFlag::RGBA,
             Self::R8Unorm => ColorChannelFlag::Red,
+            Self::Bgra10101010Xr | Self::Rgba10x6 => todo!(),
         }
     }
 
@@ -249,6 +270,7 @@ impl ColorType {
             | Self::Bgr101010x
             | Self::Bgr101010xXr
             | Self::R8Unorm => *canonical = AlphaType::Opaque,
+            Self::Bgra10101010Xr | Self::Rgba10x6 => todo!(),
         }
         true
     }
@@ -277,6 +299,7 @@ impl ColorType {
             | Self::Srgba8888
             | Self::R8Unorm => true,
             Self::Bgr101010xXr | Self::RgbaF16 | Self::RgbaF32 | Self::R16G16Float => false,
+            Self::Bgra10101010Xr | Self::Rgba10x6 => todo!(),
         }
     }
 
@@ -327,6 +350,7 @@ impl ColorType {
             | Self::R16G16Float => 16,
 
             Self::RgbaF32 => 32,
+            Self::Bgra10101010Xr | Self::Rgba10x6 => todo!(),
         }
     }
 }
