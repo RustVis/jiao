@@ -19,9 +19,10 @@
 //! Premultiplied color components improve performance.
 
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 pub enum AlphaType {
     /// uninitialized
+    #[default]
     Unknown,
 
     /// pixel is opaque
@@ -37,12 +38,6 @@ pub enum AlphaType {
 
     /// pixel components are independent of alpha
     Unpremul,
-}
-
-impl Default for AlphaType {
-    fn default() -> Self {
-        Self::Unknown
-    }
 }
 
 impl AlphaType {

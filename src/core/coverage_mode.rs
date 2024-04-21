@@ -12,18 +12,18 @@
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum CoverageMode {
-    /// A ∪ B    A+B-A*B
+    /// `A ∪ B    A+B-A*B`
     Union,
 
-    /// A ∩ B    A*B
+    /// `A ∩ B    A*B`
     Intersect,
 
-    /// A - B    A*(1-B)
+    /// `A - B    A*(1-B)`
     Difference,
 
-    /// B - A    B*(1-A)
+    /// `B - A    B*(1-A)`
     ReverseDifference,
 
-    /// A ⊕ B    A+B-2*A*B
+    /// `A ⊕ B    A+B-2*A*B`
     Xor,
 }
