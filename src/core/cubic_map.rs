@@ -12,14 +12,15 @@ use crate::core::scalar::ScalarExt;
 /// pt[0] is implicitly { 0, 0 }
 /// pt[3] is implicitly { 1, 1 }
 /// pts[1, 2].x are inside the unit [0..1]
+#[derive(Debug, Clone)]
 pub struct CubicMap {
     coeff: [Point; 3],
-    type_: Type,
+    cubic_type: CubicType,
 }
 
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
-pub enum Type {
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub enum CubicType {
     /// x == y
     Line,
 
@@ -32,11 +33,13 @@ pub enum Type {
 
 impl CubicMap {
     #[must_use]
+    #[inline]
     pub fn new(_p1: Point, _p2: Point) -> Self {
         unimplemented!()
     }
 
     #[must_use]
+    #[inline]
     pub fn is_linear(p1: Point, p2: Point) -> bool {
         p1.x().nearly_equal(p1.y()) && p2.x().nearly_equal(p2.y())
     }
