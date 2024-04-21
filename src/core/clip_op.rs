@@ -3,8 +3,11 @@
 // in the LICENSE file.
 
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum ClipOp {
+    #[default]
     Difference = 0,
     Intersect = 1,
 }
+
+pub const MAX_CLIP_OP: usize = ClipOp::Intersect as usize;
