@@ -44,3 +44,49 @@ pub fn fill_path_with_paint_and_cull_rect(
 pub fn fill_path_with_paint(_src: &Path, _paint: &Paint, _dst: &mut Path) {
     unimplemented!()
 }
+
+/*
+fn fill_path_with_paint_impl(src: &Path, paint: &Paint, dst: &mut Path,
+                       cull_rect: &mut Rect, ctm: &Matrix) -> bool {
+    if !src.is_finite() {
+        dst.reset();
+        return false;
+    }
+
+    let res_scale = ctm.compute_res_scale_for_stroking();
+    StrokeRec rec(paint, res_scale);
+
+#if defined(SK_BUILD_FOR_FUZZER)
+    // Prevent lines with small widths from timing out.
+    if (rec.getStyle() == SkStrokeRec::Style::kStroke_Style && rec.getWidth() < 0.001) {
+        return false;
+    }
+#endif
+
+    const SkPath* srcPtr = &src;
+    SkPath tmpPath;
+
+    SkPathEffect* pe = paint.getPathEffect();
+    if (pe && pe->filterPath(&tmpPath, src, &rec, cullRect, ctm)) {
+        srcPtr = &tmpPath;
+    }
+
+    if (!rec.applyToPath(dst, *srcPtr)) {
+        if (srcPtr == &tmpPath) {
+            // If path's were copy-on-write, this trick would not be needed.
+            // As it is, we want to save making a deep-copy from tmpPath -> dst
+            // since we know we're just going to delete tmpPath when we return,
+            // so the swap saves that copy.
+            dst->swap(tmpPath);
+        } else {
+            *dst = *srcPtr;
+        }
+    }
+
+    if (!dst->isFinite()) {
+        dst->reset();
+        return false;
+    }
+    return !rec.isHairlineStyle();
+}
+*/

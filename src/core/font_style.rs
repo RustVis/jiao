@@ -3,12 +3,13 @@
 // in the LICENSE file.
 
 #[repr(u16)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum FontWeight {
     Invisible = 0,
     Thin = 100,
     ExtraLight = 200,
     Light = 300,
+    #[default]
     Normal = 400,
     Medium = 500,
     SemiBold = 600,
@@ -18,26 +19,22 @@ pub enum FontWeight {
     ExtraBlack = 1000,
 }
 
-impl Default for FontWeight {
-    fn default() -> Self {
-        Self::Normal
-    }
-}
-
 impl FontWeight {
     #[must_use]
+    #[inline]
     pub const fn is_bold(self) -> bool {
         self as u16 >= Self::SemiBold as u16
     }
 }
 
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum FontWidth {
     UltraCondensed = 1,
     ExtraCondensed = 2,
     Condensed = 3,
     SemiCondensed = 4,
+    #[default]
     Normal = 5,
     SemiExpanded = 6,
     Expanded = 7,
@@ -45,28 +42,18 @@ pub enum FontWidth {
     UltraExpanded = 9,
 }
 
-impl Default for FontWidth {
-    fn default() -> Self {
-        Self::Normal
-    }
-}
-
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum FontSlant {
+    #[default]
     Upright = 0,
     Italic,
     Oblique,
 }
 
-impl Default for FontSlant {
-    fn default() -> Self {
-        Self::Upright
-    }
-}
-
 impl FontSlant {
     #[must_use]
+    #[inline]
     pub fn is_italic(self) -> bool {
         self != Self::Upright
     }
@@ -87,37 +74,27 @@ impl From<FontStyle> for u32 {
     }
 }
 
-// TODO(Shaohua): Convert from u32
-//impl TryFrom<u32> for FontStyle {
-//    fn Tryfrom(value: u32) -> Option<Self> {
-//        let weight = (value & 0xFFFF) as u16;
-//        let width = ((value >> 16) & 0xFF) as u8;
-//        let slant = ((value >> 24) & 0xFF) as u8;
-//        Some(Self {
-//            weight,
-//            width,
-//            slant,
-//        })
-//    }
-//}
-
 impl FontStyle {
     #[must_use]
+    #[inline]
     pub const fn weight(self) -> FontWeight {
         self.weight
     }
 
     #[must_use]
+    #[inline]
     pub const fn width(self) -> FontWidth {
         self.width
     }
 
     #[must_use]
+    #[inline]
     pub const fn slant(self) -> FontSlant {
         self.slant
     }
 
     #[must_use]
+    #[inline]
     pub const fn normal() -> Self {
         Self {
             weight: FontWeight::Normal,
@@ -127,6 +104,7 @@ impl FontStyle {
     }
 
     #[must_use]
+    #[inline]
     pub const fn bold() -> Self {
         Self {
             weight: FontWeight::Bold,
@@ -136,6 +114,7 @@ impl FontStyle {
     }
 
     #[must_use]
+    #[inline]
     pub const fn italic() -> Self {
         Self {
             weight: FontWeight::Normal,
@@ -145,6 +124,7 @@ impl FontStyle {
     }
 
     #[must_use]
+    #[inline]
     pub const fn bold_italic() -> Self {
         Self {
             weight: FontWeight::Bold,
