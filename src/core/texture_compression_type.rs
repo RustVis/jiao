@@ -5,15 +5,17 @@
 /// ```txt
 ///  Jiao               | GL_COMPRESSED_*     | MTLPixelFormat*      | VK_FORMAT_*_BLOCK
 /// --------------------------------------------------------------------------------------
-///  ETC2_RGB8_UNORM    | ETC1_RGB8           | ETC2_RGB8 (iOS-only) | ETC2_R8G8B8_UNORM
+///  Etc2Rgb8Unorm    | ETC1_RGB8           | ETC2_RGB8 (iOS-only) | ETC2_R8G8B8_UNORM
 ///                     | RGB8_ETC2           |                      |
 /// --------------------------------------------------------------------------------------
-///  BC1_RGB8_UNORM     | RGB_S3TC_DXT1_EXT   | N/A                  | BC1_RGB_UNORM
+///  Bc1RGB8Unorm     | RGB_S3TC_DXT1_EXT   | N/A                  | BC1_RGB_UNORM
 /// --------------------------------------------------------------------------------------
-///  BC1_RGBA8_UNORM    | RGBA_S3TC_DXT1_EXT  | BC1_RGBA (macOS-only)| BC1_RGBA_UNORM
+///  Bc1Rgba8Unorm    | RGBA_S3TC_DXT1_EXT  | BC1_RGBA (macOS-only)| BC1_RGBA_UNORM
 /// ```
 #[repr(u8)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum TextureCompressionType {
+    #[default]
     None = 0,
     Etc2Rgb8Unorm,
     Bc1Rgb8Unorm,

@@ -3,9 +3,10 @@
 // in the LICENSE file.
 
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum TextEncoding {
     /// uses bytes to represent UTF-8 or ASCII
+    #[default]
     UTF8,
 
     /// uses two byte words to represent most of Unicode
@@ -18,14 +19,8 @@ pub enum TextEncoding {
     GlyphID,
 }
 
-impl Default for TextEncoding {
-    fn default() -> Self {
-        Self::UTF8
-    }
-}
-
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum FontHinting {
     /// glyph outlines unchanged
     None,
@@ -34,14 +29,9 @@ pub enum FontHinting {
     Slight,
 
     /// glyph outlines modified to improve constrast
+    #[default]
     Normal,
 
     /// modifies glyph outlines for maximum constrast
     Full,
-}
-
-impl Default for FontHinting {
-    fn default() -> Self {
-        Self::Normal
-    }
 }
