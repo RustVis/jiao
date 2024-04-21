@@ -22,18 +22,21 @@ pub enum PathFillType {
 
 impl PathFillType {
     #[must_use]
+    #[inline]
     pub const fn is_event_odd(self) -> bool {
         let num = self as u8;
         num & 1 != 0
     }
 
     #[must_use]
+    #[inline]
     pub const fn is_inverse(self) -> bool {
         let num = self as u8;
         num & 2 != 0
     }
 
     #[must_use]
+    #[inline]
     pub const fn inverse(self) -> Self {
         match self {
             Self::Winding => Self::InverseWinding,
@@ -44,6 +47,7 @@ impl PathFillType {
     }
 
     #[must_use]
+    #[inline]
     pub const fn convert_to_non_inverse(self) -> Self {
         match self {
             Self::Winding => Self::InverseWinding,
@@ -98,6 +102,7 @@ pub enum PathVerb {
 impl PathVerb {
     /// Get number of points of a path verb.
     #[must_use]
+    #[inline]
     #[allow(clippy::match_same_arms)]
     pub const fn points(self) -> usize {
         match self {
@@ -111,11 +116,15 @@ impl PathVerb {
     }
 }
 
+/// Four oval parts with radii (rx, ry) start at last Path Point and ends at (x, y).
+///
+/// `ArcSize` and Direction select one of the four oval parts.
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum ArcSize {
     /// smaller of arc pair
     Small,
+
     /// larger of arc pair
     Large,
 }
