@@ -18,7 +18,7 @@ pub struct VariationPosition {
 
 #[derive(Debug, Default, Clone, Eq, PartialEq)]
 pub struct Override {
-    pub index: i32,
+    pub index: u16,
     pub color: Color,
 }
 
@@ -53,6 +53,7 @@ impl FontArguments {
     ///
     /// Font formats like ttc, dfont, cff, cid, pfr, t42, t1, and fon may actually be indexed
     /// collections of fonts.
+    #[inline]
     pub fn set_collection_index(&mut self, collection_index: i32) -> &mut Self {
         self.collection_index = collection_index;
         self
@@ -65,21 +66,25 @@ impl FontArguments {
     ///
     /// # Parameters
     /// - `position` not copied. The value must remain valid for life of `FontArguments`.
+    #[inline]
     pub fn set_variation_design_position(&mut self, position: VariationPosition) -> &mut Self {
         self.variation_design_position.coordinates = position.coordinates;
         self
     }
 
     #[must_use]
+    #[inline]
     pub const fn get_collection_index(&self) -> i32 {
         self.collection_index
     }
 
     #[must_use]
+    #[inline]
     pub const fn get_variation_design_position(&self) -> &VariationPosition {
         &self.variation_design_position
     }
 
+    #[inline]
     pub fn set_palette(&mut self, palette: Palette) -> &mut Self {
         self.palette.index = palette.index;
         self.palette.overrides = palette.overrides;
@@ -87,6 +92,7 @@ impl FontArguments {
     }
 
     #[must_use]
+    #[inline]
     pub const fn get_palette(&self) -> &Palette {
         &self.palette
     }
