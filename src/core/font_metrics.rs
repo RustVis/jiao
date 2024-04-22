@@ -9,6 +9,7 @@ use crate::core::scalar::Scalar;
 /// `FontMetrics` represents the metrics of a Font.
 ///
 /// The metric values are consistent with the y-down coordinate system.
+#[derive(Debug, Clone, PartialEq)]
 pub struct FontMetrics {
     /// FontMetricsFlags indicating which metrics are valid
     pub flags: FontMetricsFlags,
@@ -64,24 +65,25 @@ pub struct FontMetrics {
 }
 
 bitflags! {
-    /// FontMetricsFlags indicate when certain metrics are valid;
+    /// `FontMetricsFlags` indicate when certain metrics are valid;
     /// the underline or strikeout metrics may be valid and zero.
     ///
     /// Fonts with embedded bitmaps may not have valid underline or strikeout metrics.
-    pub struct FontMetricsFlags : u16 {
-        /// Set if fUnderlineThickness is valid.
+    #[derive(Debug, Clone, Copy, Eq, PartialEq)]
+    pub struct FontMetricsFlags : u32 {
+        /// Set if underline_thickness is valid.
         const UnderlineThicknessIsValid = 1 << 0;
 
-        /// Set if fUnderlinePosition is valid.
+        /// Set if underline_position is valid.
         const UnderlinePositionIsValid = 1 << 1;
 
-        /// Set if fStrikeoutThickness is valid.
+        /// Set if strikeout_thickness is valid.
         const StrikeoutThicknessIsValid = 1 << 2;
 
-        /// Set if fStrikeoutPosition is valid.
+        /// Set if strikeout_position is valid.
         const StrikeoutPositionIsValid = 1 << 3;
 
-        /// Set if fTop, fBottom, fXMin, fXMax invalid.
+        /// Set if top, bottom, xmin, xmax invalid.
         const BoundsInvalid = 1 << 4;
     }
 }
@@ -91,6 +93,7 @@ impl FontMetrics {
     ///
     /// If the underline thickness is not valid, return None.
     #[must_use]
+    #[inline]
     pub const fn has_underline_thickness(&self) -> Option<Scalar> {
         if self
             .flags
@@ -106,6 +109,7 @@ impl FontMetrics {
     ///
     /// If the underline position is not valid, return None.
     #[must_use]
+    #[inline]
     pub const fn has_underline_position(&self) -> Option<Scalar> {
         if self
             .flags
@@ -121,6 +125,7 @@ impl FontMetrics {
     ///
     /// If the underline thickness is not valid, return None.
     #[must_use]
+    #[inline]
     pub const fn has_strikeout_thickness(&self) -> Option<Scalar> {
         if self
             .flags
@@ -136,6 +141,7 @@ impl FontMetrics {
     ///
     /// If the underline position is not valid, return None.
     #[must_use]
+    #[inline]
     pub const fn has_strikeout_position(&self) -> Option<Scalar> {
         if self
             .flags
@@ -153,6 +159,7 @@ impl FontMetrics {
     ///
     /// Returns true if font specifies maximum glyph bounds.
     #[must_use]
+    #[inline]
     pub const fn has_bounds(&self) -> bool {
         !self.flags.contains(FontMetricsFlags::BoundsInvalid)
     }
