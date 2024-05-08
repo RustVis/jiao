@@ -8,8 +8,11 @@ use bitflags::bitflags;
 use std::marker::PhantomData;
 use std::ops::{Index, IndexMut, Mul};
 
+use crate::base::math::mul_div_255_round;
 use crate::core::alpha_type::AlphaType;
-use crate::core::color_priv::{get_packed_a32, get_packed_b32, get_packed_g32, get_packed_r32};
+use crate::core::color_priv::{
+    alpha_255_to_256, get_packed_a32, get_packed_b32, get_packed_g32, get_packed_r32,
+};
 use crate::core::scalar::{Scalar, ScalarExt, SCALAR_1};
 use crate::core::types::{A32_SHIFT, B32_SHIFT, G32_SHIFT, R32_SHIFT};
 
@@ -355,12 +358,7 @@ impl PMColor {
     #[must_use]
     #[inline]
     pub const fn from_argb(alpha: u8, red: u8, green: u8, blue: u8) -> Self {
-        Self {
-            alpha,
-            red,
-            green,
-            blue,
-        }
+        Self::premultiply_argb_inline(alpha, red, green, blue)
     }
 
     #[must_use]
@@ -385,6 +383,51 @@ impl PMColor {
     #[inline]
     pub const fn blue(&self) -> u8 {
         self.blue
+    }
+
+    // Moved from color_priv
+    #[must_use]
+    #[inline]
+    pub(crate) const fn premultiply_argb_inline(
+        alpha: u8,
+        mut red: u8,
+        mut green: u8,
+        mut blue: u8,
+    ) -> Self {
+        if alpha != 255 {
+            let a16: u16 = alpha as u16;
+            red = mul_div_255_round(red as u16, a16);
+            green = mul_div_255_round(green as u16, a16);
+            blue = mul_div_255_round(blue as u16, a16);
+        }
+        Self {
+            alpha,
+            red,
+            green,
+            blue,
+        }
+    }
+
+    // Moved from color_priv
+    #[must_use]
+    pub(crate) fn pm_src_over(src: Self, dst: Self) -> Self {
+        let src_u32: u32 = src.into();
+        let dst_u32: u32 = dst.into();
+        let scale = alpha_255_to_256(255 - src.alpha());
+        let mask: u32 = 0x00FF_00FF;
+
+        let mut rb: u32 = (((dst_u32 & mask) * scale) >> 8) & mask;
+        let mut ag: u32 = (((dst_u32 >> 8) & mask) * scale) & !mask;
+
+        rb += src_u32 & mask;
+        ag += src_u32 & !mask;
+
+        // Color channels (but not alpha) can overflow, so we have to saturate to 0xFF in each lane.
+        let color: u32 = (rb & 0x0000_01FF).min(0x0000_00FF)
+            | (ag & 0x0001_FF00).min(0x0000_FF00)
+            | (rb & 0x01FF_0000).min(0x00FF_0000)
+            | (ag & 0xFF00_0000);
+        color.into()
     }
 }
 
