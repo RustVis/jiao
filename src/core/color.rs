@@ -8,8 +8,8 @@ use bitflags::bitflags;
 use std::marker::PhantomData;
 use std::ops::{Index, IndexMut, Mul};
 
-use crate::base::tpin::tpin;
 use crate::core::alpha_type::AlphaType;
+use crate::core::color_priv::{get_packed_a32, get_packed_b32, get_packed_g32, get_packed_r32};
 use crate::core::scalar::{Scalar, ScalarExt, SCALAR_1};
 use crate::core::types::{A32_SHIFT, B32_SHIFT, G32_SHIFT, R32_SHIFT};
 
@@ -268,8 +268,8 @@ impl Hsv {
     #[allow(clippy::cast_sign_loss)]
     #[allow(clippy::many_single_char_names)]
     pub fn to_color(&self, alpha: Alpha) -> Color {
-        let s: Scalar = tpin(self.saturation, 0.0, 1.0);
-        let v: Scalar = tpin(self.value, 0.0, 1.0);
+        let s: Scalar = self.saturation.tpin(0.0, 1.0);
+        let v: Scalar = self.value.tpin(0.0, 1.0);
 
         let v_byte: u8 = (v * 255.0).round_to_int() as u8;
 
@@ -325,8 +325,8 @@ pub struct PMColor {
 /// Multiplies `color` RGB components by the `color` alpha,
 /// and arranges the bytes to match the format of `ColorType` `N32`.
 impl From<Color> for PMColor {
-    fn from(_color: Color) -> Self {
-        unimplemented!()
+    fn from(color: Color) -> Self {
+        Self::from_argb(color.alpha, color.red, color.green, color.blue)
     }
 }
 
@@ -342,16 +342,18 @@ impl From<PMColor> for u32 {
 
 impl From<u32> for PMColor {
     fn from(packed: u32) -> Self {
-        let alpha = ((packed << (24 - A32_SHIFT)) >> 24) as u8;
-        let red = ((packed << (24 - R32_SHIFT)) >> 24) as u8;
-        let green = ((packed << (24 - G32_SHIFT)) >> 24) as u8;
-        let blue = ((packed << (24 - B32_SHIFT)) >> 24) as u8;
+        let alpha = get_packed_a32(packed);
+        let red = get_packed_r32(packed);
+        let green = get_packed_g32(packed);
+        let blue = get_packed_b32(packed);
         Self::from_argb(alpha, red, green, blue)
     }
 }
 
 impl PMColor {
+    /// Returns a `PMColor` value from unpremultiplied 8-bit component values.
     #[must_use]
+    #[inline]
     pub const fn from_argb(alpha: u8, red: u8, green: u8, blue: u8) -> Self {
         Self {
             alpha,
@@ -362,21 +364,25 @@ impl PMColor {
     }
 
     #[must_use]
+    #[inline]
     pub const fn alpha(&self) -> u8 {
         self.alpha
     }
 
     #[must_use]
+    #[inline]
     pub const fn red(&self) -> u8 {
         self.red
     }
 
     #[must_use]
+    #[inline]
     pub const fn green(&self) -> u8 {
         self.green
     }
 
     #[must_use]
+    #[inline]
     pub const fn blue(&self) -> u8 {
         self.blue
     }
