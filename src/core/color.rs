@@ -9,7 +9,7 @@ use std::marker::PhantomData;
 use std::ops::{Index, IndexMut, Mul};
 
 use crate::base::math::mul_div_255_round;
-use crate::core::alpha_type::AlphaType;
+use crate::core::alpha_type::alpha_type_mod;
 use crate::core::color_priv::{
     alpha_255_to_256, get_packed_a32, get_packed_b32, get_packed_g32, get_packed_r32,
 };
@@ -410,7 +410,8 @@ impl PMColor {
 
     // Moved from color_priv
     #[must_use]
-    pub(crate) fn pm_src_over(src: Self, dst: Self) -> Self {
+    pub(crate) fn src_over(self, dst: Self) -> Self {
+        let src = self;
         let src_u32: u32 = src.into();
         let dst_u32: u32 = dst.into();
         let scale = alpha_255_to_256(255 - src.alpha());
@@ -466,26 +467,37 @@ bitflags! {
     }
 }
 
-/// `Rgba4F` represents RGBA color value, holding four floating point components.
+/// `Rgba4f` represents RGBA color value, holding four floating point components.
 ///
 /// Color components are always in a known order.
-/// `AlphaType` determines if the `Rgba4F`'s R, G, and B components are premultiplied by alpha or not.
+///
+/// Here `T` can only be structs in `alpha_type_mod`.
+/// `AlphaType` determines if the `Rgba4f`'s R, G, and B components are premultiplied by alpha or not.
 ///
 /// Crate public API always uses unpremultiplied colors, which can be stored as
-/// `Rgba4F<Unpremul>`. For convenience, this type can also be referred to as `Color4f`.
+/// `Rgba4f<Unpremul>`. For convenience, this type can also be referred to as `Color4f`.
 #[derive(Debug, Default, Clone, PartialEq)]
-pub struct Rgba4F<AlphaType> {
+pub struct Rgba4f<T> {
+    /// red component
     red: f32,
+
+    /// green component
     green: f32,
+
+    /// blue component
     blue: f32,
+
+    /// alpha component
     alpha: f32,
-    phantom: PhantomData<AlphaType>,
+
+    phantom: PhantomData<T>,
 }
 
-/// Returns `Rgba4F` multiplied by scale.
-impl Mul<f32> for Rgba4F<AlphaType> {
+/// Returns `Rgba4f` multiplied by scale.
+impl<T> Mul<f32> for Rgba4f<T> {
     type Output = Self;
 
+    #[inline]
     fn mul(self, scale: f32) -> Self {
         Self {
             red: self.red * scale,
@@ -497,10 +509,11 @@ impl Mul<f32> for Rgba4F<AlphaType> {
     }
 }
 
-/// Returns `Rgba4F` multiplied component-wise by scale.
-impl Mul<&Self> for Rgba4F<AlphaType> {
+/// Returns `Rgba4f` multiplied component-wise by scale.
+impl<T> Mul<&Self> for Rgba4f<T> {
     type Output = Self;
 
+    #[inline]
     fn mul(self, other: &Self) -> Self {
         Self {
             red: self.red * other.red,
@@ -515,7 +528,7 @@ impl Mul<&Self> for Rgba4F<AlphaType> {
 /// Returns one component.
 ///
 /// Index should not be larger than 3.
-impl Index<usize> for Rgba4F<AlphaType> {
+impl<T> Index<usize> for Rgba4f<T> {
     type Output = f32;
 
     fn index(&self, index: usize) -> &Self::Output {
@@ -530,7 +543,10 @@ impl Index<usize> for Rgba4F<AlphaType> {
     }
 }
 
-impl IndexMut<usize> for Rgba4F<AlphaType> {
+/// Returns one component.
+///
+/// Index should not be larger than 3.
+impl<T> IndexMut<usize> for Rgba4f<T> {
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         debug_assert!(index < 4);
         match index {
@@ -543,28 +559,31 @@ impl IndexMut<usize> for Rgba4F<AlphaType> {
     }
 }
 
-impl Rgba4F<AlphaType> {
+impl<T> Rgba4f<T> {
     #[must_use]
+    #[inline]
     pub const fn from_rgba(red: f32, green: f32, blue: f32, alpha: f32) -> Self {
         Self {
             red,
             green,
             blue,
             alpha,
-            phantom: PhantomData::<AlphaType>,
+            phantom: PhantomData::<T>,
         }
     }
 
-    /// Returns a pointer to components of `Rgba4F`, for array access.
+    /// Returns color components, for array access.
     ///
     /// Orders in array is [red, green, blue, alpha]
     #[must_use]
+    #[inline]
     pub const fn to_vec(&self) -> [f32; 4] {
         [self.red, self.green, self.blue, self.alpha]
     }
 
-    /// Returns true if `Rgba4F` is an opaque color.
+    /// Returns true if `Rgba4f` is an opaque color.
     #[must_use]
+    #[inline]
     pub fn is_opaque(&self) -> bool {
         debug_assert!((0.0..=1.0).contains(&self.alpha));
         self.alpha.fuzzy_equal(1.0)
@@ -572,15 +591,17 @@ impl Rgba4F<AlphaType> {
 
     /// Returns true if all channels are in [0, 1].
     #[must_use]
+    #[inline]
     pub fn fits_in_bytes(&self) -> bool {
         let range = 0.0..=1.0;
         debug_assert!(range.contains(&self.alpha));
         range.contains(&self.red) && range.contains(&self.green) && range.contains(&self.blue)
     }
 
-    /// Returns a copy of the `Rgba4F` but with alpha component set to 1.0f.
+    /// Returns a copy of the `Rgba4f` but with alpha component set to 1.0f.
     #[must_use]
-    pub const fn new_opaque(&self) -> Self {
+    #[inline]
+    pub const fn to_opaque(&self) -> Self {
         Self {
             red: self.red,
             green: self.green,
@@ -589,78 +610,36 @@ impl Rgba4F<AlphaType> {
             phantom: self.phantom,
         }
     }
+
+    #[must_use]
+    #[inline]
+    pub const fn red(&self) -> f32 {
+        self.red
+    }
+
+    #[must_use]
+    #[inline]
+    pub const fn green(&self) -> f32 {
+        self.green
+    }
+
+    #[must_use]
+    #[inline]
+    pub const fn blue(&self) -> f32 {
+        self.blue
+    }
+
+    #[must_use]
+    #[inline]
+    pub const fn alpha(&self) -> f32 {
+        self.alpha
+    }
 }
 
-// TODO(Shaohua): Replace with partial specialization of Rgba4F<AlphaType>
 /// `Color4f` represents RGBA color value, holding four floating point components.
 ///
 /// Color components are always in a known order, and are unpremultiplied.
-#[derive(Debug, Default, Clone, PartialEq)]
-pub struct Color4f {
-    red: f32,
-    green: f32,
-    blue: f32,
-    alpha: f32,
-}
-
-/// Returns `Color4f` multiplied by scale.
-impl Mul<f32> for Color4f {
-    type Output = Self;
-
-    fn mul(self, scale: f32) -> Self {
-        Self {
-            red: self.red * scale,
-            green: self.green * scale,
-            blue: self.blue * scale,
-            alpha: self.alpha * scale,
-        }
-    }
-}
-
-/// Returns `Color4f` multiplied component-wise by scale.
-impl Mul<&Self> for Color4f {
-    type Output = Self;
-
-    fn mul(self, other: &Self) -> Self {
-        Self {
-            red: self.red * other.red,
-            green: self.green * other.green,
-            blue: self.blue * other.blue,
-            alpha: self.alpha * other.alpha,
-        }
-    }
-}
-
-/// Returns one component.
-///
-/// Index should not be larger than 3.
-impl Index<usize> for Color4f {
-    type Output = f32;
-
-    fn index(&self, index: usize) -> &Self::Output {
-        debug_assert!(index < 4);
-        match index {
-            0 => &self.red,
-            1 => &self.green,
-            2 => &self.blue,
-            3 => &self.alpha,
-            _ => panic!("Index out of range"),
-        }
-    }
-}
-
-impl IndexMut<usize> for Color4f {
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        debug_assert!(index < 4);
-        match index {
-            0 => &mut self.red,
-            1 => &mut self.green,
-            2 => &mut self.blue,
-            3 => &mut self.alpha,
-            _ => panic!("Index out of range"),
-        }
-    }
-}
+pub type Color4f = Rgba4f<alpha_type_mod::Unpremul>;
 
 impl From<Color> for Color4f {
     fn from(_color: Color) -> Self {
@@ -681,73 +660,10 @@ impl From<Color4f> for Color {
 }
 
 impl Color4f {
-    #[must_use]
-    pub const fn from_rgba(red: f32, green: f32, blue: f32, alpha: f32) -> Self {
-        Self {
-            red,
-            green,
-            blue,
-            alpha,
-        }
-    }
-
-    #[must_use]
-    pub const fn red(&self) -> f32 {
-        self.red
-    }
-
-    #[must_use]
-    pub const fn green(&self) -> f32 {
-        self.green
-    }
-
-    #[must_use]
-    pub const fn blue(&self) -> f32 {
-        self.blue
-    }
-
-    #[must_use]
-    pub const fn alpha(&self) -> f32 {
-        self.alpha
-    }
-
+    #[inline]
     pub fn set_alpha(&mut self, alpha: f32) {
         debug_assert!((0.0..=1.0).contains(&alpha));
         self.alpha = alpha;
-    }
-
-    /// Returns a pointer to components of `Color4f`, for array access.
-    ///
-    /// Orders in array is [red, green, blue, alpha]
-    #[must_use]
-    pub const fn to_vec(&self) -> [f32; 4] {
-        [self.red, self.green, self.blue, self.alpha]
-    }
-
-    /// Returns true if `Color4f` is an opaque color.
-    #[must_use]
-    pub fn is_opaque(&self) -> bool {
-        debug_assert!((0.0..=1.0).contains(&self.alpha));
-        self.alpha.fuzzy_equal(1.0)
-    }
-
-    /// Returns true if all channels are in [0, 1].
-    #[must_use]
-    pub fn fits_in_bytes(&self) -> bool {
-        let range = 0.0..=1.0;
-        debug_assert!(range.contains(&self.alpha));
-        range.contains(&self.red) && range.contains(&self.green) && range.contains(&self.blue)
-    }
-
-    /// Returns a copy of the `Color4f` but with alpha component set to 1.0f.
-    #[must_use]
-    pub const fn new_opaque(&self) -> Self {
-        Self {
-            red: self.red,
-            green: self.green,
-            blue: self.blue,
-            alpha: 1.0,
-        }
     }
 
     #[must_use]
