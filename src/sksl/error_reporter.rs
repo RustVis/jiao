@@ -37,7 +37,7 @@ impl ErrorReporter {
     }
 
     pub fn set_source(&mut self, source: &str) {
-        self.source = source.to_owned();
+        source.clone_into(&mut self.source);
     }
 
     #[must_use]

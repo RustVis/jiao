@@ -29,7 +29,7 @@ pub struct Options {
     ///
     /// This is only meaningful if the `src` is not Gray, since Gray will not be encoded as YUV.
     ///
-    /// This is ignored in favor of src's subsampling when src is an YUVAPixmaps.
+    /// This is ignored in favor of src's subsampling when src is an `YUVAPixmaps`.
     pub downsample: Downsample,
 
     /// Jpegs must be opaque.

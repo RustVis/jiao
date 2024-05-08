@@ -12,13 +12,13 @@ use crate::sksl::version::Version;
 /// The KHR extension requires special layout qualifiers in the fragment shader.
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 pub enum AdvBlendEqInteraction {
-    /// No _blend_equation_advanced extension
+    /// No _`blend_equation_advanced` extension
     NotSupported,
 
     /// No interaction required
     Automatic,
 
-    /// layout(blend_support_all_equations) out
+    /// `layout(blend_support_all_equations`) out
     GeneralEnable,
 }
 
@@ -34,7 +34,7 @@ pub struct ShaderCaps {
     /// Indicates true 32-bit integer support, with unsigned types and bitwise operations
     integer_support: bool,
     non_square_matrix_support: bool,
-    /// asinh(), acosh(), atanh()
+    /// `asinh()`, `acosh()`, `atanh()`
     inverse_hyperbolic_support: bool,
     fb_fetch_support: bool,
     fb_fetch_needs_custom_output: bool,

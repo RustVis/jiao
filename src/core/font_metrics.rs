@@ -11,7 +11,7 @@ use crate::core::scalar::Scalar;
 /// The metric values are consistent with the y-down coordinate system.
 #[derive(Debug, Clone, PartialEq)]
 pub struct FontMetrics {
-    /// FontMetricsFlags indicating which metrics are valid
+    /// `FontMetricsFlags` indicating which metrics are valid
     pub flags: FontMetricsFlags,
 
     /// Greatest extent above origin of any glyph bounding box, typically negative;

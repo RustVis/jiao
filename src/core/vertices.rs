@@ -180,7 +180,7 @@ bitflags! {
 }
 
 pub struct Builder {
-    /// holds a partially complete object. only completed in detach()
+    /// holds a partially complete object. only completed in `detach()`
     vertices: Vertices,
 
     /// Extra storage for intermediate vertices in the case where the client specifies indexed

@@ -78,10 +78,10 @@ pub enum BlendMode {
     /// multiply or screen, depending on destination
     Overlay,
 
-    /// rc = s + d - max(s*da, d*sa), ra = SrcOver
+    /// rc = s + d - max(s*da, d*sa), ra = `SrcOver`
     Darken,
 
-    /// rc = s + d - min(s*da, d*sa), ra = SrcOver
+    /// rc = s + d - min(s*da, d*sa), ra = `SrcOver`
     Lighten,
 
     /// brighten destination to reflect source
@@ -96,10 +96,10 @@ pub enum BlendMode {
     /// lighten or darken, depending on source
     SoftLight,
 
-    /// rc = s + d - 2*(min(s*da, d*sa)), ra = SrcOver
+    /// rc = s + d - 2*(min(s*da, d*sa)), ra = `SrcOver`
     Difference,
 
-    /// rc = s + d - two(s*d), ra = SrcOver
+    /// rc = s + d - two(s*d), ra = `SrcOver`
     Exclusion,
 
     /// r = s*(1-da) + d*(1-sa) + s*d

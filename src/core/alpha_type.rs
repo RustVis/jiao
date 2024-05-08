@@ -28,8 +28,8 @@ pub enum AlphaType {
     /// pixel is opaque
     ///
     /// Opaque is a hint that the `ColorType` is opaque, or that all
-    /// alpha values are set to their 1.0 equivalent. If AlphaType is
-    /// Opaque, and ColorType is not opaque, then the result of
+    /// alpha values are set to their 1.0 equivalent. If `AlphaType` is
+    /// Opaque, and `ColorType` is not opaque, then the result of
     /// drawing any pixel with a alpha value less than 1.0 is undefined.
     Opaque,
 

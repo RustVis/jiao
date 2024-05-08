@@ -28,7 +28,7 @@ pub struct PixelRef {
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum Mutability {
-    /// PixelRefs begin mutable.
+    /// `PixelRefs` begin mutable.
     Mutable,
 
     /// Considered immutable, but can revert to mutable.

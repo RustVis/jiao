@@ -2,6 +2,8 @@
 // Use of this source is governed by Lesser General Public License that can be found
 // in the LICENSE file.
 
+//! Types, consts, functions, and macros for colors.
+
 use bitflags::bitflags;
 use std::marker::PhantomData;
 use std::ops::{Index, IndexMut, Mul};
@@ -50,6 +52,7 @@ impl Color {
     /// - `green` - amount of green, from no green (0) to full green (255)
     /// - `blue` - amount of blue, from no blue (0) to full blue (255)
     #[must_use]
+    #[inline]
     pub const fn from_argb(alpha: u8, red: u8, green: u8, blue: u8) -> Self {
         Self {
             alpha,
@@ -61,30 +64,35 @@ impl Color {
 
     /// Returns color value from 8-bit component values, with alpha set fully opaque to 255.
     #[must_use]
+    #[inline]
     pub const fn from_rgb(red: u8, green: u8, blue: u8) -> Self {
         Self::from_argb(0xFF, red, green, blue)
     }
 
     /// Returns alpha byte from color value.
     #[must_use]
+    #[inline]
     pub const fn alpha(self) -> u8 {
         self.alpha
     }
 
     /// Returns red component of color, from zero to 255.
     #[must_use]
+    #[inline]
     pub const fn red(self) -> u8 {
         self.red
     }
 
     /// Returns green component of color, from zero to 255.
     #[must_use]
+    #[inline]
     pub const fn green(self) -> u8 {
         self.green
     }
 
     /// Returns blue component of color, from zero to 255.
     #[must_use]
+    #[inline]
     pub const fn blue(self) -> u8 {
         self.blue
     }
@@ -92,15 +100,16 @@ impl Color {
     /// Returns unpremultiplied color with red, blue, and green set from self; and alpha set
     /// from `alpha`.
     ///
-    /// Alpha component of self is ignored and is replaced by `alpha` in result.
-    #[must_use]
-    pub const fn set_alpha(self, alpha: u8) -> Self {
-        Self { alpha, ..self }
+    /// Alpha component of self is ignored and is replaced by `alpha`.
+
+    pub fn set_alpha(&mut self, alpha: u8) {
+        self.alpha = alpha;
     }
 }
 
-/// Represents fully transparent Color. May be used to initialize a destination
-/// containing a mask or a non-rectangular image.
+/// Represents fully transparent Color.
+///
+/// May be used to initialize a destination containing a mask or a non-rectangular image.
 pub const COLOR_TRANSPARENT: Color = Color::from_argb(0x00, 0x00, 0x00, 0x00);
 
 /// Represents fully opaque black.
@@ -144,6 +153,7 @@ pub const COLOR_CYAN: Color = Color::from_argb(0xFF, 0x00, 0xFF, 0xFF);
 /// Represents fully opaque magenta. HTML fuchsia is equivalent.
 pub const COLOR_MAGENTA: Color = Color::from_argb(0xFF, 0xFF, 0x00, 0xFF);
 
+#[derive(Debug, Default, Clone, PartialEq)]
 pub struct Hsv {
     /// From zero to less than 360
     pub hue: Scalar,

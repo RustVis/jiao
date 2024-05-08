@@ -77,7 +77,7 @@ impl Paint {
     pub fn from_color_space(color: &Color4f, color_space: &Option<ColorSpace>) -> Self {
         let mut p = Self::new();
         p.color4f = color.clone();
-        p.color_space = color_space.clone();
+        p.color_space.clone_from(color_space);
         p
     }
 
@@ -238,7 +238,7 @@ impl Paint {
     /// - `color_space` - `ColorSpace` describing the encoding of color
     pub fn set_color_space(&mut self, color: &Color4f, color_space: &Option<ColorSpace>) {
         self.color4f = color.clone();
-        self.color_space = color_space.clone();
+        self.color_space.clone_from(color_space);
     }
 
     /// Retrieves alpha from the color used when stroking and filling.

@@ -16,7 +16,7 @@ pub enum PathFillType {
     /// Same as Winding, but draws outside of the path, rather than inside.
     InverseWinding,
 
-    /// Same as EvenOdd, but draws outside of the path, rather than inside.
+    /// Same as `EvenOdd`, but draws outside of the path, rather than inside.
     InverseEvenOdd,
 }
 

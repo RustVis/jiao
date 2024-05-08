@@ -69,7 +69,7 @@ pub enum ColorType {
     RgbaF32,
 
     /// The following 6 colortypes are just for reading from - not for rendering to
-    /// pixel with a uint8_t for red and green
+    /// pixel with a `uint8_t` for red and green
     R8G8Unorm,
 
     /// pixel with a half float for alpha
@@ -78,13 +78,13 @@ pub enum ColorType {
     /// pixel with a half float for red and green
     R16G16Float,
 
-    /// pixel with a little endian uint16_t for alpha
+    /// pixel with a little endian `uint16_t` for alpha
     A16Unorm,
 
-    /// pixel with a little endian uint16_t for red and green
+    /// pixel with a little endian `uint16_t` for red and green
     R16G16Unorm,
 
-    /// pixel with a little endian uint16_t for red, green, blue and alpha
+    /// pixel with a little endian `uint16_t` for red, green, blue and alpha
     R16G16B16A16Unorm,
 
     Srgba8888,
