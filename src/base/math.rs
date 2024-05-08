@@ -34,11 +34,3 @@ pub fn mul_16_shift_round(a: u16, b: u16, shift: i32) -> u32 {
 pub fn mul_div_255_round(a: u16, b: u16) -> u8 {
     mul_16_shift_round(a, b, 8) as u8
 }
-
-/// Unlike `clamp()`, `tpin()` always returns a value between low and hi.
-/// If x is NaN, `tpin()` returns lo but `clamp()` returns NaN.
-///
-/// Returns x pinned (clamped) between lo and hi, inclusively.
-pub fn tpin(x: u32, lo: u32, hi: u32) -> u32 {
-    lo.max(x.min(hi))
-}
