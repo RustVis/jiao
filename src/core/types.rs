@@ -3,8 +3,8 @@
 // in the LICENSE file.
 
 pub const R32_SHIFT: u32 = 0;
-pub const B32_SHIFT: u32 = 16 - R32_SHIFT;
 pub const G32_SHIFT: u32 = 8;
+pub const B32_SHIFT: u32 = 16;
 pub const A32_SHIFT: u32 = 24;
 
 // TODO(Shaohua): PMCOLOR_BYTE_ORDER can be used to query the byte order of SkPMColor at compile time.

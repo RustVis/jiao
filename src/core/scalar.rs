@@ -104,6 +104,10 @@ pub trait ScalarExt {
     #[must_use]
     fn mid_point(self, other: Self) -> Self;
 
+    /// Returns x pinned (clamped) between lo and hi, inclusively.
+    ///
+    /// Unlike `clamp()`, `tpin()` always returns a value between low and hi.
+    /// If x is NaN, `tpin()` returns lo but `clamp()` returns NaN.
     #[must_use]
     fn tpin(self, low: Self, hi: Self) -> Self;
 }
@@ -271,7 +275,12 @@ impl ScalarExt for Scalar {
     #[must_use]
     #[inline]
     fn tpin(self, low: Self, hi: Self) -> Self {
-        low.max(self.min(hi))
+        // FIXME(Shaohua): `2.0.min(f32::NAN)` returns 2.0 in rust, while returns `NAN` in C++17.
+        if self.is_nan() {
+            low
+        } else {
+            low.max(self.min(hi))
+        }
     }
 }
 
