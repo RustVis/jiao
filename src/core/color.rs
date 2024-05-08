@@ -8,8 +8,9 @@ use bitflags::bitflags;
 use std::marker::PhantomData;
 use std::ops::{Index, IndexMut, Mul};
 
+use crate::base::tpin::tpin;
 use crate::core::alpha_type::AlphaType;
-use crate::core::scalar::{Scalar, ScalarExt};
+use crate::core::scalar::{Scalar, ScalarExt, SCALAR_1};
 use crate::core::types::{A32_SHIFT, B32_SHIFT, G32_SHIFT, R32_SHIFT};
 
 /// 8-bit type for an alpha value. 255 is 100% opaque, zero is 100% transparent.
@@ -39,6 +40,27 @@ pub struct Color {
     red: u8,
     green: u8,
     blue: u8,
+}
+
+impl From<u32> for Color {
+    #[allow(clippy::cast_possible_truncation)]
+    fn from(val: u32) -> Self {
+        Self {
+            alpha: (val >> 24) as u8,
+            red: (val >> 16) as u8,
+            green: (val >> 8) as u8,
+            blue: val as u8,
+        }
+    }
+}
+
+impl From<Color> for u32 {
+    fn from(color: Color) -> Self {
+        (Self::from(color.alpha) << 24)
+            | (Self::from(color.red) << 16)
+            | (Self::from(color.green) << 8)
+            | Self::from(color.blue)
+    }
 }
 
 impl Color {
@@ -163,12 +185,66 @@ pub struct Hsv {
     pub value: Scalar,
 }
 
+#[must_use]
+#[inline]
+fn byte_to_scalar(x: u8) -> Scalar {
+    f32::from(x) / 255.0
+}
+
+#[must_use]
+#[inline]
+fn byte_div_to_scalar(numer: u8, denom: u8) -> Scalar {
+    // cast to keep the answer signed
+    f32::from(numer) / f32::from(denom)
+}
+
 /// Converts RGB to its HSV components.
 ///
 /// Alpha value is dropped.
 impl From<Color> for Hsv {
-    fn from(_color: Color) -> Self {
-        unimplemented!()
+    #[allow(clippy::many_single_char_names)]
+    fn from(color: Color) -> Self {
+        let r: u8 = color.red;
+        let g: u8 = color.green;
+        let b: u8 = color.blue;
+        let min: u8 = r.min(g.min(b));
+        let max: u8 = r.max(g.max(b));
+        let delta: u8 = max - min;
+        let v: Scalar = byte_to_scalar(max);
+        debug_assert!((0.0..=1.0).contains(&v));
+
+        if delta == 0 {
+            // we're a shade of gray
+            return Self {
+                hue: 0.0,
+                saturation: 0.0,
+                value: v,
+            };
+        }
+
+        let s: Scalar = byte_div_to_scalar(delta, max);
+        debug_assert!((0.0..=1.0).contains(&s));
+
+        let mut h: Scalar = if r == max {
+            byte_div_to_scalar(g - b, delta)
+        } else if g == max {
+            2.0 + byte_div_to_scalar(b - r, delta)
+        } else {
+            // b == max
+            4.0 + byte_div_to_scalar(r - g, delta)
+        };
+
+        h *= 60.0;
+        if h < 0.0 {
+            h += 360.0;
+        }
+        debug_assert!((0.0..360.0).contains(&h));
+
+        Self {
+            hue: h,
+            saturation: s,
+            value: v,
+        }
     }
 }
 
@@ -176,6 +252,8 @@ impl From<Color> for Hsv {
 ///
 /// Alpha is set to 255.
 impl From<&Hsv> for Color {
+    #[must_use]
+    #[inline]
     fn from(hsv: &Hsv) -> Self {
         hsv.to_color(0xFF)
     }
@@ -186,8 +264,42 @@ impl Hsv {
     ///
     /// Alpha is passed through unchanged.
     #[must_use]
-    pub fn to_color(&self, _alpha: Alpha) -> Color {
-        unimplemented!()
+    #[allow(clippy::cast_possible_truncation)]
+    #[allow(clippy::cast_sign_loss)]
+    #[allow(clippy::many_single_char_names)]
+    pub fn to_color(&self, alpha: Alpha) -> Color {
+        let s: Scalar = tpin(self.saturation, 0.0, 1.0);
+        let v: Scalar = tpin(self.value, 0.0, 1.0);
+
+        let v_byte: u8 = (v * 255.0).round_to_int() as u8;
+
+        if s.nearly_zero() {
+            // shade of gray
+            return Color::from_argb(alpha, v_byte, v_byte, v_byte);
+        }
+
+        let hx: Scalar = if self.hue < 0.0 || self.hue >= 360.0 {
+            0.0
+        } else {
+            self.hue / 60.0
+        };
+        let w: Scalar = hx.floor();
+        let f: Scalar = hx - w;
+
+        let p: u8 = ((SCALAR_1 - s) * v * 255.0).round_to_int() as u8;
+        let q: u8 = (s.mul_add(-f, SCALAR_1) * v * 255.0).round_to_int() as u8;
+        let t: u8 = (s.mul_add(-(SCALAR_1 - f), SCALAR_1) * v * 255.0).round_to_int() as u8;
+
+        debug_assert!(w < 6.0);
+        let (r, g, b) = match w as u32 {
+            0 => (v_byte, t, p),
+            1 => (q, v_byte, p),
+            2 => (p, v_byte, t),
+            3 => (p, q, v_byte),
+            4 => (t, p, v_byte),
+            _ => (v_byte, p, q),
+        };
+        Color::from_argb(alpha, r, g, b)
     }
 }
 
@@ -271,6 +383,8 @@ impl PMColor {
 }
 
 /// `ColorChannel` describes different color channels one can manipulate
+#[repr(u8)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub enum ColorChannel {
     /// the red channel
     Red,
