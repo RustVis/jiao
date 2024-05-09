@@ -4,6 +4,9 @@
 
 #![allow(clippy::cast_possible_truncation)]
 
+use std::mem::size_of_val;
+use std::ptr;
+
 pub const MAX_I32_FITS_IN_F32: i32 = 2_147_483_520;
 #[allow(clippy::cast_precision_loss)]
 pub const MAX_I32_FITS_IN_F32_F32: f32 = MAX_I32_FITS_IN_F32 as f32;
@@ -99,14 +102,73 @@ pub fn f32_midpoint(a: f32, b: f32) -> f32 {
 /// Returns false if any of the floats are outside the range [0...1].
 ///
 /// Returns true if count is 0.
-pub fn floats_are_unit(_array: &[f32]) -> bool {
-    unimplemented!()
+pub fn floats_are_unit(array: &[f32]) -> bool {
+    let mut is_unit = true;
+    let range = 0.0..=1.0;
+    for num in array {
+        is_unit &= range.contains(num);
+    }
+    is_unit
+}
+
+#[must_use]
+#[inline]
+pub fn f32_rsqrt(x: f32) -> f32 {
+    1.0 / x.sqrt()
+}
+
+//pub const FLT_DECIMAL_DIG: usize = std::numeric_limits<float>::max_digits10;
+/// The number of significant digits to print.
+pub const FLOAT_DECIMAL_DIG: usize = 9;
+pub const DOUBLE_DECIMAL_DIG: usize = 17;
+
+#[must_use]
+#[inline]
+pub fn sk_floats_are_finite(array: &[f32]) -> bool {
+    let mut prod: f32 = 0.0;
+
+    for &num in array {
+        prod *= num;
+    }
+    // At this point, prod will either be NaN or 0
+    // if prod is NaN, this check will return false
+    !prod.is_nan()
 }
 
 /// Returns true iff the provided number is within a small epsilon of 0.
 #[must_use]
-pub fn f64_nearly_zero(_a: f64) -> bool {
-    unimplemented!()
+#[inline]
+pub fn f64_nearly_zero(a: f64) -> bool {
+    a.abs() < f64::EPSILON
+}
+// Return the positive magnitude of a double.
+// * normalized - given 1.bbb...bbb x 2^e return 2^e.
+// * subnormal - return 0.
+// * nan & infinity - return infinity
+#[must_use]
+fn magnitude(a: f64) -> f64 {
+    const EXTRACT_MAGNITUDE: i64 =
+        0b0111_1111_1111_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+    let mut bits: i64 = 0;
+    //memcpy(&bits, &a, sizeof(bits));
+    unsafe {
+        ptr::copy_nonoverlapping(
+            ptr::from_ref(&a).cast::<()>(),
+            ptr::from_mut(&mut bits).cast::<()>(),
+            size_of_val(&bits),
+        );
+    }
+    bits &= EXTRACT_MAGNITUDE;
+    let mut out: f64 = 0.0;
+    //memcpy(&out, &bits, sizeof(out));
+    unsafe {
+        ptr::copy_nonoverlapping(
+            ptr::from_ref(&bits).cast::<()>(),
+            ptr::from_mut(&mut out).cast::<()>(),
+            size_of_val(&out),
+        );
+    }
+    out
 }
 
 /// Compare two doubles and return true if they are within `max_ulps_diff` of each other.
@@ -118,8 +180,26 @@ pub fn f64_nearly_zero(_a: f64) -> bool {
 /// ulp is an initialism for Units in the Last Place.
 #[must_use]
 #[inline]
-pub fn doubles_nearly_equal_ulps(_a: f64, _b: f64, _max_ulps_diff: u8) -> bool {
-    unimplemented!()
+pub fn doubles_nearly_equal_ulps(a: f64, b: f64, max_ulps_diff: u8) -> bool {
+    // The maximum magnitude to construct the ulp tolerance. The proper magnitude for
+    // subnormal numbers is minMagnitude, which is 2^-1021, so if a and b are subnormal (having a
+    // magnitude of 0) use minMagnitude. If a or b are infinity or nan, then maxMagnitude will be
+    // +infinity. This means the tolerance will also be infinity, but the expression b - a below
+    // will either be NaN or infinity, so a tolerance of infinity doesn't matter.
+    let min_magnitude: f64 = f64::MIN;
+    let max_magnitude = magnitude(a).max(min_magnitude).max(magnitude(b));
+
+    // Given a magnitude, this is the factor that generates the ulp for that magnitude.
+    // In numbers, 2 ^ (-precision + 1) = 2 ^ -52.
+    let ulp_factor: f64 = f64::EPSILON;
+
+    // The tolerance in ULPs given the maxMagnitude. Because the return statement must use <
+    // for comparison instead of <= to correctly handle infinities, bump maxUlpsDiff up to get
+    // the full maxUlpsDiff range.
+    let tolerance: f64 = max_magnitude * (ulp_factor * f64::from(max_ulps_diff + 1));
+
+    // The expression a == b is mainly for handling infinities, but it also catches the exact equals.
+    (a.is_infinite() && b.is_infinite()) || (a - b).abs() < tolerance
 }
 
 #[must_use]
