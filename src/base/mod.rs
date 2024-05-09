@@ -5,9 +5,10 @@
 pub mod align;
 pub mod cpu_types;
 pub mod cubics;
+pub mod endian;
 pub mod floating_point;
-//pub mod half;
 pub mod id_change_listener;
 pub mod math;
 pub mod thread_id;
-//pub mod vx;
+//pub(crate) mod half;
+//pub(crate) mod vx;

@@ -55,15 +55,15 @@ impl AlphaType {
 
 // This module is used to bypass limitations of struct generic in rust.
 pub mod alpha_type_mod {
-    #[derive(Debug, Default, Clone, PartialEq)]
+    #[derive(Debug, Default, Clone, Copy, Eq, PartialEq)]
     pub struct Unknown();
 
-    #[derive(Debug, Default, Clone, PartialEq)]
+    #[derive(Debug, Default, Clone, Copy, Eq, PartialEq)]
     pub struct Opaque();
 
-    #[derive(Debug, Default, Clone, PartialEq)]
+    #[derive(Debug, Default, Clone, Copy, Eq, PartialEq)]
     pub struct Premul();
 
-    #[derive(Debug, Default, Clone, PartialEq)]
+    #[derive(Debug, Default, Clone, Copy, Eq, PartialEq)]
     pub struct Unpremul();
 }

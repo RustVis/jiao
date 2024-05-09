@@ -26,12 +26,16 @@ pub const Half1: Half = 0x3C00;
 ///
 /// Vectorized functions vx::from_half and vx::to_half are also available.
 /// Unlike vx::to_half, this will correctly handle float NaN -> half NaN.
-fn HalfToFloat(h: Half) -> f32 {
+#[must_use]
+#[inline]
+pub fn HalfToFloat(h: Half) -> f32 {
     from_half(vx::Vec < 1, uint16_t > (h))[0]
 }
 
-fn FloatToHalf(f: f32) -> Half {
-    if (float_isnan(f)) {
+#[must_use]
+#[inline]
+pub fn FloatToHalf(f: f32) -> Half {
+    if f.is_nan() {
         HalfNaN
     } else {
         to_half(vx::Vec < 1, float > (f))[0]
