@@ -8,9 +8,9 @@ use std::ops::{
 
 use crate::core::matrix::Matrix;
 use crate::core::rect::Rect;
-use crate::core::scalar::Scalar;
+use crate::core::scalar::{Scalar, ScalarExt, SCALAR_1, SCALAR_NAN};
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub struct V2 {
     x: f32,
     y: f32,
@@ -20,6 +20,12 @@ impl V2 {
     #[must_use]
     pub const fn make(x: f32, y: f32) -> Self {
         Self { x, y }
+    }
+
+    #[must_use]
+    #[inline]
+    pub const fn x(&self) -> f32 {
+        self.x
     }
 
     #[must_use]
@@ -34,7 +40,7 @@ impl V2 {
 
     #[must_use]
     pub fn normalize(&self) -> Self {
-        self * (1.0 / self.length())
+        *self * (1.0 / self.length())
     }
 
     #[must_use]
@@ -48,7 +54,7 @@ impl V2 {
     }
 }
 
-impl Neg for &V2 {
+impl Neg for V2 {
     type Output = V2;
 
     fn neg(self) -> Self::Output {
@@ -59,7 +65,7 @@ impl Neg for &V2 {
     }
 }
 
-impl Add<Self> for &V2 {
+impl Add<Self> for V2 {
     type Output = V2;
 
     fn add(self, other: Self) -> Self::Output {
@@ -70,7 +76,7 @@ impl Add<Self> for &V2 {
     }
 }
 
-impl Sub<Self> for &V2 {
+impl Sub<Self> for V2 {
     type Output = V2;
 
     fn sub(self, other: Self) -> Self::Output {
@@ -81,7 +87,7 @@ impl Sub<Self> for &V2 {
     }
 }
 
-impl Mul<Self> for &V2 {
+impl Mul<Self> for V2 {
     type Output = V2;
 
     fn mul(self, other: Self) -> Self::Output {
@@ -92,7 +98,7 @@ impl Mul<Self> for &V2 {
     }
 }
 
-impl Mul<Scalar> for &V2 {
+impl Mul<Scalar> for V2 {
     type Output = V2;
 
     fn mul(self, scale: Scalar) -> Self::Output {
@@ -141,22 +147,22 @@ impl Div<V2> for Scalar {
     }
 }
 
-impl AddAssign<&Self> for V2 {
-    fn add_assign(&mut self, other: &Self) {
+impl AddAssign<Self> for V2 {
+    fn add_assign(&mut self, other: Self) {
         self.x += other.x;
         self.y += other.y;
     }
 }
 
-impl SubAssign<&Self> for V2 {
-    fn sub_assign(&mut self, other: &Self) {
+impl SubAssign<Self> for V2 {
+    fn sub_assign(&mut self, other: Self) {
         self.x -= other.x;
         self.y -= other.y;
     }
 }
 
-impl MulAssign<&Self> for V2 {
-    fn mul_assign(&mut self, other: &Self) {
+impl MulAssign<Self> for V2 {
+    fn mul_assign(&mut self, other: Self) {
         self.x *= other.x;
         self.y *= other.y;
     }
@@ -187,8 +193,27 @@ pub struct V3 {
 
 impl V3 {
     #[must_use]
+    #[inline]
     pub const fn make(x: f32, y: f32, z: f32) -> Self {
         Self { x, y, z }
+    }
+
+    #[must_use]
+    #[inline]
+    pub const fn x(&self) -> f32 {
+        self.x
+    }
+
+    #[must_use]
+    #[inline]
+    pub const fn y(&self) -> f32 {
+        self.y
+    }
+
+    #[must_use]
+    #[inline]
+    pub const fn z(&self) -> f32 {
+        self.z
     }
 
     #[must_use]
@@ -223,6 +248,18 @@ impl V3 {
 }
 
 impl Neg for &V3 {
+    type Output = V3;
+
+    fn neg(self) -> Self::Output {
+        Self::Output {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
+        }
+    }
+}
+
+impl Neg for V3 {
     type Output = V3;
 
     fn neg(self) -> Self::Output {
@@ -336,6 +373,7 @@ pub struct V4 {
 
 impl V4 {
     #[must_use]
+    #[inline]
     pub const fn make(x: f32, y: f32, z: f32, w: f32) -> Self {
         Self { x, y, z, w }
     }
@@ -491,45 +529,58 @@ pub struct M44 {
 }
 
 impl Default for M44 {
+    #[inline]
     fn default() -> Self {
-        Self::make_identity()
+        Self::new()
     }
 }
 
 impl M44 {
     #[must_use]
+    #[inline]
+    pub const fn new() -> Self {
+        Self::make_identity()
+    }
+
+    #[must_use]
     pub const fn make_uninitialized() -> Self {
-        Self {
-            mat: [
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-            ],
-        }
+        Self { mat: [0.0; 16] }
     }
 
     #[must_use]
     pub const fn make_nan() -> Self {
         Self {
-            mat: [
-                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-            ],
+            mat: [SCALAR_NAN; 16],
         }
     }
 
     #[must_use]
+    #[rustfmt::skip]
     pub const fn make_identity() -> Self {
         Self {
             mat: [
-                1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+                // row 1
+                1.0, 0.0, 0.0, 0.0,
+                // row 2
+                0.0, 1.0, 0.0, 0.0,
+                // row 3
+                0.0, 0.0, 1.0, 0.0,
+                // row 4
+                0.0, 0.0, 0.0, 1.0,
             ],
         }
     }
 
-    //M44(const M44& a, const M44& b) { this->setConcat(a, b); }
+    pub fn from_concat(a: &Self, b: &Self) -> Self {
+        let mut m = Self::new();
+        m.set_concat(a, b);
+        m
+    }
 
     /// The constructor parameters are in row-major order.
-    // FIXME(Shaohua): too many arguments
     #[must_use]
     #[allow(clippy::too_many_arguments)]
+    #[rustfmt::skip]
     pub const fn make(
         m0: Scalar,
         m4: Scalar,
@@ -551,13 +602,16 @@ impl M44 {
         // mat is column-major order in memory.
         Self {
             mat: [
-                m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13, m14, m15,
+                m0, m1, m2, m3,
+                m4, m5, m6, m7,
+                m8, m9, m10, m11,
+                m12, m13, m14, m15,
             ],
         }
     }
 
     #[must_use]
-    pub fn rows(r0: &V4, r1: &V4, r2: &V4, r3: &V4) -> Self {
+    pub fn from_rows(r0: &V4, r1: &V4, r2: &V4, r3: &V4) -> Self {
         let mut m = Self::make_uninitialized();
         m.set_row(0, r0);
         m.set_row(1, r1);
@@ -567,7 +621,8 @@ impl M44 {
     }
 
     #[must_use]
-    pub fn cols(c0: &V4, c1: &V4, c2: &V4, c3: &V4) -> Self {
+    #[inline]
+    pub fn from_cols(c0: &V4, c1: &V4, c2: &V4, c3: &V4) -> Self {
         let mut m = Self::make_uninitialized();
         m.set_col(0, c0);
         m.set_col(1, c1);
@@ -577,56 +632,132 @@ impl M44 {
     }
 
     #[must_use]
-    pub const fn row_major(r: &[Scalar; 16]) -> Self {
+    #[inline]
+    #[rustfmt::skip]
+    pub const fn from_row_major(r: &[Scalar; 16]) -> Self {
         Self::make(
-            r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13],
-            r[14], r[15],
+            r[0], r[1], r[2], r[3],
+            r[4], r[5], r[6], r[7],
+            r[8], r[9], r[10], r[11],
+            r[12], r[13], r[14], r[15],
         )
     }
 
     #[must_use]
-    pub const fn col_major(c: &[Scalar; 16]) -> Self {
+    #[inline]
+    #[rustfmt::skip]
+    pub const fn from_col_major(c: &[Scalar; 16]) -> Self {
         Self::make(
-            c[0], c[4], c[8], c[12], c[1], c[5], c[9], c[13], c[2], c[6], c[10], c[14], c[3], c[7],
-            c[11], c[15],
+            c[0], c[4], c[8], c[12],
+            c[1], c[5], c[9], c[13],
+            c[2], c[6], c[10], c[14],
+            c[3], c[7], c[11], c[15],
         )
     }
 
     #[must_use]
-    pub const fn translate(x: Scalar, y: Scalar, z: Scalar) -> Self {
+    #[inline]
+    #[rustfmt::skip]
+    pub const fn from_translate(x: Scalar, y: Scalar, z: Scalar) -> Self {
         Self::make(
-            1.0, 0.0, 0.0, x, 0.0, 1.0, 0.0, y, 0.0, 0.0, 1.0, z, 0.0, 0.0, 0.0, 1.0,
+            1.0, 0.0, 0.0, x,
+            0.0, 1.0, 0.0, y,
+            0.0, 0.0, 1.0, z,
+            0.0, 0.0, 0.0, 1.0,
         )
     }
 
     #[must_use]
-    pub const fn scale(x: Scalar, y: Scalar, z: Scalar) -> Self {
+    #[rustfmt::skip]
+    pub const fn from_scale(x: Scalar, y: Scalar, z: Scalar) -> Self {
         Self::make(
-            x, 0.0, 0.0, 0.0, 0.0, y, 0.0, 0.0, 0.0, 0.0, z, 0.0, 0.0, 0.0, 0.0, 1.0,
+            x, 0.0, 0.0, 0.0,
+            0.0, y, 0.0, 0.0,
+            0.0, 0.0, z, 0.0,
+            0.0, 0.0, 0.0, 1.0,
         )
     }
 
     #[must_use]
-    pub fn rotate(axis: &V3, radians: Scalar) -> Self {
+    pub fn from_rotate(axis: &V3, radians: Scalar) -> Self {
         let mut m = Self::make_uninitialized();
         m.set_rotate(axis, radians);
         m
     }
 
-    // Scales and translates 'src' to fill 'dst' exactly.
+    /// Scales and translates 'src' to fill 'dst' exactly.
     #[must_use]
-    pub fn rect_to_rect(_src: &Rect, _dst: &Rect) -> Self {
-        unimplemented!()
+    #[rustfmt::skip]
+    pub fn rect_to_rect(src: &Rect, dst: &Rect) -> Self {
+        if src.is_empty() {
+            return Self::new();
+        }
+        if dst.is_empty() {
+            return Self::from_scale(0.0, 0.0, 0.0);
+        }
+
+        let sx = dst.width() / src.width();
+        let sy = dst.height() / src.height();
+
+        let tx = dst.left() - sx * src.left();
+        let ty = dst.top() - sy * src.top();
+
+        Self::make(
+            sx, 0.0, 0.0, tx,
+            0.0, sy, 0.0, ty,
+            0.0, 0.0, 1.0, 0.0,
+            0.0, 0.0, 0.0, 1.0,
+        )
     }
 
     #[must_use]
-    pub fn look_at(_eye: &V3, _center: &V3, _up: &V3) -> Self {
-        unimplemented!()
+    pub fn look_at(eye: &V3, center: &V3, up: &V3) -> Self {
+        fn v4(v: &V3, w: Scalar) -> V4 {
+            V4::make(v.x, v.y, v.z, w)
+        }
+
+        fn normalize(v: &V3) -> V3 {
+            let len = v.length();
+            if len.nearly_zero() {
+                v.clone()
+            } else {
+                v * (1.0 / len)
+            }
+        }
+
+        let f: V3 = normalize(&(center - eye));
+        let u: V3 = normalize(up);
+        let s: V3 = normalize(&f.cross(&u));
+
+        let mut m = Self::make_uninitialized();
+        let cols_m = Self::from_cols(
+            &v4(&s, 0.0),
+            &v4(&s.cross(&f), 0.0),
+            &v4(&-f, 0.0),
+            &v4(eye, 1.0),
+        );
+        if !cols_m.invert(&mut m) {
+            m.set_identity();
+        }
+        m
     }
 
     #[must_use]
-    pub fn perspective(_near: f32, _far: f32, _angle: f32) -> Self {
-        unimplemented!()
+    pub fn perspective(near: f32, far: f32, angle: f32) -> Self {
+        debug_assert!(far > near);
+
+        let denom_inv: f32 = 1.0 / (far - near);
+        let half_angle = angle * 0.5;
+        debug_assert!(half_angle != 0.0);
+        let cot: f32 = 1.0 / half_angle.tan();
+
+        let mut m = Self::new();
+        m.set_rc(0, 0, cot);
+        m.set_rc(1, 1, cot);
+        m.set_rc(2, 2, (far + near) * denom_inv);
+        m.set_rc(2, 3, 2.0 * far * near * denom_inv);
+        m.set_rc(3, 2, -1.0);
+        m
     }
 
     pub fn get_col_major(&self /*Scalar v[]*/) {
@@ -713,13 +844,29 @@ impl M44 {
     ///
     /// This does not attempt to verify that `axis.length()` == 1 or that the sin,cos values
     /// are correct.
+    #[rustfmt::skip]
     pub fn set_rotate_unit_sin_cos(
         &mut self,
-        _axis: &V3,
-        _sin_angle: Scalar,
-        _cos_angle: Scalar,
+        axis: &V3,
+        sin_angle: Scalar,
+        cos_angle: Scalar,
     ) -> &Self {
-        unimplemented!()
+        // Taken from "Essential Mathematics for Games and Interactive Applications"
+        //             James M. Van Verth and Lars M. Bishop -- third edition
+        let x = axis.x();
+        let y = axis.y();
+        let z = axis.z();
+        let c = cos_angle;
+        let s = sin_angle;
+        let t = 1.0 - c;
+
+        self.mat = [
+            t * x * x + c,     t * x * y - s * z, t * x * z + s * y, 0.0,
+            t * x * y + s * z, t * y * y + c,     t * y * z - s * x, 0.0,
+            t * x * z - s * y, t * y * z + s * x, t * z * z + c,     0.0,
+            0.0,               0.0,               0.0,               1.0,
+        ];
+        self
     }
 
     /// Set this matrix to rotate about the specified unit-length axis vector,
@@ -735,8 +882,14 @@ impl M44 {
     ///
     /// Note: axis is not assumed to be unit-length, so it will be normalized internally.
     /// If axis is already unit-length, call `set_rotate_about_unit_radians()` instead.
-    pub fn set_rotate(&mut self, _axis: &V3, _radians: Scalar) -> &Self {
-        unimplemented!()
+    pub fn set_rotate(&mut self, axis: &V3, radians: Scalar) -> &Self {
+        let len = axis.length();
+        if len > 0.0 && len.is_finite() {
+            self.set_rotate_unit(&(axis * (SCALAR_1 / len)), radians);
+        } else {
+            self.set_identity();
+        }
+        self
     }
 
     pub fn set_concat(&mut self, _a: &Self, _b: &Self) -> &Self {
