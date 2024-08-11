@@ -2,24 +2,26 @@
 // Use of this source is governed by Lesser General Public License that can be found
 // in the LICENSE file.
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum FilterMode {
-    /// single sample point (nearest neighbor)
+    /// Single sample point (nearest neighbor)
+    #[default]
     Nearest,
 
-    /// interporate between 2x2 sample points (bilinear interpolation)
+    /// Interporate between 2x2 sample points (bilinear interpolation)
     Linear,
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum MipmapMode {
-    /// ignore mipmap levels, sample from the "base"
+    /// Ignore mipmap levels, sample from the "base"
+    #[default]
     None,
 
-    /// sample from the nearest level
+    /// Sample from the nearest level
     Nearest,
 
-    /// interpolate between the two nearest levels
+    /// Interpolate between the two nearest levels
     Linear,
 }
 
@@ -54,6 +56,7 @@ impl CubicResampler {
 
     /// Historic default for `FilterQuality::High`
     #[must_use]
+    #[inline]
     pub fn mitchell() -> Self {
         Self {
             val_b: 1.0 / 3.0,
@@ -62,6 +65,7 @@ impl CubicResampler {
     }
 
     #[must_use]
+    #[inline]
     pub fn catmull_rom() -> Self {
         Self {
             val_b: 0.0,
@@ -80,6 +84,7 @@ pub struct SamplingOptions {
 }
 
 impl Default for SamplingOptions {
+    #[inline]
     fn default() -> Self {
         Self::new()
     }
@@ -87,6 +92,7 @@ impl Default for SamplingOptions {
 
 impl SamplingOptions {
     #[must_use]
+    #[inline]
     pub const fn new() -> Self {
         Self {
             max_aniso: 0,
@@ -107,9 +113,18 @@ impl SamplingOptions {
     }
 
     #[must_use]
+    pub const fn with_filter(filter: FilterMode) -> Self {
+        Self {
+            filter,
+            ..Self::new()
+        }
+    }
+
+    #[must_use]
     pub const fn with_resampler(cubic: CubicResampler) -> Self {
         Self {
             cubic,
+            use_cubic: true,
             ..Self::new()
         }
     }
@@ -123,6 +138,7 @@ impl SamplingOptions {
     }
 
     #[must_use]
+    #[inline]
     pub const fn is_aniso(&self) -> bool {
         self.max_aniso != 0
     }
