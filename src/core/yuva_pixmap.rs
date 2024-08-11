@@ -14,9 +14,10 @@ use crate::core::yuva_info::{PlaneConfig, YuvaInfo, YuvaLocations, MAX_PLANES};
 
 /// Data type for Y, U, V, and possibly A channels independent of how values are packed into planes.
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum DataType {
     /// 8 bit unsigned normalized
+    #[default]
     Unorm8 = 0,
 
     /// 16 bit unsigned normalized
@@ -43,12 +44,6 @@ impl From<u8> for DataType {
 }
 
 pub const DATA_TYPE_CNT: usize = 4;
-
-impl Default for DataType {
-    fn default() -> Self {
-        Self::Unorm8
-    }
-}
 
 impl DataType {
     /// Gets the default `ColorType` to use with `num_channels` channels, each represented as `DataType`.

@@ -29,8 +29,9 @@ pub struct Typeface {
 
 /// Style specifies the intrinsic style attributes of a given typeface.
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum Style {
+    #[default]
     Normal = 0,
     Bold   = 0x01,
     Italic = 0x02,
@@ -41,18 +42,21 @@ pub enum Style {
 impl Typeface {
     /// Returns the typeface's intrinsic style attributes. */
     #[must_use]
+    #[inline]
     pub const fn font_sytle(&self) -> FontStyle {
         self.style
     }
 
     /// Returns true if style() has the kBold bit set. 
     #[must_use]
+    #[inline]
     pub const fn is_bold(&self) -> bool {
         self.style.weight().is_bold()
     }
 
     /// Returns true if style() has the kItalic bit set.
     #[must_use]
+    #[inline]
     pub const fn is_italic(&self) -> bool {
         self.style.slant().is_italic()
     }
@@ -61,6 +65,7 @@ impl Typeface {
     ///
     /// This is a style bit, advance widths may vary even if this returns true.
     #[must_use]
+    #[inline]
     pub const fn is_fixed_pitch(&self) -> bool {
         self.is_fixed_pitch
     }
@@ -76,6 +81,7 @@ impl Typeface {
      *  variation space. It is possible the number of axes can be retrieved but actual position
      *  cannot.
      */
+    // TODO(Shaohua):
     int getVariationDesignPosition(SkFontArguments::VariationPosition::Coordinate coordinates[],
                                    int coordinateCount) const;
 
@@ -97,6 +103,7 @@ impl Typeface {
     ///
     /// Will never return 0.
     #[must_use]
+    #[inline]
     pub const fn unique_id(&self) -> TypefaceId {
         self.unique_id
     }

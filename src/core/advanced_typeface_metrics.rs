@@ -65,25 +65,21 @@ bitflags! {
 }
 
 impl Default for StyleFlags {
+    #[inline]
     fn default() -> Self {
         Self::empty()
     }
 }
 
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum FontType {
     Type1,
     Type1Cid,
     Cff,
     TrueType,
+    #[default]
     Other,
-}
-
-impl Default for FontType {
-    fn default() -> Self {
-        Self::Other
-    }
 }
 
 bitflags! {
@@ -104,6 +100,7 @@ bitflags! {
 }
 
 impl Default for FontFlags {
+    #[inline]
     fn default() -> Self {
         Self::empty()
     }

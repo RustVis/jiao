@@ -4,10 +4,10 @@
 
 use crate::core::path::Path;
 use crate::core::path_builder_priv::PointIter;
-use crate::core::path_types::{PathFillType, PathVerb};
 use crate::core::path_types::ArcSize;
 use crate::core::path_types::PathDirection;
 use crate::core::path_types::PathSegmentMask;
+use crate::core::path_types::{PathFillType, PathVerb};
 use crate::core::point::Point;
 use crate::core::rect::Rect;
 use crate::core::rrect::RRect;

@@ -10,9 +10,10 @@
 /// Use `StrokeAndFill` to avoid hitting the same pixels twice with a stroke draw
 /// and a fill draw.
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum PaintStyle {
     /// Set to fill geometry
+    #[default]
     Fill,
 
     /// Set to stroke geometry
@@ -20,12 +21,6 @@ pub enum PaintStyle {
 
     /// Sets to stroke and fill geometry
     StrokeAndFill,
-}
-
-impl Default for PaintStyle {
-    fn default() -> Self {
-        Self::Fill
-    }
 }
 
 /// `StrokeJoin` specifies how corners are drawn when a shape is stroked.
@@ -42,9 +37,10 @@ impl Default for PaintStyle {
 /// For instance, a fill path constructed with round joins does not necessarily
 /// include circles at each connected segment.
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum StrokeJoin {
     /// Extends to miter limit
+    #[default]
     Miter,
 
     /// Adds circle
@@ -54,17 +50,12 @@ pub enum StrokeJoin {
     Bevel,
 }
 
-impl Default for StrokeJoin {
-    fn default() -> Self {
-        Self::Miter
-    }
-}
-
 /// `StrokeCap` draws at the beginning and end of an open path contour.
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub enum StrokeCap {
     /// No stroke extension
+    #[default]
     Butt,
 
     /// Adds circle
@@ -72,10 +63,4 @@ pub enum StrokeCap {
 
     /// Adds square
     Square,
-}
-
-impl Default for StrokeCap {
-    fn default() -> Self {
-        Self::Butt
-    }
 }

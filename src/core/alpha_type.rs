@@ -19,7 +19,7 @@
 //! Premultiplied color components improve performance.
 
 #[repr(u8)]
-#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum AlphaType {
     /// uninitialized
     #[default]
@@ -48,11 +48,13 @@ impl AlphaType {
     /// If `AlphaType` is `AlphaType::Opaque`, and `ColorType` is not opaque,
     /// then the result of drawing any pixel with a alpha value less than 1.0 is undefined.
     #[must_use]
+    #[inline]
     pub fn is_opaque(self) -> bool {
         self == Self::Opaque
     }
 }
 
+// TODO(Shaohua): Remove
 // This module is used to bypass limitations of struct generic in rust.
 pub mod alpha_type_mod {
     #[derive(Debug, Default, Clone, Copy, Eq, PartialEq)]

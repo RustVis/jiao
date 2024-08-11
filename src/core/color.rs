@@ -14,7 +14,7 @@ use crate::core::alpha_type::alpha_type_mod;
 use crate::core::color_priv::{
     alpha_255_to_256, get_packed_a32, get_packed_b32, get_packed_g32, get_packed_r32,
 };
-use crate::core::scalar::{Scalar, SCALAR_1, ScalarExt};
+use crate::core::scalar::{Scalar, ScalarExt, SCALAR_1};
 use crate::core::types::{A32_SHIFT, B32_SHIFT, G32_SHIFT, R32_SHIFT};
 
 /// 8-bit type for an alpha value. 255 is 100% opaque, zero is 100% transparent.

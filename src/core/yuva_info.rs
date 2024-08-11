@@ -9,7 +9,7 @@ use crate::core::size::ISize;
 
 pub const MAX_PLANES: usize = 4;
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum YuvaChannels {
     Y,
     U,
@@ -37,8 +37,9 @@ pub type YuvaLocations = [YuvaLocation; YUVA_CHANNEL_COUNT];
 /// - RGB                      0:R,    1:G, 2:B
 /// - RGBA                     0:R,    1:G, 2:B, 3:A
 #[allow(non_camel_case_types)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum PlaneConfig {
+    #[default]
     Unknown,
 
     /// Plane 0: Y, Plane 1: U,  Plane 2: V
@@ -76,12 +77,6 @@ pub enum PlaneConfig {
 
     /// Plane 0: UYVA
     UYVA,
-}
-
-impl Default for PlaneConfig {
-    fn default() -> Self {
-        Self::Unknown
-    }
 }
 
 impl PlaneConfig {
@@ -186,8 +181,9 @@ impl PlaneConfig {
 /// If alpha is present it is not sub-sampled. Note that Subsampling values other than
 /// k444 are only valid with `PlaneConfig` values that have U and V in different planes
 /// than Y (and A, if present).
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum Subsampling {
+    #[default]
     Unknown,
 
     /// No subsampling. UV values for each Y.
@@ -209,12 +205,6 @@ pub enum Subsampling {
     K410,
 }
 
-impl Default for Subsampling {
-    fn default() -> Self {
-        Self::Unknown
-    }
-}
-
 impl Subsampling {
     /// ratio of Y/A values to U/V values in x and y.
     #[must_use]
@@ -226,9 +216,10 @@ impl Subsampling {
 /// Describes how subsampled chroma values are sited relative to luma values.
 ///
 /// Currently only centered siting is supported but will expand to support additional sitings.
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum Siting {
     /// Subsampled chroma value is sited at the center of the block of corresponding luma values.
+    #[default]
     Centered,
 }
 
@@ -255,6 +246,7 @@ pub struct YuvaInfo {
 }
 
 impl Default for YuvaInfo {
+    #[inline]
     fn default() -> Self {
         Self::new()
     }
@@ -319,16 +311,19 @@ impl YuvaInfo {
     }
 
     #[must_use]
+    #[inline]
     pub const fn plane_config(&self) -> PlaneConfig {
         self.plane_config
     }
 
     #[must_use]
+    #[inline]
     pub const fn subsampling(&self) -> Subsampling {
         self.subsampling
     }
 
     #[must_use]
+    #[inline]
     pub const fn plane_subsampling_factors(&self, plane_idx: i32) -> (i32, i32) {
         self.plane_config
             .subsampling_factors(self.subsampling, plane_idx)
@@ -337,36 +332,43 @@ impl YuvaInfo {
     /// Dimensions of the full resolution image (after planes have been oriented to how the image
     /// is displayed as indicated by fOrigin).
     #[must_use]
+    #[inline]
     pub const fn dimensions(&self) -> ISize {
         self.dimensions
     }
 
     #[must_use]
+    #[inline]
     pub const fn width(&self) -> i32 {
         self.dimensions.width()
     }
 
     #[must_use]
+    #[inline]
     pub const fn height(&self) -> i32 {
         self.dimensions.height()
     }
 
     #[must_use]
+    #[inline]
     pub const fn yuv_color_space(&self) -> YuvColorSpace {
         self.yuv_color_space
     }
 
     #[must_use]
+    #[inline]
     pub const fn siting_x(&self) -> Siting {
         self.siting_x
     }
 
     #[must_use]
+    #[inline]
     pub const fn siting_y(&self) -> Siting {
         self.siting_y
     }
 
     #[must_use]
+    #[inline]
     pub const fn origin(&self) -> EncodedOrigin {
         self.origin
     }
@@ -378,16 +380,19 @@ impl YuvaInfo {
     }
 
     #[must_use]
+    #[inline]
     pub const fn has_alpha(&self) -> bool {
         self.plane_config.has_alpha()
     }
 
     #[must_use]
+    #[inline]
     pub const fn num_planes(&self) -> i32 {
         self.plane_config.num_planes()
     }
 
     #[must_use]
+    #[inline]
     pub const fn num_channels_in_plane(&self, index: i32) -> i32 {
         self.plane_config.num_channels_in_plane(index)
     }
@@ -397,6 +402,7 @@ impl YuvaInfo {
     ///
     /// Dimensions are as stored in memory, before transformation to image display space
     /// as indicated by `origin()`.
+    #[inline]
     pub fn plane_dimensions(&self, plane_dimensions: &mut [ISize; MAX_PLANES]) -> i32 {
         Self::plane_dimensions_impl(
             self.dimensions,
@@ -449,6 +455,7 @@ impl YuvaInfo {
     }
 
     #[must_use]
+    #[inline]
     pub fn is_valid(&self) -> bool {
         self.plane_config != PlaneConfig::Unknown
     }

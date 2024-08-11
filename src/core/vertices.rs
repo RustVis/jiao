@@ -99,6 +99,7 @@ impl Sizes {
     }
 
     #[must_use]
+    #[inline]
     pub const fn is_valid(&self) -> bool {
         self.total != 0
     }
@@ -145,11 +146,13 @@ impl Vertices {
     }
 
     #[must_use]
+    #[inline]
     pub const fn unique_id(&self) -> u32 {
         self.unique_id
     }
 
     #[must_use]
+    #[inline]
     pub const fn bounds(&self) -> &Rect {
         &self.bounds
     }
@@ -166,6 +169,7 @@ impl Vertices {
     }
 
     #[must_use]
+    #[inline]
     pub const fn is_empty(&self) -> bool {
         self.vertex_count == 0
     }
@@ -233,6 +237,7 @@ impl Builder {
     ///
     /// After the first call, this will always return null.
     #[must_use]
+    #[inline]
     #[allow(clippy::missing_const_for_fn)]
     pub fn finish(self) -> Vertices {
         self.vertices
