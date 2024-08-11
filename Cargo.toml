@@ -8,17 +8,16 @@ repository = "https://github.com/RustVis/jiao"
 documentation = "https://docs.rs/jiao"
 readme = "README.md"
 categories = [
-  "computer-vision",
-  "graphics",
-  "rendering",
-  "visualization",
+    "computer-vision",
+    "graphics",
+    "rendering",
+    "visualization",
 ]
 keywords = [
-  "2d",
-  "canvas",
-  "painting",
-  "rendering",
-  "svg",
+    "canvas",
+    "painting",
+    "rendering",
+    "svg",
 ]
 edition = "2021"
 license = "LGPL-3.0"

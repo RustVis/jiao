@@ -19,6 +19,7 @@ pub struct Path {
 
 impl Path {
     #[must_use]
+    #[inline]
     pub(crate) fn new(
         points: Vec<Point>,
         verbs: Vec<PathVerb>,
@@ -46,21 +47,25 @@ impl Path {
     }
 
     #[must_use]
+    #[inline]
     pub const fn fill_type(&self) -> PathFillType {
         self.fill_type
     }
 
     #[must_use]
+    #[inline]
     pub fn points(&self) -> &[Point] {
         &self.points
     }
 
     #[must_use]
+    #[inline]
     pub fn verbs(&self) -> &[PathVerb] {
         &self.verbs
     }
 
     #[must_use]
+    #[inline]
     pub fn conic_weights(&self) -> &[Scalar] {
         &self.conic_weights
     }

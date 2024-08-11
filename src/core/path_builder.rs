@@ -4,10 +4,10 @@
 
 use crate::core::path::Path;
 use crate::core::path_builder_priv::PointIter;
+use crate::core::path_types::{PathFillType, PathVerb};
 use crate::core::path_types::ArcSize;
 use crate::core::path_types::PathDirection;
 use crate::core::path_types::PathSegmentMask;
-use crate::core::path_types::{PathFillType, PathVerb};
 use crate::core::point::Point;
 use crate::core::rect::Rect;
 use crate::core::rrect::RRect;
@@ -34,9 +34,10 @@ pub struct PathBuilder {
 }
 
 #[repr(u8)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Default, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 enum IsA {
     /// we only have 0 or more moves
+    #[default]
     JustMoves,
 
     /// we have verbs other than just move
@@ -49,13 +50,8 @@ enum IsA {
     RRect,
 }
 
-impl Default for IsA {
-    fn default() -> Self {
-        Self::JustMoves
-    }
-}
-
 impl Default for PathBuilder {
+    #[inline]
     fn default() -> Self {
         Self::new()
     }
@@ -121,6 +117,7 @@ impl PathBuilder {
     }
 
     #[must_use]
+    #[inline]
     #[allow(clippy::missing_const_for_fn)]
     pub fn from_path(path: Path) -> Self {
         path.into()
@@ -236,6 +233,7 @@ impl PathBuilder {
         ))
     }
 
+    #[inline]
     pub fn set_fill_type(&mut self, fill_type: PathFillType) {
         self.fill_type = fill_type;
     }
@@ -252,22 +250,26 @@ impl PathBuilder {
         Some(bounds)
     }
 
+    #[inline]
     pub fn reserve(&mut self, additional_verbs: usize, additional_points: usize) {
         self.verbs.reserve(additional_verbs);
         self.points.reserve(additional_points);
     }
 
     #[must_use]
+    #[inline]
     pub const fn fill_type(&self) -> PathFillType {
         self.fill_type
     }
 
     #[must_use]
+    #[inline]
     pub fn len(&self) -> usize {
         self.verbs.len()
     }
 
     #[must_use]
+    #[inline]
     pub fn is_empty(&self) -> bool {
         self.verbs.is_empty()
     }
@@ -276,6 +278,7 @@ impl PathBuilder {
         unimplemented!()
     }
 
+    #[inline]
     pub fn toggle_inverse_fill_type(&mut self) -> &mut Self {
         self.fill_type = self.fill_type.inverse();
         self
@@ -294,6 +297,7 @@ impl PathBuilder {
         self
     }
 
+    #[inline]
     pub fn move_to(&mut self, x: Scalar, y: Scalar) -> &mut Self {
         self.move_to_point(Point::from_xy(x, y))
     }
@@ -318,6 +322,7 @@ impl PathBuilder {
         self
     }
 
+    #[inline]
     pub fn line_to(&mut self, x: Scalar, y: Scalar) -> &mut Self {
         self.line_to_point(Point::from_xy(x, y))
     }
@@ -333,6 +338,7 @@ impl PathBuilder {
         self
     }
 
+    #[inline]
     pub fn quad_to(&mut self, x1: Scalar, y1: Scalar, x2: Scalar, y2: Scalar) -> &mut Self {
         self.quad_to_point(Point::from_xy(x1, y1), Point::from_xy(x2, y2))
     }
@@ -373,6 +379,7 @@ impl PathBuilder {
         self
     }
 
+    #[inline]
     pub fn cubic_to(
         &mut self,
         x1: Scalar,
@@ -403,11 +410,13 @@ impl PathBuilder {
     }
 
     /// Append a series of Line.
+    #[inline]
     pub fn polyline_to(&mut self, _points: &[Point]) -> &mut Self {
         self
     }
 
-    // Relative versions of segments, relative to the previous position.
+    /// Relative versions of segments, relative to the previous position.
+    #[inline]
     pub fn relative_line_to(&mut self, x: Scalar, y: Scalar) -> &mut Self {
         self.relative_line_to_point(Point::from_xy(x, y))
     }
@@ -421,6 +430,7 @@ impl PathBuilder {
         }
     }
 
+    #[inline]
     pub fn relative_quad_to(
         &mut self,
         x1: Scalar,
@@ -440,6 +450,7 @@ impl PathBuilder {
         }
     }
 
+    #[inline]
     pub fn relative_conic_to(
         &mut self,
         x1: Scalar,
@@ -460,6 +471,7 @@ impl PathBuilder {
         }
     }
 
+    #[inline]
     pub fn relative_cubic_to(
         &mut self,
         x1: Scalar,
@@ -498,6 +510,7 @@ impl PathBuilder {
     /// Add a new rect contour.
     ///
     /// The contour is closed and has a clock-wise direction.
+    #[inline]
     pub fn add_rect(&mut self, rect: &Rect) -> &mut Self {
         self.add_rect_detail(rect, PathDirection::Cw, 0)
     }
@@ -526,6 +539,7 @@ impl PathBuilder {
     /// Adds an oval contour bounded by the provided rectangle.
     ///
     /// The contour is closed and has a clock-wise direction.
+    #[inline]
     pub fn add_oval(&mut self, oval: &Rect) -> &mut Self {
         self.add_oval_detail(oval, PathDirection::Cw, 0)
     }
@@ -566,6 +580,7 @@ impl PathBuilder {
         self
     }
 
+    #[inline]
     pub fn add_rrect(&mut self, rrect: &RRect) -> &mut Self {
         self.add_rrect_detail(rrect, PathDirection::Cw, 0)
     }
@@ -576,12 +591,14 @@ impl PathBuilder {
         _dir: PathDirection,
         _start_index: usize,
     ) -> &mut Self {
+        // TODO(Shaohua):
         self
     }
 
     /// Add a circular contour.
     ///
     /// Segments are created clockwise.
+    #[inline]
     pub fn add_circle(&mut self, center_x: Scalar, center_y: Scalar, radius: Scalar) -> &mut Self {
         self.add_circle_detail(center_x, center_y, radius, PathDirection::Cw)
     }
@@ -593,10 +610,12 @@ impl PathBuilder {
         _radius: Scalar,
         _dir: PathDirection,
     ) -> &mut Self {
+        // TODO(Shaohua):
         self
     }
 
     pub fn add_polygon(&mut self, _points: &[Point], _is_closed: bool) -> &mut Self {
+        // TODO(Shaohua):
         self
     }
 
@@ -623,6 +642,7 @@ impl PathBuilder {
         _sweep_angle_deg: Scalar,
         _force_move_to: bool,
     ) -> &mut Self {
+        // TODO(Shaohua):
         self
     }
 
@@ -646,6 +666,7 @@ impl PathBuilder {
     /// - `p2` - end of second tangent
     /// - `radius` - distance from arc to circle center
     pub fn arc_to_point(&mut self, _pt1: Point, _pt2: Point, _radius: Scalar) -> &mut Self {
+        // TODO(Shaohua):
         self
     }
 
@@ -680,6 +701,7 @@ impl PathBuilder {
         _sweep: PathDirection,
         _xy: Point,
     ) -> &mut Self {
+        // TODO(Shaohua):
         self
     }
 
@@ -704,6 +726,7 @@ impl PathBuilder {
         _start_angle_deg: Scalar,
         _sweep_angle_deg: Scalar,
     ) -> &mut Self {
+        // TODO(Shaohua):
         self
     }
 

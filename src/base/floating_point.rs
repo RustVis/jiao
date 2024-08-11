@@ -124,7 +124,7 @@ pub const DOUBLE_DECIMAL_DIG: usize = 17;
 
 #[must_use]
 #[inline]
-pub fn sk_floats_are_finite(array: &[f32]) -> bool {
+pub fn floats_are_finite(array: &[f32]) -> bool {
     let mut prod: f32 = 0.0;
 
     for &num in array {

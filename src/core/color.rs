@@ -4,16 +4,17 @@
 
 //! Types, consts, functions, and macros for colors.
 
-use bitflags::bitflags;
 use std::marker::PhantomData;
 use std::ops::{Index, IndexMut, Mul};
+
+use bitflags::bitflags;
 
 use crate::base::math::mul_div_255_round;
 use crate::core::alpha_type::alpha_type_mod;
 use crate::core::color_priv::{
     alpha_255_to_256, get_packed_a32, get_packed_b32, get_packed_g32, get_packed_r32,
 };
-use crate::core::scalar::{Scalar, ScalarExt, SCALAR_1};
+use crate::core::scalar::{Scalar, SCALAR_1, ScalarExt};
 use crate::core::types::{A32_SHIFT, B32_SHIFT, G32_SHIFT, R32_SHIFT};
 
 /// 8-bit type for an alpha value. 255 is 100% opaque, zero is 100% transparent.
@@ -46,6 +47,7 @@ pub struct Color {
 }
 
 impl From<u32> for Color {
+    #[inline]
     #[allow(clippy::cast_possible_truncation)]
     fn from(val: u32) -> Self {
         Self {
@@ -58,6 +60,7 @@ impl From<u32> for Color {
 }
 
 impl From<Color> for u32 {
+    #[inline]
     fn from(color: Color) -> Self {
         (Self::from(color.alpha) << 24)
             | (Self::from(color.red) << 16)
@@ -126,7 +129,7 @@ impl Color {
     /// from `alpha`.
     ///
     /// Alpha component of self is ignored and is replaced by `alpha`.
-
+    #[inline]
     pub fn set_alpha(&mut self, alpha: u8) {
         self.alpha = alpha;
     }
@@ -328,12 +331,14 @@ pub struct PMColor {
 /// Multiplies `color` RGB components by the `color` alpha,
 /// and arranges the bytes to match the format of `ColorType` `N32`.
 impl From<Color> for PMColor {
+    #[inline]
     fn from(color: Color) -> Self {
         Self::from_argb(color.alpha, color.red, color.green, color.blue)
     }
 }
 
 impl From<PMColor> for u32 {
+    #[inline]
     #[allow(clippy::use_self)]
     fn from(color: PMColor) -> u32 {
         (u32::from(color.alpha) << A32_SHIFT)
@@ -344,6 +349,7 @@ impl From<PMColor> for u32 {
 }
 
 impl From<u32> for PMColor {
+    #[inline]
     fn from(packed: u32) -> Self {
         let alpha = get_packed_a32(packed);
         let red = get_packed_r32(packed);
